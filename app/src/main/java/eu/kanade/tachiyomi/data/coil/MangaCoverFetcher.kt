@@ -33,9 +33,9 @@ import okio.buffer
 import okio.sink
 import okio.source
 import tachiyomi.core.common.util.system.logcat
-import tachiyomi.domain.manga.model.Manga
-import tachiyomi.domain.manga.model.MangaCover
-import tachiyomi.domain.manga.model.asMangaCover
+import tachiyomi.domain.anime.model.Manga
+import tachiyomi.domain.anime.model.MangaCover
+import tachiyomi.domain.anime.model.asMangaCover
 import tachiyomi.domain.source.service.SourceManager
 import uy.kohesive.injekt.Injekt
 import uy.kohesive.injekt.api.get

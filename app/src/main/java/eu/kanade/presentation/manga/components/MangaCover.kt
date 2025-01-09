@@ -29,9 +29,9 @@ import androidx.compose.ui.unit.dp
 import coil3.compose.AsyncImagePainter
 import coil3.compose.SubcomposeAsyncImage
 import eu.kanade.tachiyomi.R
-import tachiyomi.domain.manga.model.Manga
-import tachiyomi.domain.manga.model.asMangaCover
-import tachiyomi.domain.manga.model.MangaCover as DomainMangaCover
+import tachiyomi.domain.anime.model.Manga
+import tachiyomi.domain.anime.model.asMangaCover
+import tachiyomi.domain.anime.model.MangaCover as DomainMangaCover
 
 enum class MangaCover(val ratio: Float) {
     Square(1f / 1f),

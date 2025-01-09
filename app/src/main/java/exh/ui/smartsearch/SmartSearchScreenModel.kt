@@ -7,8 +7,8 @@ import eu.kanade.tachiyomi.ui.browse.source.SourcesScreen
 import exh.smartsearch.SmartSearchEngine
 import kotlinx.coroutines.CancellationException
 import tachiyomi.core.common.util.lang.launchIO
-import tachiyomi.domain.manga.interactor.NetworkToLocalManga
-import tachiyomi.domain.manga.model.Manga
+import tachiyomi.domain.anime.interactor.NetworkToLocalManga
+import tachiyomi.domain.anime.model.Manga
 import tachiyomi.domain.source.service.SourceManager
 import uy.kohesive.injekt.Injekt
 import uy.kohesive.injekt.api.get

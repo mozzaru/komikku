@@ -13,7 +13,7 @@ import okio.Source
 import okio.buffer
 import okio.sink
 import tachiyomi.core.common.util.system.logcat
-import tachiyomi.domain.manga.model.Manga
+import tachiyomi.domain.anime.model.Manga
 import uy.kohesive.injekt.injectLazy
 import java.io.File
 import java.io.IOException

@@ -8,7 +8,7 @@ import exh.source.getMainSource
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.update
-import tachiyomi.domain.manga.model.Manga
+import tachiyomi.domain.anime.model.Manga
 import tachiyomi.domain.source.repository.SourcePagingSourceType
 
 class MangaDexFollowsScreenModel(sourceId: Long) : BrowseSourceScreenModel(sourceId, null) {

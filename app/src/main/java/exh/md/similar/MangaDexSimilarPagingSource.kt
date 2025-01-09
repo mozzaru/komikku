@@ -8,7 +8,7 @@ import kotlinx.coroutines.async
 import kotlinx.coroutines.coroutineScope
 import tachiyomi.data.source.NoResultsException
 import tachiyomi.data.source.SourcePagingSource
-import tachiyomi.domain.manga.model.Manga
+import tachiyomi.domain.anime.model.Manga
 
 /**
  * MangaDexSimilarPagingSource inherited from the general Pager.

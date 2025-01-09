@@ -2,7 +2,7 @@ package eu.kanade.tachiyomi.data.backup.models
 
 import kotlinx.serialization.Serializable
 import kotlinx.serialization.protobuf.ProtoNumber
-import tachiyomi.domain.manga.model.MergedMangaReference
+import tachiyomi.domain.anime.model.MergedMangaReference
 
 /*
 * SY merged manga backup class

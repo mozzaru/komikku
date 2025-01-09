@@ -9,8 +9,8 @@ import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.runBlocking
-import tachiyomi.domain.manga.interactor.GetManga
-import tachiyomi.domain.manga.model.Manga
+import tachiyomi.domain.anime.interactor.GetManga
+import tachiyomi.domain.anime.model.Manga
 import tachiyomi.domain.source.repository.SourcePagingSourceType
 import uy.kohesive.injekt.Injekt
 import uy.kohesive.injekt.api.get

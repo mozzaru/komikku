@@ -47,8 +47,8 @@ import exh.util.floor
 import kotlinx.coroutines.flow.StateFlow
 import tachiyomi.core.common.i18n.pluralStringResource
 import tachiyomi.core.common.util.lang.withIOContext
-import tachiyomi.domain.manga.model.Manga
-import tachiyomi.domain.manga.model.asMangaCover
+import tachiyomi.domain.anime.model.Manga
+import tachiyomi.domain.anime.model.asMangaCover
 import tachiyomi.i18n.sy.SYMR
 import tachiyomi.presentation.core.components.BadgeGroup
 import tachiyomi.presentation.core.components.material.padding

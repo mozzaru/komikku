@@ -13,12 +13,12 @@ import eu.kanade.tachiyomi.ui.reader.setting.ReadingMode
 import exh.source.MERGED_SOURCE_ID
 import exh.source.getMainSource
 import tachiyomi.data.DatabaseHandler
+import tachiyomi.domain.anime.interactor.GetCustomMangaInfo
+import tachiyomi.domain.anime.interactor.GetFlatMetadataById
+import tachiyomi.domain.anime.model.CustomMangaInfo
+import tachiyomi.domain.anime.model.Manga
 import tachiyomi.domain.category.interactor.GetCategories
 import tachiyomi.domain.history.interactor.GetHistory
-import tachiyomi.domain.manga.interactor.GetCustomMangaInfo
-import tachiyomi.domain.manga.interactor.GetFlatMetadataById
-import tachiyomi.domain.manga.model.CustomMangaInfo
-import tachiyomi.domain.manga.model.Manga
 import tachiyomi.domain.source.service.SourceManager
 import uy.kohesive.injekt.Injekt
 import uy.kohesive.injekt.api.get

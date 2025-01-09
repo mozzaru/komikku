@@ -4,10 +4,10 @@ import kotlinx.coroutines.flow.Flow
 import logcat.LogPriority
 import tachiyomi.core.common.util.system.logcat
 import tachiyomi.data.DatabaseHandler
-import tachiyomi.domain.manga.model.Manga
-import tachiyomi.domain.manga.model.MergeMangaSettingsUpdate
-import tachiyomi.domain.manga.model.MergedMangaReference
-import tachiyomi.domain.manga.repository.MangaMergeRepository
+import tachiyomi.domain.anime.model.Manga
+import tachiyomi.domain.anime.model.MergeMangaSettingsUpdate
+import tachiyomi.domain.anime.model.MergedMangaReference
+import tachiyomi.domain.anime.repository.MangaMergeRepository
 
 class MangaMergeRepositoryImpl(
     private val handler: DatabaseHandler,

@@ -4,8 +4,8 @@ import eu.kanade.domain.chapter.model.applyFilters
 import eu.kanade.tachiyomi.data.download.DownloadManager
 import eu.kanade.tachiyomi.ui.manga.ChapterList
 import exh.source.isEhBasedManga
-import tachiyomi.domain.chapter.model.Chapter
-import tachiyomi.domain.manga.model.Manga
+import tachiyomi.domain.anime.model.Manga
+import tachiyomi.domain.episode.model.Chapter
 
 /**
  * Gets next unread chapter with filters and sorting applied

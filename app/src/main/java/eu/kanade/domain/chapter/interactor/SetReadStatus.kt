@@ -10,13 +10,13 @@ import exh.source.MERGED_SOURCE_ID
 import logcat.LogPriority
 import tachiyomi.core.common.util.lang.withNonCancellableContext
 import tachiyomi.core.common.util.system.logcat
-import tachiyomi.domain.chapter.interactor.GetMergedChaptersByMangaId
-import tachiyomi.domain.chapter.model.Chapter
-import tachiyomi.domain.chapter.model.ChapterUpdate
-import tachiyomi.domain.chapter.repository.ChapterRepository
+import tachiyomi.domain.anime.model.Manga
+import tachiyomi.domain.anime.repository.MangaRepository
 import tachiyomi.domain.download.service.DownloadPreferences
-import tachiyomi.domain.manga.model.Manga
-import tachiyomi.domain.manga.repository.MangaRepository
+import tachiyomi.domain.episode.interactor.GetMergedChaptersByMangaId
+import tachiyomi.domain.episode.model.Chapter
+import tachiyomi.domain.episode.model.ChapterUpdate
+import tachiyomi.domain.episode.repository.ChapterRepository
 
 class SetReadStatus(
     private val downloadPreferences: DownloadPreferences,

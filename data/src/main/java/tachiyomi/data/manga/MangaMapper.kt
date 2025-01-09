@@ -1,8 +1,8 @@
 package tachiyomi.data.manga
 
 import eu.kanade.tachiyomi.source.model.UpdateStrategy
+import tachiyomi.domain.anime.model.Manga
 import tachiyomi.domain.library.model.LibraryManga
-import tachiyomi.domain.manga.model.Manga
 import tachiyomi.view.LibraryView
 
 object MangaMapper {

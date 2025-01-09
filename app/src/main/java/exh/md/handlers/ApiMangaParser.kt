@@ -15,9 +15,9 @@ import exh.metadata.metadata.base.RaisedTag
 import exh.util.capitalize
 import exh.util.floor
 import exh.util.nullIfEmpty
-import tachiyomi.domain.manga.interactor.GetFlatMetadataById
-import tachiyomi.domain.manga.interactor.GetManga
-import tachiyomi.domain.manga.interactor.InsertFlatMetadata
+import tachiyomi.domain.anime.interactor.GetFlatMetadataById
+import tachiyomi.domain.anime.interactor.GetManga
+import tachiyomi.domain.anime.interactor.InsertFlatMetadata
 import uy.kohesive.injekt.injectLazy
 import java.util.Locale
 

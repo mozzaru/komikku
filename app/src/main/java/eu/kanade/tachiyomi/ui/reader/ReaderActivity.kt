@@ -136,8 +136,8 @@ import tachiyomi.core.common.util.lang.launchIO
 import tachiyomi.core.common.util.lang.launchNonCancellable
 import tachiyomi.core.common.util.lang.withUIContext
 import tachiyomi.core.common.util.system.logcat
-import tachiyomi.domain.manga.model.MangaCover
-import tachiyomi.domain.manga.model.asMangaCover
+import tachiyomi.domain.anime.model.MangaCover
+import tachiyomi.domain.anime.model.asMangaCover
 import tachiyomi.domain.source.service.SourceManager
 import tachiyomi.i18n.MR
 import tachiyomi.i18n.kmk.KMR

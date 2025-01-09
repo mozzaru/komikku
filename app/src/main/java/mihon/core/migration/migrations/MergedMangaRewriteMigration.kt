@@ -11,15 +11,15 @@ import mihon.core.migration.MigrationContext
 import tachiyomi.core.common.util.lang.withIOContext
 import tachiyomi.data.DatabaseHandler
 import tachiyomi.data.chapter.ChapterMapper
-import tachiyomi.domain.chapter.interactor.DeleteChapters
-import tachiyomi.domain.chapter.interactor.UpdateChapter
-import tachiyomi.domain.chapter.model.ChapterUpdate
-import tachiyomi.domain.manga.interactor.GetManga
-import tachiyomi.domain.manga.interactor.GetMangaBySource
-import tachiyomi.domain.manga.interactor.InsertMergedReference
-import tachiyomi.domain.manga.model.Manga
-import tachiyomi.domain.manga.model.MangaUpdate
-import tachiyomi.domain.manga.model.MergedMangaReference
+import tachiyomi.domain.anime.interactor.GetManga
+import tachiyomi.domain.anime.interactor.GetMangaBySource
+import tachiyomi.domain.anime.interactor.InsertMergedReference
+import tachiyomi.domain.anime.model.Manga
+import tachiyomi.domain.anime.model.MangaUpdate
+import tachiyomi.domain.anime.model.MergedMangaReference
+import tachiyomi.domain.episode.interactor.DeleteChapters
+import tachiyomi.domain.episode.interactor.UpdateChapter
+import tachiyomi.domain.episode.model.ChapterUpdate
 import tachiyomi.domain.source.service.SourceManager
 
 class MergedMangaRewriteMigration : Migration {

@@ -8,8 +8,8 @@ import exh.source.EH_SOURCE_ID
 import exh.source.EXH_SOURCE_ID
 import kotlinx.coroutines.flow.Flow
 import tachiyomi.data.DatabaseHandler
-import tachiyomi.domain.manga.model.Manga
-import tachiyomi.domain.manga.repository.MangaMetadataRepository
+import tachiyomi.domain.anime.model.Manga
+import tachiyomi.domain.anime.repository.MangaMetadataRepository
 
 class MangaMetadataRepositoryImpl(
     private val handler: DatabaseHandler,

@@ -2,7 +2,7 @@ package eu.kanade.domain.chapter.interactor
 
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
-import tachiyomi.domain.chapter.repository.ChapterRepository
+import tachiyomi.domain.episode.repository.ChapterRepository
 
 class GetAvailableScanlators(
     private val repository: ChapterRepository,

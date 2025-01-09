@@ -24,7 +24,7 @@ import exh.source.isEhBasedManga
 import kotlinx.collections.immutable.ImmutableList
 import kotlinx.coroutines.flow.filter
 import kotlinx.coroutines.flow.map
-import tachiyomi.domain.chapter.model.Chapter
+import tachiyomi.domain.episode.model.Chapter
 import tachiyomi.domain.library.service.LibraryPreferences
 import tachiyomi.source.local.isLocal
 import uy.kohesive.injekt.Injekt

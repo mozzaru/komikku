@@ -33,8 +33,8 @@ import tachiyomi.core.metadata.comicinfo.ComicInfoPublishingStatus
 import tachiyomi.core.metadata.comicinfo.copyFromComicInfo
 import tachiyomi.core.metadata.comicinfo.getComicInfo
 import tachiyomi.core.metadata.tachiyomi.AnimeDetails
-import tachiyomi.domain.chapter.service.ChapterRecognition
-import tachiyomi.domain.manga.model.Manga
+import tachiyomi.domain.anime.model.Manga
+import tachiyomi.domain.episode.service.ChapterRecognition
 import tachiyomi.i18n.MR
 import tachiyomi.source.local.filter.OrderBy
 import tachiyomi.source.local.image.LocalCoverManager

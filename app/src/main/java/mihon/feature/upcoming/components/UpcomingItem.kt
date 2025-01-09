@@ -16,8 +16,8 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import eu.kanade.presentation.manga.components.MangaCover
-import tachiyomi.domain.manga.model.Manga
-import tachiyomi.domain.manga.model.asMangaCover
+import tachiyomi.domain.anime.model.Manga
+import tachiyomi.domain.anime.model.asMangaCover
 import tachiyomi.presentation.core.components.material.padding
 
 private val UpcomingItemHeight = 96.dp

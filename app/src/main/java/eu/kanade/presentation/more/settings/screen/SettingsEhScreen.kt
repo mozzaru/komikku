@@ -65,11 +65,11 @@ import tachiyomi.core.common.util.lang.withIOContext
 import tachiyomi.core.common.util.lang.withUIContext
 import tachiyomi.core.common.util.system.logcat
 import tachiyomi.domain.UnsortedPreferences
+import tachiyomi.domain.anime.interactor.DeleteFavoriteEntries
+import tachiyomi.domain.anime.interactor.GetExhFavoriteMangaWithMetadata
+import tachiyomi.domain.anime.interactor.GetFlatMetadataById
 import tachiyomi.domain.library.service.LibraryPreferences.Companion.DEVICE_CHARGING
 import tachiyomi.domain.library.service.LibraryPreferences.Companion.DEVICE_ONLY_ON_WIFI
-import tachiyomi.domain.manga.interactor.DeleteFavoriteEntries
-import tachiyomi.domain.manga.interactor.GetExhFavoriteMangaWithMetadata
-import tachiyomi.domain.manga.interactor.GetFlatMetadataById
 import tachiyomi.i18n.MR
 import tachiyomi.i18n.sy.SYMR
 import tachiyomi.presentation.core.i18n.stringResource

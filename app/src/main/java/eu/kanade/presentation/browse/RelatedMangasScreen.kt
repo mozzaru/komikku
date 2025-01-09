@@ -30,8 +30,8 @@ import eu.kanade.presentation.browse.components.RelatedMangasComfortableGrid
 import eu.kanade.presentation.browse.components.RelatedMangasCompactGrid
 import eu.kanade.presentation.browse.components.RelatedMangasList
 import eu.kanade.tachiyomi.ui.manga.RelatedManga
+import tachiyomi.domain.anime.model.Manga
 import tachiyomi.domain.library.model.LibraryDisplayMode
-import tachiyomi.domain.manga.model.Manga
 import tachiyomi.i18n.MR
 import tachiyomi.presentation.core.components.material.padding
 import tachiyomi.presentation.core.i18n.stringResource

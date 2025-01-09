@@ -7,8 +7,8 @@ import eu.kanade.tachiyomi.data.cache.PagePreviewCache
 import eu.kanade.tachiyomi.source.PagePreviewSource
 import eu.kanade.tachiyomi.source.Source
 import exh.source.getMainSource
-import tachiyomi.domain.chapter.interactor.GetChaptersByMangaId
-import tachiyomi.domain.manga.model.Manga
+import tachiyomi.domain.anime.model.Manga
+import tachiyomi.domain.episode.interactor.GetChaptersByMangaId
 
 class GetPagePreviews(
     private val pagePreviewCache: PagePreviewCache,

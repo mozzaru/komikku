@@ -7,8 +7,8 @@ import mihon.core.migration.MigrateUtils
 import mihon.core.migration.Migration
 import mihon.core.migration.MigrationContext
 import tachiyomi.core.common.util.lang.withIOContext
-import tachiyomi.domain.manga.interactor.GetMangaBySource
-import tachiyomi.domain.manga.model.MangaUpdate
+import tachiyomi.domain.anime.interactor.GetMangaBySource
+import tachiyomi.domain.anime.model.MangaUpdate
 
 class DelegateHBrowseMigration : Migration {
     override val version: Float = 4f

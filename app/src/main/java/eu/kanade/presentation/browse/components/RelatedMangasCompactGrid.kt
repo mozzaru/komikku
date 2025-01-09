@@ -16,7 +16,7 @@ import eu.kanade.presentation.browse.RelatedMangasLoadingItem
 import eu.kanade.presentation.browse.header
 import eu.kanade.presentation.library.components.CommonMangaItemDefaults
 import eu.kanade.tachiyomi.ui.manga.RelatedManga
-import tachiyomi.domain.manga.model.Manga
+import tachiyomi.domain.anime.model.Manga
 import tachiyomi.i18n.MR
 import tachiyomi.i18n.kmk.KMR
 import tachiyomi.presentation.core.components.FastScrollLazyVerticalGrid

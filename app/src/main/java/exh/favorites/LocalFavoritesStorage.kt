@@ -11,14 +11,14 @@ import kotlinx.coroutines.flow.filter
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.mapNotNull
 import kotlinx.coroutines.flow.toList
+import tachiyomi.domain.anime.interactor.DeleteFavoriteEntries
+import tachiyomi.domain.anime.interactor.GetFavoriteEntries
+import tachiyomi.domain.anime.interactor.GetFavorites
+import tachiyomi.domain.anime.interactor.InsertFavoriteEntries
+import tachiyomi.domain.anime.model.FavoriteEntry
+import tachiyomi.domain.anime.model.Manga
 import tachiyomi.domain.category.interactor.GetCategories
 import tachiyomi.domain.category.model.Category
-import tachiyomi.domain.manga.interactor.DeleteFavoriteEntries
-import tachiyomi.domain.manga.interactor.GetFavoriteEntries
-import tachiyomi.domain.manga.interactor.GetFavorites
-import tachiyomi.domain.manga.interactor.InsertFavoriteEntries
-import tachiyomi.domain.manga.model.FavoriteEntry
-import tachiyomi.domain.manga.model.Manga
 import uy.kohesive.injekt.Injekt
 import uy.kohesive.injekt.api.get
 

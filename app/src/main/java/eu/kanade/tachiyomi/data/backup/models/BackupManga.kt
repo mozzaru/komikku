@@ -3,7 +3,7 @@ package eu.kanade.tachiyomi.data.backup.models
 import eu.kanade.tachiyomi.source.model.UpdateStrategy
 import kotlinx.serialization.Serializable
 import kotlinx.serialization.protobuf.ProtoNumber
-import tachiyomi.domain.manga.model.Manga
+import tachiyomi.domain.anime.model.Manga
 
 @Suppress("DEPRECATION")
 @Serializable

@@ -4,10 +4,10 @@ import eu.kanade.domain.manga.model.hasCustomCover
 import eu.kanade.tachiyomi.data.cache.CoverCache
 import eu.kanade.tachiyomi.data.download.DownloadManager
 import eu.kanade.tachiyomi.source.model.SManga
-import tachiyomi.domain.manga.interactor.FetchInterval
-import tachiyomi.domain.manga.model.Manga
-import tachiyomi.domain.manga.model.MangaUpdate
-import tachiyomi.domain.manga.repository.MangaRepository
+import tachiyomi.domain.anime.interactor.FetchInterval
+import tachiyomi.domain.anime.model.Manga
+import tachiyomi.domain.anime.model.MangaUpdate
+import tachiyomi.domain.anime.repository.MangaRepository
 import tachiyomi.source.local.isLocal
 import uy.kohesive.injekt.Injekt
 import uy.kohesive.injekt.api.get

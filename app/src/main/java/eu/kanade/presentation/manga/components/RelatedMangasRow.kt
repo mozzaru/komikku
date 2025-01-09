@@ -21,8 +21,8 @@ import eu.kanade.presentation.browse.components.EmptyResultItem
 import eu.kanade.presentation.browse.components.GlobalSearchLoadingResultItem
 import eu.kanade.presentation.browse.components.MangaItem
 import eu.kanade.tachiyomi.ui.manga.RelatedManga
-import tachiyomi.domain.manga.model.Manga
-import tachiyomi.domain.manga.model.asMangaCover
+import tachiyomi.domain.anime.model.Manga
+import tachiyomi.domain.anime.model.asMangaCover
 import tachiyomi.presentation.core.components.material.padding
 
 @Composable

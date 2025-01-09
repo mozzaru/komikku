@@ -21,9 +21,9 @@ import eu.kanade.domain.ui.UiPreferences
 import eu.kanade.presentation.library.components.CommonMangaItemDefaults
 import eu.kanade.presentation.library.components.MangaComfortableGridItem
 import eu.kanade.presentation.manga.components.RatioSwitchToPanorama
-import tachiyomi.domain.manga.model.Manga
-import tachiyomi.domain.manga.model.MangaCover
-import tachiyomi.domain.manga.model.asMangaCover
+import tachiyomi.domain.anime.model.Manga
+import tachiyomi.domain.anime.model.MangaCover
+import tachiyomi.domain.anime.model.asMangaCover
 import tachiyomi.i18n.MR
 import tachiyomi.presentation.core.components.material.padding
 import tachiyomi.presentation.core.i18n.stringResource

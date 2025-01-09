@@ -8,7 +8,7 @@ import exh.source.NHENTAI_OLD_ID
 import exh.source.NHENTAI_SOURCE_ID
 import exh.source.TSUMINO_OLD_ID
 import exh.source.TSUMINO_SOURCE_ID
-import tachiyomi.domain.manga.model.Manga
+import tachiyomi.domain.anime.model.Manga
 import java.net.URI
 import java.net.URISyntaxException
 

@@ -22,8 +22,8 @@ import tachiyomi.core.common.util.system.logcat
 import tachiyomi.data.Chapters
 import tachiyomi.data.DatabaseHandler
 import tachiyomi.data.manga.MangaMapper.mapManga
+import tachiyomi.domain.anime.model.Manga
 import tachiyomi.domain.category.interactor.GetCategories
-import tachiyomi.domain.manga.model.Manga
 import uy.kohesive.injekt.Injekt
 import uy.kohesive.injekt.api.get
 import java.io.File

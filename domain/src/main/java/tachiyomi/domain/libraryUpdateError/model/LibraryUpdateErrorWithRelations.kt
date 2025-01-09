@@ -1,6 +1,6 @@
 package tachiyomi.domain.libraryUpdateError.model
 
-import tachiyomi.domain.manga.model.MangaCover
+import tachiyomi.domain.anime.model.MangaCover
 
 data class LibraryUpdateErrorWithRelations(
     val mangaId: Long,

@@ -3,9 +3,9 @@ package tachiyomi.data.manga
 import logcat.LogPriority
 import tachiyomi.core.common.util.system.logcat
 import tachiyomi.data.DatabaseHandler
-import tachiyomi.domain.manga.model.FavoriteEntry
-import tachiyomi.domain.manga.model.FavoriteEntryAlternative
-import tachiyomi.domain.manga.repository.FavoritesEntryRepository
+import tachiyomi.domain.anime.model.FavoriteEntry
+import tachiyomi.domain.anime.model.FavoriteEntryAlternative
+import tachiyomi.domain.anime.repository.FavoritesEntryRepository
 
 class FavoritesEntryRepositoryImpl(
     private val handler: DatabaseHandler,
