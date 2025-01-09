@@ -93,9 +93,9 @@ internal fun BrowseSourceCompactGridItem(
     MangaCompactGridItem(
         title = manga.title,
         coverData = MangaCover(
-            mangaId = manga.id,
+            animeId = manga.id,
             sourceId = manga.source,
-            isMangaFavorite = manga.favorite,
+            isAnimeFavorite = manga.favorite,
             ogUrl = manga.thumbnailUrl,
             lastModified = manga.coverLastModified,
         ),

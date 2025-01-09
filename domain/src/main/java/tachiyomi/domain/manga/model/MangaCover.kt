@@ -8,17 +8,17 @@ import java.util.concurrent.ConcurrentHashMap
  * Contains the required data for MangaCoverFetcher
  */
 data class MangaCover(
-    val mangaId: Long,
+    val animeId: Long,
     val sourceId: Long,
-    val isMangaFavorite: Boolean,
+    val isAnimeFavorite: Boolean,
     // SY -->
     val ogUrl: String?,
     // SY <--
     val lastModified: Long,
 ) {
     // SY -->
-    private val customThumbnailUrl = if (isMangaFavorite) {
-        getCustomMangaInfo.get(mangaId)?.thumbnailUrl
+    private val customThumbnailUrl = if (isAnimeFavorite) {
+        getCustomMangaInfo.get(animeId)?.thumbnailUrl
     } else {
         null
     }
@@ -33,9 +33,9 @@ data class MangaCover(
      * It reads/saves to a hashmap in [MangaCover.vibrantCoverColorMap] for multiple mangas.
      */
     var vibrantCoverColor: Int?
-        get() = vibrantCoverColorMap[mangaId]
+        get() = vibrantCoverColorMap[animeId]
         set(value) {
-            vibrantCoverColorMap[mangaId] = value
+            vibrantCoverColorMap[animeId] = value
         }
 
     /**
@@ -54,17 +54,17 @@ data class MangaCover(
      */
     @Suppress("KDocUnresolvedReference")
     var dominantCoverColors: Pair<Int, Int>?
-        get() = dominantCoverColorMap[mangaId]
+        get() = dominantCoverColorMap[animeId]
         set(value) {
             value ?: return
-            dominantCoverColorMap[mangaId] = value.first to value.second
+            dominantCoverColorMap[animeId] = value.first to value.second
         }
 
     var ratio: Float?
-        get() = coverRatioMap[mangaId]
+        get() = coverRatioMap[animeId]
         set(value) {
             value ?: return
-            coverRatioMap[mangaId] = value
+            coverRatioMap[animeId] = value
         }
 
     companion object {
@@ -94,9 +94,9 @@ data class MangaCover(
 
 fun Manga.asMangaCover(): MangaCover {
     return MangaCover(
-        mangaId = id,
+        animeId = id,
         sourceId = source,
-        isMangaFavorite = favorite,
+        isAnimeFavorite = favorite,
         ogUrl = thumbnailUrl,
         lastModified = coverLastModified,
     )

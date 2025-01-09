@@ -114,7 +114,7 @@ class UpdatesScreenModel(
     private fun List<UpdatesWithRelations>.toUpdateItems(): PersistentList<UpdatesItem> {
         return this
             .map { update ->
-                val activeDownload = downloadManager.getQueuedDownloadOrNull(update.chapterId)
+                val activeDownload = downloadManager.getQueuedDownloadOrNull(update.episodeId)
                 val downloaded = downloadManager.isChapterDownloaded(
                     update.chapterName,
                     update.scanlator,
@@ -132,7 +132,7 @@ class UpdatesScreenModel(
                     update = update,
                     downloadStateProvider = { downloadState },
                     downloadProgressProvider = { activeDownload?.progress ?: 0 },
-                    selected = update.chapterId in selectedChapterIds,
+                    selected = update.episodeId in selectedChapterIds,
                 )
             }
             .toPersistentList()
@@ -154,7 +154,7 @@ class UpdatesScreenModel(
     private fun updateDownloadState(download: Download) {
         mutableState.update { state ->
             val newItems = state.items.mutate { list ->
-                val modifiedIndex = list.indexOfFirst { it.update.chapterId == download.chapter.id }
+                val modifiedIndex = list.indexOfFirst { it.update.episodeId == download.chapter.id }
                 if (modifiedIndex < 0) return@mutate
 
                 val item = list[modifiedIndex]
@@ -178,11 +178,11 @@ class UpdatesScreenModel(
                     }
                 }
                 ChapterDownloadAction.START_NOW -> {
-                    val chapterId = items.singleOrNull()?.update?.chapterId ?: return@launch
+                    val chapterId = items.singleOrNull()?.update?.episodeId ?: return@launch
                     startDownloadingNow(chapterId)
                 }
                 ChapterDownloadAction.CANCEL -> {
-                    val chapterId = items.singleOrNull()?.update?.chapterId ?: return@launch
+                    val chapterId = items.singleOrNull()?.update?.episodeId ?: return@launch
                     cancelDownload(chapterId)
                 }
                 ChapterDownloadAction.DELETE -> {
@@ -213,7 +213,7 @@ class UpdatesScreenModel(
             setReadStatus.await(
                 read = read,
                 chapters = updates
-                    .mapNotNull { getChapter.await(it.update.chapterId) }
+                    .mapNotNull { getChapter.await(it.update.episodeId) }
                     .toTypedArray(),
             )
         }
@@ -228,7 +228,7 @@ class UpdatesScreenModel(
         screenModelScope.launchIO {
             updates
                 .filterNot { it.update.bookmark == bookmark }
-                .map { ChapterUpdate(id = it.update.chapterId, bookmark = bookmark) }
+                .map { ChapterUpdate(id = it.update.episodeId, bookmark = bookmark) }
                 .let { updateChapter.awaitAll(it) }
         }
         toggleAllSelection(false)
@@ -240,13 +240,13 @@ class UpdatesScreenModel(
      */
     private fun downloadChapters(updatesItem: List<UpdatesItem>) {
         screenModelScope.launchNonCancellable {
-            val groupedUpdates = updatesItem.groupBy { it.update.mangaId }.values
+            val groupedUpdates = updatesItem.groupBy { it.update.animeId }.values
             for (updates in groupedUpdates) {
-                val mangaId = updates.first().update.mangaId
+                val mangaId = updates.first().update.animeId
                 val manga = getManga.await(mangaId) ?: continue
                 // Don't download if source isn't available
                 sourceManager.get(manga.source) ?: continue
-                val chapters = updates.mapNotNull { getChapter.await(it.update.chapterId) }
+                val chapters = updates.mapNotNull { getChapter.await(it.update.episodeId) }
                 downloadManager.downloadChapters(manga, chapters)
             }
         }
@@ -260,12 +260,12 @@ class UpdatesScreenModel(
     fun deleteChapters(updatesItem: List<UpdatesItem>) {
         screenModelScope.launchNonCancellable {
             updatesItem
-                .groupBy { it.update.mangaId }
+                .groupBy { it.update.animeId }
                 .entries
                 .forEach { (mangaId, updates) ->
                     val manga = getManga.await(mangaId) ?: return@forEach
                     val source = sourceManager.get(manga.source) ?: return@forEach
-                    val chapters = updates.mapNotNull { getChapter.await(it.update.chapterId) }
+                    val chapters = updates.mapNotNull { getChapter.await(it.update.episodeId) }
                     downloadManager.deleteChapters(
                         chapters,
                         manga,
@@ -291,7 +291,7 @@ class UpdatesScreenModel(
     ) {
         mutableState.update { state ->
             val newItems = state.items.toMutableList().apply {
-                val selectedIndex = indexOfFirst { it.update.chapterId == item.update.chapterId }
+                val selectedIndex = indexOfFirst { it.update.episodeId == item.update.episodeId }
                 if (selectedIndex < 0) return@apply
 
                 val selectedItem = get(selectedIndex)
@@ -299,7 +299,7 @@ class UpdatesScreenModel(
 
                 val firstSelection = none { it.selected }
                 set(selectedIndex, selectedItem.copy(selected = selected))
-                selectedChapterIds.addOrRemove(item.update.chapterId, selected)
+                selectedChapterIds.addOrRemove(item.update.episodeId, selected)
 
                 if (selected && userSelected && fromLongPress) {
                     if (firstSelection) {
@@ -322,7 +322,7 @@ class UpdatesScreenModel(
                         range.forEach {
                             val inbetweenItem = get(it)
                             if (!inbetweenItem.selected) {
-                                selectedChapterIds.add(inbetweenItem.update.chapterId)
+                                selectedChapterIds.add(inbetweenItem.update.episodeId)
                                 set(it, inbetweenItem.copy(selected = true))
                             }
                         }
@@ -350,7 +350,7 @@ class UpdatesScreenModel(
     fun toggleAllSelection(selected: Boolean) {
         mutableState.update { state ->
             val newItems = state.items.map {
-                selectedChapterIds.addOrRemove(it.update.chapterId, selected)
+                selectedChapterIds.addOrRemove(it.update.episodeId, selected)
                 it.copy(selected = selected)
             }
             state.copy(items = newItems.toPersistentList())
@@ -363,7 +363,7 @@ class UpdatesScreenModel(
     fun invertSelection() {
         mutableState.update { state ->
             val newItems = state.items.map {
-                selectedChapterIds.addOrRemove(it.update.chapterId, !it.selected)
+                selectedChapterIds.addOrRemove(it.update.episodeId, !it.selected)
                 it.copy(selected = !it.selected)
             }
             state.copy(items = newItems.toPersistentList())
@@ -410,7 +410,7 @@ class UpdatesScreenModel(
             // KMK <--
             return items.groupBy { it.update.dateFetch.toLocalDate() }
                 .flatMap { groupDate ->
-                    groupDate.value.groupBy { it.update.mangaId }
+                    groupDate.value.groupBy { it.update.animeId }
                         .flatMap { groupManga ->
                             val list = groupManga.value
                             list.sortedBy { it.update.dateFetch }
@@ -432,8 +432,8 @@ class UpdatesScreenModel(
                         lastMangaId = -1L
                         it
                     } else {
-                        if ((it as UpdatesUiModel.Item).item.update.mangaId != lastMangaId) {
-                            lastMangaId = it.item.update.mangaId
+                        if ((it as UpdatesUiModel.Item).item.update.animeId != lastMangaId) {
+                            lastMangaId = it.item.update.animeId
                             UpdatesUiModel.Leader(it.item, it.isExpandable)
                         } else {
                             it
@@ -469,5 +469,5 @@ data class UpdatesItem(
 }
 
 // KMK -->
-fun UpdatesWithRelations.groupByDateAndManga() = "${dateFetch.toLocalDate().toEpochDay()}-$mangaId"
+fun UpdatesWithRelations.groupByDateAndManga() = "${dateFetch.toLocalDate().toEpochDay()}-$animeId"
 // KMK <--

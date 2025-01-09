@@ -39,9 +39,9 @@ internal fun LibraryCompactGrid(
                 isSelected = selection.fastAny { it.id == libraryItem.libraryManga.id },
                 title = manga.title.takeIf { showTitle },
                 coverData = MangaCover(
-                    mangaId = manga.id,
+                    animeId = manga.id,
                     sourceId = manga.source,
-                    isMangaFavorite = manga.favorite,
+                    isAnimeFavorite = manga.favorite,
                     ogUrl = manga.thumbnailUrl,
                     lastModified = manga.coverLastModified,
                 ),

@@ -80,16 +80,16 @@ object MangaCoverMetadata {
         onlyDominantColor: Boolean = true,
         force: Boolean = false,
     ) {
-        if (!mangaCover.isMangaFavorite) {
+        if (!mangaCover.isAnimeFavorite) {
             mangaCover.remove()
             if (mangaCover.vibrantCoverColor != null) return
         }
 
-        if (mangaCover.isMangaFavorite && onlyDominantColor && mangaCover.dominantCoverColors != null) return
+        if (mangaCover.isAnimeFavorite && onlyDominantColor && mangaCover.dominantCoverColors != null) return
 
         val options = BitmapFactory.Options()
 
-        val updateColors = mangaCover.isMangaFavorite &&
+        val updateColors = mangaCover.isAnimeFavorite &&
             mangaCover.dominantCoverColors == null ||
             !onlyDominantColor &&
             mangaCover.vibrantCoverColor == null ||
@@ -119,7 +119,7 @@ object MangaCoverMetadata {
         }
 
         val file = ogFile
-            ?: coverCache.getCustomCoverFile(mangaCover.mangaId).takeIf { it.exists() }
+            ?: coverCache.getCustomCoverFile(mangaCover.animeId).takeIf { it.exists() }
             ?: coverCache.getCoverFile(mangaCover.url)
 
         val bitmap = when {
@@ -134,7 +134,7 @@ object MangaCoverMetadata {
         if (bitmap != null) {
             Palette.from(bitmap).generate {
                 if (it == null) return@generate
-                if (mangaCover.isMangaFavorite) {
+                if (mangaCover.isAnimeFavorite) {
                     it.dominantSwatch?.let { swatch ->
                         mangaCover.dominantCoverColors = swatch.rgb to swatch.titleTextColor
                     }
@@ -143,14 +143,14 @@ object MangaCoverMetadata {
                 mangaCover.vibrantCoverColor = color
             }
         }
-        if (mangaCover.isMangaFavorite && options.outWidth != -1 && options.outHeight != -1) {
+        if (mangaCover.isAnimeFavorite && options.outWidth != -1 && options.outHeight != -1) {
             mangaCover.ratio = options.outWidth / options.outHeight.toFloat()
         }
     }
 
     fun MangaCover.remove() {
-        MangaCover.coverRatioMap.remove(mangaId)
-        MangaCover.dominantCoverColorMap.remove(mangaId)
+        MangaCover.coverRatioMap.remove(animeId)
+        MangaCover.dominantCoverColorMap.remove(animeId)
     }
 
     fun savePrefs() {

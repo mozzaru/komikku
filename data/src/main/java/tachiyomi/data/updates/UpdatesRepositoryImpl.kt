@@ -70,11 +70,11 @@ class UpdatesRepositoryImpl(
         dateUpload: Long,
         dateFetch: Long,
     ): UpdatesWithRelations = UpdatesWithRelations(
-        mangaId = mangaId,
+        animeId = mangaId,
         // SY -->
         ogMangaTitle = mangaTitle,
         // SY <--
-        chapterId = chapterId,
+        episodeId = chapterId,
         chapterName = chapterName,
         scanlator = scanlator,
         read = read,
@@ -83,9 +83,9 @@ class UpdatesRepositoryImpl(
         sourceId = sourceId,
         dateFetch = dateFetch,
         coverData = MangaCover(
-            mangaId = mangaId,
+            animeId = mangaId,
             sourceId = sourceId,
-            isMangaFavorite = favorite,
+            isAnimeFavorite = favorite,
             ogUrl = thumbnailUrl,
             lastModified = coverLastModified,
         ),
@@ -93,9 +93,9 @@ class UpdatesRepositoryImpl(
 
     fun mapUpdatesView(updatesView: UpdatesView): UpdatesWithRelations {
         return UpdatesWithRelations(
-            mangaId = updatesView.mangaId,
+            animeId = updatesView.mangaId,
             ogMangaTitle = updatesView.mangaTitle,
-            chapterId = updatesView.chapterId,
+            episodeId = updatesView.chapterId,
             chapterName = updatesView.chapterName,
             scanlator = updatesView.scanlator,
             read = updatesView.read,
@@ -104,9 +104,9 @@ class UpdatesRepositoryImpl(
             sourceId = updatesView.source,
             dateFetch = updatesView.datefetch,
             coverData = MangaCover(
-                mangaId = updatesView.mangaId,
+                animeId = updatesView.mangaId,
                 sourceId = updatesView.source,
-                isMangaFavorite = updatesView.favorite,
+                isAnimeFavorite = updatesView.favorite,
                 ogUrl = updatesView.thumbnailUrl,
                 lastModified = updatesView.coverLastModified,
             ),

@@ -525,7 +525,7 @@ class MangaScreenModel(
                             is MangaCover -> model
                             else -> return@launchIO
                         }
-                        if (mangaCover.isMangaFavorite) {
+                        if (mangaCover.isAnimeFavorite) {
                             it.dominantSwatch?.let { swatch ->
                                 mangaCover.dominantCoverColors = swatch.rgb to swatch.titleTextColor
                             }
