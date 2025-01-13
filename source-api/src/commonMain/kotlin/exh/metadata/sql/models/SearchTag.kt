@@ -8,7 +8,7 @@ data class SearchTag(
     val id: Long?,
 
     // Metadata this tag is attached to
-    val mangaId: Long,
+    val animeId: Long,
 
     // Tag namespace
     val namespace: String?,

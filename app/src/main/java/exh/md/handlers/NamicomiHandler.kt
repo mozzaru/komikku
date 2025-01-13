@@ -21,16 +21,16 @@ class NamicomiHandler(currentClient: OkHttpClient, userAgent: String) {
     val client: OkHttpClient = currentClient
 
     suspend fun fetchPageList(externalUrl: String, dataSaver: Boolean): List<Page> {
-        val chapterId = externalUrl.substringBefore("?").substringAfterLast("/")
+        val episodeId = externalUrl.substringBefore("?").substringAfterLast("/")
         val request =
             GET(
-                "$apiUrl/images/chapter/$chapterId?newQualities=true",
+                "$apiUrl/images/episode/$episodeId?newQualities=true",
                 headers,
             )
-        return pageListParse(client.newCall(request).awaitSuccess(), chapterId, dataSaver)
+        return pageListParse(client.newCall(request).awaitSuccess(), episodeId, dataSaver)
     }
 
-    private fun pageListParse(response: Response, chapterId: String, dataSaver: Boolean): List<Page> {
+    private fun pageListParse(response: Response, episodeId: String, dataSaver: Boolean): List<Page> {
         val data = Json.parseToJsonElement(response.body.string()).jsonObject["data"]!!
         val baseUrl = data.jsonObject["baseUrl"]!!.jsonPrimitive.content
         val hash = data.jsonObject["hash"]!!.jsonPrimitive.content
@@ -42,7 +42,7 @@ class NamicomiHandler(currentClient: OkHttpClient, userAgent: String) {
             .jsonObject[quality]!!
             .jsonArray.mapIndexed { index, element ->
                 val fileName = element.jsonObject["filename"]!!.jsonPrimitive.content
-                val url = "$baseUrl/chapter/$chapterId/$hash/$quality/$fileName"
+                val url = "$baseUrl/episode/$episodeId/$hash/$quality/$fileName"
                 Page(index, url, url)
             }
     }

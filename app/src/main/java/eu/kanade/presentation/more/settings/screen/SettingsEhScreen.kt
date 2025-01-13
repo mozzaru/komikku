@@ -65,11 +65,11 @@ import tachiyomi.core.common.util.lang.withIOContext
 import tachiyomi.core.common.util.lang.withUIContext
 import tachiyomi.core.common.util.system.logcat
 import tachiyomi.domain.UnsortedPreferences
+import tachiyomi.domain.anime.interactor.DeleteFavoriteEntries
+import tachiyomi.domain.anime.interactor.GetExhFavoriteAnimeWithMetadata
+import tachiyomi.domain.anime.interactor.GetFlatMetadataById
 import tachiyomi.domain.library.service.LibraryPreferences.Companion.DEVICE_CHARGING
 import tachiyomi.domain.library.service.LibraryPreferences.Companion.DEVICE_ONLY_ON_WIFI
-import tachiyomi.domain.manga.interactor.DeleteFavoriteEntries
-import tachiyomi.domain.manga.interactor.GetExhFavoriteMangaWithMetadata
-import tachiyomi.domain.manga.interactor.GetFlatMetadataById
 import tachiyomi.i18n.MR
 import tachiyomi.i18n.sy.SYMR
 import tachiyomi.presentation.core.i18n.stringResource
@@ -127,9 +127,9 @@ object SettingsEhScreen : SearchableSettings {
     @Composable
     override fun getPreferences(): List<Preference> {
         val unsortedPreferences: UnsortedPreferences = remember { Injekt.get() }
-        val getFlatMetadataById: GetFlatMetadataById = remember { Injekt.get() }
-        val deleteFavoriteEntries: DeleteFavoriteEntries = remember { Injekt.get() }
-        val getExhFavoriteMangaWithMetadata: GetExhFavoriteMangaWithMetadata = remember { Injekt.get() }
+        val getFlatMetadataById: tachiyomi.domain.anime.interactor.GetFlatMetadataById = remember { Injekt.get() }
+        val deleteFavoriteEntries: tachiyomi.domain.anime.interactor.DeleteFavoriteEntries = remember { Injekt.get() }
+        val getExhFavoriteAnimeWithMetadata: GetExhFavoriteAnimeWithMetadata = remember { Injekt.get() }
         val exhentaiEnabled by unsortedPreferences.enableExhentai().collectAsState()
         var runConfigureDialog by remember { mutableStateOf(false) }
         val openWarnConfigureDialogController = { runConfigureDialog = true }
@@ -172,7 +172,7 @@ object SettingsEhScreen : SearchableSettings {
                     autoUpdateRequirements(unsortedPreferences),
                     updaterStatistics(
                         unsortedPreferences,
-                        getExhFavoriteMangaWithMetadata,
+                        getExhFavoriteAnimeWithMetadata,
                         getFlatMetadataById,
                     ),
                 ),
@@ -636,7 +636,7 @@ object SettingsEhScreen : SearchableSettings {
     ) {
         private val enabledCategories = preference.split(",").map { !it.toBoolean() }
         var doujinshi by mutableStateOf(enabledCategories[0])
-        var manga by mutableStateOf(enabledCategories[1])
+        var anime by mutableStateOf(enabledCategories[1])
         var artistCg by mutableStateOf(enabledCategories[2])
         var gameCg by mutableStateOf(enabledCategories[3])
         var western by mutableStateOf(enabledCategories[4])
@@ -648,7 +648,7 @@ object SettingsEhScreen : SearchableSettings {
 
         fun toPreference() = listOf(
             doujinshi,
-            manga,
+            anime,
             artistCg,
             gameCg,
             western,
@@ -711,9 +711,9 @@ object SettingsEhScreen : SearchableSettings {
                         onValueChange = { state.doujinshi = it },
                     )
                     FrontPageCategoriesDialogRow(
-                        title = "Manga",
-                        value = state.manga,
-                        onValueChange = { state.manga = it },
+                        title = "Anime",
+                        value = state.anime,
+                        onValueChange = { state.anime = it },
                     )
                     FrontPageCategoriesDialogRow(
                         title = "Artist CG",
@@ -905,7 +905,7 @@ object SettingsEhScreen : SearchableSettings {
     }
 
     @Composable
-    fun forceSyncReset(deleteFavoriteEntries: DeleteFavoriteEntries): Preference.PreferenceItem.TextPreference {
+    fun forceSyncReset(deleteFavoriteEntries: tachiyomi.domain.anime.interactor.DeleteFavoriteEntries): Preference.PreferenceItem.TextPreference {
         val context = LocalContext.current
         val scope = rememberCoroutineScope()
         var dialogOpen by remember { mutableStateOf(false) }
@@ -1143,8 +1143,8 @@ object SettingsEhScreen : SearchableSettings {
     @Composable
     fun updaterStatistics(
         unsortedPreferences: UnsortedPreferences,
-        getExhFavoriteMangaWithMetadata: GetExhFavoriteMangaWithMetadata,
-        getFlatMetadataById: GetFlatMetadataById,
+        getExhFavoriteAnimeWithMetadata: GetExhFavoriteAnimeWithMetadata,
+        getFlatMetadataById: tachiyomi.domain.anime.interactor.GetFlatMetadataById,
     ): Preference.PreferenceItem.TextPreference {
         val context = LocalContext.current
         var dialogOpen by remember { mutableStateOf(false) }
@@ -1168,7 +1168,7 @@ object SettingsEhScreen : SearchableSettings {
                             context.stringResource(SYMR.strings.gallery_updater_not_ran_yet)
                         }
 
-                        val allMeta = getExhFavoriteMangaWithMetadata.await()
+                        val allMeta = getExhFavoriteAnimeWithMetadata.await()
                             .mapNotNull {
                                 getFlatMetadataById.await(it.id)
                                     ?.raise<EHentaiSearchMetadata>()

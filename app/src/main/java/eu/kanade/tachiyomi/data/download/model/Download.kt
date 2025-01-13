@@ -10,18 +10,18 @@ import kotlinx.coroutines.flow.debounce
 import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.emitAll
 import kotlinx.coroutines.flow.flow
-import tachiyomi.domain.chapter.interactor.GetChapter
-import tachiyomi.domain.chapter.model.Chapter
-import tachiyomi.domain.manga.interactor.GetManga
-import tachiyomi.domain.manga.model.Manga
+import tachiyomi.domain.anime.interactor.GetAnime
+import tachiyomi.domain.anime.model.Anime
+import tachiyomi.domain.episode.interactor.GetEpisode
+import tachiyomi.domain.episode.model.Episode
 import tachiyomi.domain.source.service.SourceManager
 import uy.kohesive.injekt.Injekt
 import uy.kohesive.injekt.api.get
 
 data class Download(
     val source: HttpSource,
-    val manga: Manga,
-    val chapter: Chapter,
+    val anime: Anime,
+    val episode: Episode,
 ) {
     var pages: List<Page>? = null
 
@@ -72,17 +72,17 @@ data class Download(
     }
 
     companion object {
-        suspend fun fromChapterId(
-            chapterId: Long,
-            getChapter: GetChapter = Injekt.get(),
-            getManga: GetManga = Injekt.get(),
+        suspend fun fromEpisodeId(
+            episodeId: Long,
+            getEpisode: GetEpisode = Injekt.get(),
+            getAnime: GetAnime = Injekt.get(),
             sourceManager: SourceManager = Injekt.get(),
         ): Download? {
-            val chapter = getChapter.await(chapterId) ?: return null
-            val manga = getManga.await(chapter.mangaId) ?: return null
-            val source = sourceManager.get(manga.source) as? HttpSource ?: return null
+            val episode = getEpisode.await(episodeId) ?: return null
+            val anime = getAnime.await(episode.animeId) ?: return null
+            val source = sourceManager.get(anime.source) as? HttpSource ?: return null
 
-            return Download(source, manga, chapter)
+            return Download(source, anime, episode)
         }
     }
 }

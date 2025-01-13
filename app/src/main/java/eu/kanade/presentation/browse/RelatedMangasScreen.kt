@@ -26,12 +26,12 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.capitalize
 import androidx.compose.ui.text.intl.Locale
 import androidx.compose.ui.unit.dp
-import eu.kanade.presentation.browse.components.RelatedMangasComfortableGrid
-import eu.kanade.presentation.browse.components.RelatedMangasCompactGrid
-import eu.kanade.presentation.browse.components.RelatedMangasList
-import eu.kanade.tachiyomi.ui.manga.RelatedManga
+import eu.kanade.presentation.browse.components.RelatedAnimesComfortableGrid
+import eu.kanade.presentation.browse.components.RelatedAnimesCompactGrid
+import eu.kanade.presentation.browse.components.RelatedAnimesList
+import eu.kanade.tachiyomi.ui.anime.RelatedAnime
+import tachiyomi.domain.anime.model.Anime
 import tachiyomi.domain.library.model.LibraryDisplayMode
-import tachiyomi.domain.manga.model.Manga
 import tachiyomi.i18n.MR
 import tachiyomi.presentation.core.components.material.padding
 import tachiyomi.presentation.core.i18n.stringResource
@@ -39,26 +39,26 @@ import tachiyomi.presentation.core.screens.EmptyScreen
 import tachiyomi.presentation.core.screens.LoadingScreen
 
 @Composable
-fun RelatedMangasContent(
-    relatedMangas: List<RelatedManga>?,
-    getMangaState: @Composable (Manga) -> State<Manga>,
+fun RelatedAnimesContent(
+    relatedAnimes: List<RelatedAnime>?,
+    getAnimeState: @Composable (Anime) -> State<Anime>,
     columns: GridCells,
     displayMode: LibraryDisplayMode,
     contentPadding: PaddingValues,
-    onMangaClick: (Manga) -> Unit,
-    onMangaLongClick: (Manga) -> Unit,
+    onAnimeClick: (Anime) -> Unit,
+    onAnimeLongClick: (Anime) -> Unit,
     onKeywordClick: (String) -> Unit,
     onKeywordLongClick: (String) -> Unit,
-    selection: List<Manga>,
+    selection: List<Anime>,
 ) {
-    if (relatedMangas == null) {
+    if (relatedAnimes == null) {
         LoadingScreen(
             modifier = Modifier.padding(contentPadding),
         )
         return
     }
 
-    if (relatedMangas.isEmpty()) {
+    if (relatedAnimes.isEmpty()) {
         EmptyScreen(
             modifier = Modifier.padding(contentPadding),
             message = stringResource(MR.strings.no_results_found),
@@ -68,26 +68,26 @@ fun RelatedMangasContent(
 
     when (displayMode) {
         LibraryDisplayMode.ComfortableGrid -> {
-            RelatedMangasComfortableGrid(
-                relatedMangas = relatedMangas,
-                getManga = getMangaState,
+            RelatedAnimesComfortableGrid(
+                relatedAnimes = relatedAnimes,
+                getAnime = getAnimeState,
                 columns = columns,
                 contentPadding = contentPadding,
-                onMangaClick = onMangaClick,
-                onMangaLongClick = onMangaLongClick,
+                onAnimeClick = onAnimeClick,
+                onAnimeLongClick = onAnimeLongClick,
                 onKeywordClick = onKeywordClick,
                 onKeywordLongClick = onKeywordLongClick,
                 selection = selection,
             )
         }
         LibraryDisplayMode.ComfortableGridPanorama -> {
-            RelatedMangasComfortableGrid(
-                relatedMangas = relatedMangas,
-                getManga = getMangaState,
+            RelatedAnimesComfortableGrid(
+                relatedAnimes = relatedAnimes,
+                getAnime = getAnimeState,
                 columns = columns,
                 contentPadding = contentPadding,
-                onMangaClick = onMangaClick,
-                onMangaLongClick = onMangaLongClick,
+                onAnimeClick = onAnimeClick,
+                onAnimeLongClick = onAnimeLongClick,
                 onKeywordClick = onKeywordClick,
                 onKeywordLongClick = onKeywordLongClick,
                 selection = selection,
@@ -95,25 +95,25 @@ fun RelatedMangasContent(
             )
         }
         LibraryDisplayMode.CompactGrid, LibraryDisplayMode.CoverOnlyGrid -> {
-            RelatedMangasCompactGrid(
-                relatedMangas = relatedMangas,
-                getManga = getMangaState,
+            RelatedAnimesCompactGrid(
+                relatedAnimes = relatedAnimes,
+                getAnime = getAnimeState,
                 columns = columns,
                 contentPadding = contentPadding,
-                onMangaClick = onMangaClick,
-                onMangaLongClick = onMangaLongClick,
+                onAnimeClick = onAnimeClick,
+                onAnimeLongClick = onAnimeLongClick,
                 onKeywordClick = onKeywordClick,
                 onKeywordLongClick = onKeywordLongClick,
                 selection = selection,
             )
         }
         LibraryDisplayMode.List -> {
-            RelatedMangasList(
-                relatedMangas = relatedMangas,
-                getManga = getMangaState,
+            RelatedAnimesList(
+                relatedAnimes = relatedAnimes,
+                getAnime = getAnimeState,
                 contentPadding = contentPadding,
-                onMangaClick = onMangaClick,
-                onMangaLongClick = onMangaLongClick,
+                onAnimeClick = onAnimeClick,
+                onAnimeLongClick = onAnimeLongClick,
                 onKeywordClick = onKeywordClick,
                 onKeywordLongClick = onKeywordLongClick,
                 selection = selection,
@@ -123,7 +123,7 @@ fun RelatedMangasContent(
 }
 
 @Composable
-fun RelatedMangaTitle(
+fun RelatedAnimeTitle(
     title: String,
     subtitle: String?,
     onClick: () -> Unit,
@@ -173,7 +173,7 @@ fun LazyGridScope.header(
 }
 
 @Composable
-fun RelatedMangasLoadingItem() {
+fun RelatedAnimesLoadingItem() {
     Row(
         modifier = Modifier
             .fillMaxWidth()

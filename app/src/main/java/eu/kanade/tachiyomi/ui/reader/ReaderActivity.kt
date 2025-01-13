@@ -63,11 +63,12 @@ import com.hippo.unifile.UniFile
 import com.materialkolor.Contrast
 import com.materialkolor.dynamicColorScheme
 import dev.chrisbanes.insetter.applyInsetter
+import eu.kanade.core.util.ifSourcesLoaded
+import eu.kanade.domain.anime.model.readingMode
 import eu.kanade.domain.base.BasePreferences
-import eu.kanade.domain.manga.model.readingMode
 import eu.kanade.domain.ui.UiPreferences
-import eu.kanade.presentation.reader.ChapterListDialog
 import eu.kanade.presentation.reader.DisplayRefreshHost
+import eu.kanade.presentation.reader.EpisodeListDialog
 import eu.kanade.presentation.reader.OrientationSelectDialog
 import eu.kanade.presentation.reader.PageIndicatorText
 import eu.kanade.presentation.reader.ReaderContentOverlay
@@ -90,9 +91,9 @@ import eu.kanade.tachiyomi.ui.reader.ReaderViewModel.SetAsCoverResult.AddToLibra
 import eu.kanade.tachiyomi.ui.reader.ReaderViewModel.SetAsCoverResult.Error
 import eu.kanade.tachiyomi.ui.reader.ReaderViewModel.SetAsCoverResult.Success
 import eu.kanade.tachiyomi.ui.reader.loader.HttpPageLoader
-import eu.kanade.tachiyomi.ui.reader.model.ReaderChapter
+import eu.kanade.tachiyomi.ui.reader.model.ReaderEpisode
 import eu.kanade.tachiyomi.ui.reader.model.ReaderPage
-import eu.kanade.tachiyomi.ui.reader.model.ViewerChapters
+import eu.kanade.tachiyomi.ui.reader.model.ViewerEpisodes
 import eu.kanade.tachiyomi.ui.reader.setting.ReaderOrientation
 import eu.kanade.tachiyomi.ui.reader.setting.ReaderPreferences
 import eu.kanade.tachiyomi.ui.reader.setting.ReaderSettingsScreenModel
@@ -110,9 +111,8 @@ import eu.kanade.tachiyomi.util.system.toShareIntent
 import eu.kanade.tachiyomi.util.system.toast
 import eu.kanade.tachiyomi.util.view.setComposeContent
 import exh.source.isEhBasedSource
-import exh.ui.ifSourcesLoaded
+import exh.util.animeType
 import exh.util.defaultReaderType
-import exh.util.mangaType
 import kotlinx.collections.immutable.persistentSetOf
 import kotlinx.collections.immutable.toImmutableList
 import kotlinx.collections.immutable.toImmutableSet
@@ -136,8 +136,8 @@ import tachiyomi.core.common.util.lang.launchIO
 import tachiyomi.core.common.util.lang.launchNonCancellable
 import tachiyomi.core.common.util.lang.withUIContext
 import tachiyomi.core.common.util.system.logcat
-import tachiyomi.domain.manga.model.MangaCover
-import tachiyomi.domain.manga.model.asMangaCover
+import tachiyomi.domain.anime.model.AnimeCover
+import tachiyomi.domain.anime.model.asAnimeCover
 import tachiyomi.domain.source.service.SourceManager
 import tachiyomi.i18n.MR
 import tachiyomi.i18n.kmk.KMR
@@ -153,10 +153,10 @@ class ReaderActivity : BaseActivity() {
 
     companion object {
 
-        fun newIntent(context: Context, mangaId: Long?, chapterId: Long?/* SY --> */, page: Int? = null/* SY <-- */): Intent {
+        fun newIntent(context: Context, animeId: Long?, episodeId: Long?/* SY --> */, page: Int? = null/* SY <-- */): Intent {
             return Intent(context, ReaderActivity::class.java).apply {
-                putExtra("manga", mangaId)
-                putExtra("chapter", chapterId)
+                putExtra("anime", animeId)
+                putExtra("episode", episodeId)
                 // SY -->
                 putExtra("page", page)
                 // SY <--
@@ -224,23 +224,23 @@ class ReaderActivity : BaseActivity() {
         setContentView(binding.root)
 
         if (viewModel.needsInit()) {
-            val manga = intent.extras?.getLong("manga", -1) ?: -1L
-            val chapter = intent.extras?.getLong("chapter", -1) ?: -1L
+            val anime = intent.extras?.getLong("anime", -1) ?: -1L
+            val episode = intent.extras?.getLong("episode", -1) ?: -1L
             // SY -->
             val page = intent.extras?.getInt("page", -1).takeUnless { it == -1 }
             // SY <--
-            if (manga == -1L || chapter == -1L) {
+            if (anime == -1L || episode == -1L) {
                 finish()
                 return
             }
-            NotificationReceiver.dismissNotification(this, manga.hashCode(), Notifications.ID_NEW_CHAPTERS)
+            NotificationReceiver.dismissNotification(this, anime.hashCode(), Notifications.ID_NEW_CHAPTERS)
 
             lifecycleScope.launchNonCancellable {
-                val initResult = viewModel.init(manga, chapter/* SY --> */, page/* SY <-- */)
+                val initResult = viewModel.init(anime, episode/* SY --> */, page/* SY <-- */)
                 if (!initResult.getOrDefault(false)) {
                     val exception = initResult.exceptionOrNull() ?: IllegalStateException("Unknown err")
                     withUIContext {
-                        setInitialChapterError(exception)
+                        setInitialEpisodeError(exception)
                     }
                 }
             }
@@ -256,30 +256,30 @@ class ReaderActivity : BaseActivity() {
             .launchIn(lifecycleScope)
 
         viewModel.state
-            .map { it.isLoadingAdjacentChapter }
+            .map { it.isLoadingAdjacentEpisode }
             .distinctUntilChanged()
             .onEach(::setProgressDialog)
             .launchIn(lifecycleScope)
 
         viewModel.state
-            .map { it.manga }
+            .map { it.anime }
             .distinctUntilChanged()
             .filterNotNull()
             .onEach { updateViewer() }
             .launchIn(lifecycleScope)
 
         viewModel.state
-            .map { it.viewerChapters }
+            .map { it.viewerEpisodes }
             .distinctUntilChanged()
             .filterNotNull()
-            .onEach(::setChapters)
+            .onEach(::setEpisodes)
             .launchIn(lifecycleScope)
 
         viewModel.eventFlow
             .onEach { event ->
                 when (event) {
-                    ReaderViewModel.Event.ReloadViewerChapters -> {
-                        viewModel.state.value.viewerChapters?.let(::setChapters)
+                    ReaderViewModel.Event.ReloadViewerEpisodes -> {
+                        viewModel.state.value.viewerEpisodes?.let(::setEpisodes)
                     }
                     ReaderViewModel.Event.PageChanged -> {
                         displayRefreshHost.flash()
@@ -367,10 +367,10 @@ class ReaderActivity : BaseActivity() {
 
     override fun onKeyUp(keyCode: Int, event: KeyEvent?): Boolean {
         if (keyCode == KeyEvent.KEYCODE_N) {
-            loadNextChapter()
+            loadNextEpisode()
             return true
         } else if (keyCode == KeyEvent.KEYCODE_P) {
-            loadPreviousChapter()
+            loadPreviousEpisode()
             return true
         }
         return super.onKeyUp(keyCode, event)
@@ -432,8 +432,8 @@ class ReaderActivity : BaseActivity() {
                 ReaderSettingsScreenModel(
                     readerState = viewModel.state,
                     hasDisplayCutout = hasCutout,
-                    onChangeReadingMode = viewModel::setMangaReadingMode,
-                    onChangeOrientation = viewModel::setMangaOrientationType,
+                    onChangeReadingMode = viewModel::setAnimeReadingMode,
+                    onChangeOrientation = viewModel::setAnimeOrientationType,
                 )
             }
 
@@ -455,7 +455,7 @@ class ReaderActivity : BaseActivity() {
             val cropBorderPaged by readerPreferences.cropBorders().collectAsState()
             val cropBorderWebtoon by readerPreferences.cropBordersWebtoon().collectAsState()
             // SY -->
-            val readingMode = viewModel.getMangaReadingMode()
+            val readingMode = viewModel.getAnimeReadingMode()
             val isPagerType = ReadingMode.isPagerType(readingMode)
             val isWebtoon = ReadingMode.WEBTOON.flagValue == readingMode
             val cropBorderContinuousVertical by readerPreferences.cropBordersContinuousVertical().collectAsState()
@@ -509,21 +509,21 @@ class ReaderActivity : BaseActivity() {
                 visible = state.menuVisible,
                 fullscreen = isFullscreen,
 
-                mangaTitle = state.manga?.title,
-                chapterTitle = state.currentChapter?.chapter?.name,
+                animeTitle = state.anime?.title,
+                episodeTitle = state.currentEpisode?.episode?.name,
                 navigateUp = onBackPressedDispatcher::onBackPressed,
-                onClickTopAppBar = ::openMangaScreen,
+                onClickTopAppBar = ::openAnimeScreen,
                 // bookmarked = state.bookmarked,
-                // onToggleBookmarked = viewModel::toggleChapterBookmark,
-                onOpenInWebView = ::openChapterInWebView.takeIf { isHttpSource },
-                onOpenInBrowser = ::openChapterInBrowser.takeIf { isHttpSource },
-                onShare = ::shareChapter.takeIf { isHttpSource },
+                // onToggleBookmarked = viewModel::toggleEpisodeBookmark,
+                onOpenInWebView = ::openEpisodeInWebView.takeIf { isHttpSource },
+                onOpenInBrowser = ::openEpisodeInBrowser.takeIf { isHttpSource },
+                onShare = ::shareEpisode.takeIf { isHttpSource },
 
                 viewer = state.viewer,
-                onNextChapter = ::loadNextChapter,
-                enabledNext = state.viewerChapters?.nextChapter != null,
-                onPreviousChapter = ::loadPreviousChapter,
-                enabledPrevious = state.viewerChapters?.prevChapter != null,
+                onNextEpisode = ::loadNextEpisode,
+                enabledNext = state.viewerEpisodes?.nextEpisode != null,
+                onPreviousEpisode = ::loadPreviousEpisode,
+                enabledPrevious = state.viewerEpisodes?.prevEpisode != null,
                 currentPage = state.currentPage,
                 totalPages = state.totalPages,
                 onPageIndexChange = {
@@ -532,11 +532,11 @@ class ReaderActivity : BaseActivity() {
                 },
 
                 readingMode = ReadingMode.fromPreference(
-                    viewModel.getMangaReadingMode(resolveDefault = false),
+                    viewModel.getAnimeReadingMode(resolveDefault = false),
                 ),
                 onClickReadingMode = viewModel::openReadingModeSelectDialog,
                 orientation = ReaderOrientation.fromPreference(
-                    viewModel.getMangaOrientation(resolveDefault = false),
+                    viewModel.getAnimeOrientation(resolveDefault = false),
                 ),
                 onClickOrientation = viewModel::openOrientationModeSelectDialog,
                 cropEnabled = cropEnabled,
@@ -563,16 +563,16 @@ class ReaderActivity : BaseActivity() {
                 navBarType = navBarType,
                 enabledButtons = readerBottomButtons,
                 currentReadingMode = ReadingMode.fromPreference(
-                    viewModel.getMangaReadingMode(resolveDefault = true),
+                    viewModel.getAnimeReadingMode(resolveDefault = true),
                 ),
                 dualPageSplitEnabled = dualPageSplitPaged,
                 doublePages = state.doublePages,
-                onClickChapterList = viewModel::openChapterListDialog,
+                onClickEpisodeList = viewModel::openEpisodeListDialog,
                 onClickPageLayout = {
                     if (readerPreferences.pageLayout().get() == PagerConfig.PageLayout.AUTOMATIC) {
                         (viewModel.state.value.viewer as? PagerViewer)?.config?.let { config ->
                             config.doublePages = !config.doublePages
-                            reloadChapters(config.doublePages, true)
+                            reloadEpisodes(config.doublePages, true)
                         }
                     } else {
                         readerPreferences.pageLayout().set(1 - readerPreferences.pageLayout().get())
@@ -666,23 +666,23 @@ class ReaderActivity : BaseActivity() {
                         hasExtraPage = (state.dialog as? ReaderViewModel.Dialog.PageActions)?.extraPage != null,
                     )
                 }
-                is ReaderViewModel.Dialog.ChapterList -> {
-                    var chapters by remember {
-                        mutableStateOf(viewModel.getChapters().toImmutableList())
+                is ReaderViewModel.Dialog.EpisodeList -> {
+                    var episodes by remember {
+                        mutableStateOf(viewModel.getEpisodes().toImmutableList())
                     }
-                    ChapterListDialog(
+                    EpisodeListDialog(
                         onDismissRequest = onDismissRequest,
                         screenModel = settingsScreenModel,
-                        chapters = chapters,
-                        onClickChapter = {
-                            viewModel.loadNewChapterFromDialog(it)
+                        episodes = episodes,
+                        onClickEpisode = {
+                            viewModel.loadNewEpisodeFromDialog(it)
                             onDismissRequest()
                         },
-                        onBookmark = { chapter ->
-                            viewModel.toggleBookmark(chapter.id, !chapter.bookmark)
-                            chapters = chapters.map {
-                                if (it.chapter.id == chapter.id) {
-                                    it.copy(chapter = chapter.copy(bookmark = !chapter.bookmark))
+                        onBookmark = { episode ->
+                            viewModel.toggleBookmark(episode.id, !episode.bookmark)
+                            episodes = episodes.map {
+                                if (it.episode.id == episode.id) {
+                                    it.copy(episode = episode.copy(bookmark = !episode.bookmark))
                                 } else {
                                     it
                                 }
@@ -779,14 +779,14 @@ class ReaderActivity : BaseActivity() {
     @Composable
     private fun seedColorState(): ComposeColor? {
         val state by viewModel.state.collectAsState()
-        return state.manga?.asMangaCover()?.vibrantCoverColor?.let { ComposeColor(it) }
+        return state.anime?.asAnimeCover()?.vibrantCoverColor?.let { ComposeColor(it) }
             ?: seedColorStatic()
     }
 
     private fun seedColorStatic(): ComposeColor? {
-        return viewModel.manga?.asMangaCover()?.vibrantCoverColor?.let { ComposeColor(it) }
-            ?: intent.extras?.getLong("manga")?.takeIf { it > 0 }
-                ?.let { MangaCover.vibrantCoverColorMap[it] }
+        return viewModel.anime?.asAnimeCover()?.vibrantCoverColor?.let { ComposeColor(it) }
+            ?: intent.extras?.getLong("anime")?.takeIf { it > 0 }
+                ?.let { AnimeCover.vibrantCoverColorMap[it] }
                 ?.let { ComposeColor(it) }
     }
     // KMK <--
@@ -827,8 +827,8 @@ class ReaderActivity : BaseActivity() {
     private fun exhRetryAll() {
         var retried = 0
 
-        viewModel.state.value.viewerChapters
-            ?.currChapter
+        viewModel.state.value.viewerEpisodes
+            ?.currEpisode
             ?.pages
             ?.forEachIndexed { _, page ->
                 var shouldQueuePage = false
@@ -846,14 +846,14 @@ class ReaderActivity : BaseActivity() {
                 }
 
                 // If we are using EHentai/ExHentai, get a new image URL
-                viewModel.manga?.let { m ->
+                viewModel.anime?.let { m ->
                     val src = sourceManager.get(m.source)
                     if (src?.isEhBasedSource() == true) {
                         page.imageUrl = null
                     }
                 }
 
-                val loader = page.chapter.pageLoader
+                val loader = page.episode.pageLoader
                 if (page.index == exhCurrentpage()?.index && loader is HttpPageLoader) {
                     loader.boostPage(page)
                 } else {
@@ -880,7 +880,7 @@ class ReaderActivity : BaseActivity() {
         } else if (curPage.status == Page.State.READY) {
             toast(SYMR.strings.eh_boost_page_downloaded)
         } else {
-            val loader = (viewModel.state.value.viewerChapters?.currChapter?.pageLoader as? HttpPageLoader)
+            val loader = (viewModel.state.value.viewerEpisodes?.currEpisode?.pageLoader as? HttpPageLoader)
             if (loader != null) {
                 loader.boostPage(curPage)
                 toast(SYMR.strings.eh_boost_boosted)
@@ -893,10 +893,10 @@ class ReaderActivity : BaseActivity() {
     private fun exhCurrentpage(): ReaderPage? {
         val viewer = viewModel.state.value.viewer
         val currentPage = (((viewer as? PagerViewer)?.currentPage ?: (viewer as? WebtoonViewer)?.currentPage) as? ReaderPage)?.index
-        return currentPage?.let { viewModel.state.value.viewerChapters?.currChapter?.pages?.getOrNull(it) }
+        return currentPage?.let { viewModel.state.value.viewerEpisodes?.currEpisode?.pages?.getOrNull(it) }
     }
 
-    fun reloadChapters(doublePages: Boolean, force: Boolean = false) {
+    fun reloadEpisodes(doublePages: Boolean, force: Boolean = false) {
         val viewer = viewModel.state.value.viewer as? PagerViewer ?: return
         viewer.updateShifting()
         if (!force && viewer.config.autoDoublePages) {
@@ -905,16 +905,16 @@ class ReaderActivity : BaseActivity() {
             viewer.config.doublePages = doublePages
             viewModel.setDoublePages(viewer.config.doublePages)
         }
-        val currentChapter = viewModel.state.value.currentChapter
+        val currentEpisode = viewModel.state.value.currentEpisode
         if (doublePages) {
             // If we're moving from singe to double, we want the current page to be the first page
             val currentPage = viewModel.state.value.currentPage
             viewer.config.shiftDoublePage = (
-                currentPage + (currentChapter?.pages?.take(currentPage)?.count { it.fullPage || it.isolatedPage } ?: 0)
+                currentPage + (currentEpisode?.pages?.take(currentPage)?.count { it.fullPage || it.isolatedPage } ?: 0)
                 ) % 2 != 0
         }
-        viewModel.state.value.viewerChapters?.let {
-            viewer.setChaptersDoubleShift(it)
+        viewModel.state.value.viewerEpisodes?.let {
+            viewer.setEpisodesDoubleShift(it)
         }
     }
 
@@ -928,9 +928,9 @@ class ReaderActivity : BaseActivity() {
         val viewer = viewModel.state.value.viewer as? PagerViewer ?: return
         viewer.config.let { config ->
             config.shiftDoublePage = !config.shiftDoublePage
-            viewModel.state.value.viewerChapters?.let {
+            viewModel.state.value.viewerEpisodes?.let {
                 viewer.updateShifting()
-                viewer.setChaptersDoubleShift(it)
+                viewer.setEpisodesDoubleShift(it)
                 invalidateOptionsMenu()
             }
         }
@@ -955,12 +955,12 @@ class ReaderActivity : BaseActivity() {
     }
 
     /**
-     * Called from the presenter when a manga is ready. Used to instantiate the appropriate viewer.
+     * Called from the presenter when a anime is ready. Used to instantiate the appropriate viewer.
      */
     private fun updateViewer() {
         val prevViewer = viewModel.state.value.viewer
         val newViewer = ReadingMode.toViewer(
-            viewModel.getMangaReadingMode(),
+            viewModel.getAnimeReadingMode(),
             this,
             // KMK -->
             seedColor = seedColorStatic()?.toArgb(),
@@ -970,10 +970,10 @@ class ReaderActivity : BaseActivity() {
         if (window.sharedElementEnterTransition is MaterialContainerTransform) {
             // Wait until transition is complete to avoid crash on API 26
             window.sharedElementEnterTransition.doOnEnd {
-                setOrientation(viewModel.getMangaOrientation())
+                setOrientation(viewModel.getAnimeOrientation())
             }
         } else {
-            setOrientation(viewModel.getMangaOrientation())
+            setOrientation(viewModel.getAnimeOrientation())
         }
 
         // Destroy previous viewer if there was one
@@ -993,13 +993,13 @@ class ReaderActivity : BaseActivity() {
             viewModel.state.value.lastShiftDoubleState?.let { newViewer.config.shiftDoublePage = it }
         }
 
-        val manga = viewModel.state.value.manga
-        val defaultReaderType = manga?.defaultReaderType(
-            manga.mangaType(sourceName = sourceManager.get(manga.source)?.name),
+        val anime = viewModel.state.value.anime
+        val defaultReaderType = anime?.defaultReaderType(
+            anime.animeType(sourceName = sourceManager.get(anime.source)?.name),
         )
         if (
             readerPreferences.useAutoWebtoon().get() &&
-            (manga?.readingMode?.toInt() ?: ReadingMode.DEFAULT.flagValue) == ReadingMode.DEFAULT.flagValue &&
+            (anime?.readingMode?.toInt() ?: ReadingMode.DEFAULT.flagValue) == ReadingMode.DEFAULT.flagValue &&
             defaultReaderType != null &&
             defaultReaderType == ReadingMode.WEBTOON.flagValue
         ) {
@@ -1007,7 +1007,7 @@ class ReaderActivity : BaseActivity() {
             readingModeToast = toast(SYMR.strings.eh_auto_webtoon_snack)
         } else if (readerPreferences.showReadingMode().get()) {
             // SY <--
-            showReadingModeToast(viewModel.getMangaReadingMode())
+            showReadingModeToast(viewModel.getAnimeReadingMode())
         }
 
         loadingIndicator = ReaderProgressIndicator(
@@ -1021,8 +1021,8 @@ class ReaderActivity : BaseActivity() {
         startPostponedEnterTransition()
     }
 
-    private fun openMangaScreen() {
-        viewModel.manga?.id?.let { id ->
+    private fun openAnimeScreen() {
+        viewModel.anime?.id?.let { id ->
             startActivity(
                 Intent(this, MainActivity::class.java).apply {
                     action = Constants.SHORTCUT_MANGA
@@ -1033,22 +1033,22 @@ class ReaderActivity : BaseActivity() {
         }
     }
 
-    private fun openChapterInWebView() {
-        val manga = viewModel.manga ?: return
+    private fun openEpisodeInWebView() {
+        val anime = viewModel.anime ?: return
         val source = viewModel.getSource() ?: return
         assistUrl?.let {
-            val intent = WebViewActivity.newIntent(this@ReaderActivity, it, source.id, manga.title)
+            val intent = WebViewActivity.newIntent(this@ReaderActivity, it, source.id, anime.title)
             startActivity(intent)
         }
     }
 
-    private fun openChapterInBrowser() {
+    private fun openEpisodeInBrowser() {
         assistUrl?.let {
             openInBrowser(it.toUri(), forceDefaultBrowser = false)
         }
     }
 
-    private fun shareChapter() {
+    private fun shareEpisode() {
         assistUrl?.let {
             val intent = it.toUri().toShareIntent(this, type = "text/plain")
             startActivity(Intent.createChooser(intent, stringResource(MR.strings.action_share)))
@@ -1065,59 +1065,59 @@ class ReaderActivity : BaseActivity() {
     }
 
     /**
-     * Called from the presenter whenever a new [viewerChapters] have been set. It delegates the
+     * Called from the presenter whenever a new [viewerEpisodes] have been set. It delegates the
      * method to the current viewer, but also set the subtitle on the toolbar, and
-     * hides or disables the reader prev/next buttons if there's a prev or next chapter
+     * hides or disables the reader prev/next buttons if there's a prev or next episode
      */
     @SuppressLint("RestrictedApi")
-    private fun setChapters(viewerChapters: ViewerChapters) {
+    private fun setEpisodes(viewerEpisodes: ViewerEpisodes) {
         binding.readerContainer.removeView(loadingIndicator)
         // SY -->
         val state = viewModel.state.value
-        if (state.indexChapterToShift != null && state.indexPageToShift != null) {
-            viewerChapters.currChapter.pages?.find {
-                it.index == state.indexPageToShift && it.chapter.chapter.id == state.indexChapterToShift
+        if (state.indexEpisodeToShift != null && state.indexPageToShift != null) {
+            viewerEpisodes.currEpisode.pages?.find {
+                it.index == state.indexPageToShift && it.episode.episode.id == state.indexEpisodeToShift
             }?.let {
                 (viewModel.state.value.viewer as? PagerViewer)?.updateShifting(it)
             }
-            viewModel.setIndexChapterToShift(null)
+            viewModel.setIndexEpisodeToShift(null)
             viewModel.setIndexPageToShift(null)
         } else if (state.lastShiftDoubleState != null) {
-            val currentChapter = viewerChapters.currChapter
+            val currentEpisode = viewerEpisodes.currEpisode
             (viewModel.state.value.viewer as? PagerViewer)?.config?.shiftDoublePage = (
-                currentChapter.requestedPage +
+                currentEpisode.requestedPage +
                     (
-                        currentChapter.pages?.take(currentChapter.requestedPage)
+                        currentEpisode.pages?.take(currentEpisode.requestedPage)
                             ?.count { it.fullPage || it.isolatedPage } ?: 0
                         )
                 ) % 2 != 0
         }
         // SY <--
 
-        viewModel.state.value.viewer?.setChapters(viewerChapters)
+        viewModel.state.value.viewer?.setEpisodes(viewerEpisodes)
 
         lifecycleScope.launchIO {
-            viewModel.getChapterUrl()?.let { url ->
+            viewModel.getEpisodeUrl()?.let { url ->
                 assistUrl = url
             }
         }
     }
 
     /**
-     * Called from the presenter if the initial load couldn't load the pages of the chapter. In
+     * Called from the presenter if the initial load couldn't load the pages of the episode. In
      * this case the activity is closed and a toast is shown to the user.
      */
-    private fun setInitialChapterError(error: Throwable) {
+    private fun setInitialEpisodeError(error: Throwable) {
         logcat(LogPriority.ERROR, error)
         finish()
         toast(error.message)
     }
 
     /**
-     * Called from the presenter whenever it's loading the next or previous chapter. It shows or
+     * Called from the presenter whenever it's loading the next or previous episode. It shows or
      * dismisses a non-cancellable dialog to prevent user interaction according to the value of
      * [show]. This is only used when the next/previous buttons on the toolbar are clicked; the
-     * other cases are handled with chapter transitions on the viewers and chapter preloading.
+     * other cases are handled with episode transitions on the viewers and episode preloading.
      */
     private fun setProgressDialog(show: Boolean) {
         if (show) {
@@ -1133,29 +1133,29 @@ class ReaderActivity : BaseActivity() {
      */
     private fun moveToPageIndex(index: Int) {
         val viewer = viewModel.state.value.viewer ?: return
-        val currentChapter = viewModel.state.value.currentChapter ?: return
-        val page = currentChapter.pages?.getOrNull(index) ?: return
+        val currentEpisode = viewModel.state.value.currentEpisode ?: return
+        val page = currentEpisode.pages?.getOrNull(index) ?: return
         viewer.moveToPage(page)
     }
 
     /**
-     * Tells the presenter to load the next chapter and mark it as active. The progress dialog
+     * Tells the presenter to load the next episode and mark it as active. The progress dialog
      * should be automatically shown.
      */
-    private fun loadNextChapter() {
+    private fun loadNextEpisode() {
         lifecycleScope.launch {
-            viewModel.loadNextChapter()
+            viewModel.loadNextEpisode()
             moveToPageIndex(0)
         }
     }
 
     /**
-     * Tells the presenter to load the previous chapter and mark it as active. The progress dialog
+     * Tells the presenter to load the previous episode and mark it as active. The progress dialog
      * should be automatically shown.
      */
-    private fun loadPreviousChapter() {
+    private fun loadPreviousEpisode() {
         lifecycleScope.launch {
-            viewModel.loadPreviousChapter()
+            viewModel.loadPreviousEpisode()
             moveToPageIndex(0)
         }
     }
@@ -1194,11 +1194,11 @@ class ReaderActivity : BaseActivity() {
     }
 
     /**
-     * Called from the viewer when the given [chapter] should be preloaded. It should be called when
-     * the viewer is reaching the beginning or end of a chapter or the transition page is active.
+     * Called from the viewer when the given [episode] should be preloaded. It should be called when
+     * the viewer is reaching the beginning or end of a episode or the transition page is active.
      */
-    fun requestPreloadChapter(chapter: ReaderChapter) {
-        lifecycleScope.launchIO { viewModel.preload(chapter) }
+    fun requestPreloadEpisode(episode: ReaderEpisode) {
+        lifecycleScope.launchIO { viewModel.preload(episode) }
     }
 
     /**
@@ -1232,13 +1232,13 @@ class ReaderActivity : BaseActivity() {
      * sharing tool.
      */
     fun onShareImageResult(uri: Uri, page: ReaderPage /* SY --> */, secondPage: ReaderPage? = null /* SY <-- */) {
-        val manga = viewModel.manga ?: return
-        val chapter = page.chapter.chapter
+        val anime = viewModel.anime ?: return
+        val episode = page.episode.episode
 
         // SY -->
         val text = if (secondPage != null) {
             stringResource(
-                SYMR.strings.share_pages_info, manga.title, chapter.name,
+                SYMR.strings.share_pages_info, anime.title, episode.name,
                 if (resources.configuration.layoutDirection ==
                     View.LAYOUT_DIRECTION_LTR
                 ) {
@@ -1248,7 +1248,7 @@ class ReaderActivity : BaseActivity() {
                 },
             )
         } else {
-            stringResource(MR.strings.share_page_info, manga.title, chapter.name, page.number)
+            stringResource(MR.strings.share_page_info, anime.title, episode.name, page.number)
         }
         // SY <--
 
@@ -1409,7 +1409,7 @@ class ReaderActivity : BaseActivity() {
                 .drop(1)
                 .onEach {
                     if (viewModel.state.value.viewer !is PagerViewer) return@onEach
-                    reloadChapters(
+                    reloadEpisodes(
                         !it &&
                             when (readerPreferences.pageLayout().get()) {
                                 PagerConfig.PageLayout.DOUBLE_PAGES -> true

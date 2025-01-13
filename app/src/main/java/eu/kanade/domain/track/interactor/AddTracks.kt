@@ -16,9 +16,9 @@ import tachiyomi.core.common.util.lang.withIOContext
 import tachiyomi.core.common.util.lang.withNonCancellableContext
 import tachiyomi.core.common.util.lang.withUIContext
 import tachiyomi.core.common.util.system.logcat
-import tachiyomi.domain.chapter.interactor.GetChaptersByMangaId
+import tachiyomi.domain.anime.model.Anime
+import tachiyomi.domain.episode.interactor.GetEpisodesByAnimeId
 import tachiyomi.domain.history.interactor.GetHistory
-import tachiyomi.domain.manga.model.Manga
 import tachiyomi.domain.track.interactor.InsertTrack
 import tachiyomi.i18n.MR
 import uy.kohesive.injekt.Injekt
@@ -28,44 +28,44 @@ import java.time.ZoneOffset
 class AddTracks(
     private val insertTrack: InsertTrack,
     private val refreshTracks: RefreshTracks,
-    private val getChaptersByMangaId: GetChaptersByMangaId,
+    private val getEpisodesByAnimeId: GetEpisodesByAnimeId,
     private val trackerManager: TrackerManager,
 ) {
 
-    suspend fun bind(tracker: Tracker, item: Track, mangaId: Long) = withNonCancellableContext {
+    suspend fun bind(tracker: Tracker, item: Track, animeId: Long) = withNonCancellableContext {
         withIOContext {
-            val allChapters = getChaptersByMangaId.await(mangaId)
-            val hasReadChapters = allChapters.any { it.read }
-            tracker.bind(item, hasReadChapters)
+            val allEpisodes = getEpisodesByAnimeId.await(animeId)
+            val hasReadEpisodes = allEpisodes.any { it.seen }
+            tracker.bind(item, hasReadEpisodes)
 
             var track = item.toDomainTrack(idRequired = false) ?: return@withIOContext
 
             insertTrack.await(track)
 
-            // TODO: merge into [SyncChapterProgressWithTrack]?
-            // Update chapter progress if newer chapters marked read locally
-            if (hasReadChapters) {
-                val latestLocalReadChapterNumber = allChapters
-                    .sortedBy { it.chapterNumber }
-                    .takeWhile { it.read }
+            // TODO: merge into [SyncEpisodeProgressWithTrack]?
+            // Update episode progress if newer episodes marked read locally
+            if (hasReadEpisodes) {
+                val latestLocalReadEpisodeNumber = allEpisodes
+                    .sortedBy { it.episodeNumber }
+                    .takeWhile { it.seen }
                     .lastOrNull()
-                    ?.chapterNumber ?: -1.0
+                    ?.episodeNumber ?: -1.0
 
-                if (latestLocalReadChapterNumber > track.lastChapterRead) {
+                if (latestLocalReadEpisodeNumber > track.lastEpisodeSeen) {
                     track = track.copy(
-                        lastChapterRead = latestLocalReadChapterNumber,
+                        lastEpisodeSeen = latestLocalReadEpisodeNumber,
                     )
-                    tracker.setRemoteLastChapterRead(track.toDbTrack(), latestLocalReadChapterNumber.toInt())
+                    tracker.setRemoteLastEpisodeSeen(track.toDbTrack(), latestLocalReadEpisodeNumber.toInt())
                 }
 
                 if (track.startDate <= 0) {
-                    val firstReadChapterDate = Injekt.get<GetHistory>().await(mangaId)
-                        .sortedBy { it.readAt }
+                    val firstReadEpisodeDate = Injekt.get<GetHistory>().await(animeId)
+                        .sortedBy { it.seenAt }
                         .firstOrNull()
-                        ?.readAt
+                        ?.seenAt
 
-                    firstReadChapterDate?.let {
-                        val startDate = firstReadChapterDate.time.convertEpochMillisZone(
+                    firstReadEpisodeDate?.let {
+                        val startDate = firstReadEpisodeDate.time.convertEpochMillisZone(
                             ZoneOffset.systemDefault(),
                             ZoneOffset.UTC,
                         )
@@ -79,11 +79,11 @@ class AddTracks(
 
             // KMK -->
             val context = Injekt.get<Application>()
-            refreshTracks.await(mangaId)
+            refreshTracks.await(animeId)
                 .filter { it.first != null }
                 .forEach { (track, e) ->
                     logcat(LogPriority.ERROR, e) {
-                        "Failed to refresh track data mangaId=$mangaId for service ${track!!.id}"
+                        "Failed to refresh track data animeId=$animeId for service ${track!!.id}"
                     }
                     withUIContext {
                         context.toast(
@@ -99,15 +99,15 @@ class AddTracks(
         }
     }
 
-    suspend fun bindEnhancedTrackers(manga: Manga, source: Source) = withNonCancellableContext {
+    suspend fun bindEnhancedTrackers(anime: Anime, source: Source) = withNonCancellableContext {
         withIOContext {
             trackerManager.loggedInTrackers()
                 .filterIsInstance<EnhancedTracker>()
                 .filter { it.accept(source) }
                 .forEach { service ->
                     try {
-                        service.match(manga)?.let { track ->
-                            track.manga_id = manga.id
+                        service.match(anime)?.let { track ->
+                            track.anime_id = anime.id
                             (service as Tracker).bind(track)
                             insertTrack.await(track.toDomainTrack(idRequired = false)!!)
                         }
@@ -115,17 +115,17 @@ class AddTracks(
                         logcat(
                             LogPriority.WARN,
                             e,
-                        ) { "Could not match manga: ${manga.title} with service $service" }
+                        ) { "Could not match anime: ${anime.title} with service $service" }
                     }
                 }
 
             // KMK -->
             val context = Injekt.get<Application>()
-            refreshTracks.await(manga.id)
+            refreshTracks.await(anime.id)
                 .filter { it.first != null }
                 .forEach { (track, e) ->
                     logcat(LogPriority.ERROR, e) {
-                        "Failed to refresh track data mangaId=${manga.id} for service ${track!!.id}"
+                        "Failed to refresh track data animeId=${anime.id} for service ${track!!.id}"
                     }
                     withUIContext {
                         context.toast(

@@ -25,10 +25,10 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.PreviewLightDark
 import androidx.compose.ui.tooling.preview.PreviewParameter
 import androidx.compose.ui.unit.dp
-import eu.kanade.presentation.manga.components.MangaCover
-import eu.kanade.presentation.manga.components.RatioSwitchToPanorama
+import eu.kanade.presentation.anime.components.AnimeCover
+import eu.kanade.presentation.anime.components.RatioSwitchToPanorama
 import eu.kanade.presentation.theme.TachiyomiPreviewTheme
-import eu.kanade.presentation.util.formatChapterNumber
+import eu.kanade.presentation.util.formatEpisodeNumber
 import eu.kanade.tachiyomi.util.lang.toTimestampString
 import tachiyomi.domain.history.model.HistoryWithRelations
 import tachiyomi.i18n.MR
@@ -57,19 +57,19 @@ fun HistoryItem(
         verticalAlignment = Alignment.CenterVertically,
     ) {
         // KMK -->
-        val mangaCover = history.coverData
+        val animeCover = history.coverData
         val coverIsWide = coverRatio.floatValue <= RatioSwitchToPanorama
-        val bgColor = mangaCover.dominantCoverColors?.first?.let { Color(it) }
-        val onBgColor = mangaCover.dominantCoverColors?.second
+        val bgColor = animeCover.dominantCoverColors?.first?.let { Color(it) }
+        val onBgColor = animeCover.dominantCoverColors?.second
         if (usePanoramaCover && coverIsWide) {
-            MangaCover.Panorama(
+            AnimeCover.Panorama(
                 modifier = Modifier.fillMaxHeight(),
-                data = mangaCover,
+                data = animeCover,
                 onClick = onClickCover,
                 // KMK -->
                 bgColor = bgColor,
                 tint = onBgColor,
-                size = MangaCover.Size.Medium,
+                size = AnimeCover.Size.Medium,
                 onCoverLoaded = { _, result ->
                     val image = result.result.image
                     coverRatio.floatValue = image.height.toFloat() / image.width
@@ -78,14 +78,14 @@ fun HistoryItem(
             )
         } else {
             // KMK <--
-            MangaCover.Book(
+            AnimeCover.Book(
                 modifier = Modifier.fillMaxHeight(),
-                data = mangaCover,
+                data = animeCover,
                 onClick = onClickCover,
                 // KMK -->
                 bgColor = bgColor,
                 tint = onBgColor,
-                size = MangaCover.Size.Medium,
+                size = AnimeCover.Size.Medium,
                 onCoverLoaded = { _, result ->
                     val image = result.result.image
                     coverRatio.floatValue = image.height.toFloat() / image.width
@@ -106,12 +106,12 @@ fun HistoryItem(
                 overflow = TextOverflow.Ellipsis,
                 style = textStyle,
             )
-            val readAt = remember { history.readAt?.toTimestampString() ?: "" }
+            val readAt = remember { history.seenAt?.toTimestampString() ?: "" }
             Text(
-                text = if (history.chapterNumber > -1) {
+                text = if (history.episodeNumber > -1) {
                     stringResource(
-                        MR.strings.recent_manga_time,
-                        formatChapterNumber(history.chapterNumber),
+                        MR.strings.recent_anime_time,
+                        formatEpisodeNumber(history.episodeNumber),
                         readAt,
                     )
                 } else {

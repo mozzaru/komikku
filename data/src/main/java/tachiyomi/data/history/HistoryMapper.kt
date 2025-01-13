@@ -1,49 +1,49 @@
 package tachiyomi.data.history
 
+import tachiyomi.domain.anime.model.AnimeCover
 import tachiyomi.domain.history.model.History
 import tachiyomi.domain.history.model.HistoryWithRelations
-import tachiyomi.domain.manga.model.MangaCover
 import java.util.Date
 
 object HistoryMapper {
     fun mapHistory(
         id: Long,
-        chapterId: Long,
-        readAt: Date?,
-        readDuration: Long,
+        episodeId: Long,
+        seenAt: Date?,
+        watchDuration: Long,
     ): History = History(
         id = id,
-        chapterId = chapterId,
-        readAt = readAt,
-        readDuration = readDuration,
+        episodeId = episodeId,
+        seenAt = seenAt,
+        watchDuration = watchDuration,
     )
 
     fun mapHistoryWithRelations(
         historyId: Long,
-        mangaId: Long,
-        chapterId: Long,
+        animeId: Long,
+        episodeId: Long,
         title: String,
         thumbnailUrl: String?,
         sourceId: Long,
         isFavorite: Boolean,
         coverLastModified: Long,
-        chapterNumber: Double,
-        readAt: Date?,
-        readDuration: Long,
+        episodeNumber: Double,
+        seenAt: Date?,
+        watchDuration: Long,
     ): HistoryWithRelations = HistoryWithRelations(
         id = historyId,
-        chapterId = chapterId,
-        mangaId = mangaId,
+        episodeId = episodeId,
+        animeId = animeId,
         // SY -->
         ogTitle = title,
         // SY <--
-        chapterNumber = chapterNumber,
-        readAt = readAt,
-        readDuration = readDuration,
-        coverData = MangaCover(
-            mangaId = mangaId,
+        episodeNumber = episodeNumber,
+        seenAt = seenAt,
+        watchDuration = watchDuration,
+        coverData = AnimeCover(
+            animeId = animeId,
             sourceId = sourceId,
-            isMangaFavorite = isFavorite,
+            isAnimeFavorite = isFavorite,
             ogUrl = thumbnailUrl,
             lastModified = coverLastModified,
         ),

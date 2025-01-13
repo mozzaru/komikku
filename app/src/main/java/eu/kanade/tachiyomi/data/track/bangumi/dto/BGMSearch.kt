@@ -35,7 +35,7 @@ data class BGMSearchItem(
         }
         score = rating?.score ?: -1.0
         tracking_url = url
-        total_chapters = epsCount ?: 0
+        total_episodes = epsCount ?: 0
     }
 }
 

@@ -3,66 +3,66 @@ package exh.util
 import android.content.Context
 import eu.kanade.tachiyomi.ui.reader.setting.ReadingMode
 import tachiyomi.core.common.i18n.stringResource
-import tachiyomi.domain.manga.model.Manga
+import tachiyomi.domain.anime.model.Anime
 import tachiyomi.domain.source.service.SourceManager
 import tachiyomi.i18n.sy.SYMR
 import uy.kohesive.injekt.Injekt
 import uy.kohesive.injekt.api.get
 import java.util.Locale
 
-fun Manga.mangaType(context: Context): String {
+fun Anime.animeType(context: Context): String {
     return context.stringResource(
-        when (mangaType()) {
-            MangaType.TYPE_WEBTOON -> SYMR.strings.entry_type_webtoon
-            MangaType.TYPE_MANHWA -> SYMR.strings.entry_type_manhwa
-            MangaType.TYPE_MANHUA -> SYMR.strings.entry_type_manhua
-            MangaType.TYPE_COMIC -> SYMR.strings.entry_type_comic
-            else -> SYMR.strings.entry_type_manga
+        when (animeType()) {
+            AnimeType.TYPE_WEBTOON -> SYMR.strings.entry_type_webtoon
+            AnimeType.TYPE_MANHWA -> SYMR.strings.entry_type_manhwa
+            AnimeType.TYPE_MANHUA -> SYMR.strings.entry_type_manhua
+            AnimeType.TYPE_COMIC -> SYMR.strings.entry_type_comic
+            else -> SYMR.strings.entry_type_anime
         },
     ).lowercase(Locale.getDefault())
 }
 
 /**
- * The type of comic the manga is (ie. manga, manhwa, manhua)
+ * The type of comic the anime is (ie. anime, manhwa, manhua)
  */
-fun Manga.mangaType(sourceName: String? = Injekt.get<SourceManager>().get(source)?.name): MangaType {
+fun Anime.animeType(sourceName: String? = Injekt.get<SourceManager>().get(source)?.name): AnimeType {
     val currentTags = genre.orEmpty()
     return when {
-        currentTags.any { tag -> isMangaTag(tag) } -> {
-            MangaType.TYPE_MANGA
+        currentTags.any { tag -> isAnimeTag(tag) } -> {
+            AnimeType.TYPE_MANGA
         }
         currentTags.any { tag -> isWebtoonTag(tag) } || sourceName?.let { isWebtoonSource(it) } == true -> {
-            MangaType.TYPE_WEBTOON
+            AnimeType.TYPE_WEBTOON
         }
         currentTags.any { tag -> isComicTag(tag) } || sourceName?.let { isComicSource(it) } == true -> {
-            MangaType.TYPE_COMIC
+            AnimeType.TYPE_COMIC
         }
         currentTags.any { tag -> isManhuaTag(tag) } || sourceName?.let { isManhuaSource(it) } == true -> {
-            MangaType.TYPE_MANHUA
+            AnimeType.TYPE_MANHUA
         }
         currentTags.any { tag -> isManhwaTag(tag) } || sourceName?.let { isManhwaSource(it) } == true -> {
-            MangaType.TYPE_MANHWA
+            AnimeType.TYPE_MANHWA
         }
         else -> {
-            MangaType.TYPE_MANGA
+            AnimeType.TYPE_MANGA
         }
     }
 }
 
 /**
- * The type the reader should use. Different from manga type as certain manga has different
+ * The type the reader should use. Different from anime type as certain anime has different
  * read types
  */
-fun Manga.defaultReaderType(type: MangaType = mangaType()): Int? {
-    return if (type == MangaType.TYPE_MANHWA || type == MangaType.TYPE_WEBTOON) {
+fun Anime.defaultReaderType(type: AnimeType = animeType()): Int? {
+    return if (type == AnimeType.TYPE_MANHWA || type == AnimeType.TYPE_WEBTOON) {
         ReadingMode.WEBTOON.flagValue
     } else {
         null
     }
 }
 
-private fun isMangaTag(tag: String): Boolean {
-    return tag.contains("manga", true) ||
+private fun isAnimeTag(tag: String): Boolean {
+    return tag.contains("anime", true) ||
         tag.contains("манга", true)
 }
 
@@ -86,7 +86,7 @@ private fun isWebtoonTag(tag: String): Boolean {
         tag.contains("webtoon", true)
 }
 
-/*private fun isMangaSource(sourceName: String): Boolean {
+/*private fun isAnimeSource(sourceName: String): Boolean {
     return
 }*/
 
@@ -98,20 +98,20 @@ private fun isManhwaSource(sourceName: String): Boolean {
         sourceName.contains("manhwa68", true) ||
         sourceName.contains("manhwa365", true) ||
         sourceName.contains("manhwahentaime", true) ||
-        sourceName.contains("manhwamanga", true) ||
+        sourceName.contains("manhwaanime", true) ||
         sourceName.contains("manhwatop", true) ||
         sourceName.contains("manhwa club", true) ||
         sourceName.contains("manytoon", true) ||
         sourceName.contains("manwha", true) ||
         sourceName.contains("readmanhwa", true) ||
-        sourceName.contains("skymanga", true) ||
+        sourceName.contains("skyanime", true) ||
         sourceName.contains("toonily", true) ||
         sourceName.contains("webtoonxyz", true)
 }
 
 private fun isWebtoonSource(sourceName: String): Boolean {
-    return sourceName.contains("mangatoon", true) ||
-        sourceName.contains("manmanga", true) ||
+    return sourceName.contains("animetoon", true) ||
+        sourceName.contains("mananime", true) ||
         // sourceName.contains("tapas", true) ||
         sourceName.contains("toomics", true) ||
         sourceName.contains("webcomics", true) ||
@@ -157,7 +157,7 @@ private fun isManhuaSource(sourceName: String): Boolean {
         sourceName.contains("manhua", true)
 }
 
-enum class MangaType {
+enum class AnimeType {
     TYPE_MANGA,
     TYPE_MANHWA,
     TYPE_MANHUA,

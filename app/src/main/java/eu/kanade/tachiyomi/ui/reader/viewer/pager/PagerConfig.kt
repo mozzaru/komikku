@@ -32,7 +32,7 @@ class PagerConfig(
 
     var dualPageSplitChangedListener: ((Boolean) -> Unit)? = null
 
-    var reloadChapterListener: ((Boolean) -> Unit)? = null
+    var reloadEpisodeListener: ((Boolean) -> Unit)? = null
 
     var imageScaleType = 1
         private set
@@ -87,7 +87,7 @@ class PagerConfig(
                     imagePropertyChangedListener?.invoke()
                     // SY -->
                     themeToColor(it)
-                    reloadChapterListener?.invoke(doublePages)
+                    reloadEpisodeListener?.invoke(doublePages)
                     // SY <--
                 },
             )
@@ -158,7 +158,7 @@ class PagerConfig(
                     if (!autoDoublePages) {
                         doublePages = it == PageLayout.DOUBLE_PAGES && dualPageSplit == false
                     }
-                    reloadChapterListener?.invoke(doublePages)
+                    reloadEpisodeListener?.invoke(doublePages)
                 },
             )
 

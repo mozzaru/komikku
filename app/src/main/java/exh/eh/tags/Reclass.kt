@@ -8,7 +8,7 @@ object Reclass : TagList {
         "reclass:doujinshi",
         "reclass:gamecg",
         "reclass:imageset",
-        "reclass:manga",
+        "reclass:anime",
         "reclass:misc",
         "reclass:non-h",
         "reclass:western",

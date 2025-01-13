@@ -26,9 +26,9 @@ data class LibrarySort(
         data object LastRead : Type(0b00000100)
         data object LastUpdate : Type(0b00001000)
         data object UnreadCount : Type(0b00001100)
-        data object TotalChapters : Type(0b00010000)
-        data object LatestChapter : Type(0b00010100)
-        data object ChapterFetchDate : Type(0b00011000)
+        data object TotalEpisodes : Type(0b00010000)
+        data object LatestEpisode : Type(0b00010100)
+        data object EpisodeFetchDate : Type(0b00011000)
         data object DateAdded : Type(0b00011100)
         data object TrackerMean : Type(0b00100000)
         data object Random : Type(0b00111100)
@@ -77,9 +77,9 @@ data class LibrarySort(
                 Type.LastRead,
                 Type.LastUpdate,
                 Type.UnreadCount,
-                Type.TotalChapters,
-                Type.LatestChapter,
-                Type.ChapterFetchDate,
+                Type.TotalEpisodes,
+                Type.LatestEpisode,
+                Type.EpisodeFetchDate,
                 Type.DateAdded,
                 Type.TrackerMean,
                 Type.Random,
@@ -107,9 +107,9 @@ data class LibrarySort(
                     "LAST_READ" -> Type.LastRead
                     "LAST_MANGA_UPDATE" -> Type.LastUpdate
                     "UNREAD_COUNT" -> Type.UnreadCount
-                    "TOTAL_CHAPTERS" -> Type.TotalChapters
-                    "LATEST_CHAPTER" -> Type.LatestChapter
-                    "CHAPTER_FETCH_DATE" -> Type.ChapterFetchDate
+                    "TOTAL_CHAPTERS" -> Type.TotalEpisodes
+                    "LATEST_CHAPTER" -> Type.LatestEpisode
+                    "CHAPTER_FETCH_DATE" -> Type.EpisodeFetchDate
                     "DATE_ADDED" -> Type.DateAdded
                     "TRACKER_MEAN" -> Type.TrackerMean
                     "RANDOM" -> Type.Random
@@ -133,9 +133,9 @@ data class LibrarySort(
             Type.LastRead -> "LAST_READ"
             Type.LastUpdate -> "LAST_MANGA_UPDATE"
             Type.UnreadCount -> "UNREAD_COUNT"
-            Type.TotalChapters -> "TOTAL_CHAPTERS"
-            Type.LatestChapter -> "LATEST_CHAPTER"
-            Type.ChapterFetchDate -> "CHAPTER_FETCH_DATE"
+            Type.TotalEpisodes -> "TOTAL_CHAPTERS"
+            Type.LatestEpisode -> "LATEST_CHAPTER"
+            Type.EpisodeFetchDate -> "CHAPTER_FETCH_DATE"
             Type.DateAdded -> "DATE_ADDED"
             Type.TrackerMean -> "TRACKER_MEAN"
             Type.Random -> "RANDOM"

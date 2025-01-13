@@ -1,12 +1,12 @@
 package exh.md.handlers
 
-import eu.kanade.tachiyomi.source.model.SChapter
-import eu.kanade.tachiyomi.source.model.SManga
+import eu.kanade.tachiyomi.source.model.SAnime
+import eu.kanade.tachiyomi.source.model.SEpisode
 import exh.log.xLogE
-import exh.md.dto.ChapterDataDto
-import exh.md.dto.ChapterDto
-import exh.md.dto.MangaDto
-import exh.md.dto.StatisticsMangaDto
+import exh.md.dto.AnimeDto
+import exh.md.dto.EpisodeDataDto
+import exh.md.dto.EpisodeDto
+import exh.md.dto.StatisticsAnimeDto
 import exh.md.utils.MdConstants
 import exh.md.utils.MdUtil
 import exh.md.utils.asMdMap
@@ -15,16 +15,16 @@ import exh.metadata.metadata.base.RaisedTag
 import exh.util.capitalize
 import exh.util.floor
 import exh.util.nullIfEmpty
-import tachiyomi.domain.manga.interactor.GetFlatMetadataById
-import tachiyomi.domain.manga.interactor.GetManga
-import tachiyomi.domain.manga.interactor.InsertFlatMetadata
+import tachiyomi.domain.anime.interactor.GetAnime
+import tachiyomi.domain.anime.interactor.GetFlatMetadataById
+import tachiyomi.domain.anime.interactor.InsertFlatMetadata
 import uy.kohesive.injekt.injectLazy
 import java.util.Locale
 
-class ApiMangaParser(
+class ApiAnimeParser(
     private val lang: String,
 ) {
-    private val getManga: GetManga by injectLazy()
+    private val getAnime: GetAnime by injectLazy()
     private val insertFlatMetadata: InsertFlatMetadata by injectLazy()
     private val getFlatMetadataById: GetFlatMetadataById by injectLazy()
 
@@ -35,89 +35,89 @@ class ApiMangaParser(
      */
     private fun newMetaInstance() = MangaDexSearchMetadata()
 
-    suspend fun parseToManga(
-        manga: SManga,
+    suspend fun parseToAnime(
+        anime: SAnime,
         sourceId: Long,
-        input: MangaDto,
-        simpleChapters: List<String>,
-        statistics: StatisticsMangaDto?,
+        input: AnimeDto,
+        simpleEpisodes: List<String>,
+        statistics: StatisticsAnimeDto?,
         coverFileName: String?,
         coverQuality: String,
         altTitlesInDesc: Boolean,
-    ): SManga {
-        val mangaId = getManga.await(manga.url, sourceId)?.id
-        val metadata = if (mangaId != null) {
-            val flatMetadata = getFlatMetadataById.await(mangaId)
+    ): SAnime {
+        val animeId = getAnime.await(anime.url, sourceId)?.id
+        val metadata = if (animeId != null) {
+            val flatMetadata = getFlatMetadataById.await(animeId)
             flatMetadata?.raise(metaClass) ?: newMetaInstance()
         } else {
             newMetaInstance()
         }
 
-        parseIntoMetadata(metadata, input, simpleChapters, statistics, coverFileName, coverQuality, altTitlesInDesc)
-        if (mangaId != null) {
-            metadata.mangaId = mangaId
+        parseIntoMetadata(metadata, input, simpleEpisodes, statistics, coverFileName, coverQuality, altTitlesInDesc)
+        if (animeId != null) {
+            metadata.animeId = animeId
             insertFlatMetadata.await(metadata.flatten())
         }
 
-        return metadata.createMangaInfo(manga)
+        return metadata.createAnimeInfo(anime)
     }
 
     fun parseIntoMetadata(
         metadata: MangaDexSearchMetadata,
-        mangaDto: MangaDto,
-        simpleChapters: List<String>,
-        statistics: StatisticsMangaDto?,
+        animeDto: AnimeDto,
+        simpleEpisodes: List<String>,
+        statistics: StatisticsAnimeDto?,
         coverFileName: String?,
         coverQuality: String,
         altTitlesInDesc: Boolean,
     ) {
         with(metadata) {
             try {
-                val mangaAttributesDto = mangaDto.data.attributes
-                mdUuid = mangaDto.data.id
-                title = MdUtil.getTitleFromManga(mangaAttributesDto, lang)
-                altTitles = mangaAttributesDto.altTitles.mapNotNull { it[lang] }.nullIfEmpty()
+                val animeAttributesDto = animeDto.data.attributes
+                mdUuid = animeDto.data.id
+                title = MdUtil.getTitleFromAnime(animeAttributesDto, lang)
+                altTitles = animeAttributesDto.altTitles.mapNotNull { it[lang] }.nullIfEmpty()
 
-                val mangaRelationshipsDto = mangaDto.data.relationships
+                val animeRelationshipsDto = animeDto.data.relationships
                 cover = if (!coverFileName.isNullOrEmpty()) {
-                    MdUtil.cdnCoverUrl(mangaDto.data.id, "$coverFileName$coverQuality")
+                    MdUtil.cdnCoverUrl(animeDto.data.id, "$coverFileName$coverQuality")
                 } else {
-                    mangaRelationshipsDto
+                    animeRelationshipsDto
                         .firstOrNull { relationshipDto -> relationshipDto.type == MdConstants.Types.coverArt }
                         ?.attributes
                         ?.fileName
                         ?.let { coverFileName ->
-                            MdUtil.cdnCoverUrl(mangaDto.data.id, "$coverFileName$coverQuality")
+                            MdUtil.cdnCoverUrl(animeDto.data.id, "$coverFileName$coverQuality")
                         }
                 }
                 val rawDesc = MdUtil.getFromLangMap(
-                    langMap = mangaAttributesDto.description.asMdMap(),
+                    langMap = animeAttributesDto.description.asMdMap(),
                     currentLang = lang,
-                    originalLanguage = mangaAttributesDto.originalLanguage,
+                    originalLanguage = animeAttributesDto.originalLanguage,
                 ).orEmpty()
 
                 description = MdUtil.cleanDescription(
                     if (altTitlesInDesc) MdUtil.addAltTitleToDesc(rawDesc, altTitles) else rawDesc,
                 )
 
-                authors = mangaRelationshipsDto.filter { relationshipDto ->
+                authors = animeRelationshipsDto.filter { relationshipDto ->
                     relationshipDto.type.equals(MdConstants.Types.author, true)
                 }.mapNotNull { it.attributes?.name }.distinct()
 
-                artists = mangaRelationshipsDto.filter { relationshipDto ->
+                artists = animeRelationshipsDto.filter { relationshipDto ->
                     relationshipDto.type.equals(MdConstants.Types.artist, true)
                 }.mapNotNull { it.attributes?.name }.distinct()
 
-                langFlag = mangaAttributesDto.originalLanguage
-                val lastChapter = mangaAttributesDto.lastChapter?.toFloatOrNull()
-                lastChapterNumber = lastChapter?.floor()
+                langFlag = animeAttributesDto.originalLanguage
+                val lastEpisode = animeAttributesDto.lastEpisode?.toFloatOrNull()
+                lastChapterNumber = lastEpisode?.floor()
 
                 statistics?.rating?.let {
                     rating = it.bayesian?.toFloat()
-                    // manga.users = it.users
+                    // anime.users = it.users
                 }
 
-                mangaAttributesDto.links?.asMdMap<String>()?.let { links ->
+                animeAttributesDto.links?.asMdMap<String>()?.let { links ->
                     links["al"]?.let { anilistId = it }
                     links["kt"]?.let { kitsuId = it }
                     links["mal"]?.let { myAnimeListId = it }
@@ -125,34 +125,34 @@ class ApiMangaParser(
                     links["ap"]?.let { animePlanetId = it }
                 }
 
-                // val filteredChapters = filterChapterForChecking(networkApiManga)
+                // val filteredEpisodes = filterEpisodeForChecking(networkApiAnime)
 
-                val tempStatus = parseStatus(mangaAttributesDto.status)
-                val publishedOrCancelled = tempStatus == SManga.PUBLISHING_FINISHED || tempStatus == SManga.CANCELLED
+                val tempStatus = parseStatus(animeAttributesDto.status)
+                val publishedOrCancelled = tempStatus == SAnime.PUBLISHING_FINISHED || tempStatus == SAnime.CANCELLED
                 status = if (
-                    mangaAttributesDto.lastChapter != null &&
+                    animeAttributesDto.lastEpisode != null &&
                     publishedOrCancelled &&
-                    mangaAttributesDto.lastChapter in simpleChapters
+                    animeAttributesDto.lastEpisode in simpleEpisodes
                 ) {
-                    SManga.COMPLETED
+                    SAnime.COMPLETED
                 } else {
                     tempStatus
                 }
 
                 // things that will go with the genre tags but aren't actually genre
                 val nonGenres = listOfNotNull(
-                    mangaAttributesDto.publicationDemographic
+                    animeAttributesDto.publicationDemographic
                         ?.let {
                             RaisedTag("Demographic", it.capitalize(Locale.US), MangaDexSearchMetadata.TAG_TYPE_DEFAULT)
                         },
-                    mangaAttributesDto.contentRating
+                    animeAttributesDto.contentRating
                         ?.takeUnless { it == "safe" }
                         ?.let {
                             RaisedTag("Content Rating", it.capitalize(Locale.US), MangaDexSearchMetadata.TAG_TYPE_DEFAULT)
                         },
                 )
 
-                val genres = nonGenres + mangaAttributesDto.tags
+                val genres = nonGenres + animeAttributesDto.tags
                     .mapNotNull {
                         it.attributes.name[lang] ?: it.attributes.name["en"]
                     }
@@ -169,13 +169,13 @@ class ApiMangaParser(
         }
     }
 
-    /* private fun filterChapterForChecking(serializer: ApiMangaSerializer): List<ChapterSerializer> {
-         serializer.data.chapters ?: return emptyList()
-         return serializer.data.chapters.asSequence()
+    /* private fun filterEpisodeForChecking(serializer: ApiAnimeSerializer): List<EpisodeSerializer> {
+         serializer.data.episodes ?: return emptyList()
+         return serializer.data.episodes.asSequence()
              .filter { langs.contains(it.language) }
              .filter {
-                 it.chapter?.let { chapterNumber ->
-                     if (chapterNumber.toDoubleOrNull() == null) {
+                 it.episode?.let { episodeNumber ->
+                     if (episodeNumber.toDoubleOrNull() == null) {
                          return@filter false
                      }
                      return@filter true
@@ -184,82 +184,82 @@ class ApiMangaParser(
              }.toList()
      }*/
 
-    /*private fun isOneShot(chapter: ChapterSerializer, finalChapterNumber: String): Boolean {
-        return chapter.title.equals("oneshot", true) ||
-            ((chapter.chapter.isNullOrEmpty() || chapter.chapter == "0") && MdUtil.validOneShotFinalChapters.contains(finalChapterNumber))
+    /*private fun isOneShot(episode: EpisodeSerializer, finalEpisodeNumber: String): Boolean {
+        return episode.title.equals("oneshot", true) ||
+            ((episode.episode.isNullOrEmpty() || episode.episode == "0") && MdUtil.validOneShotFinalEpisodes.contains(finalEpisodeNumber))
     }*/
 
     private fun parseStatus(status: String?) = when (status) {
-        "ongoing" -> SManga.ONGOING
-        "completed" -> SManga.PUBLISHING_FINISHED
-        "cancelled" -> SManga.CANCELLED
-        "hiatus" -> SManga.ON_HIATUS
-        else -> SManga.UNKNOWN
+        "ongoing" -> SAnime.ONGOING
+        "completed" -> SAnime.PUBLISHING_FINISHED
+        "cancelled" -> SAnime.CANCELLED
+        "hiatus" -> SAnime.ON_HIATUS
+        else -> SAnime.UNKNOWN
     }
 
-    fun chapterListParse(chapterListResponse: List<ChapterDataDto>, groupMap: Map<String, String>): List<SChapter> {
+    fun episodeListParse(episodeListResponse: List<EpisodeDataDto>, groupMap: Map<String, String>): List<SEpisode> {
         val now = System.currentTimeMillis()
-        return chapterListResponse
+        return episodeListResponse
             .filterNot { MdUtil.parseDate(it.attributes.publishAt) > now && it.attributes.externalUrl == null }
             .map {
-                mapChapter(it, groupMap)
+                mapEpisode(it, groupMap)
             }
     }
 
-    fun chapterParseForMangaId(chapterDto: ChapterDto): String? {
-        return chapterDto.data.relationships.find { it.type.equals("manga", true) }?.id
+    fun episodeParseForAnimeId(episodeDto: EpisodeDto): String? {
+        return episodeDto.data.relationships.find { it.type.equals("anime", true) }?.id
     }
 
     fun StringBuilder.appends(string: String): StringBuilder = append("$string ")
 
-    private fun mapChapter(
-        networkChapter: ChapterDataDto,
+    private fun mapEpisode(
+        networkEpisode: EpisodeDataDto,
         groups: Map<String, String>,
-    ): SChapter {
-        val attributes = networkChapter.attributes
-        val key = MdUtil.chapterSuffix + networkChapter.id
-        val chapterName = StringBuilder()
-        // Build chapter name
+    ): SEpisode {
+        val attributes = networkEpisode.attributes
+        val key = MdUtil.episodeSuffix + networkEpisode.id
+        val episodeName = StringBuilder()
+        // Build episode name
 
         if (attributes.volume != null) {
             val vol = "Vol." + attributes.volume
-            chapterName.appends(vol)
+            episodeName.appends(vol)
             // todo
-            // chapter.vol = vol
+            // episode.vol = vol
         }
 
-        if (attributes.chapter.isNullOrBlank().not()) {
-            val chp = "Ch.${attributes.chapter}"
-            chapterName.appends(chp)
-            // chapter.chapter_txt = chp
+        if (attributes.episode.isNullOrBlank().not()) {
+            val chp = "Ch.${attributes.episode}"
+            episodeName.appends(chp)
+            // episode.episode_txt = chp
         }
 
         if (!attributes.title.isNullOrBlank()) {
-            if (chapterName.isNotEmpty()) {
-                chapterName.appends("-")
+            if (episodeName.isNotEmpty()) {
+                episodeName.appends("-")
             }
-            chapterName.append(attributes.title)
+            episodeName.append(attributes.title)
         }
 
-        // if volume, chapter and title is empty its a oneshot
-        if (chapterName.isEmpty()) {
-            chapterName.append("Oneshot")
+        // if volume, episode and title is empty its a oneshot
+        if (episodeName.isEmpty()) {
+            episodeName.append("Oneshot")
         }
         /*if ((status == 2 || status == 3)) {
-            if (finalChapterNumber != null) {
-                if ((isOneShot(networkChapter, finalChapterNumber) && totalChapterCount == 1) ||
-                    networkChapter.chapter == finalChapterNumber && finalChapterNumber.toIntOrNull() != 0
+            if (finalEpisodeNumber != null) {
+                if ((isOneShot(networkEpisode, finalEpisodeNumber) && totalEpisodeCount == 1) ||
+                    networkEpisode.episode == finalEpisodeNumber && finalEpisodeNumber.toIntOrNull() != 0
                 ) {
-                    chapterName.add("[END]")
+                    episodeName.add("[END]")
                 }
             }
         }*/
 
-        val name = chapterName.toString()
+        val name = episodeName.toString()
         // Convert from unix time
         val dateUpload = MdUtil.parseDate(attributes.readableAt)
 
-        val scanlatorName = networkChapter.relationships
+        val scanlatorName = networkEpisode.relationships
             .filter {
                 it.type == MdConstants.Types.scanlator
             }
@@ -276,11 +276,11 @@ class ApiMangaParser(
 
         val scanlator = MdUtil.getScanlatorString(scanlatorName)
 
-        // chapter.mangadex_chapter_id = MdUtil.getChapterId(chapter.url)
+        // episode.mangadex_episode_id = MdUtil.getEpisodeId(episode.url)
 
-        // chapter.language = MdLang.fromIsoCode(attributes.translatedLanguage)?.prettyPrint ?: ""
+        // episode.language = MdLang.fromIsoCode(attributes.translatedLanguage)?.prettyPrint ?: ""
 
-        return SChapter(
+        return SEpisode(
             url = key,
             name = name,
             scanlator = scanlator,

@@ -9,8 +9,8 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.util.fastAny
 import eu.kanade.tachiyomi.ui.library.LibraryItem
-import tachiyomi.domain.library.model.LibraryManga
-import tachiyomi.domain.manga.model.MangaCover
+import tachiyomi.domain.anime.model.AnimeCover
+import tachiyomi.domain.library.model.LibraryAnime
 import tachiyomi.presentation.core.components.FastScrollLazyColumn
 import tachiyomi.presentation.core.util.plus
 
@@ -18,10 +18,10 @@ import tachiyomi.presentation.core.util.plus
 internal fun LibraryList(
     items: List<LibraryItem>,
     contentPadding: PaddingValues,
-    selection: List<LibraryManga>,
-    onClick: (LibraryManga) -> Unit,
-    onLongClick: (LibraryManga) -> Unit,
-    onClickContinueReading: ((LibraryManga) -> Unit)?,
+    selection: List<LibraryAnime>,
+    onClick: (LibraryAnime) -> Unit,
+    onLongClick: (LibraryAnime) -> Unit,
+    onClickContinueReading: ((LibraryAnime) -> Unit)?,
     searchQuery: String?,
     onGlobalSearchClicked: () -> Unit,
 ) {
@@ -43,16 +43,16 @@ internal fun LibraryList(
             items = items,
             contentType = { "library_list_item" },
         ) { libraryItem ->
-            val manga = libraryItem.libraryManga.manga
-            MangaListItem(
-                isSelected = selection.fastAny { it.id == libraryItem.libraryManga.id },
-                title = manga.title,
-                coverData = MangaCover(
-                    mangaId = manga.id,
-                    sourceId = manga.source,
-                    isMangaFavorite = manga.favorite,
-                    ogUrl = manga.thumbnailUrl,
-                    lastModified = manga.coverLastModified,
+            val anime = libraryItem.libraryAnime.anime
+            AnimeListItem(
+                isSelected = selection.fastAny { it.id == libraryItem.libraryAnime.id },
+                title = anime.title,
+                coverData = AnimeCover(
+                    animeId = anime.id,
+                    sourceId = anime.source,
+                    isAnimeFavorite = anime.favorite,
+                    ogUrl = anime.thumbnailUrl,
+                    lastModified = anime.coverLastModified,
                 ),
                 badge = {
                     DownloadsBadge(count = libraryItem.downloadCount)
@@ -68,10 +68,10 @@ internal fun LibraryList(
                     SourceIconBadge(source = libraryItem.source)
                     // KMK <--
                 },
-                onLongClick = { onLongClick(libraryItem.libraryManga) },
-                onClick = { onClick(libraryItem.libraryManga) },
+                onLongClick = { onLongClick(libraryItem.libraryAnime) },
+                onClick = { onClick(libraryItem.libraryAnime) },
                 onClickContinueReading = if (onClickContinueReading != null && libraryItem.unreadCount > 0) {
-                    { onClickContinueReading(libraryItem.libraryManga) }
+                    { onClickContinueReading(libraryItem.libraryAnime) }
                 } else {
                     null
                 },

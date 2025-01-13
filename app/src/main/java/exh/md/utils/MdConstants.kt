@@ -14,7 +14,7 @@ object MdConstants {
         const val author = "author"
         const val artist = "artist"
         const val coverArt = "cover_art"
-        const val manga = "manga"
+        const val anime = "anime"
         const val scanlator = "scanlation_group"
     }
 

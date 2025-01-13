@@ -1,0 +1,59 @@
+package eu.kanade.domain.episode.model
+
+import eu.kanade.domain.anime.model.downloadedFilter
+import eu.kanade.tachiyomi.data.download.DownloadManager
+import eu.kanade.tachiyomi.ui.anime.EpisodeList
+import tachiyomi.domain.anime.model.Anime
+import tachiyomi.domain.episode.model.Episode
+import tachiyomi.domain.episode.service.getEpisodeSort
+import tachiyomi.source.local.isLocal
+
+/**
+ * Applies the view filters to the list of episodes obtained from the database.
+ * @return an observable of the list of episodes filtered and sorted.
+ */
+fun List<Episode>.applyFilters(
+    anime: Anime,
+    downloadManager: DownloadManager, /* SY --> */
+    mergedAnime: Map<Long, Anime>, /* SY <-- */
+): List<Episode> {
+    val isLocalAnime = anime.isLocal()
+    val unreadFilter = anime.unseenFilter
+    val downloadedFilter = anime.downloadedFilter
+    val bookmarkedFilter = anime.bookmarkedFilter
+
+    return filter { episode -> tachiyomi.domain.anime.model.applyFilter(unreadFilter) { !episode.seen } }
+        .filter { episode -> tachiyomi.domain.anime.model.applyFilter(bookmarkedFilter) { episode.bookmark } }
+        .filter { episode ->
+            // SY -->
+            @Suppress("NAME_SHADOWING")
+            val anime = mergedAnime.getOrElse(episode.animeId) { anime }
+            // SY <--
+            tachiyomi.domain.anime.model.applyFilter(downloadedFilter) {
+                val downloaded = downloadManager.isEpisodeDownloaded(
+                    episode.name,
+                    episode.scanlator,
+                    /* SY --> */ anime.ogTitle /* SY <-- */,
+                    anime.source,
+                )
+                downloaded || isLocalAnime
+            }
+        }
+        .sortedWith(getEpisodeSort(anime))
+}
+
+/**
+ * Applies the view filters to the list of episodes obtained from the database.
+ * @return an observable of the list of episodes filtered and sorted.
+ */
+fun List<EpisodeList.Item>.applyFilters(anime: Anime): Sequence<EpisodeList.Item> {
+    val isLocalAnime = anime.isLocal()
+    val unreadFilter = anime.unseenFilter
+    val downloadedFilter = anime.downloadedFilter
+    val bookmarkedFilter = anime.bookmarkedFilter
+    return asSequence()
+        .filter { (episode) -> tachiyomi.domain.anime.model.applyFilter(unreadFilter) { !episode.seen } }
+        .filter { (episode) -> tachiyomi.domain.anime.model.applyFilter(bookmarkedFilter) { episode.bookmark } }
+        .filter { tachiyomi.domain.anime.model.applyFilter(downloadedFilter) { it.isDownloaded || isLocalAnime } }
+        .sortedWith { (episode1), (episode2) -> getEpisodeSort(anime).invoke(episode1, episode2) }
+}

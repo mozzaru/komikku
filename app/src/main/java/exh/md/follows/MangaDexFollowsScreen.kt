@@ -14,21 +14,21 @@ import androidx.compose.ui.platform.LocalHapticFeedback
 import cafe.adriel.voyager.core.model.rememberScreenModel
 import cafe.adriel.voyager.navigator.LocalNavigator
 import cafe.adriel.voyager.navigator.currentOrThrow
+import eu.kanade.core.util.ifSourcesLoaded
+import eu.kanade.presentation.anime.DuplicateAnimeDialog
 import eu.kanade.presentation.browse.BrowseSourceContent
 import eu.kanade.presentation.browse.components.BrowseSourceSimpleToolbar
-import eu.kanade.presentation.browse.components.RemoveMangaDialog
+import eu.kanade.presentation.browse.components.RemoveAnimeDialog
 import eu.kanade.presentation.category.components.ChangeCategoryDialog
 import eu.kanade.presentation.components.BulkSelectionToolbar
-import eu.kanade.presentation.manga.DuplicateMangaDialog
 import eu.kanade.presentation.util.Screen
+import eu.kanade.tachiyomi.ui.anime.AnimeScreen
 import eu.kanade.tachiyomi.ui.browse.AllowDuplicateDialog
 import eu.kanade.tachiyomi.ui.browse.BulkFavoriteScreenModel
-import eu.kanade.tachiyomi.ui.browse.ChangeMangasCategoryDialog
+import eu.kanade.tachiyomi.ui.browse.ChangeAnimesCategoryDialog
 import eu.kanade.tachiyomi.ui.browse.migration.advanced.design.PreMigrationScreen
 import eu.kanade.tachiyomi.ui.browse.source.browse.BrowseSourceScreenModel
 import eu.kanade.tachiyomi.ui.category.CategoryScreen
-import eu.kanade.tachiyomi.ui.manga.MangaScreen
-import exh.ui.ifSourcesLoaded
 import mihon.presentation.core.util.collectAsLazyPagingItems
 import tachiyomi.core.common.util.lang.launchIO
 import tachiyomi.domain.UnsortedPreferences
@@ -75,12 +75,12 @@ class MangaDexFollowsScreen(private val sourceId: Long) : Screen() {
                         onClickClearSelection = bulkFavoriteScreenModel::toggleSelectionMode,
                         onChangeCategoryClick = bulkFavoriteScreenModel::addFavorite,
                         onSelectAll = {
-                            state.mangaDisplayingList.forEach { manga ->
-                                bulkFavoriteScreenModel.select(manga)
+                            state.animeDisplayingList.forEach { anime ->
+                                bulkFavoriteScreenModel.select(anime)
                             }
                         },
                         onReverseSelection = {
-                            bulkFavoriteScreenModel.reverseSelection(state.mangaDisplayingList.toList())
+                            bulkFavoriteScreenModel.reverseSelection(state.animeDisplayingList.toList())
                         },
                     )
                 } else {
@@ -104,7 +104,7 @@ class MangaDexFollowsScreen(private val sourceId: Long) : Screen() {
         ) { paddingValues ->
             BrowseSourceContent(
                 source = screenModel.source,
-                mangaList = screenModel.mangaPagerFlowFlow.collectAsLazyPagingItems(),
+                animeList = screenModel.animePagerFlowFlow.collectAsLazyPagingItems(),
                 columns = screenModel.getColumnsPreference(LocalConfiguration.current.orientation),
                 // SY -->
                 ehentaiBrowseDisplayMode = screenModel.ehentaiBrowseDisplayMode,
@@ -115,34 +115,34 @@ class MangaDexFollowsScreen(private val sourceId: Long) : Screen() {
                 onWebViewClick = null,
                 onHelpClick = null,
                 onLocalSourceHelpClick = null,
-                onMangaClick = {
+                onAnimeClick = {
                     // KMK -->
                     if (bulkFavoriteState.selectionMode) {
                         bulkFavoriteScreenModel.toggleSelection(it)
                     } else {
                         // KMK <--
-                        navigator.push(MangaScreen(it.id, true))
+                        navigator.push(AnimeScreen(it.id, true))
                     }
                 },
-                onMangaLongClick = { manga ->
+                onAnimeLongClick = { anime ->
                     // KMK -->
                     if (bulkFavoriteState.selectionMode) {
-                        navigator.push(MangaScreen(manga.id, true))
+                        navigator.push(AnimeScreen(anime.id, true))
                     } else {
                         // KMK <--
                         scope.launchIO {
-                            val duplicateManga = screenModel.getDuplicateLibraryManga(manga)
+                            val duplicateAnime = screenModel.getDuplicateLibraryAnime(anime)
                             when {
-                                manga.favorite -> screenModel.setDialog(
-                                    BrowseSourceScreenModel.Dialog.RemoveManga(manga),
+                                anime.favorite -> screenModel.setDialog(
+                                    BrowseSourceScreenModel.Dialog.RemoveAnime(anime),
                                 )
-                                duplicateManga != null -> screenModel.setDialog(
-                                    BrowseSourceScreenModel.Dialog.AddDuplicateManga(
-                                        manga,
-                                        duplicateManga,
+                                duplicateAnime != null -> screenModel.setDialog(
+                                    BrowseSourceScreenModel.Dialog.AddDuplicateAnime(
+                                        anime,
+                                        duplicateAnime,
                                     ),
                                 )
-                                else -> screenModel.addFavorite(manga)
+                                else -> screenModel.addFavorite(anime)
                             }
                             haptic.performHapticFeedback(HapticFeedbackType.LongPress)
                         }
@@ -158,17 +158,17 @@ class MangaDexFollowsScreen(private val sourceId: Long) : Screen() {
         val onDismissRequest = { screenModel.setDialog(null) }
         when (val dialog = state.dialog) {
             is BrowseSourceScreenModel.Dialog.Migrate -> {}
-            is BrowseSourceScreenModel.Dialog.AddDuplicateManga -> {
-                DuplicateMangaDialog(
+            is BrowseSourceScreenModel.Dialog.AddDuplicateAnime -> {
+                DuplicateAnimeDialog(
                     onDismissRequest = onDismissRequest,
-                    onConfirm = { screenModel.addFavorite(dialog.manga) },
-                    onOpenManga = { navigator.push(MangaScreen(dialog.duplicate.id)) },
+                    onConfirm = { screenModel.addFavorite(dialog.anime) },
+                    onOpenAnime = { navigator.push(AnimeScreen(dialog.duplicate.id)) },
                     onMigrate = {
                         PreMigrationScreen.navigateToMigration(
                             Injekt.get<UnsortedPreferences>().skipPreMigration().get(),
                             navigator,
                             dialog.duplicate.id,
-                            dialog.manga.id,
+                            dialog.anime.id,
                         )
                     },
                     // KMK -->
@@ -176,16 +176,16 @@ class MangaDexFollowsScreen(private val sourceId: Long) : Screen() {
                     // KMK <--
                 )
             }
-            is BrowseSourceScreenModel.Dialog.RemoveManga -> {
-                RemoveMangaDialog(
+            is BrowseSourceScreenModel.Dialog.RemoveAnime -> {
+                RemoveAnimeDialog(
                     onDismissRequest = onDismissRequest,
                     onConfirm = {
-                        screenModel.changeMangaFavorite(dialog.manga)
+                        screenModel.changeAnimeFavorite(dialog.anime)
                     },
-                    mangaToRemove = dialog.manga,
+                    animeToRemove = dialog.anime,
                 )
             }
-            is BrowseSourceScreenModel.Dialog.ChangeMangaCategory -> {
+            is BrowseSourceScreenModel.Dialog.ChangeAnimeCategory -> {
                 ChangeCategoryDialog(
                     initialSelection = dialog.initialSelection,
                     onDismissRequest = onDismissRequest,
@@ -193,8 +193,8 @@ class MangaDexFollowsScreen(private val sourceId: Long) : Screen() {
                         navigator.push(CategoryScreen())
                     },
                     onConfirm = { include, _ ->
-                        screenModel.changeMangaFavorite(dialog.manga)
-                        screenModel.moveMangaToCategories(dialog.manga, include)
+                        screenModel.changeAnimeFavorite(dialog.anime)
+                        screenModel.moveAnimeToCategories(dialog.anime, include)
                     },
                 )
             }
@@ -203,8 +203,8 @@ class MangaDexFollowsScreen(private val sourceId: Long) : Screen() {
 
         // KMK -->
         when (bulkFavoriteState.dialog) {
-            is BulkFavoriteScreenModel.Dialog.ChangeMangasCategory ->
-                ChangeMangasCategoryDialog(bulkFavoriteScreenModel)
+            is BulkFavoriteScreenModel.Dialog.ChangeAnimesCategory ->
+                ChangeAnimesCategoryDialog(bulkFavoriteScreenModel)
             is BulkFavoriteScreenModel.Dialog.AllowDuplicate ->
                 AllowDuplicateDialog(bulkFavoriteScreenModel)
             else -> {}

@@ -25,10 +25,10 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import eu.kanade.presentation.manga.components.MangaCover
-import eu.kanade.tachiyomi.ui.browse.migration.advanced.process.MigratingManga
+import eu.kanade.presentation.anime.components.AnimeCover
+import eu.kanade.tachiyomi.ui.browse.migration.advanced.process.MigratingAnime
 import tachiyomi.core.common.util.lang.withIOContext
-import tachiyomi.domain.manga.model.Manga
+import tachiyomi.domain.anime.model.Anime
 import tachiyomi.i18n.MR
 import tachiyomi.presentation.core.components.Badge
 import tachiyomi.presentation.core.components.BadgeGroup
@@ -37,9 +37,9 @@ import tachiyomi.presentation.core.i18n.stringResource
 @Composable
 fun MigrationItem(
     modifier: Modifier,
-    manga: Manga,
+    anime: Anime,
     sourcesString: String,
-    chapterInfo: MigratingManga.ChapterInfo,
+    episodeInfo: MigratingAnime.EpisodeInfo,
     onClick: () -> Unit,
 ) {
     Column(
@@ -53,12 +53,12 @@ fun MigrationItem(
         val context = LocalContext.current
         Box(
             Modifier.fillMaxWidth()
-                .aspectRatio(MangaCover.Book.ratio),
+                .aspectRatio(AnimeCover.Book.ratio),
         ) {
-            MangaCover.Book(
+            AnimeCover.Book(
                 modifier = Modifier
                     .fillMaxWidth(),
-                data = manga,
+                data = anime,
             )
             Box(
                 modifier = Modifier
@@ -77,7 +77,7 @@ fun MigrationItem(
                 modifier = Modifier
                     .padding(8.dp)
                     .align(Alignment.BottomStart),
-                text = manga.title.ifBlank { stringResource(MR.strings.unknown) },
+                text = anime.title.ifBlank { stringResource(MR.strings.unknown) },
                 fontSize = 12.sp,
                 lineHeight = 18.sp,
                 maxLines = 2,
@@ -91,7 +91,7 @@ fun MigrationItem(
                 ),
             )
             BadgeGroup(modifier = Modifier.padding(4.dp)) {
-                Badge(text = "${chapterInfo.chapterCount}")
+                Badge(text = "${episodeInfo.episodeCount}")
             }
         }
         Text(
@@ -102,13 +102,13 @@ fun MigrationItem(
             style = MaterialTheme.typography.titleSmall,
         )
 
-        val formattedLatestChapter by produceState(initialValue = "") {
+        val formattedLatestEpisode by produceState(initialValue = "") {
             value = withIOContext {
-                chapterInfo.getFormattedLatestChapter(context)
+                episodeInfo.getFormattedLatestEpisode(context)
             }
         }
         Text(
-            text = formattedLatestChapter,
+            text = formattedLatestEpisode,
             modifier = Modifier.padding(top = 1.dp, bottom = 4.dp, start = 8.dp),
             overflow = TextOverflow.Ellipsis,
             maxLines = 1,

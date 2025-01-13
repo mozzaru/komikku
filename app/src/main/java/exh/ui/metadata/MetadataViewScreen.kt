@@ -37,7 +37,7 @@ import tachiyomi.presentation.core.util.clickableNoIndication
 import tachiyomi.presentation.core.util.plus
 
 class MetadataViewScreen(
-    private val mangaId: Long,
+    private val animeId: Long,
     private val sourceId: Long,
     // KMK -->
     @ColorInt private val seedColor: Int?,
@@ -45,7 +45,7 @@ class MetadataViewScreen(
 ) : Screen() {
     @Composable
     override fun Content() {
-        val screenModel = rememberScreenModel { MetadataViewScreenModel(mangaId, sourceId) }
+        val screenModel = rememberScreenModel { MetadataViewScreenModel(animeId, sourceId) }
         val navigator = LocalNavigator.currentOrThrow
 
         val state by screenModel.state.collectAsState()
@@ -54,7 +54,7 @@ class MetadataViewScreen(
         fun content() = Scaffold(
             topBar = { scrollBehavior ->
                 AppBar(
-                    title = screenModel.manga.collectAsState().value?.title,
+                    title = screenModel.anime.collectAsState().value?.title,
                     navigateUp = navigator::pop,
                     scrollBehavior = scrollBehavior,
                 )

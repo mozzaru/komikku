@@ -11,7 +11,7 @@ import eu.kanade.tachiyomi.ui.browse.BulkFavoriteScreenModel
 import eu.kanade.tachiyomi.ui.browse.source.globalsearch.SearchItemResult
 import eu.kanade.tachiyomi.ui.browse.source.globalsearch.SearchScreenModel
 import eu.kanade.tachiyomi.ui.browse.source.globalsearch.SourceFilter
-import tachiyomi.domain.manga.model.Manga
+import tachiyomi.domain.anime.model.Anime
 import tachiyomi.presentation.core.components.material.Scaffold
 
 @Composable
@@ -23,10 +23,10 @@ fun MigrateSearchScreen(
     onSearch: (String) -> Unit,
     onChangeSearchFilter: (SourceFilter) -> Unit,
     onToggleResults: () -> Unit,
-    getManga: @Composable (Manga) -> State<Manga>,
+    getAnime: @Composable (Anime) -> State<Anime>,
     onClickSource: (CatalogueSource) -> Unit,
-    onClickItem: (Manga) -> Unit,
-    onLongClickItem: (Manga) -> Unit,
+    onClickItem: (Anime) -> Unit,
+    onLongClickItem: (Anime) -> Unit,
     // KMK -->
     bulkFavoriteScreenModel: BulkFavoriteScreenModel,
     hasPinnedSources: Boolean,
@@ -49,8 +49,8 @@ fun MigrateSearchScreen(
                         state.filteredItems.forEach { (_, result) ->
                             when (result) {
                                 is SearchItemResult.Success -> {
-                                    result.result.forEach { manga ->
-                                        bulkFavoriteScreenModel.select(manga)
+                                    result.result.forEach { anime ->
+                                        bulkFavoriteScreenModel.select(anime)
                                     }
                                 }
                                 else -> {}
@@ -92,7 +92,7 @@ fun MigrateSearchScreen(
             fromSourceId = fromSourceId,
             items = state.filteredItems,
             contentPadding = paddingValues,
-            getManga = getManga,
+            getAnime = getAnime,
             onClickSource = onClickSource,
             onClickItem = onClickItem,
             onLongClickItem = onLongClickItem,

@@ -32,7 +32,7 @@ import tachiyomi.decoder.ImageDecoder
 import kotlin.math.max
 
 /**
- * View of the ViewPager that contains a page of a chapter.
+ * View of the ViewPager that contains a page of a episode.
  */
 @SuppressLint("ViewConstructor")
 class PagerPageHolder(
@@ -115,7 +115,7 @@ class PagerPageHolder(
         val page = if (pageIndex == 1) page else extraPage
         page ?: return
         // SY <--
-        val loader = page.chapter.pageLoader ?: return
+        val loader = page.episode.pageLoader ?: return
         supervisorScope {
             launchIO {
                 loader.loadPage(page)
@@ -446,7 +446,7 @@ class PagerPageHolder(
             errorLayout = ReaderErrorBinding.inflate(LayoutInflater.from(context), this, true)
             errorLayout?.actionRetry?.viewer = viewer
             errorLayout?.actionRetry?.setOnClickListener {
-                page.chapter.pageLoader?.retryPage(page)
+                page.episode.pageLoader?.retryPage(page)
             }
         }
 

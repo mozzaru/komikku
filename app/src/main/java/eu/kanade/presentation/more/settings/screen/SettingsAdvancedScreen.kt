@@ -90,9 +90,9 @@ import tachiyomi.core.common.util.lang.withUIContext
 import tachiyomi.core.common.util.system.ImageUtil
 import tachiyomi.core.common.util.system.logcat
 import tachiyomi.domain.UnsortedPreferences
-import tachiyomi.domain.chapter.interactor.GetChaptersByMangaId
-import tachiyomi.domain.manga.interactor.GetAllManga
-import tachiyomi.domain.manga.interactor.ResetViewerFlags
+import tachiyomi.domain.anime.interactor.GetAllAnime
+import tachiyomi.domain.anime.interactor.ResetViewerFlags
+import tachiyomi.domain.episode.interactor.GetEpisodesByAnimeId
 import tachiyomi.domain.release.service.AppUpdatePolicy
 import tachiyomi.domain.source.service.SourceManager
 import tachiyomi.i18n.MR
@@ -371,7 +371,7 @@ object SettingsAdvancedScreen : SearchableSettings {
                     subtitle = stringResource(MR.strings.pref_reset_viewer_flags_summary),
                     onClick = {
                         scope.launchNonCancellable {
-                            val success = Injekt.get<ResetViewerFlags>().await()
+                            val success = Injekt.get<tachiyomi.domain.anime.interactor.ResetViewerFlags>().await()
                             withUIContext {
                                 val message = if (success) {
                                     MR.strings.pref_reset_viewer_flags_success
@@ -528,7 +528,7 @@ object SettingsAdvancedScreen : SearchableSettings {
         }
         AlertDialog(
             onDismissRequest = onDismissRequest,
-            title = { Text(text = stringResource(SYMR.strings.clean_up_downloaded_chapters)) },
+            title = { Text(text = stringResource(SYMR.strings.clean_up_downloaded_episodes)) },
             text = {
                 LazyColumn {
                     options.forEachIndexed { index, option ->
@@ -582,34 +582,34 @@ object SettingsAdvancedScreen : SearchableSettings {
                     if (job?.isActive == true) return@CleanupDownloadsDialog
                     context.toast(SYMR.strings.starting_cleanup)
                     job = scope.launchNonCancellable {
-                        val mangaList = Injekt.get<GetAllManga>().await()
+                        val animeList = Injekt.get<GetAllAnime>().await()
                         val downloadManager: DownloadManager = Injekt.get()
                         var foldersCleared = 0
                         Injekt.get<SourceManager>().getOnlineSources().forEach { source ->
-                            val mangaFolders = downloadManager.getMangaFolders(source)
-                            val sourceManga = mangaList
+                            val animeFolders = downloadManager.getAnimeFolders(source)
+                            val sourceAnime = animeList
                                 .asSequence()
                                 .filter { it.source == source.id }
                                 .map { it to DiskUtil.buildValidFilename(it.ogTitle) }
                                 .toList()
 
-                            mangaFolders.forEach mangaFolder@{ mangaFolder ->
-                                val manga =
-                                    sourceManga.find { (_, folderName) ->
-                                        folderName == mangaFolder.name
+                            animeFolders.forEach animeFolder@{ animeFolder ->
+                                val anime =
+                                    sourceAnime.find { (_, folderName) ->
+                                        folderName == animeFolder.name
                                     }?.first
-                                if (manga == null) {
+                                if (anime == null) {
                                     // download is orphaned delete it
                                     foldersCleared += 1 + (
-                                        mangaFolder.listFiles()
+                                        animeFolder.listFiles()
                                             .orEmpty().size
                                         )
-                                    mangaFolder.delete()
+                                    animeFolder.delete()
                                 } else {
-                                    val chapterList = Injekt.get<GetChaptersByMangaId>().await(manga.id)
-                                    foldersCleared += downloadManager.cleanupChapters(
-                                        chapterList,
-                                        manga,
+                                    val episodeList = Injekt.get<GetEpisodesByAnimeId>().await(anime.id)
+                                    foldersCleared += downloadManager.cleanupEpisodes(
+                                        episodeList,
+                                        anime,
                                         source,
                                         removeRead,
                                         removeNonFavorite,
@@ -638,8 +638,8 @@ object SettingsAdvancedScreen : SearchableSettings {
             title = stringResource(MR.strings.download_notifier_downloader_title),
             preferenceItems = persistentListOf(
                 Preference.PreferenceItem.TextPreference(
-                    title = stringResource(SYMR.strings.clean_up_downloaded_chapters),
-                    subtitle = stringResource(SYMR.strings.delete_unused_chapters),
+                    title = stringResource(SYMR.strings.clean_up_downloaded_episodes),
+                    subtitle = stringResource(SYMR.strings.delete_unused_episodes),
                     onClick = { dialogOpen = true },
                 ),
             ),

@@ -4,7 +4,7 @@ import android.view.KeyEvent
 import android.view.MotionEvent
 import android.view.View
 import eu.kanade.tachiyomi.ui.reader.model.ReaderPage
-import eu.kanade.tachiyomi.ui.reader.model.ViewerChapters
+import eu.kanade.tachiyomi.ui.reader.model.ViewerEpisodes
 
 /**
  * Interface for implementing a viewer.
@@ -22,9 +22,9 @@ interface Viewer {
     fun destroy() {}
 
     /**
-     * Tells this viewer to set the given [chapters] as active.
+     * Tells this viewer to set the given [episodes] as active.
      */
-    fun setChapters(chapters: ViewerChapters)
+    fun setEpisodes(episodes: ViewerEpisodes)
 
     /**
      * Tells this viewer to move to the given [page].

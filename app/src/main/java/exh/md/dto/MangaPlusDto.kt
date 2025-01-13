@@ -3,23 +3,23 @@ package exh.md.dto
 import kotlinx.serialization.Serializable
 
 @Serializable
-data class MangaPlusResponse(
+data class AnimePlusResponse(
     val success: SuccessResult? = null,
 )
 
 @Serializable
 data class SuccessResult(
-    val mangaViewer: MangaViewer? = null,
+    val animeViewer: AnimeViewer? = null,
 )
 
 @Serializable
-data class MangaViewer(val pages: List<MangaPlusPage> = emptyList())
+data class AnimeViewer(val pages: List<AnimePlusPage> = emptyList())
 
 @Serializable
-data class MangaPlusPage(val mangaPage: MangaPage? = null)
+data class AnimePlusPage(val animePage: AnimePage? = null)
 
 @Serializable
-data class MangaPage(
+data class AnimePage(
     val imageUrl: String,
     val width: Int,
     val height: Int,

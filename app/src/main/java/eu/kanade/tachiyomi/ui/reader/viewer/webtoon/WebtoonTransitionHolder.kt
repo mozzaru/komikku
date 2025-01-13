@@ -9,8 +9,8 @@ import androidx.appcompat.widget.AppCompatButton
 import androidx.appcompat.widget.AppCompatTextView
 import androidx.core.view.isNotEmpty
 import androidx.core.view.isVisible
-import eu.kanade.tachiyomi.ui.reader.model.ChapterTransition
-import eu.kanade.tachiyomi.ui.reader.model.ReaderChapter
+import eu.kanade.tachiyomi.ui.reader.model.EpisodeTransition
+import eu.kanade.tachiyomi.ui.reader.model.ReaderEpisode
 import eu.kanade.tachiyomi.ui.reader.viewer.ReaderProgressIndicator
 import eu.kanade.tachiyomi.ui.reader.viewer.ReaderTransitionView
 import eu.kanade.tachiyomi.util.system.dpToPx
@@ -22,7 +22,7 @@ import tachiyomi.core.common.i18n.stringResource
 import tachiyomi.i18n.MR
 
 /**
- * Holder of the webtoon viewer that contains a chapter transition.
+ * Holder of the webtoon viewer that contains a episode transition.
  */
 class WebtoonTransitionHolder(
     val layout: LinearLayout,
@@ -72,8 +72,8 @@ class WebtoonTransitionHolder(
     /**
      * Binds the given [transition] with this view holder, subscribing to its state.
      */
-    fun bind(transition: ChapterTransition) {
-        transitionView.bind(transition, viewer.downloadManager, viewer.activity.viewModel.manga)
+    fun bind(transition: EpisodeTransition) {
+        transitionView.bind(transition, viewer.downloadManager, viewer.activity.viewModel.anime)
 
         transition.to?.let { observeStatus(it, transition) }
     }
@@ -86,19 +86,19 @@ class WebtoonTransitionHolder(
     }
 
     /**
-     * Observes the status of the page list of the next/previous chapter. Whenever there's a new
+     * Observes the status of the page list of the next/previous episode. Whenever there's a new
      * state, the pages container is cleaned up before setting the new state.
      */
-    private fun observeStatus(chapter: ReaderChapter, transition: ChapterTransition) {
+    private fun observeStatus(episode: ReaderEpisode, transition: EpisodeTransition) {
         stateJob?.cancel()
         stateJob = scope.launch {
-            chapter.stateFlow
+            episode.stateFlow
                 .collectLatest { state ->
                     pagesContainer.removeAllViews()
                     when (state) {
-                        is ReaderChapter.State.Loading -> setLoading()
-                        is ReaderChapter.State.Error -> setError(state.error, transition)
-                        is ReaderChapter.State.Wait, is ReaderChapter.State.Loaded -> {
+                        is ReaderEpisode.State.Loading -> setLoading()
+                        is ReaderEpisode.State.Error -> setError(state.error, transition)
+                        is ReaderEpisode.State.Wait, is ReaderEpisode.State.Loaded -> {
                             // No additional view is added
                         }
                     }
@@ -130,7 +130,7 @@ class WebtoonTransitionHolder(
     /**
      * Sets the error state on the pages container.
      */
-    private fun setError(error: Throwable, transition: ChapterTransition) {
+    private fun setError(error: Throwable, transition: EpisodeTransition) {
         val textView = AppCompatTextView(context).apply {
             wrapContent()
             text = context.stringResource(MR.strings.transition_pages_error, error.message ?: "")
@@ -140,9 +140,9 @@ class WebtoonTransitionHolder(
             wrapContent()
             text = context.stringResource(MR.strings.action_retry)
             setOnClickListener {
-                val toChapter = transition.to
-                if (toChapter != null) {
-                    viewer.activity.requestPreloadChapter(toChapter)
+                val toEpisode = transition.to
+                if (toEpisode != null) {
+                    viewer.activity.requestPreloadEpisode(toEpisode)
                 }
             }
         }

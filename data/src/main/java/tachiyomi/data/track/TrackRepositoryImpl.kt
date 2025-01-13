@@ -10,45 +10,45 @@ class TrackRepositoryImpl(
 ) : TrackRepository {
 
     override suspend fun getTrackById(id: Long): Track? {
-        return handler.awaitOneOrNull { manga_syncQueries.getTrackById(id, TrackMapper::mapTrack) }
+        return handler.awaitOneOrNull { anime_syncQueries.getTrackById(id, TrackMapper::mapTrack) }
     }
 
     // SY -->
     override suspend fun getTracks(): List<Track> {
         return handler.awaitList {
-            manga_syncQueries.getTracks(TrackMapper::mapTrack)
+            anime_syncQueries.getTracks(TrackMapper::mapTrack)
         }
     }
 
-    override suspend fun getTracksByMangaIds(mangaIds: List<Long>): List<Track> {
+    override suspend fun getTracksByAnimeIds(animeIds: List<Long>): List<Track> {
         return handler.awaitList {
-            manga_syncQueries.getTracksByMangaIds(mangaIds, TrackMapper::mapTrack)
+            anime_syncQueries.getTracksByAnimeIds(animeIds, TrackMapper::mapTrack)
         }
     }
     // SY <--
 
-    override suspend fun getTracksByMangaId(mangaId: Long): List<Track> {
+    override suspend fun getTracksByAnimeId(animeId: Long): List<Track> {
         return handler.awaitList {
-            manga_syncQueries.getTracksByMangaId(mangaId, TrackMapper::mapTrack)
+            anime_syncQueries.getTracksByAnimeId(animeId, TrackMapper::mapTrack)
         }
     }
 
     override fun getTracksAsFlow(): Flow<List<Track>> {
         return handler.subscribeToList {
-            manga_syncQueries.getTracks(TrackMapper::mapTrack)
+            anime_syncQueries.getTracks(TrackMapper::mapTrack)
         }
     }
 
-    override fun getTracksByMangaIdAsFlow(mangaId: Long): Flow<List<Track>> {
+    override fun getTracksByAnimeIdAsFlow(animeId: Long): Flow<List<Track>> {
         return handler.subscribeToList {
-            manga_syncQueries.getTracksByMangaId(mangaId, TrackMapper::mapTrack)
+            anime_syncQueries.getTracksByAnimeId(animeId, TrackMapper::mapTrack)
         }
     }
 
-    override suspend fun delete(mangaId: Long, trackerId: Long) {
+    override suspend fun delete(animeId: Long, trackerId: Long) {
         handler.await {
-            manga_syncQueries.delete(
-                mangaId = mangaId,
+            anime_syncQueries.delete(
+                animeId = animeId,
                 syncId = trackerId,
             )
         }
@@ -64,20 +64,20 @@ class TrackRepositoryImpl(
 
     private suspend fun insertValues(vararg tracks: Track) {
         handler.await(inTransaction = true) {
-            tracks.forEach { mangaTrack ->
-                manga_syncQueries.insert(
-                    mangaId = mangaTrack.mangaId,
-                    syncId = mangaTrack.trackerId,
-                    remoteId = mangaTrack.remoteId,
-                    libraryId = mangaTrack.libraryId,
-                    title = mangaTrack.title,
-                    lastChapterRead = mangaTrack.lastChapterRead,
-                    totalChapters = mangaTrack.totalChapters,
-                    status = mangaTrack.status,
-                    score = mangaTrack.score,
-                    remoteUrl = mangaTrack.remoteUrl,
-                    startDate = mangaTrack.startDate,
-                    finishDate = mangaTrack.finishDate,
+            tracks.forEach { animeTrack ->
+                anime_syncQueries.insert(
+                    animeId = animeTrack.animeId,
+                    syncId = animeTrack.trackerId,
+                    remoteId = animeTrack.remoteId,
+                    libraryId = animeTrack.libraryId,
+                    title = animeTrack.title,
+                    lastEpisodeSeen = animeTrack.lastEpisodeSeen,
+                    totalEpisodes = animeTrack.totalEpisodes,
+                    status = animeTrack.status,
+                    score = animeTrack.score,
+                    remoteUrl = animeTrack.remoteUrl,
+                    startDate = animeTrack.startDate,
+                    finishDate = animeTrack.finishDate,
                 )
             }
         }

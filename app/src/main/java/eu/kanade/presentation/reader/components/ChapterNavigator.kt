@@ -50,12 +50,12 @@ import tachiyomi.presentation.core.components.material.Slider
 import tachiyomi.presentation.core.i18n.stringResource
 
 @Composable
-fun ChapterNavigator(
+fun EpisodeNavigator(
     isRtl: Boolean,
     isVerticalSlider: Boolean,
-    onNextChapter: () -> Unit,
+    onNextEpisode: () -> Unit,
     enabledNext: Boolean,
-    onPreviousChapter: () -> Unit,
+    onPreviousEpisode: () -> Unit,
     enabledPrevious: Boolean,
     currentPage: Int,
     // SY -->
@@ -66,10 +66,10 @@ fun ChapterNavigator(
 ) {
     // SY -->
     if (isVerticalSlider) {
-        ChapterNavigatorVert(
-            onNextChapter = onNextChapter,
+        EpisodeNavigatorVert(
+            onNextEpisode = onNextEpisode,
             enabledNext = enabledNext,
-            onPreviousChapter = onPreviousChapter,
+            onPreviousEpisode = onPreviousEpisode,
             enabledPrevious = enabledPrevious,
             currentPage = currentPage,
             currentPageText = currentPageText,
@@ -107,13 +107,13 @@ fun ChapterNavigator(
         ) {
             FilledIconButton(
                 enabled = if (isRtl) enabledNext else enabledPrevious,
-                onClick = if (isRtl) onNextChapter else onPreviousChapter,
+                onClick = if (isRtl) onNextEpisode else onPreviousEpisode,
                 colors = buttonColor,
             ) {
                 Icon(
                     imageVector = Icons.Outlined.SkipPrevious,
                     contentDescription = stringResource(
-                        if (isRtl) MR.strings.action_next_chapter else MR.strings.action_previous_chapter,
+                        if (isRtl) MR.strings.action_next_episode else MR.strings.action_previous_episode,
                     ),
                 )
             }
@@ -175,13 +175,13 @@ fun ChapterNavigator(
 
             FilledIconButton(
                 enabled = if (isRtl) enabledPrevious else enabledNext,
-                onClick = if (isRtl) onPreviousChapter else onNextChapter,
+                onClick = if (isRtl) onPreviousEpisode else onNextEpisode,
                 colors = buttonColor,
             ) {
                 Icon(
                     imageVector = Icons.Outlined.SkipNext,
                     contentDescription = stringResource(
-                        if (isRtl) MR.strings.action_previous_chapter else MR.strings.action_next_chapter,
+                        if (isRtl) MR.strings.action_previous_episode else MR.strings.action_next_episode,
                     ),
                 )
             }
@@ -190,10 +190,10 @@ fun ChapterNavigator(
 }
 
 @Composable
-fun ChapterNavigatorVert(
-    onNextChapter: () -> Unit,
+fun EpisodeNavigatorVert(
+    onNextEpisode: () -> Unit,
     enabledNext: Boolean,
-    onPreviousChapter: () -> Unit,
+    onPreviousEpisode: () -> Unit,
     enabledPrevious: Boolean,
     currentPage: Int,
     // SY -->
@@ -228,12 +228,12 @@ fun ChapterNavigatorVert(
 
         FilledIconButton(
             enabled = enabledPrevious,
-            onClick = onPreviousChapter,
+            onClick = onPreviousEpisode,
             colors = buttonColor,
         ) {
             Icon(
                 imageVector = Icons.Outlined.SkipPrevious,
-                contentDescription = stringResource(MR.strings.action_previous_chapter),
+                contentDescription = stringResource(MR.strings.action_previous_episode),
                 modifier = Modifier.rotate(90f),
             )
         }
@@ -306,12 +306,12 @@ fun ChapterNavigatorVert(
 
         FilledIconButton(
             enabled = enabledNext,
-            onClick = onNextChapter,
+            onClick = onNextEpisode,
             colors = buttonColor,
         ) {
             Icon(
                 imageVector = Icons.Outlined.SkipNext,
-                contentDescription = stringResource(MR.strings.action_next_chapter),
+                contentDescription = stringResource(MR.strings.action_next_episode),
                 modifier = Modifier.rotate(90f),
             )
         }
@@ -320,14 +320,14 @@ fun ChapterNavigatorVert(
 
 @Preview
 @Composable
-private fun ChapterNavigatorPreview() {
+private fun EpisodeNavigatorPreview() {
     var currentPage by remember { mutableIntStateOf(1) }
     TachiyomiPreviewTheme {
-        ChapterNavigator(
+        EpisodeNavigator(
             isRtl = false,
-            onNextChapter = {},
+            onNextEpisode = {},
             enabledNext = true,
-            onPreviousChapter = {},
+            onPreviousEpisode = {},
             enabledPrevious = true,
             currentPage = currentPage,
             totalPages = 10,

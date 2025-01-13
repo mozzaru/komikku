@@ -16,9 +16,9 @@ import androidx.work.PeriodicWorkRequestBuilder
 import androidx.work.WorkerParameters
 import com.elvishew.xlog.Logger
 import com.elvishew.xlog.XLog
-import eu.kanade.domain.chapter.interactor.SyncChaptersWithSource
-import eu.kanade.domain.manga.interactor.UpdateManga
-import eu.kanade.domain.manga.model.toSManga
+import eu.kanade.domain.anime.interactor.UpdateAnime
+import eu.kanade.domain.anime.model.toSAnime
+import eu.kanade.domain.episode.interactor.SyncEpisodesWithSource
 import eu.kanade.tachiyomi.data.library.LibraryUpdateNotifier
 import eu.kanade.tachiyomi.data.notification.Notifications
 import eu.kanade.tachiyomi.source.online.all.EHentai
@@ -37,15 +37,14 @@ import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.Json
 import tachiyomi.core.common.preference.getAndSet
 import tachiyomi.domain.UnsortedPreferences
-import tachiyomi.domain.chapter.interactor.GetChaptersByMangaId
-import tachiyomi.domain.chapter.model.Chapter
+import tachiyomi.domain.anime.interactor.GetExhFavoriteAnimeWithMetadata
+import tachiyomi.domain.anime.interactor.InsertFlatMetadata
+import tachiyomi.domain.anime.model.Anime
+import tachiyomi.domain.episode.interactor.GetEpisodesByAnimeId
+import tachiyomi.domain.episode.model.Episode
 import tachiyomi.domain.library.service.LibraryPreferences
 import tachiyomi.domain.library.service.LibraryPreferences.Companion.DEVICE_CHARGING
 import tachiyomi.domain.library.service.LibraryPreferences.Companion.DEVICE_ONLY_ON_WIFI
-import tachiyomi.domain.manga.interactor.GetExhFavoriteMangaWithMetadata
-import tachiyomi.domain.manga.interactor.GetFlatMetadataById
-import tachiyomi.domain.manga.interactor.InsertFlatMetadata
-import tachiyomi.domain.manga.model.Manga
 import tachiyomi.domain.source.service.SourceManager
 import uy.kohesive.injekt.Injekt
 import uy.kohesive.injekt.api.get
@@ -60,12 +59,12 @@ class EHentaiUpdateWorker(private val context: Context, workerParams: WorkerPara
     private val sourceManager: SourceManager by injectLazy()
     private val updateHelper: EHentaiUpdateHelper by injectLazy()
     private val logger: Logger by lazy { xLog() }
-    private val updateManga: UpdateManga by injectLazy()
-    private val syncChaptersWithSource: SyncChaptersWithSource by injectLazy()
-    private val getChaptersByMangaId: GetChaptersByMangaId by injectLazy()
-    private val getFlatMetadataById: GetFlatMetadataById by injectLazy()
+    private val updateAnime: UpdateAnime by injectLazy()
+    private val syncEpisodesWithSource: SyncEpisodesWithSource by injectLazy()
+    private val getEpisodesByAnimeId: GetEpisodesByAnimeId by injectLazy()
+    private val getFlatMetadataById: tachiyomi.domain.anime.interactor.GetFlatMetadataById by injectLazy()
     private val insertFlatMetadata: InsertFlatMetadata by injectLazy()
-    private val getExhFavoriteMangaWithMetadata: GetExhFavoriteMangaWithMetadata by injectLazy()
+    private val getExhFavoriteAnimeWithMetadata: GetExhFavoriteAnimeWithMetadata by injectLazy()
 
     private val updateNotifier by lazy { EHentaiUpdateNotifier(context) }
     private val libraryUpdateNotifier by lazy { LibraryUpdateNotifier(context) }
@@ -106,13 +105,13 @@ class EHentaiUpdateWorker(private val context: Context, workerParams: WorkerPara
         logger.d("Update job started!")
         val startTime = System.currentTimeMillis()
 
-        logger.d("Finding manga with metadata...")
-        val metadataManga = getExhFavoriteMangaWithMetadata.await()
+        logger.d("Finding anime with metadata...")
+        val metadataAnime = getExhFavoriteAnimeWithMetadata.await()
 
-        logger.d("Filtering manga and raising metadata...")
+        logger.d("Filtering anime and raising metadata...")
         val curTime = System.currentTimeMillis()
-        val allMeta = metadataManga.asFlow().cancellable().mapNotNull { manga ->
-            val meta = getFlatMetadataById.await(manga.id)
+        val allMeta = metadataAnime.asFlow().cancellable().mapNotNull { anime ->
+            val meta = getFlatMetadataById.await(anime.id)
                 ?: return@mapNotNull null
 
             val raisedMeta = meta.raise<EHentaiSearchMetadata>()
@@ -127,61 +126,61 @@ class EHentaiUpdateWorker(private val context: Context, workerParams: WorkerPara
                 return@mapNotNull null
             }
 
-            val chapter = getChaptersByMangaId.await(manga.id).minByOrNull {
+            val episode = getEpisodesByAnimeId.await(anime.id).minByOrNull {
                 it.dateUpload
             }
 
-            UpdateEntry(manga, raisedMeta, chapter)
+            UpdateEntry(anime, raisedMeta, episode)
         }.toList().sortedBy { it.meta.lastUpdateCheck }
 
-        logger.d("Found %s manga to update, starting updates!", allMeta.size)
-        val mangaMetaToUpdateThisIter = allMeta.take(UPDATES_PER_ITERATION)
+        logger.d("Found %s anime to update, starting updates!", allMeta.size)
+        val animeMetaToUpdateThisIter = allMeta.take(UPDATES_PER_ITERATION)
 
         var failuresThisIteration = 0
         var updatedThisIteration = 0
-        val updatedManga = mutableListOf<Pair<Manga, Array<Chapter>>>()
+        val updatedAnime = mutableListOf<Pair<Anime, Array<Episode>>>()
         val modifiedThisIteration = mutableSetOf<Long>()
 
         try {
-            for ((index, entry) in mangaMetaToUpdateThisIter.withIndex()) {
-                val (manga, meta) = entry
+            for ((index, entry) in animeMetaToUpdateThisIter.withIndex()) {
+                val (anime, meta) = entry
                 if (failuresThisIteration > MAX_UPDATE_FAILURES) {
                     logger.w("Too many update failures, aborting...")
                     break
                 }
 
                 logger.d(
-                    "Updating gallery (index: %s, manga.id: %s, meta.gId: %s, meta.gToken: %s, failures-so-far: %s, modifiedThisIteration.size: %s)...",
+                    "Updating gallery (index: %s, anime.id: %s, meta.gId: %s, meta.gToken: %s, failures-so-far: %s, modifiedThisIteration.size: %s)...",
                     index,
-                    manga.id,
+                    anime.id,
                     meta.gId,
                     meta.gToken,
                     failuresThisIteration,
                     modifiedThisIteration.size,
                 )
 
-                if (manga.id in modifiedThisIteration) {
-                    // We already processed this manga!
+                if (anime.id in modifiedThisIteration) {
+                    // We already processed this anime!
                     logger.w("Gallery already updated this iteration, skipping...")
                     updatedThisIteration++
                     continue
                 }
 
-                val (new, chapters) = try {
+                val (new, episodes) = try {
                     updateNotifier.showProgressNotification(
-                        manga,
+                        anime,
                         updatedThisIteration + failuresThisIteration,
-                        mangaMetaToUpdateThisIter.size,
+                        animeMetaToUpdateThisIter.size,
                     )
-                    updateEntryAndGetChapters(manga)
+                    updateEntryAndGetEpisodes(anime)
                 } catch (e: GalleryNotUpdatedException) {
                     if (e.network) {
                         failuresThisIteration++
 
                         logger.e("> Network error while updating gallery!", e)
                         logger.e(
-                            "> (manga.id: %s, meta.gId: %s, meta.gToken: %s, failures-so-far: %s)",
-                            manga.id,
+                            "> (anime.id: %s, meta.gId: %s, meta.gToken: %s, failures-so-far: %s)",
+                            anime.id,
                             meta.gId,
                             meta.gToken,
                             failuresThisIteration,
@@ -191,10 +190,10 @@ class EHentaiUpdateWorker(private val context: Context, workerParams: WorkerPara
                     continue
                 }
 
-                if (chapters.isEmpty()) {
+                if (episodes.isEmpty()) {
                     logger.e(
-                        "No chapters found for gallery (manga.id: %s, meta.gId: %s, meta.gToken: %s, failures-so-far: %s)!",
-                        manga.id,
+                        "No episodes found for gallery (anime.id: %s, meta.gId: %s, meta.gToken: %s, failures-so-far: %s)!",
+                        anime.id,
                         meta.gId,
                         meta.gToken,
                         failuresThisIteration,
@@ -205,18 +204,18 @@ class EHentaiUpdateWorker(private val context: Context, workerParams: WorkerPara
 
                 // Find accepted root and discard others
                 val (acceptedRoot, discardedRoots, exhNew) =
-                    updateHelper.findAcceptedRootAndDiscardOthers(manga.source, chapters)
+                    updateHelper.findAcceptedRootAndDiscardOthers(anime.source, episodes)
 
-                if (new.isNotEmpty() && manga.id == acceptedRoot.manga.id) {
+                if (new.isNotEmpty() && anime.id == acceptedRoot.anime.id) {
                     libraryPreferences.newUpdatesCount().getAndSet { it + new.size }
-                    updatedManga += acceptedRoot.manga to new.toTypedArray()
-                } else if (exhNew.isNotEmpty() && updatedManga.none { it.first.id == acceptedRoot.manga.id }) {
+                    updatedAnime += acceptedRoot.anime to new.toTypedArray()
+                } else if (exhNew.isNotEmpty() && updatedAnime.none { it.first.id == acceptedRoot.anime.id }) {
                     libraryPreferences.newUpdatesCount().getAndSet { it + exhNew.size }
-                    updatedManga += acceptedRoot.manga to exhNew.toTypedArray()
+                    updatedAnime += acceptedRoot.anime to exhNew.toTypedArray()
                 }
 
-                modifiedThisIteration += acceptedRoot.manga.id
-                modifiedThisIteration += discardedRoots.map { it.manga.id }
+                modifiedThisIteration += acceptedRoot.anime.id
+                modifiedThisIteration += discardedRoots.map { it.anime.id }
                 updatedThisIteration++
             }
         } finally {
@@ -231,31 +230,31 @@ class EHentaiUpdateWorker(private val context: Context, workerParams: WorkerPara
             )
 
             updateNotifier.cancelProgressNotification()
-            if (updatedManga.isNotEmpty()) {
-                libraryUpdateNotifier.showUpdateNotifications(updatedManga)
+            if (updatedAnime.isNotEmpty()) {
+                libraryUpdateNotifier.showUpdateNotifications(updatedAnime)
             }
         }
     }
 
     // New, current
-    private suspend fun updateEntryAndGetChapters(manga: Manga): Pair<List<Chapter>, List<Chapter>> {
-        val source = sourceManager.get(manga.source) as? EHentai
-            ?: throw GalleryNotUpdatedException(false, IllegalStateException("Missing EH-based source (${manga.source})!"))
+    private suspend fun updateEntryAndGetEpisodes(anime: Anime): Pair<List<Episode>, List<Episode>> {
+        val source = sourceManager.get(anime.source) as? EHentai
+            ?: throw GalleryNotUpdatedException(false, IllegalStateException("Missing EH-based source (${anime.source})!"))
 
         try {
-            val updatedManga = source.getMangaDetails(manga.toSManga())
-            updateManga.awaitUpdateFromSource(manga, updatedManga, false)
+            val updatedAnime = source.getAnimeDetails(anime.toSAnime())
+            updateAnime.awaitUpdateFromSource(anime, updatedAnime, false)
 
-            val newChapters = source.getChapterList(manga.toSManga())
+            val newEpisodes = source.getEpisodeList(anime.toSAnime())
 
-            val new = syncChaptersWithSource.await(newChapters, manga, source)
-            return new to getChaptersByMangaId.await(manga.id)
+            val new = syncEpisodesWithSource.await(newEpisodes, anime, source)
+            return new to getEpisodesByAnimeId.await(anime.id)
         } catch (t: Throwable) {
             if (t is EHentai.GalleryNotFoundException) {
-                val meta = getFlatMetadataById.await(manga.id)?.raise<EHentaiSearchMetadata>()
+                val meta = getFlatMetadataById.await(anime.id)?.raise<EHentaiSearchMetadata>()
                 if (meta != null) {
                     // Age dead galleries
-                    logger.d("Aged %s - notfound", manga.id)
+                    logger.d("Aged %s - notfound", anime.id)
                     meta.aged = true
                     insertFlatMetadata.await(meta)
                 }
@@ -329,7 +328,7 @@ class EHentaiUpdateWorker(private val context: Context, workerParams: WorkerPara
     }
 }
 
-data class UpdateEntry(val manga: Manga, val meta: EHentaiSearchMetadata, val rootChapter: Chapter?)
+data class UpdateEntry(val anime: Anime, val meta: EHentaiSearchMetadata, val rootEpisode: Episode?)
 
 object EHentaiUpdateWorkerConstants {
     const val UPDATES_PER_ITERATION = 50

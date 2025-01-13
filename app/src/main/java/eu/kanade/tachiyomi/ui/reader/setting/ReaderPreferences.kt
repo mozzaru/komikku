@@ -59,7 +59,7 @@ class ReaderPreferences(
 
     fun readerTheme() = preferenceStore.getInt("pref_reader_theme_key", 1)
 
-    fun alwaysShowChapterTransition() = preferenceStore.getBoolean("always_show_chapter_transition", true)
+    fun alwaysShowEpisodeTransition() = preferenceStore.getBoolean("always_show_episode_transition", true)
 
     fun cropBorders() = preferenceStore.getBoolean("crop_borders", false)
 
@@ -73,7 +73,7 @@ class ReaderPreferences(
 
     fun readerHideThreshold() = preferenceStore.getEnum("reader_hide_threshold", ReaderHideThreshold.LOW)
 
-    fun folderPerManga() = preferenceStore.getBoolean("create_folder_per_manga", false)
+    fun folderPerAnime() = preferenceStore.getBoolean("create_folder_per_anime", false)
 
     fun skipRead() = preferenceStore.getBoolean("skip_read", false)
 

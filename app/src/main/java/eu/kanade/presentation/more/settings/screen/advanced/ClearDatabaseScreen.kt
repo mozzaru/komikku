@@ -44,7 +44,7 @@ import tachiyomi.core.common.util.lang.launchIO
 import tachiyomi.core.common.util.lang.launchUI
 import tachiyomi.core.common.util.lang.withNonCancellableContext
 import tachiyomi.data.Database
-import tachiyomi.domain.source.interactor.GetSourcesWithNonLibraryManga
+import tachiyomi.domain.source.interactor.GetSourcesWithNonLibraryAnime
 import tachiyomi.domain.source.model.Source
 import tachiyomi.domain.source.model.SourceWithCount
 import tachiyomi.i18n.MR
@@ -74,7 +74,7 @@ class ClearDatabaseScreen : Screen() {
             is ClearDatabaseScreenModel.State.Ready -> {
                 if (s.showConfirmation) {
                     // SY -->
-                    var keepReadManga by remember { mutableStateOf(true) }
+                    var keepReadAnime by remember { mutableStateOf(true) }
                     // SY <--
                     AlertDialog(
                         onDismissRequest = model::hideConfirmation,
@@ -83,7 +83,7 @@ class ClearDatabaseScreen : Screen() {
                                 onClick = {
                                     scope.launchUI {
                                         // SY -->
-                                        model.removeMangaBySourceId(keepReadManga)
+                                        model.removeAnimeBySourceId(keepReadAnime)
                                         // SY <--
                                         model.clearSelection()
                                         model.hideConfirmation()
@@ -107,8 +107,8 @@ class ClearDatabaseScreen : Screen() {
                                 // SY -->
                                 LabeledCheckbox(
                                     label = stringResource(SYMR.strings.clear_db_exclude_read),
-                                    checked = keepReadManga,
-                                    onCheckedChange = { keepReadManga = it },
+                                    checked = keepReadAnime,
+                                    onCheckedChange = { keepReadAnime = it },
                                 )
                             }
                             // SY <--
@@ -206,12 +206,12 @@ class ClearDatabaseScreen : Screen() {
 }
 
 private class ClearDatabaseScreenModel : StateScreenModel<ClearDatabaseScreenModel.State>(State.Loading) {
-    private val getSourcesWithNonLibraryManga: GetSourcesWithNonLibraryManga = Injekt.get()
+    private val getSourcesWithNonLibraryAnime: GetSourcesWithNonLibraryAnime = Injekt.get()
     private val database: Database = Injekt.get()
 
     init {
         screenModelScope.launchIO {
-            getSourcesWithNonLibraryManga.subscribe()
+            getSourcesWithNonLibraryAnime.subscribe()
                 .collectLatest { list ->
                     mutableState.update { old ->
                         val items = list.sortedBy { it.name }
@@ -224,13 +224,13 @@ private class ClearDatabaseScreenModel : StateScreenModel<ClearDatabaseScreenMod
         }
     }
 
-    suspend fun removeMangaBySourceId(/* SY --> */keepReadManga: Boolean /* SY <-- */) = withNonCancellableContext {
+    suspend fun removeAnimeBySourceId(/* SY --> */keepSeenAnime: Boolean /* SY <-- */) = withNonCancellableContext {
         val state = state.value as? State.Ready ?: return@withNonCancellableContext
         // SY -->
-        if (keepReadManga) {
-            database.mangasQueries.deleteMangasNotInLibraryAndNotReadBySourceIds(state.selection)
+        if (keepSeenAnime) {
+            database.animesQueries.deleteAnimesNotInLibraryAndNotReadBySourceIds(state.selection)
         } else {
-            database.mangasQueries.deleteMangasNotInLibraryBySourceIds(state.selection)
+            database.animesQueries.deleteAnimesNotInLibraryBySourceIds(state.selection)
         }
         // SY <--
         database.historyQueries.removeResettedHistory()

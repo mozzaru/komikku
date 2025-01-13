@@ -32,23 +32,23 @@ data class SyncFavoritesProgressProperties(
 fun SyncFavoritesProgressDialog(
     status: FavoritesSyncStatus,
     setStatusIdle: () -> Unit,
-    openManga: (Long) -> Unit,
+    openAnime: (Long) -> Unit,
 ) {
     val context = LocalContext.current
     val properties by produceState<SyncFavoritesProgressProperties?>(initialValue = null, status) {
         when (status) {
-            is FavoritesSyncStatus.BadLibraryState.MangaInMultipleCategories -> value = SyncFavoritesProgressProperties(
+            is FavoritesSyncStatus.BadLibraryState.AnimeInMultipleCategories -> value = SyncFavoritesProgressProperties(
                 title = context.stringResource(SYMR.strings.favorites_sync_error),
                 text = context.stringResource(
                     SYMR.strings.favorites_sync_bad_library_state,
                     context.stringResource(
-                        SYMR.strings.favorites_sync_gallery_in_multiple_categories, status.mangaTitle,
+                        SYMR.strings.favorites_sync_gallery_in_multiple_categories, status.animeTitle,
                         status.categories.joinToString(),
                     ),
                 ),
                 positiveButtonText = context.stringResource(SYMR.strings.show_gallery),
                 positiveButton = {
-                    openManga(status.mangaId)
+                    openAnime(status.animeId)
                     setStatusIdle()
                 },
                 negativeButtonText = context.stringResource(MR.strings.action_ok),

@@ -14,10 +14,10 @@ class ChangeTrackingQueueTypeMigration : Migration {
         val context = migrationContext.get<Application>() ?: return@withIOContext false
         val trackingQueuePref = context.getSharedPreferences("tracking_queue", Context.MODE_PRIVATE)
         trackingQueuePref.all.forEach {
-            val (_, lastChapterRead) = it.value.toString().split(":")
+            val (_, lastEpisodeRead) = it.value.toString().split(":")
             trackingQueuePref.edit {
                 remove(it.key)
-                putFloat(it.key, lastChapterRead.toFloat())
+                putFloat(it.key, lastEpisodeRead.toFloat())
             }
         }
 

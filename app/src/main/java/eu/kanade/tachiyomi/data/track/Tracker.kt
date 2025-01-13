@@ -5,7 +5,7 @@ import androidx.annotation.ColorInt
 import androidx.annotation.DrawableRes
 import dev.icerock.moko.resources.StringResource
 import eu.kanade.tachiyomi.data.database.models.Track
-import eu.kanade.tachiyomi.data.track.model.TrackMangaMetadata
+import eu.kanade.tachiyomi.data.track.model.TrackAnimeMetadata
 import eu.kanade.tachiyomi.data.track.model.TrackSearch
 import kotlinx.collections.immutable.ImmutableList
 import kotlinx.coroutines.flow.Flow
@@ -48,9 +48,9 @@ interface Tracker {
 
     fun displayScore(track: DomainTrack): String
 
-    suspend fun update(track: Track, didReadChapter: Boolean = false): Track
+    suspend fun update(track: Track, didSeenEpisode: Boolean = false): Track
 
-    suspend fun bind(track: Track, hasReadChapters: Boolean = false): Track
+    suspend fun bind(track: Track, hasSeenEpisodes: Boolean = false): Track
 
     suspend fun search(query: String): List<TrackSearch>
 
@@ -72,11 +72,11 @@ interface Tracker {
     fun saveCredentials(username: String, password: String)
 
     // TODO: move this to an interactor, and update all trackers based on common data
-    suspend fun register(item: Track, mangaId: Long)
+    suspend fun register(item: Track, animeId: Long)
 
     suspend fun setRemoteStatus(track: Track, status: Long)
 
-    suspend fun setRemoteLastChapterRead(track: Track, chapterNumber: Int)
+    suspend fun setRemoteLastEpisodeSeen(track: Track, episodeNumber: Int)
 
     suspend fun setRemoteScore(track: Track, scoreString: String)
 
@@ -84,9 +84,9 @@ interface Tracker {
 
     suspend fun setRemoteFinishDate(track: Track, epochMillis: Long)
 
-    suspend fun getMangaMetadata(track: DomainTrack): TrackMangaMetadata?
+    suspend fun getAnimeMetadata(track: DomainTrack): TrackAnimeMetadata?
 
     // KMK -->
-    fun hasNotStartedReading(status: Long): Boolean
+    fun hasNotStartedWatching(status: Long): Boolean
     // KMK <--
 }

@@ -1,9 +1,9 @@
 package exh.md.handlers
 
-import eu.kanade.tachiyomi.source.model.MetadataMangasPage
-import eu.kanade.tachiyomi.source.model.SManga
+import eu.kanade.tachiyomi.source.model.MetadataAnimesPage
+import eu.kanade.tachiyomi.source.model.SAnime
 import exh.md.dto.RelationListDto
-import exh.md.dto.SimilarMangaDto
+import exh.md.dto.SimilarAnimeDto
 import exh.md.service.MangaDexService
 import exh.md.service.SimilarService
 import exh.md.utils.MangaDexRelation
@@ -17,53 +17,53 @@ class SimilarHandler(
     private val similarService: SimilarService,
 ) {
 
-    suspend fun getSimilar(manga: SManga): MetadataMangasPage {
-        val similarDto = withIOContext { similarService.getSimilarManga(MdUtil.getMangaId(manga.url)) }
-        return similarDtoToMangaListPage(similarDto)
+    suspend fun getSimilar(anime: SAnime): MetadataAnimesPage {
+        val similarDto = withIOContext { similarService.getSimilarAnime(MdUtil.getAnimeId(anime.url)) }
+        return similarDtoToAnimeListPage(similarDto)
     }
 
-    private suspend fun similarDtoToMangaListPage(
-        similarMangaDto: SimilarMangaDto,
-    ): MetadataMangasPage {
-        val ids = similarMangaDto.matches.map {
+    private suspend fun similarDtoToAnimeListPage(
+        similarAnimeDto: SimilarAnimeDto,
+    ): MetadataAnimesPage {
+        val ids = similarAnimeDto.matches.map {
             it.id
         }
 
-        val mangaList = service.viewMangas(ids).data.map {
-            MdUtil.createMangaEntry(it, lang)
+        val animeList = service.viewAnimes(ids).data.map {
+            MdUtil.createAnimeEntry(it, lang)
         }
 
-        return MetadataMangasPage(
-            mangaList, false,
-            List(mangaList.size) {
+        return MetadataAnimesPage(
+            animeList, false,
+            List(animeList.size) {
                 MangaDexSearchMetadata().also { it.relation = MangaDexRelation.SIMILAR }
             },
         )
     }
 
-    suspend fun getRelated(manga: SManga): MetadataMangasPage {
-        val relatedListDto = withIOContext { service.relatedManga(MdUtil.getMangaId(manga.url)) }
-        return relatedDtoToMangaListPage(relatedListDto)
+    suspend fun getRelated(anime: SAnime): MetadataAnimesPage {
+        val relatedListDto = withIOContext { service.relatedAnime(MdUtil.getAnimeId(anime.url)) }
+        return relatedDtoToAnimeListPage(relatedListDto)
     }
 
-    private suspend fun relatedDtoToMangaListPage(
+    private suspend fun relatedDtoToAnimeListPage(
         relatedListDto: RelationListDto,
-    ): MetadataMangasPage {
+    ): MetadataAnimesPage {
         val ids = relatedListDto.data
             .mapNotNull { it.relationships.firstOrNull() }
             .map { it.id }
 
-        val mangaList = service.viewMangas(ids).data.map {
-            MdUtil.createMangaEntry(it, lang)
+        val animeList = service.viewAnimes(ids).data.map {
+            MdUtil.createAnimeEntry(it, lang)
         }
 
-        return MetadataMangasPage(
-            mangas = mangaList,
+        return MetadataAnimesPage(
+            animes = animeList,
             hasNextPage = false,
-            mangasMetadata = mangaList.map { manga ->
+            animesMetadata = animeList.map { anime ->
                 MangaDexSearchMetadata().also {
                     it.relation = relatedListDto.data
-                        .firstOrNull { it.relationships.any { it.id == MdUtil.getMangaId(manga.url) } }
+                        .firstOrNull { it.relationships.any { it.id == MdUtil.getAnimeId(anime.url) } }
                         ?.attributes?.relation?.let(MangaDexRelation::fromDex)
                 }
             },

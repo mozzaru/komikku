@@ -17,8 +17,8 @@ import kotlin.time.toDurationUnit
  *
  * Examples:
  *
- * httpUrl = "api.manga.com".toHttpUrlOrNull(), permits = 5, period = 1, unit = seconds  =>  5 requests per second to api.manga.com
- * httpUrl = "imagecdn.manga.com".toHttpUrlOrNull(), permits = 10, period = 2, unit = minutes  =>  10 requests per 2 minutes to imagecdn.manga.com
+ * httpUrl = "api.anime.com".toHttpUrlOrNull(), permits = 5, period = 1, unit = seconds  =>  5 requests per second to api.anime.com
+ * httpUrl = "imagecdn.anime.com".toHttpUrlOrNull(), permits = 10, period = 2, unit = minutes  =>  10 requests per 2 minutes to imagecdn.anime.com
  *
  * @since extension-lib 1.3
  *
@@ -42,8 +42,8 @@ fun OkHttpClient.Builder.rateLimitHost(
  *
  * Examples:
  *
- * httpUrl = "https://api.manga.com".toHttpUrlOrNull(), permits = 5, period = 1.seconds =>  5 requests per second to api.manga.com
- * httpUrl = "https://imagecdn.manga.com".toHttpUrlOrNull(), permits = 10, period = 2.minutes  =>  10 requests per 2 minutes to imagecdn.manga.com
+ * httpUrl = "https://api.anime.com".toHttpUrlOrNull(), permits = 5, period = 1.seconds =>  5 requests per second to api.anime.com
+ * httpUrl = "https://imagecdn.anime.com".toHttpUrlOrNull(), permits = 10, period = 2.minutes  =>  10 requests per 2 minutes to imagecdn.anime.com
  *
  * @since extension-lib 1.5
  *
@@ -62,8 +62,8 @@ fun OkHttpClient.Builder.rateLimitHost(
  *
  * Examples:
  *
- * url = "https://api.manga.com", permits = 5, period = 1.seconds =>  5 requests per second to api.manga.com
- * url = "https://imagecdn.manga.com", permits = 10, period = 2.minutes  =>  10 requests per 2 minutes to imagecdn.manga.com
+ * url = "https://api.anime.com", permits = 5, period = 1.seconds =>  5 requests per second to api.anime.com
+ * url = "https://imagecdn.anime.com", permits = 10, period = 2.minutes  =>  10 requests per 2 minutes to imagecdn.anime.com
  *
  * @since extension-lib 1.5
  *

@@ -128,11 +128,11 @@ object SettingsTrackingScreen : SearchableSettings {
         return listOf(
             Preference.PreferenceItem.SwitchPreference(
                 pref = trackPreferences.autoUpdateTrack(),
-                title = stringResource(MR.strings.pref_auto_update_manga_sync),
+                title = stringResource(MR.strings.pref_auto_update_anime_sync),
             ),
             Preference.PreferenceItem.ListPreference(
                 pref = trackPreferences.autoUpdateTrackOnMarkRead(),
-                title = stringResource(MR.strings.pref_auto_update_manga_on_mark_read),
+                title = stringResource(MR.strings.pref_auto_update_anime_on_mark_read),
                 entries = AutoTrackState.entries
                     .associateWith { stringResource(it.titleRes) }
                     .toPersistentMap(),
@@ -165,10 +165,10 @@ object SettingsTrackingScreen : SearchableSettings {
                         logout = { dialog = LogoutDialog(trackerManager.kitsu) },
                     ),
                     Preference.PreferenceItem.TrackerPreference(
-                        title = trackerManager.mangaUpdates.name,
-                        tracker = trackerManager.mangaUpdates,
-                        login = { dialog = LoginDialog(trackerManager.mangaUpdates, MR.strings.username) },
-                        logout = { dialog = LogoutDialog(trackerManager.mangaUpdates) },
+                        title = trackerManager.animeUpdates.name,
+                        tracker = trackerManager.animeUpdates,
+                        login = { dialog = LoginDialog(trackerManager.animeUpdates, MR.strings.username) },
+                        logout = { dialog = LogoutDialog(trackerManager.animeUpdates) },
                     ),
                     Preference.PreferenceItem.TrackerPreference(
                         title = trackerManager.shikimori.name,

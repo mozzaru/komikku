@@ -11,7 +11,7 @@
     <string name="action_edit_info">Edit info</string>
 
     <!-- Entry Type -->
-    <string name="entry_type_manga">Manga</string>
+    <string name="entry_type_anime">Anime</string>
     <string name="entry_type_manhwa">Manhwa</string>
     <string name="entry_type_manhua">Manhua</string>
     <string name="entry_type_comic">Comic</string>
@@ -38,8 +38,8 @@
     <string name="use_hentai_at_home_option_1">Any client (Recommended)</string>
     <string name="use_hentai_at_home_option_2">Default port clients only</string>
     <string name="show_japanese_titles">Show Japanese titles in search results</string>
-    <string name="show_japanese_titles_option_1">Currently showing Japanese titles in search results. Clear the chapter cache after changing this (in the Advanced section)</string>
-    <string name="show_japanese_titles_option_2">Currently showing English/Romanized titles in search results. Clear the chapter cache after changing this (in the Advanced section)</string>
+    <string name="show_japanese_titles_option_1">Currently showing Japanese titles in search results. Clear the episode cache after changing this (in the Advanced section)</string>
+    <string name="show_japanese_titles_option_2">Currently showing English/Romanized titles in search results. Clear the episode cache after changing this (in the Advanced section)</string>
     <string name="use_original_images">Use original images</string>
     <string name="use_original_images_on">Currently using original images</string>
     <string name="use_original_images_off">Currently using resampled images</string>
@@ -131,8 +131,8 @@
         <![CDATA[DO NOT TOUCH THIS MENU UNLESS YOU KNOW WHAT YOU ARE DOING! <font color=\'red\'>IT CAN CORRUPT YOUR LIBRARY!</font>]]>
     </string>
     <string name="starting_cleanup">Starting cleanup</string>
-    <string name="clean_up_downloaded_chapters">Clean up downloaded chapters</string>
-    <string name="delete_unused_chapters">Delete non-existent, partially downloaded, and read chapter folders</string>
+    <string name="clean_up_downloaded_episodes">Clean up downloaded episodes</string>
+    <string name="delete_unused_episodes">Delete non-existent, partially downloaded, and read episode folders</string>
     <string name="no_folders_to_cleanup">No folders to cleanup</string>
     <string name="clean_orphaned_downloads">Clean orphaned</string>
     <string name="clean_read_downloads">Clean read</string>
@@ -152,7 +152,7 @@
     <string name="wsrv">wsrv.nl</string>
     <string name="bandwidth_data_saver_server">Bandwidth Hero Proxy Server</string>
     <string name="data_saver_server_summary">Put Bandwidth Hero Proxy server url here</string>
-    <string name="clear_db_exclude_read">Keep entries with read chapters</string>
+    <string name="clear_db_exclude_read">Keep entries with read episodes</string>
 
     <!-- Log Level -->
     <string name="log_minimal">Minimal</string>
@@ -183,10 +183,10 @@
     <string name="library_group_updates_global">Always launch global updates</string>
     <string name="library_group_updates_all_but_ungrouped">Launch global updates only for ungrouped, category updates for others</string>
     <string name="library_group_updates_all">Launch category updates all the time</string>
-    <string name="pref_mark_read_dupe_chapters">Mark duplicate chapters as read</string>
-    <string name="pref_mark_read_dupe_chapters_summary">Mark duplicate chapters as read after reading</string>
-    <string name="pref_library_mark_duplicate_chapters">Mark new duplicate chapters as read</string>
-    <string name="pref_library_mark_duplicate_chapters_summary">Automatically mark new chapters as read if it has been read before</string>
+    <string name="pref_mark_read_dupe_episodes">Mark duplicate episodes as read</string>
+    <string name="pref_mark_read_dupe_episodes_summary">Mark duplicate episodes as read after reading</string>
+    <string name="pref_library_mark_duplicate_episodes">Mark new duplicate episodes as read</string>
+    <string name="pref_library_mark_duplicate_episodes_summary">Automatically mark new episodes as read if it has been read before</string>
     <string name="update_30min">Every 30 minutes</string>
     <string name="update_1hour">Every hour</string>
     <string name="update_3hour">Every 3 hours</string>
@@ -242,8 +242,8 @@
     <string name="pref_purge_confirmation_message">Purging sync data will delete all your sync data from Google Drive. Are you sure you want to continue?</string>
     <string name="pref_sync_options">Create sync triggers</string>
     <string name="pref_sync_options_summ">Can be used to set sync triggers</string>
-    <string name="sync_on_chapter_read">Sync on Chapter Read</string>
-    <string name="sync_on_chapter_open">Sync on Chapter Open</string>
+    <string name="sync_on_episode_read">Sync on Episode Read</string>
+    <string name="sync_on_episode_open">Sync on Episode Open</string>
     <string name="sync_on_app_start">Sync on App Start</string>
     <string name="sync_on_app_resume">Sync on App Resume</string>
     <string name="sync_library">Sync library</string>
@@ -287,7 +287,7 @@
     <string name="download_threads">Download threads</string>
     <string name="download_threads_summary">Higher values can speed up image downloading significantly, but can also trigger bans. Recommended value is 2 or 3. Current value is: %s</string>
     <string name="aggressively_load_pages">Aggressively load pages</string>
-    <string name="aggressively_load_pages_summary">Slowly download the entire chapter while reading instead of just loading the pages you are viewing.</string>
+    <string name="aggressively_load_pages_summary">Slowly download the entire episode while reading instead of just loading the pages you are viewing.</string>
     <string name="skip_queue_on_retry">Skip queue on retry</string>
     <string name="skip_queue_on_retry_summary">Normally, pressing the retry button on a failed download will wait until the downloader has finished downloading the last page before beginning to re-download the failed page. Enabling this will force the downloader to begin re-downloading the failed page as soon as you press the retry button.</string>
     <string name="reader_preload_amount">Page Preload amount</string>
@@ -460,17 +460,17 @@
     <string name="use_intelligent_search">Search title + keywords of title</string>
     <string name="data_to_include_in_migration">Data to include in migration</string>
     <string name="include_extra_search_parameter">Include extra search parameter when searching</string>
-    <string name="use_most_chapters">Use source with the most chapters (slower)</string>
+    <string name="use_most_episodes">Use source with the most episodes (slower)</string>
     <string name="use_first_source">Use first source with alternative</string>
     <string name="skip_this_step_next_time">Skip this step next time</string>
     <string name="hide_not_found_entries">Hide not found entries</string>
-    <string name="only_show_updated_entries">Only show entries with new chapters</string>
+    <string name="only_show_updated_entries">Only show entries with new episodes</string>
     <string name="search_parameter">Search parameter (e.g. language:english)</string>
     <string name="latest_">Latest: %1$s</string>
     <string name="migrating_to">migrating to</string>
     <string name="match_pinned_sources">Match pinned sources</string>
     <string name="match_enabled_sources">Match enabled sources</string>
-    <string name="no_chapters_found_for_migration">No chapters found, this entry cannot be used for migration</string>
+    <string name="no_episodes_found_for_migration">No episodes found, this entry cannot be used for migration</string>
     <string name="no_alternatives_found">No Alternatives Found</string>
     <string name="stop_migrating">Stop migrating?</string>
     <string name="action_stop">Stop</string>
@@ -555,11 +555,11 @@
     <string name="gallery_adder_importing_gallery">Importing gallery (url: %1$s, fav: %2$s, forceSource: %3$s)…</string>
     <string name="gallery_adder_source_uri_must_match">Source URI match check error!</string>
     <string name="gallery_adder_uri_map_to_gallery_error">Source URI map-to-gallery error!</string>
-    <string name="gallery_adder_uri_map_to_chapter_error">Source URI map-to-chapter error!</string>
+    <string name="gallery_adder_uri_map_to_episode_error">Source URI map-to-episode error!</string>
     <string name="gallery_adder_uri_clean_error">Source URI clean error!</string>
-    <string name="gallery_adder_chapter_fetch_error">Failed to update chapters for gallery: %1$s!</string>
+    <string name="gallery_adder_episode_fetch_error">Failed to update episodes for gallery: %1$s!</string>
     <string name="gallery_adder_could_not_add_gallery">Could not add gallery (url: %1$s)!</string>
-    <string name="gallery_adder_could_not_identify_chapter">Could not identify chapter (url: %1$s)!</string>
+    <string name="gallery_adder_could_not_identify_episode">Could not identify episode (url: %1$s)!</string>
 
     <!-- Intercept Activity -->
     <string name="launching_app">Launching app…</string>
@@ -636,12 +636,12 @@
     <string name="collection">Collection</string>
     <string name="parodies">Parodies</string>
     <string name="author">Author</string>
-    <string name="last_chapter_number">Last chapter number</string>
+    <string name="last_episode_number">Last episode number</string>
     <string name="follow_status">Follow status</string>
     <string name="anilist_id">Anilist id</string>
     <string name="kitsu_id">Kitsu id</string>
     <string name="mal_id">Mal id</string>
-    <string name="manga_updates_id">Manga updates id</string>
+    <string name="anime_updates_id">Anime updates id</string>
     <string name="anime_planet_id">Anime planet id</string>
     <string name="translated">Translated</string>
 
@@ -651,23 +651,23 @@
 
     <!-- Merged entry -->
     <string name="merge_settings">Merge settings</string>
-    <string name="fetch_chapter_updates">Fetch chapter updates</string>
+    <string name="fetch_episode_updates">Fetch episode updates</string>
     <string name="delete_merged_entry">Are you sure?</string>
     <string name="delete_merged_entry_desc">This will remove the entry from the merge, using this will also lose any unsaved changes applied to the merged entry</string>
-    <string name="chapter_updates_merged_entry">Toggle chapter updates</string>
-    <string name="chapter_updates_merged_entry_desc">Toggling this will disable or enable chapter updates for this merged entry</string>
-    <string name="download_merged_entry">Toggle new chapter downloads</string>
-    <string name="download_merged_entry_desc">Toggling this will disable or enable chapter downloads for this merged entry</string>
+    <string name="episode_updates_merged_entry">Toggle episode updates</string>
+    <string name="episode_updates_merged_entry_desc">Toggling this will disable or enable episode updates for this merged entry</string>
+    <string name="download_merged_entry">Toggle new episode downloads</string>
+    <string name="download_merged_entry_desc">Toggling this will disable or enable episode downloads for this merged entry</string>
     <string name="merged_references_invalid">Merged references invalid</string>
-    <string name="merged_chapter_updates_error">Toggle chapter updates error</string>
-    <string name="merged_toggle_download_chapters_error">Toggle download chapters error</string>
+    <string name="merged_episode_updates_error">Toggle episode updates error</string>
+    <string name="merged_toggle_download_episodes_error">Toggle download episodes error</string>
     <string name="allow_deduplication">Allow deduplication:</string>
     <string name="deduplication_mode">Dedupe mode:</string>
     <string name="deduplication_entry_info">Info entry:</string>
     <string name="no_dedupe">No dedupe</string>
     <string name="dedupe_priority">Dedupe by priority</string>
-    <string name="dedupe_most_chapters">Show source with most chapters</string>
-    <string name="dedupe_highest_chapter">Show source with highest chapter number</string>
+    <string name="dedupe_most_episodes">Show source with most episodes</string>
+    <string name="dedupe_highest_episode">Show source with highest episode number</string>
 
     <!-- MangaDex -->
     <string name="md_follows_unfollowed">Unfollowed</string>

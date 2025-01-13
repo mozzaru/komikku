@@ -6,7 +6,7 @@ import eu.kanade.tachiyomi.R
 import eu.kanade.tachiyomi.data.database.models.Track
 import eu.kanade.tachiyomi.data.track.BaseTracker
 import eu.kanade.tachiyomi.data.track.bangumi.dto.BGMOAuth
-import eu.kanade.tachiyomi.data.track.model.TrackMangaMetadata
+import eu.kanade.tachiyomi.data.track.model.TrackAnimeMetadata
 import eu.kanade.tachiyomi.data.track.model.TrackSearch
 import kotlinx.collections.immutable.ImmutableList
 import kotlinx.collections.immutable.toImmutableList
@@ -31,13 +31,13 @@ class Bangumi(id: Long) : BaseTracker(id, "Bangumi") {
     }
 
     private suspend fun add(track: Track): Track {
-        return api.addLibManga(track)
+        return api.addLibAnime(track)
     }
 
-    override suspend fun update(track: Track, didReadChapter: Boolean): Track {
+    override suspend fun update(track: Track, didSeenEpisode: Boolean): Track {
         if (track.status != COMPLETED) {
-            if (didReadChapter) {
-                if (track.last_chapter_read.toLong() == track.total_chapters && track.total_chapters > 0) {
+            if (didSeenEpisode) {
+                if (track.last_episode_seen.toLong() == track.total_episodes && track.total_episodes > 0) {
                     track.status = COMPLETED
                 } else {
                     track.status = READING
@@ -45,27 +45,27 @@ class Bangumi(id: Long) : BaseTracker(id, "Bangumi") {
             }
         }
 
-        return api.updateLibManga(track)
+        return api.updateLibAnime(track)
     }
 
-    override suspend fun bind(track: Track, hasReadChapters: Boolean): Track {
-        val statusTrack = api.statusLibManga(track)
-        val remoteTrack = api.findLibManga(track)
+    override suspend fun bind(track: Track, hasSeenEpisodes: Boolean): Track {
+        val statusTrack = api.statusLibAnime(track)
+        val remoteTrack = api.findLibAnime(track)
         return if (remoteTrack != null && statusTrack != null) {
             track.copyPersonalFrom(remoteTrack)
             track.library_id = remoteTrack.library_id
 
             if (track.status != COMPLETED) {
-                track.status = if (hasReadChapters) READING else statusTrack.status
+                track.status = if (hasSeenEpisodes) READING else statusTrack.status
             }
 
             track.score = statusTrack.score
-            track.last_chapter_read = statusTrack.last_chapter_read
-            track.total_chapters = remoteTrack.total_chapters
+            track.last_episode_seen = statusTrack.last_episode_seen
+            track.total_episodes = remoteTrack.total_episodes
             refresh(track)
         } else {
             // Set default fields if it's not found in the list
-            track.status = if (hasReadChapters) READING else PLAN_TO_READ
+            track.status = if (hasSeenEpisodes) READING else PLAN_TO_READ
             track.score = 0.0
             add(track)
             update(track)
@@ -76,15 +76,15 @@ class Bangumi(id: Long) : BaseTracker(id, "Bangumi") {
         return api.search(query)
     }
 
-    override suspend fun getMangaMetadata(track: DomainTrack): TrackMangaMetadata? {
-        return api.getMangaMetadata(track)
+    override suspend fun getAnimeMetadata(track: DomainTrack): TrackAnimeMetadata? {
+        return api.getAnimeMetadata(track)
     }
 
     override suspend fun refresh(track: Track): Track {
-        val remoteStatusTrack = api.statusLibManga(track) ?: throw Exception("Could not find manga")
+        val remoteStatusTrack = api.statusLibAnime(track) ?: throw Exception("Could not find anime")
         track.copyPersonalFrom(remoteStatusTrack)
-        api.findLibManga(track)?.let { remoteTrack ->
-            track.total_chapters = remoteTrack.total_chapters
+        api.findLibAnime(track)?.let { remoteTrack ->
+            track.total_episodes = remoteTrack.total_episodes
         }
         return track
     }
@@ -155,6 +155,6 @@ class Bangumi(id: Long) : BaseTracker(id, "Bangumi") {
     }
 
     // KMK -->
-    override fun hasNotStartedReading(status: Long): Boolean = status == PLAN_TO_READ
+    override fun hasNotStartedWatching(status: Long): Boolean = status == PLAN_TO_READ
     // KMK <--
 }

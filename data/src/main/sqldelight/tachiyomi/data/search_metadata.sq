@@ -1,12 +1,12 @@
 import kotlin.Int;
 
 CREATE TABLE search_metadata (
-    manga_id INTEGER NOT NULL PRIMARY KEY,
+    anime_id INTEGER NOT NULL PRIMARY KEY,
     uploader TEXT,
     extra TEXT NOT NULL,
     indexed_extra TEXT,
     extra_version INTEGER NOT NULL,
-    FOREIGN KEY(manga_id) REFERENCES mangas (_id)
+    FOREIGN KEY(anime_id) REFERENCES animes (_id)
     ON DELETE CASCADE
 );
 
@@ -16,26 +16,26 @@ CREATE INDEX search_metadata_indexed_extra_index ON search_metadata(indexed_extr
 selectAll:
 SELECT * FROM search_metadata;
 
-selectByMangaId:
-SELECT * FROM search_metadata WHERE manga_id = ?;
+selectByAnimeId:
+SELECT * FROM search_metadata WHERE anime_id = ?;
 
 selectByIndexedExtra:
 SELECT * FROM search_metadata WHERE indexed_extra = ?;
 
 upsert:
-INSERT INTO search_metadata(manga_id, uploader, extra, indexed_extra, extra_version)
-VALUES (:mangaId, :uploader, :extra, :indexedExtra, :extraVersion)
-ON CONFLICT(manga_id)
+INSERT INTO search_metadata(anime_id, uploader, extra, indexed_extra, extra_version)
+VALUES (:animeId, :uploader, :extra, :indexedExtra, :extraVersion)
+ON CONFLICT(anime_id)
 DO UPDATE
 SET
     uploader = :uploader,
     extra = :extra,
     indexed_extra = :indexedExtra,
     extra_version = :extraVersion
-WHERE manga_id = :mangaId;
+WHERE anime_id = :animeId;
 
 insert:
-INSERT INTO search_metadata (manga_id, uploader, extra, indexed_extra, extra_version)
+INSERT INTO search_metadata (anime_id, uploader, extra, indexed_extra, extra_version)
 VALUES (?, ?, ?, ?, ?);
 
 deleteAll:

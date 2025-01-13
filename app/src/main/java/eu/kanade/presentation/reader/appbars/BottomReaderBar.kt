@@ -46,7 +46,7 @@ fun BottomReaderBar(
     currentReadingMode: ReadingMode,
     dualPageSplitEnabled: Boolean,
     doublePages: Boolean,
-    onClickChapterList: () -> Unit,
+    onClickEpisodeList: () -> Unit,
     onClickWebView: (() -> Unit)?,
     onClickBrowser: (() -> Unit)?,
     onClickShare: (() -> Unit)?,
@@ -66,11 +66,11 @@ fun BottomReaderBar(
         verticalAlignment = Alignment.CenterVertically,
     ) {
         // SY -->
-        if (ReaderBottomButton.ViewChapters.isIn(enabledButtons)) {
-            IconButton(onClick = onClickChapterList) {
+        if (ReaderBottomButton.ViewEpisodes.isIn(enabledButtons)) {
+            IconButton(onClick = onClickEpisodeList) {
                 Icon(
                     imageVector = Icons.Outlined.FormatListNumbered,
-                    contentDescription = stringResource(MR.strings.chapters),
+                    contentDescription = stringResource(MR.strings.episodes),
                     // KMK -->
                     tint = iconColor,
                     // KMK <--

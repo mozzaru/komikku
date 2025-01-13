@@ -378,7 +378,7 @@ object ImageUtil {
     }
 
     /**
-     * Algorithm for determining what background to accompany a comic/manga page
+     * Algorithm for determining what background to accompany a comic/anime page
      */
     fun chooseBackground(context: Context, imageSource: BufferedSource): Drawable {
         val decoder = ImageDecoder.newInstance(imageSource.inputStream())

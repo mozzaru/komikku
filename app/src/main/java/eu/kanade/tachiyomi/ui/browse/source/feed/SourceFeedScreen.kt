@@ -14,6 +14,7 @@ import cafe.adriel.voyager.core.model.rememberScreenModel
 import cafe.adriel.voyager.navigator.LocalNavigator
 import cafe.adriel.voyager.navigator.Navigator
 import cafe.adriel.voyager.navigator.currentOrThrow
+import eu.kanade.core.util.ifSourcesLoaded
 import eu.kanade.domain.source.model.installedExtension
 import eu.kanade.presentation.browse.MissingSourceScreen
 import eu.kanade.presentation.browse.SourceFeedOrderScreen
@@ -27,24 +28,23 @@ import eu.kanade.presentation.util.Screen
 import eu.kanade.tachiyomi.source.Source
 import eu.kanade.tachiyomi.source.isLocalOrStub
 import eu.kanade.tachiyomi.source.online.HttpSource
-import eu.kanade.tachiyomi.ui.browse.AddDuplicateMangaDialog
+import eu.kanade.tachiyomi.ui.anime.AnimeScreen
+import eu.kanade.tachiyomi.ui.browse.AddDuplicateAnimeDialog
 import eu.kanade.tachiyomi.ui.browse.AllowDuplicateDialog
 import eu.kanade.tachiyomi.ui.browse.BulkFavoriteScreenModel
-import eu.kanade.tachiyomi.ui.browse.ChangeMangaCategoryDialog
-import eu.kanade.tachiyomi.ui.browse.ChangeMangasCategoryDialog
-import eu.kanade.tachiyomi.ui.browse.RemoveMangaDialog
+import eu.kanade.tachiyomi.ui.browse.ChangeAnimeCategoryDialog
+import eu.kanade.tachiyomi.ui.browse.ChangeAnimesCategoryDialog
+import eu.kanade.tachiyomi.ui.browse.RemoveAnimeDialog
 import eu.kanade.tachiyomi.ui.browse.extension.details.ExtensionDetailsScreen
 import eu.kanade.tachiyomi.ui.browse.source.browse.BrowseSourceScreen
 import eu.kanade.tachiyomi.ui.browse.source.browse.SourceFilterDialog
-import eu.kanade.tachiyomi.ui.manga.MangaScreen
 import eu.kanade.tachiyomi.ui.webview.WebViewScreen
 import eu.kanade.tachiyomi.util.system.toast
 import exh.md.follows.MangaDexFollowsScreen
 import exh.source.isEhBasedSource
-import exh.ui.ifSourcesLoaded
 import exh.util.nullIfBlank
-import tachiyomi.domain.manga.model.Manga
-import tachiyomi.domain.source.interactor.GetRemoteManga
+import tachiyomi.domain.anime.model.Anime
+import tachiyomi.domain.source.interactor.GetRemoteAnime
 import tachiyomi.domain.source.model.SavedSearch
 import tachiyomi.domain.source.model.StubSource
 import tachiyomi.i18n.kmk.KMR
@@ -124,19 +124,19 @@ class SourceFeedScreen(val sourceId: Long) : Screen() {
                     // onClickDelete = screenModel::openDeleteFeed,
                     onLongClickFeed = screenModel::openActionsDialog,
                     // KMK <--
-                    onClickManga = {
+                    onClickAnime = {
                         // KMK -->
                         if (bulkFavoriteState.selectionMode) {
                             bulkFavoriteScreenModel.toggleSelection(it)
                         } else {
                             // KMK <--
-                            onMangaClick(navigator, it)
+                            onAnimeClick(navigator, it)
                         }
                     },
                     onClickSearch = { onSearchClick(navigator, screenModel.source, it) },
                     searchQuery = state.searchQuery,
                     onSearchQueryChange = screenModel::search,
-                    getMangaState = { screenModel.getManga(initialManga = it) },
+                    getAnimeState = { screenModel.getAnime(initialAnime = it) },
                     // KMK -->
                     navigateUp = { navigator.pop() },
                     onWebViewClick = {
@@ -173,11 +173,11 @@ class SourceFeedScreen(val sourceId: Long) : Screen() {
                                 .filterIsInstance<SourceFeedUI.SourceSavedSearch>()
                                 .isNotEmpty()
                         },
-                    onLongClickManga = { manga ->
+                    onLongClickAnime = { anime ->
                         if (!bulkFavoriteState.selectionMode) {
-                            bulkFavoriteScreenModel.addRemoveManga(manga, haptic)
+                            bulkFavoriteScreenModel.addRemoveAnime(anime, haptic)
                         } else {
-                            navigator.push(MangaScreen(manga.id, true))
+                            navigator.push(AnimeScreen(anime.id, true))
                         }
                     },
                     bulkFavoriteScreenModel = bulkFavoriteScreenModel,
@@ -307,14 +307,14 @@ class SourceFeedScreen(val sourceId: Long) : Screen() {
 
         // KMK -->
         when (bulkFavoriteState.dialog) {
-            is BulkFavoriteScreenModel.Dialog.AddDuplicateManga ->
-                AddDuplicateMangaDialog(bulkFavoriteScreenModel)
-            is BulkFavoriteScreenModel.Dialog.RemoveManga ->
-                RemoveMangaDialog(bulkFavoriteScreenModel)
-            is BulkFavoriteScreenModel.Dialog.ChangeMangaCategory ->
-                ChangeMangaCategoryDialog(bulkFavoriteScreenModel)
-            is BulkFavoriteScreenModel.Dialog.ChangeMangasCategory ->
-                ChangeMangasCategoryDialog(bulkFavoriteScreenModel)
+            is BulkFavoriteScreenModel.Dialog.AddDuplicateAnime ->
+                AddDuplicateAnimeDialog(bulkFavoriteScreenModel)
+            is BulkFavoriteScreenModel.Dialog.RemoveAnime ->
+                RemoveAnimeDialog(bulkFavoriteScreenModel)
+            is BulkFavoriteScreenModel.Dialog.ChangeAnimeCategory ->
+                ChangeAnimeCategoryDialog(bulkFavoriteScreenModel)
+            is BulkFavoriteScreenModel.Dialog.ChangeAnimesCategory ->
+                ChangeAnimesCategoryDialog(bulkFavoriteScreenModel)
             is BulkFavoriteScreenModel.Dialog.AllowDuplicate ->
                 AllowDuplicateDialog(bulkFavoriteScreenModel)
             else -> {}
@@ -322,8 +322,8 @@ class SourceFeedScreen(val sourceId: Long) : Screen() {
         // KMK <--
     }
 
-    private fun onMangaClick(navigator: Navigator, manga: Manga) {
-        navigator.push(MangaScreen(manga.id, true))
+    private fun onAnimeClick(navigator: Navigator, anime: Anime) {
+        navigator.push(AnimeScreen(anime.id, true))
     }
 
     private fun onBrowseClick(navigator: Navigator, sourceId: Long, search: String? = null, savedSearch: Long? = null, filters: String? = null) {
@@ -335,15 +335,15 @@ class SourceFeedScreen(val sourceId: Long) : Screen() {
 
     private fun onLatestClick(navigator: Navigator, source: Source) {
         // KMK -->
-        // navigator.replace(BrowseSourceScreen(source.id, GetRemoteManga.QUERY_LATEST))
-        navigator.push(BrowseSourceScreen(source.id, GetRemoteManga.QUERY_LATEST))
+        // navigator.replace(BrowseSourceScreen(source.id, GetRemoteAnime.QUERY_LATEST))
+        navigator.push(BrowseSourceScreen(source.id, GetRemoteAnime.QUERY_LATEST))
         // KMK <--
     }
 
     private fun onBrowseClick(navigator: Navigator, source: Source) {
         // KMK -->
-        // navigator.replace(BrowseSourceScreen(source.id, GetRemoteManga.QUERY_POPULAR))
-        navigator.push(BrowseSourceScreen(source.id, GetRemoteManga.QUERY_POPULAR))
+        // navigator.replace(BrowseSourceScreen(source.id, GetRemoteAnime.QUERY_POPULAR))
+        navigator.push(BrowseSourceScreen(source.id, GetRemoteAnime.QUERY_POPULAR))
         // KMK <--
     }
 

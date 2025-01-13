@@ -51,7 +51,7 @@ object SettingsAppearanceScreen : SearchableSettings {
         return listOf(
             getThemeGroup(uiPreferences = uiPreferences),
             // KMK -->
-            getMangaInfoThemeGroup(uiPreferences = uiPreferences),
+            getAnimeInfoThemeGroup(uiPreferences = uiPreferences),
             // KMK <--
             getDisplayGroup(uiPreferences = uiPreferences),
             // SY -->
@@ -156,15 +156,15 @@ object SettingsAppearanceScreen : SearchableSettings {
 
     // KMK -->
     @Composable
-    private fun getMangaInfoThemeGroup(
+    private fun getAnimeInfoThemeGroup(
         uiPreferences: UiPreferences,
     ): Preference.PreferenceGroup {
         val scope = rememberCoroutineScope()
-        val mangaInfoThemeCoverBased by remember {
+        val animeInfoThemeCoverBased by remember {
             Injekt.get<UiPreferences>().themeCoverBased().asState(scope)
         }
         return Preference.PreferenceGroup(
-            title = stringResource(KMR.strings.pref_manga_info),
+            title = stringResource(KMR.strings.pref_anime_info),
             preferenceItems = persistentListOf(
                 Preference.PreferenceItem.SwitchPreference(
                     pref = uiPreferences.themeCoverBased(),
@@ -173,7 +173,7 @@ object SettingsAppearanceScreen : SearchableSettings {
                 Preference.PreferenceItem.ListPreference(
                     pref = uiPreferences.themeCoverBasedStyle(),
                     title = stringResource(KMR.strings.pref_theme_cover_based_style),
-                    enabled = mangaInfoThemeCoverBased,
+                    enabled = animeInfoThemeCoverBased,
                     entries = PaletteStyle.entries
                         .associateWith {
                             when (it) {
@@ -201,7 +201,7 @@ object SettingsAppearanceScreen : SearchableSettings {
                         .toImmutableMap(),
                 ),
                 Preference.PreferenceItem.SwitchPreference(
-                    pref = uiPreferences.usePanoramaCoverMangaInfo(),
+                    pref = uiPreferences.usePanoramaCoverAnimeInfo(),
                     title = stringResource(KMR.strings.pref_panorama_cover),
                     subtitle = stringResource(KMR.strings.pref_panorama_cover_summary),
                 ),
@@ -271,7 +271,7 @@ object SettingsAppearanceScreen : SearchableSettings {
         val previewsRowCount by uiPreferences.previewsRowCount().collectAsState()
         // KMK -->
         val sourcePreferences = remember { Injekt.get<SourcePreferences>() }
-        val relatedMangasInOverflow by uiPreferences.expandRelatedMangas().collectAsState()
+        val relatedAnimesInOverflow by uiPreferences.expandRelatedAnimes().collectAsState()
         // KMK <--
 
         return Preference.PreferenceGroup(
@@ -290,22 +290,22 @@ object SettingsAppearanceScreen : SearchableSettings {
                 ),
                 // KMK -->
                 Preference.PreferenceItem.SwitchPreference(
-                    pref = uiPreferences.expandRelatedMangas(),
-                    title = stringResource(KMR.strings.pref_expand_related_mangas),
-                    subtitle = stringResource(KMR.strings.pref_expand_related_mangas_summary),
-                    enabled = sourcePreferences.relatedMangas().get(),
+                    pref = uiPreferences.expandRelatedAnimes(),
+                    title = stringResource(KMR.strings.pref_expand_related_animes),
+                    subtitle = stringResource(KMR.strings.pref_expand_related_animes_summary),
+                    enabled = sourcePreferences.relatedAnimes().get(),
                 ),
                 Preference.PreferenceItem.SwitchPreference(
-                    pref = uiPreferences.relatedMangasInOverflow(),
-                    enabled = !relatedMangasInOverflow,
-                    title = stringResource(KMR.strings.put_related_mangas_in_overflow),
-                    subtitle = stringResource(KMR.strings.put_related_mangas_in_overflow_summary),
+                    pref = uiPreferences.relatedAnimesInOverflow(),
+                    enabled = !relatedAnimesInOverflow,
+                    title = stringResource(KMR.strings.put_related_animes_in_overflow),
+                    subtitle = stringResource(KMR.strings.put_related_animes_in_overflow_summary),
                 ),
                 Preference.PreferenceItem.SwitchPreference(
-                    pref = uiPreferences.showHomeOnRelatedMangas(),
-                    title = stringResource(KMR.strings.pref_show_home_on_related_mangas),
-                    subtitle = stringResource(KMR.strings.pref_show_home_on_related_mangas_summary),
-                    enabled = sourcePreferences.relatedMangas().get(),
+                    pref = uiPreferences.showHomeOnRelatedAnimes(),
+                    title = stringResource(KMR.strings.pref_show_home_on_related_animes),
+                    subtitle = stringResource(KMR.strings.pref_show_home_on_related_animes_summary),
+                    enabled = sourcePreferences.relatedAnimes().get(),
                 ),
                 // KMK <--
                 Preference.PreferenceItem.SwitchPreference(

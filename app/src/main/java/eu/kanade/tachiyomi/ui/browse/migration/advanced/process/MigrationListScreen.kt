@@ -10,13 +10,13 @@ import cafe.adriel.voyager.core.model.rememberScreenModel
 import cafe.adriel.voyager.navigator.LocalNavigator
 import cafe.adriel.voyager.navigator.currentOrThrow
 import eu.kanade.presentation.browse.MigrationListScreen
+import eu.kanade.presentation.browse.components.MigrationAnimeDialog
 import eu.kanade.presentation.browse.components.MigrationExitDialog
-import eu.kanade.presentation.browse.components.MigrationMangaDialog
 import eu.kanade.presentation.browse.components.MigrationProgressDialog
 import eu.kanade.presentation.util.Screen
+import eu.kanade.tachiyomi.ui.anime.AnimeScreen
 import eu.kanade.tachiyomi.ui.browse.migration.advanced.design.PreMigrationScreen
 import eu.kanade.tachiyomi.ui.browse.migration.search.MigrateSearchScreen
-import eu.kanade.tachiyomi.ui.manga.MangaScreen
 import eu.kanade.tachiyomi.util.system.toast
 import exh.util.overEq
 import exh.util.underEq
@@ -58,22 +58,22 @@ class MigrationListScreen(private val config: MigrationProcedureConfig) : Screen
         LaunchedEffect(newSelectedItem) {
             if (newSelectedItem != null) {
                 val (oldId, newId) = newSelectedItem!!
-                screenModel.useMangaForMigration(context, newId, oldId)
+                screenModel.useAnimeForMigration(context, newId, oldId)
                 newSelectedItem = null
             }
         }
 
         LaunchedEffect(screenModel) {
             screenModel.navigateOut.collect {
-                if (items.orEmpty().size == 1 && navigator.items.any { it is MangaScreen }) {
-                    val mangaId = (items.orEmpty().firstOrNull()?.searchResult?.value as? MigratingManga.SearchResult.Result)?.id
+                if (items.orEmpty().size == 1 && navigator.items.any { it is AnimeScreen }) {
+                    val animeId = (items.orEmpty().firstOrNull()?.searchResult?.value as? MigratingAnime.SearchResult.Result)?.id
                     withUIContext {
-                        if (mangaId != null) {
+                        if (animeId != null) {
                             val newStack = navigator.items.filter {
-                                it !is MangaScreen &&
+                                it !is AnimeScreen &&
                                     it !is MigrationListScreen &&
                                     it !is PreMigrationScreen
-                            } + MangaScreen(mangaId)
+                            } + AnimeScreen(animeId)
                             navigator replaceAll newStack.first()
                             navigator.push(newStack.drop(1))
 
@@ -95,16 +95,16 @@ class MigrationListScreen(private val config: MigrationProcedureConfig) : Screen
             items = items ?: persistentListOf(),
             migrationDone = migrationDone,
             finishedCount = finishedCount,
-            getManga = screenModel::getManga,
-            getChapterInfo = screenModel::getChapterInfo,
+            getAnime = screenModel::getAnime,
+            getEpisodeInfo = screenModel::getEpisodeInfo,
             getSourceName = screenModel::getSourceName,
             onMigrationItemClick = {
-                navigator.push(MangaScreen(it.id, true))
+                navigator.push(AnimeScreen(it.id, true))
             },
             openMigrationDialog = screenModel::openMigrateDialog,
-            skipManga = { screenModel.removeManga(it) },
+            skipAnime = { screenModel.removeAnime(it) },
             // KMK -->
-            cancelManga = { screenModel.cancelManga(it) },
+            cancelAnime = { screenModel.cancelAnime(it) },
             navigateUp = { navigator.pop() },
             // KMK <--
             searchManually = { migrationItem ->
@@ -112,13 +112,13 @@ class MigrationListScreen(private val config: MigrationProcedureConfig) : Screen
                 val validSources = if (sources.size == 1) {
                     sources
                 } else {
-                    sources.filter { it.id != migrationItem.manga.source }
+                    sources.filter { it.id != migrationItem.anime.source }
                 }
-                val searchScreen = MigrateSearchScreen(migrationItem.manga.id, validSources.map { it.id })
+                val searchScreen = MigrateSearchScreen(migrationItem.anime.id, validSources.map { it.id })
                 navigator push searchScreen
             },
-            migrateNow = { screenModel.migrateManga(it, false) },
-            copyNow = { screenModel.migrateManga(it, true) },
+            migrateNow = { screenModel.migrateAnime(it, false) },
+            copyNow = { screenModel.migrateAnime(it, true) },
         )
 
         val onDismissRequest = { screenModel.dialog.value = null }
@@ -127,14 +127,14 @@ class MigrationListScreen(private val config: MigrationProcedureConfig) : Screen
             @Suppress("NAME_SHADOWING")
             val dialog = dialog
         ) {
-            is MigrationListScreenModel.Dialog.MigrateMangaDialog -> {
-                MigrationMangaDialog(
+            is MigrationListScreenModel.Dialog.MigrateAnimeDialog -> {
+                MigrationAnimeDialog(
                     onDismissRequest = onDismissRequest,
                     copy = dialog.copy,
-                    mangaSet = dialog.mangaSet,
-                    mangaSkipped = dialog.mangaSkipped,
-                    copyManga = screenModel::copyMangas,
-                    migrateManga = screenModel::migrateMangas,
+                    animeSet = dialog.animeSet,
+                    animeSkipped = dialog.animeSkipped,
+                    copyAnime = screenModel::copyAnimes,
+                    migrateAnime = screenModel::migrateAnimes,
                 )
             }
             MigrationListScreenModel.Dialog.MigrationExitDialog -> {

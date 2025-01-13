@@ -1,20 +1,20 @@
 package eu.kanade.tachiyomi.ui.reader.model
 
-data class ViewerChapters(
-    val currChapter: ReaderChapter,
-    val prevChapter: ReaderChapter?,
-    val nextChapter: ReaderChapter?,
+data class ViewerEpisodes(
+    val currEpisode: ReaderEpisode,
+    val prevEpisode: ReaderEpisode?,
+    val nextEpisode: ReaderEpisode?,
 ) {
 
     fun ref() {
-        currChapter.ref()
-        prevChapter?.ref()
-        nextChapter?.ref()
+        currEpisode.ref()
+        prevEpisode?.ref()
+        nextEpisode?.ref()
     }
 
     fun unref() {
-        currChapter.unref()
-        prevChapter?.unref()
-        nextChapter?.unref()
+        currEpisode.unref()
+        prevEpisode?.unref()
+        nextEpisode?.unref()
     }
 }

@@ -7,7 +7,7 @@ import tachiyomi.source.local.isLocal
 import uy.kohesive.injekt.Injekt
 import uy.kohesive.injekt.api.get
 
-fun Source.getNameForMangaInfo(
+fun Source.getNameForAnimeInfo(
     // SY -->
     mergeSources: List<Source>? = null,
     // SY <--
@@ -28,7 +28,7 @@ fun Source.getNameForMangaInfo(
         // KMK -->
         isLocalOrStub() -> toString()
         // KMK <--
-        // For edge cases where user disables a source they got manga of in their library.
+        // For edge cases where user disables a source they got anime of in their library.
         hasOneActiveLanguages && !isInEnabledLanguages ->
             // KMK -->
             "$name (${FlagEmoji.getEmojiLangFlag(lang)})"

@@ -9,7 +9,7 @@ import eu.kanade.tachiyomi.data.track.bangumi.dto.BGMSearchItem
 import eu.kanade.tachiyomi.data.track.bangumi.dto.BGMSearchResult
 import eu.kanade.tachiyomi.data.track.bangumi.dto.BGMSubject
 import eu.kanade.tachiyomi.data.track.bangumi.dto.Infobox
-import eu.kanade.tachiyomi.data.track.model.TrackMangaMetadata
+import eu.kanade.tachiyomi.data.track.model.TrackAnimeMetadata
 import eu.kanade.tachiyomi.data.track.model.TrackSearch
 import eu.kanade.tachiyomi.network.GET
 import eu.kanade.tachiyomi.network.POST
@@ -36,7 +36,7 @@ class BangumiApi(
 
     private val authClient = client.newBuilder().addInterceptor(interceptor).build()
 
-    suspend fun addLibManga(track: Track): Track {
+    suspend fun addLibAnime(track: Track): Track {
         return withIOContext {
             val body = FormBody.Builder()
                 .add("rating", track.score.toInt().toString())
@@ -48,7 +48,7 @@ class BangumiApi(
         }
     }
 
-    suspend fun updateLibManga(track: Track): Track {
+    suspend fun updateLibAnime(track: Track): Track {
         return withIOContext {
             // read status update
             val sbody = FormBody.Builder()
@@ -58,9 +58,9 @@ class BangumiApi(
             authClient.newCall(POST("$API_URL/collection/${track.remote_id}/update", body = sbody))
                 .awaitSuccess()
 
-            // chapter update
+            // episode update
             val body = FormBody.Builder()
-                .add("watched_eps", track.last_chapter_read.toInt().toString())
+                .add("watched_eps", track.last_episode_seen.toInt().toString())
                 .build()
             authClient.newCall(
                 POST("$API_URL/subject/${track.remote_id}/update/watched_eps", body = body),
@@ -94,7 +94,7 @@ class BangumiApi(
         }
     }
 
-    suspend fun findLibManga(track: Track): Track? {
+    suspend fun findLibAnime(track: Track): Track? {
         return withIOContext {
             with(json) {
                 authClient.newCall(GET("$API_URL/subject/${track.remote_id}"))
@@ -105,7 +105,7 @@ class BangumiApi(
         }
     }
 
-    suspend fun statusLibManga(track: Track): Track? {
+    suspend fun statusLibAnime(track: Track): Track? {
         return withIOContext {
             val urlUserRead = "$API_URL/collection/${track.remote_id}"
             val requestUserRead = Request.Builder()
@@ -114,7 +114,7 @@ class BangumiApi(
                 .get()
                 .build()
 
-            // TODO: get user readed chapter here
+            // TODO: get user readed episode here
             with(json) {
                 authClient.newCall(requestUserRead)
                     .awaitSuccess()
@@ -123,7 +123,7 @@ class BangumiApi(
                         if (it.code == 400) return@let null
 
                         track.status = it.status?.id!!
-                        track.last_chapter_read = it.epStatus!!.toDouble()
+                        track.last_episode_seen = it.epStatus!!.toDouble()
                         track.score = it.rating!!
                         track
                     }
@@ -131,14 +131,14 @@ class BangumiApi(
         }
     }
 
-    suspend fun getMangaMetadata(track: DomainTrack): TrackMangaMetadata {
+    suspend fun getAnimeMetadata(track: DomainTrack): TrackAnimeMetadata {
         return withIOContext {
             with(json) {
                 authClient.newCall(GET("${API_URL}/v0/subjects/${track.remoteId}"))
                     .awaitSuccess()
                     .parseAs<BGMSubject>()
                     .let {
-                        TrackMangaMetadata(
+                        TrackAnimeMetadata(
                             remoteId = it.id,
                             title = it.nameCn,
                             thumbnailUrl = it.images?.common,

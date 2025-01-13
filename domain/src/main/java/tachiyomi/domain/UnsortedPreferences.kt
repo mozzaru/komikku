@@ -20,7 +20,7 @@ class UnsortedPreferences(
 
     fun migrateFlags() = preferenceStore.getInt("migrate_flags", Int.MAX_VALUE)
 
-    fun defaultMangaOrder() = preferenceStore.getString("default_manga_order", "")
+    fun defaultAnimeOrder() = preferenceStore.getString("default_anime_order", "")
 
     fun migrationSources() = preferenceStore.getString("migrate_sources", "")
 

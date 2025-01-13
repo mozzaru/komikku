@@ -17,7 +17,7 @@ open class ReaderPage(
 
 ) : Page(index, url, imageUrl, null), ReaderItem {
 
-    open lateinit var chapter: ReaderChapter
+    open lateinit var episode: ReaderEpisode
 
     /** Value to check if a page is too wide to be doubled up */
     var fullPage: Boolean = false

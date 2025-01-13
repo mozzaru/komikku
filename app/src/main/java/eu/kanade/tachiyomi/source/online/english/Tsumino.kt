@@ -3,9 +3,9 @@ package eu.kanade.tachiyomi.source.online.english
 import android.content.Context
 import android.net.Uri
 import eu.kanade.tachiyomi.network.awaitSuccess
+import eu.kanade.tachiyomi.source.model.AnimesPage
 import eu.kanade.tachiyomi.source.model.FilterList
-import eu.kanade.tachiyomi.source.model.MangasPage
-import eu.kanade.tachiyomi.source.model.SManga
+import eu.kanade.tachiyomi.source.model.SAnime
 import eu.kanade.tachiyomi.source.online.HttpSource
 import eu.kanade.tachiyomi.source.online.MetadataSource
 import eu.kanade.tachiyomi.source.online.NamespaceSource
@@ -18,8 +18,8 @@ import exh.metadata.metadata.base.RaisedTag
 import exh.source.DelegatedHttpSource
 import exh.util.dropBlank
 import exh.util.trimAll
-import exh.util.urlImportFetchSearchManga
-import exh.util.urlImportFetchSearchMangaSuspend
+import exh.util.urlImportFetchSearchAnime
+import exh.util.urlImportFetchSearchAnimeSuspend
 import org.jsoup.nodes.Document
 import rx.Observable
 import java.text.SimpleDateFormat
@@ -35,20 +35,20 @@ class Tsumino(delegate: HttpSource, val context: Context) :
     override val lang = "en"
 
     // Support direct URL importing
-    @Deprecated("Use the non-RxJava API instead", replaceWith = ReplaceWith("getSearchManga"))
-    override fun fetchSearchManga(page: Int, query: String, filters: FilterList): Observable<MangasPage> =
-        urlImportFetchSearchManga(context, query) {
+    @Deprecated("Use the non-RxJava API instead", replaceWith = ReplaceWith("getSearchAnime"))
+    override fun fetchSearchAnime(page: Int, query: String, filters: FilterList): Observable<AnimesPage> =
+        urlImportFetchSearchAnime(context, query) {
             @Suppress("DEPRECATION")
-            super<DelegatedHttpSource>.fetchSearchManga(page, query, filters)
+            super<DelegatedHttpSource>.fetchSearchAnime(page, query, filters)
         }
 
-    override suspend fun getSearchManga(page: Int, query: String, filters: FilterList): MangasPage {
-        return urlImportFetchSearchMangaSuspend(context, query) {
-            super<DelegatedHttpSource>.getSearchManga(page, query, filters)
+    override suspend fun getSearchAnime(page: Int, query: String, filters: FilterList): AnimesPage {
+        return urlImportFetchSearchAnimeSuspend(context, query) {
+            super<DelegatedHttpSource>.getSearchAnime(page, query, filters)
         }
     }
 
-    override suspend fun mapUrlToMangaUrl(uri: Uri): String? {
+    override suspend fun mapUrlToAnimeUrl(uri: Uri): String? {
         val lcFirstPathSegment = uri.pathSegments.firstOrNull()?.lowercase(Locale.ROOT) ?: return null
         if (lcFirstPathSegment != "read" && lcFirstPathSegment != "book" && lcFirstPathSegment != "entry") {
             return null
@@ -56,9 +56,9 @@ class Tsumino(delegate: HttpSource, val context: Context) :
         return "https://tsumino.com/Book/Info/${uri.lastPathSegment}"
     }
 
-    override suspend fun getMangaDetails(manga: SManga): SManga {
-        val response = client.newCall(mangaDetailsRequest(manga)).awaitSuccess()
-        return parseToManga(manga, response.asJsoup())
+    override suspend fun getAnimeDetails(anime: SAnime): SAnime {
+        val response = client.newCall(animeDetailsRequest(anime)).awaitSuccess()
+        return parseToAnime(anime, response.asJsoup())
     }
 
     override suspend fun parseIntoMetadata(metadata: TsuminoSearchMetadata, input: Document) {

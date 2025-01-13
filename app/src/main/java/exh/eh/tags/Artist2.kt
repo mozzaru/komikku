@@ -4213,7 +4213,7 @@ object Artist2 : TagList {
         "artist:the amanoja9",
         "artist:the cat",
         "artist:the ch",
-        "artist:the dark mangaka",
+        "artist:the dark animeka",
         "artist:the destroyer awakened",
         "artist:the fabulous croissant",
         "artist:the foxxx",

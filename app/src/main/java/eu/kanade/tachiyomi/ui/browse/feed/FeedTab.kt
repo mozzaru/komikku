@@ -27,20 +27,20 @@ import eu.kanade.presentation.browse.components.FeedSortAlphabeticallyDialog
 import eu.kanade.presentation.browse.components.SourceFeedDeleteDialog
 import eu.kanade.presentation.components.AppBar
 import eu.kanade.presentation.components.TabContent
-import eu.kanade.tachiyomi.ui.browse.AddDuplicateMangaDialog
+import eu.kanade.tachiyomi.ui.anime.AnimeScreen
+import eu.kanade.tachiyomi.ui.browse.AddDuplicateAnimeDialog
 import eu.kanade.tachiyomi.ui.browse.AllowDuplicateDialog
 import eu.kanade.tachiyomi.ui.browse.BulkFavoriteScreenModel
-import eu.kanade.tachiyomi.ui.browse.ChangeMangaCategoryDialog
-import eu.kanade.tachiyomi.ui.browse.ChangeMangasCategoryDialog
-import eu.kanade.tachiyomi.ui.browse.RemoveMangaDialog
+import eu.kanade.tachiyomi.ui.browse.ChangeAnimeCategoryDialog
+import eu.kanade.tachiyomi.ui.browse.ChangeAnimesCategoryDialog
+import eu.kanade.tachiyomi.ui.browse.RemoveAnimeDialog
 import eu.kanade.tachiyomi.ui.browse.bulkSelectionButton
 import eu.kanade.tachiyomi.ui.browse.source.browse.BrowseSourceScreen
 import eu.kanade.tachiyomi.ui.home.HomeScreen
-import eu.kanade.tachiyomi.ui.manga.MangaScreen
 import kotlinx.collections.immutable.persistentListOf
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
-import tachiyomi.domain.source.interactor.GetRemoteManga
+import tachiyomi.domain.source.interactor.GetRemoteAnime
 import tachiyomi.i18n.MR
 import tachiyomi.i18n.kmk.KMR
 import tachiyomi.i18n.sy.SYMR
@@ -164,10 +164,10 @@ fun feedTab(
                                     source.id,
                                     // KMK -->
                                     listingQuery = if (!source.supportsLatest) {
-                                        GetRemoteManga.QUERY_POPULAR
+                                        GetRemoteAnime.QUERY_POPULAR
                                     } else {
                                         // KMK <--
-                                        GetRemoteManga.QUERY_LATEST
+                                        GetRemoteAnime.QUERY_LATEST
                                     },
                                 ),
                             )
@@ -175,27 +175,27 @@ fun feedTab(
                         // KMK -->
                         onLongClickFeed = screenModel::openActionsDialog,
                         // KMK <--
-                        onClickManga = { manga ->
+                        onClickAnime = { anime ->
                             // KMK -->
                             if (bulkFavoriteState.selectionMode) {
-                                bulkFavoriteScreenModel.toggleSelection(manga)
+                                bulkFavoriteScreenModel.toggleSelection(anime)
                             } else {
                                 // KMK <--
-                                navigator.push(MangaScreen(manga.id, true))
+                                navigator.push(AnimeScreen(anime.id, true))
                             }
                         },
                         // KMK -->
-                        onLongClickManga = { manga ->
+                        onLongClickAnime = { anime ->
                             if (!bulkFavoriteState.selectionMode) {
-                                bulkFavoriteScreenModel.addRemoveManga(manga, haptic)
+                                bulkFavoriteScreenModel.addRemoveAnime(anime, haptic)
                             } else {
-                                navigator.push(MangaScreen(manga.id, true))
+                                navigator.push(AnimeScreen(anime.id, true))
                             }
                         },
                         selection = bulkFavoriteState.selection,
                         // KMK <--
                         onRefresh = screenModel::init,
-                        getMangaState = { manga -> screenModel.getManga(initialManga = manga) },
+                        getAnimeState = { anime -> screenModel.getAnime(initialAnime = anime) },
                     )
                 }
             }
@@ -260,14 +260,14 @@ fun feedTab(
 
             // KMK -->
             when (bulkFavoriteState.dialog) {
-                is BulkFavoriteScreenModel.Dialog.AddDuplicateManga ->
-                    AddDuplicateMangaDialog(bulkFavoriteScreenModel)
-                is BulkFavoriteScreenModel.Dialog.RemoveManga ->
-                    RemoveMangaDialog(bulkFavoriteScreenModel)
-                is BulkFavoriteScreenModel.Dialog.ChangeMangaCategory ->
-                    ChangeMangaCategoryDialog(bulkFavoriteScreenModel)
-                is BulkFavoriteScreenModel.Dialog.ChangeMangasCategory ->
-                    ChangeMangasCategoryDialog(bulkFavoriteScreenModel)
+                is BulkFavoriteScreenModel.Dialog.AddDuplicateAnime ->
+                    AddDuplicateAnimeDialog(bulkFavoriteScreenModel)
+                is BulkFavoriteScreenModel.Dialog.RemoveAnime ->
+                    RemoveAnimeDialog(bulkFavoriteScreenModel)
+                is BulkFavoriteScreenModel.Dialog.ChangeAnimeCategory ->
+                    ChangeAnimeCategoryDialog(bulkFavoriteScreenModel)
+                is BulkFavoriteScreenModel.Dialog.ChangeAnimesCategory ->
+                    ChangeAnimesCategoryDialog(bulkFavoriteScreenModel)
                 is BulkFavoriteScreenModel.Dialog.AllowDuplicate ->
                     AllowDuplicateDialog(bulkFavoriteScreenModel)
                 else -> {}

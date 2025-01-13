@@ -25,7 +25,7 @@
     <!-- Preferences -->
       <!-- Appearance section -->
     <string name="pref_custom_theme_style">Custom theme style</string>
-    <string name="pref_manga_info">Manga Info</string>
+    <string name="pref_anime_info">Anime Info</string>
     <string name="pref_theme_cover_based">Theme based on cover</string>
     <string name="pref_theme_cover_based_style">Cover based theme style</string>
     <string name="pref_theme_cover_based_style_tonalspot">Tonal Spot</string>
@@ -42,12 +42,12 @@
     <string name="pref_panorama_cover_flow">Panorama Cover Flow</string>
     <string name="pref_panorama_cover_flow_summary">Show panorama cover in Global Search &amp; Suggestions</string>
     <string name="action_display_comfortable_grid_panorama">Panorama comfortable grid</string>
-    <string name="pref_expand_related_mangas">Expand Suggestions</string>
-    <string name="pref_expand_related_mangas_summary">If turned off, Suggestions won\'t automatically load &amp; show expanded</string>
-    <string name="put_related_mangas_in_overflow">Suggestions in overflow</string>
-    <string name="put_related_mangas_in_overflow_summary">Put the Suggestions button in the overflow menu instead of on the entry page</string>
-    <string name="pref_show_home_on_related_mangas">Home from Suggestions</string>
-    <string name="pref_show_home_on_related_mangas_summary">Show an icon while browsing Suggestions to navigate directly back to Home</string>
+    <string name="pref_expand_related_animes">Expand Suggestions</string>
+    <string name="pref_expand_related_animes_summary">If turned off, Suggestions won\'t automatically load &amp; show expanded</string>
+    <string name="put_related_animes_in_overflow">Suggestions in overflow</string>
+    <string name="put_related_animes_in_overflow_summary">Put the Suggestions button in the overflow menu instead of on the entry page</string>
+    <string name="pref_show_home_on_related_animes">Home from Suggestions</string>
+    <string name="pref_show_home_on_related_animes_summary">Show an icon while browsing Suggestions to navigate directly back to Home</string>
     <string name="theme_cloudflare">Cloudflare</string>
     <string name="theme_cottoncandy">Cotton Candy</string>
     <string name="theme_doom">Doom</string>
@@ -91,11 +91,11 @@
     <string name="download_cache_renew_interval_6hour">6 hours</string>
     <string name="download_cache_renew_interval_12hour">12 hours</string>
     <string name="download_cache_renew_interval_24hour">1 day</string>
-    <string name="download_cache_renew_interval_info">If set to "manual", either refresh each manga or using the "Invalidate downloads index" action in "Advanced"</string>
+    <string name="download_cache_renew_interval_info">If set to "manual", either refresh each Anime or using the "Invalidate downloads index" action in "Advanced"</string>
 
     <!-- Tracking section -->
     <string name="pref_auto_sync_progress_from_trackers">Auto sync progress from Trackers</string>
-    <string name="sync_progress_from_trackers_up_to_chapter">Sync progress from Trackers up to chapter %d</string>
+    <string name="sync_progress_from_trackers_up_to_episode">Sync progress from Trackers up to episode %d</string>
 
     <!-- Sync section -->
     <string name="pref_show_restoring_progress_banner">Show restoring progress banner</string>
@@ -119,11 +119,11 @@
       <!-- About section -->
     <string name="whats_coming">What\'s coming (soon)</string>
 
-    <!-- Manga info -->
-    <string name="action_allow_duplicate_manga">Allow it</string>
-    <string name="action_skip_duplicate_manga">Skip it</string>
-    <string name="action_allow_all_duplicate_manga">Allow all</string>
-    <string name="action_skip_all_duplicate_manga">Skip all</string>
+    <!-- Anime info -->
+    <string name="action_allow_duplicate_anime">Allow it</string>
+    <string name="action_skip_duplicate_anime">Skip it</string>
+    <string name="action_allow_all_duplicate_anime">Allow all</string>
+    <string name="action_skip_all_duplicate_anime">Skip all</string>
 
     <!--UpdateCheck-->
     <string name="update_check_try_now">Try now</string>
@@ -140,10 +140,10 @@
     <string name="manual_download">Manual download</string>
 
     <!-- Browse settings -->
-    <string name="pref_source_related_mangas">Suggestions</string>
-    <string name="pref_source_related_mangas_summary">Show source-website's Suggestions while viewing entry</string>
-    <string name="related_mangas_website_suggestions">Website Suggestions</string>
-    <string name="related_mangas_more">More like these...</string>
+    <string name="pref_source_related_animes">Suggestions</string>
+    <string name="pref_source_related_animes_summary">Show source-website's Suggestions while viewing entry</string>
+    <string name="related_animes_website_suggestions">Website Suggestions</string>
+    <string name="related_animes_more">More like these...</string>
     <string name="saved_searches_add_feed">Saved Searches (Hold to add to Feed)</string>
     <string name="saved_searches_delete">Saved Searches (Hold to delete)</string>
 

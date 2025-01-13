@@ -1,0 +1,178 @@
+package tachiyomi.data.anime
+
+import eu.kanade.tachiyomi.source.model.UpdateStrategy
+import tachiyomi.domain.anime.model.Anime
+import tachiyomi.domain.library.model.LibraryAnime
+import tachiyomi.view.LibraryView
+
+object AnimeMapper {
+    fun mapAnime(
+        id: Long,
+        source: Long,
+        url: String,
+        artist: String?,
+        author: String?,
+        description: String?,
+        genre: List<String>?,
+        title: String,
+        status: Long,
+        thumbnailUrl: String?,
+        favorite: Boolean,
+        lastUpdate: Long?,
+        nextUpdate: Long?,
+        initialized: Boolean,
+        viewerFlags: Long,
+        episodeFlags: Long,
+        coverLastModified: Long,
+        dateAdded: Long,
+        // SY -->
+        @Suppress("UNUSED_PARAMETER")
+        filteredScanlators: String?,
+        // SY <--
+        updateStrategy: UpdateStrategy,
+        calculateInterval: Long,
+        lastModifiedAt: Long,
+        favoriteModifiedAt: Long?,
+        version: Long,
+        @Suppress("UNUSED_PARAMETER")
+        isSyncing: Long,
+    ): Anime = Anime(
+        id = id,
+        source = source,
+        favorite = favorite,
+        lastUpdate = lastUpdate ?: 0,
+        nextUpdate = nextUpdate ?: 0,
+        fetchInterval = calculateInterval.toInt(),
+        dateAdded = dateAdded,
+        viewerFlags = viewerFlags,
+        episodeFlags = episodeFlags,
+        coverLastModified = coverLastModified,
+        url = url,
+        // SY -->
+        ogTitle = title,
+        ogArtist = artist,
+        ogAuthor = author,
+        ogThumbnailUrl = thumbnailUrl,
+        ogDescription = description,
+        ogGenre = genre,
+        ogStatus = status,
+        // SY <--
+        updateStrategy = updateStrategy,
+        initialized = initialized,
+        lastModifiedAt = lastModifiedAt,
+        favoriteModifiedAt = favoriteModifiedAt,
+        version = version,
+    )
+
+    fun mapLibraryAnime(
+        id: Long,
+        source: Long,
+        url: String,
+        artist: String?,
+        author: String?,
+        description: String?,
+        genre: List<String>?,
+        title: String,
+        status: Long,
+        thumbnailUrl: String?,
+        favorite: Boolean,
+        lastUpdate: Long?,
+        nextUpdate: Long?,
+        initialized: Boolean,
+        viewerFlags: Long,
+        episodeFlags: Long,
+        coverLastModified: Long,
+        dateAdded: Long,
+        // SY -->
+        @Suppress("UNUSED_PARAMETER")
+        filteredScanlators: String?,
+        // SY <--
+        updateStrategy: UpdateStrategy,
+        calculateInterval: Long,
+        lastModifiedAt: Long,
+        favoriteModifiedAt: Long?,
+        version: Long,
+        isSyncing: Long,
+        totalCount: Long,
+        seenCount: Double,
+        latestUpload: Long,
+        episodeFetchedAt: Long,
+        lastSeen: Long,
+        bookmarkCount: Double,
+        category: Long,
+    ): LibraryAnime = LibraryAnime(
+        anime = mapAnime(
+            id,
+            source,
+            url,
+            artist,
+            author,
+            description,
+            genre,
+            title,
+            status,
+            thumbnailUrl,
+            favorite,
+            lastUpdate,
+            nextUpdate,
+            initialized,
+            viewerFlags,
+            episodeFlags,
+            coverLastModified,
+            dateAdded,
+            // SY -->
+            null,
+            // SY <--
+            updateStrategy,
+            calculateInterval,
+            lastModifiedAt,
+            favoriteModifiedAt,
+            version,
+            isSyncing,
+        ),
+        category = category,
+        totalEpisodes = totalCount,
+        seenCount = seenCount.toLong(),
+        bookmarkCount = bookmarkCount.toLong(),
+        latestUpload = latestUpload,
+        episodeFetchedAt = episodeFetchedAt,
+        lastSeen = lastSeen,
+    )
+
+    fun mapLibraryView(libraryView: LibraryView): LibraryAnime {
+        return LibraryAnime(
+            anime = Anime(
+                id = libraryView._id,
+                source = libraryView.source,
+                favorite = libraryView.favorite,
+                lastUpdate = libraryView.last_update ?: 0,
+                nextUpdate = libraryView.next_update ?: 0,
+                dateAdded = libraryView.date_added,
+                viewerFlags = libraryView.viewer,
+                episodeFlags = libraryView.episode_flags,
+                coverLastModified = libraryView.cover_last_modified,
+                url = libraryView.url,
+                ogTitle = libraryView.title,
+                ogArtist = libraryView.artist,
+                ogAuthor = libraryView.author,
+                ogDescription = libraryView.description,
+                ogGenre = libraryView.genre,
+                ogStatus = libraryView.status,
+                ogThumbnailUrl = libraryView.thumbnail_url,
+                updateStrategy = libraryView.update_strategy,
+                initialized = libraryView.initialized,
+                fetchInterval = libraryView.calculate_interval.toInt(),
+                lastModifiedAt = libraryView.last_modified_at,
+                favoriteModifiedAt = libraryView.favorite_modified_at,
+                version = libraryView.version,
+            ),
+            category = libraryView.category,
+            totalEpisodes = libraryView.totalCount,
+            seenCount = libraryView.seenCount.toLong(),
+            bookmarkCount = libraryView.bookmarkCount.toLong(),
+            latestUpload = libraryView.latestUpload,
+            episodeFetchedAt = libraryView.episodeFetchedAt,
+            lastSeen = libraryView.lastSeen,
+        )
+    }
+}

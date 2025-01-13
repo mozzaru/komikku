@@ -141,12 +141,12 @@ class MigrationBottomSheetDialogState(private val onStartMigration: State<(extra
     fun initPreferences(binding: MigrationBottomSheetBinding) {
         val flags = preferences.migrateFlags().get()
 
-        binding.migChapters.isChecked = MigrationFlags.hasChapters(flags)
+        binding.migChapters.isChecked = MigrationFlags.hasEpisodes(flags)
         binding.migCategories.isChecked = MigrationFlags.hasCategories(flags)
         binding.migTracking.isChecked = MigrationFlags.hasTracks(flags)
         binding.migCustomCover.isChecked = MigrationFlags.hasCustomCover(flags)
         binding.migExtra.isChecked = MigrationFlags.hasExtra(flags)
-        binding.migDeleteDownloaded.isChecked = MigrationFlags.hasDeleteChapters(flags)
+        binding.migDeleteDownloaded.isChecked = MigrationFlags.hasDeleteEpisodes(flags)
 
         binding.migChapters.setOnCheckedChangeListener { _, _ -> setFlags(binding) }
         binding.migCategories.setOnCheckedChangeListener { _, _ -> setFlags(binding) }

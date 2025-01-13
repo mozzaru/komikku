@@ -6,14 +6,14 @@ CREATE TABLE categories(
     name TEXT NOT NULL,
     sort INTEGER NOT NULL,
     flags INTEGER NOT NULL,
-    manga_order TEXT AS List<Long> NOT NULL,
+    anime_order TEXT AS List<Long> NOT NULL,
     -- KMK -->
     hidden INTEGER NOT NULL DEFAULT 0
     -- KMK <--
 );
 
 -- Insert system category
-INSERT OR IGNORE INTO categories(_id, name, sort, flags, manga_order, hidden) VALUES (0, "", -1, 0, "", 0);
+INSERT OR IGNORE INTO categories(_id, name, sort, flags, anime_order, hidden) VALUES (0, "", -1, 0, "", 0);
 -- Disallow deletion of default category
 CREATE TRIGGER IF NOT EXISTS system_category_delete_trigger BEFORE DELETE
 ON categories
@@ -41,7 +41,7 @@ hidden
 FROM categories
 ORDER BY sort;
 
-getCategoriesByMangaId:
+getCategoriesByAnimeId:
 SELECT
 C._id AS id,
 C.name,
@@ -51,12 +51,12 @@ C.flags,
 C.hidden
 -- KMK <--
 FROM categories C
-JOIN mangas_categories MC
-ON C._id = MC.category_id
-WHERE MC.manga_id = :mangaId;
+JOIN animes_categories AC
+ON C._id = AC.category_id
+WHERE AC.anime_id = :animeId;
 
 insert:
-INSERT INTO categories(name, sort, flags, manga_order, hidden)
+INSERT INTO categories(name, sort, flags, anime_order, hidden)
 VALUES (:name, :order, :flags, "", :hidden);
 
 delete:

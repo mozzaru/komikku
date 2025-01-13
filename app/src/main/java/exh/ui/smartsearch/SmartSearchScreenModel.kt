@@ -7,8 +7,8 @@ import eu.kanade.tachiyomi.ui.browse.source.SourcesScreen
 import exh.smartsearch.SmartSearchEngine
 import kotlinx.coroutines.CancellationException
 import tachiyomi.core.common.util.lang.launchIO
-import tachiyomi.domain.manga.interactor.NetworkToLocalManga
-import tachiyomi.domain.manga.model.Manga
+import tachiyomi.domain.anime.interactor.NetworkToLocalAnime
+import tachiyomi.domain.anime.model.Anime
 import tachiyomi.domain.source.service.SourceManager
 import uy.kohesive.injekt.Injekt
 import uy.kohesive.injekt.api.get
@@ -16,7 +16,7 @@ import uy.kohesive.injekt.api.get
 class SmartSearchScreenModel(
     private val sourceId: Long,
     private val config: SourcesScreen.SmartSearchConfig,
-    private val networkToLocalManga: NetworkToLocalManga = Injekt.get(),
+    private val networkToLocalAnime: NetworkToLocalAnime = Injekt.get(),
     private val sourceManager: SourceManager = Injekt.get(),
 ) : StateScreenModel<SmartSearchScreenModel.SearchResults?>(null) {
     private val smartSearchEngine = SmartSearchEngine()
@@ -26,10 +26,10 @@ class SmartSearchScreenModel(
     init {
         screenModelScope.launchIO {
             val result = try {
-                val resultManga = smartSearchEngine.smartSearch(source, config.origTitle)
-                if (resultManga != null) {
-                    val localManga = networkToLocalManga.await(resultManga)
-                    SearchResults.Found(localManga)
+                val resultAnime = smartSearchEngine.smartSearch(source, config.origTitle)
+                if (resultAnime != null) {
+                    val localAnime = networkToLocalAnime.await(resultAnime)
+                    SearchResults.Found(localAnime)
                 } else {
                     SearchResults.NotFound
                 }
@@ -46,7 +46,7 @@ class SmartSearchScreenModel(
     }
 
     sealed class SearchResults {
-        data class Found(val manga: Manga) : SearchResults()
+        data class Found(val anime: Anime) : SearchResults()
         data object NotFound : SearchResults()
         data object Error : SearchResults()
     }

@@ -14,7 +14,7 @@ fun UpdatesDeleteConfirmationDialog(
 ) {
     AlertDialog(
         text = {
-            Text(text = stringResource(MR.strings.confirm_delete_chapters))
+            Text(text = stringResource(MR.strings.confirm_delete_episodes))
         },
         onDismissRequest = onDismissRequest,
         confirmButton = {

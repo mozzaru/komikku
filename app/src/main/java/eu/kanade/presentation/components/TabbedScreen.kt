@@ -66,8 +66,8 @@ fun TabbedScreen(
                     onChangeCategoryClick = bulkFavoriteScreenModel::addFavorite,
                     onSelectAll = {
                         feedState.items?.forEach {
-                            it.results?.forEach { manga ->
-                                bulkFavoriteScreenModel.select(manga)
+                            it.results?.forEach { anime ->
+                                bulkFavoriteScreenModel.select(anime)
                             }
                         }
                     },

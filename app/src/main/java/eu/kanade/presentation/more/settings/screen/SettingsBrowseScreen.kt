@@ -60,9 +60,9 @@ object SettingsBrowseScreen : SearchableSettings {
                 preferenceItems = persistentListOf(
                     // KMK -->
                     Preference.PreferenceItem.SwitchPreference(
-                        pref = sourcePreferences.relatedMangas(),
-                        title = stringResource(KMR.strings.pref_source_related_mangas),
-                        subtitle = stringResource(KMR.strings.pref_source_related_mangas_summary),
+                        pref = sourcePreferences.relatedAnimes(),
+                        title = stringResource(KMR.strings.pref_source_related_animes),
+                        subtitle = stringResource(KMR.strings.pref_source_related_animes_summary),
                     ),
                     // KMK <--
                     kotlin.run {

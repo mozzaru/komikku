@@ -1,9 +1,9 @@
 package exh.md.handlers
 
 import eu.kanade.tachiyomi.data.database.models.Track
-import eu.kanade.tachiyomi.source.model.SChapter
-import eu.kanade.tachiyomi.source.model.SManga
-import exh.md.dto.ChapterDataDto
+import eu.kanade.tachiyomi.source.model.SAnime
+import eu.kanade.tachiyomi.source.model.SEpisode
+import exh.md.dto.EpisodeDataDto
 import exh.md.service.MangaDexService
 import exh.md.utils.MdConstants
 import exh.md.utils.MdUtil
@@ -17,26 +17,26 @@ import rx.Observable
 import tachiyomi.core.common.util.lang.runAsObservable
 import tachiyomi.core.common.util.lang.withIOContext
 
-class MangaHandler(
+class AnimeHandler(
     private val lang: String,
     private val service: MangaDexService,
-    private val apiMangaParser: ApiMangaParser,
+    private val apiAnimeParser: ApiAnimeParser,
     private val followsHandler: FollowsHandler,
 ) {
-    suspend fun getMangaDetails(
-        manga: SManga,
+    suspend fun getAnimeDetails(
+        anime: SAnime,
         sourceId: Long,
         coverQuality: String,
         tryUsingFirstVolumeCover: Boolean,
         altTitlesInDesc: Boolean,
-    ): SManga {
+    ): SAnime {
         return coroutineScope {
-            val mangaId = MdUtil.getMangaId(manga.url)
-            val response = async(Dispatchers.IO) { service.viewManga(mangaId) }
-            val simpleChapters = async(Dispatchers.IO) { getSimpleChapters(manga) }
+            val animeId = MdUtil.getAnimeId(anime.url)
+            val response = async(Dispatchers.IO) { service.viewAnime(animeId) }
+            val simpleEpisodes = async(Dispatchers.IO) { getSimpleEpisodes(anime) }
             val statistics =
                 async(Dispatchers.IO) {
-                    kotlin.runCatching { service.mangasRating(mangaId) }.getOrNull()?.statistics?.get(mangaId)
+                    kotlin.runCatching { service.animesRating(animeId) }.getOrNull()?.statistics?.get(animeId)
                 }
             val responseData = response.await()
             val coverFileName = if (tryUsingFirstVolumeCover) {
@@ -46,11 +46,11 @@ class MangaHandler(
             } else {
                 null
             }
-            apiMangaParser.parseToManga(
-                manga,
+            apiAnimeParser.parseToAnime(
+                anime,
                 sourceId,
                 responseData,
-                simpleChapters.await(),
+                simpleEpisodes.await(),
                 statistics.await(),
                 coverFileName?.await(),
                 coverQuality,
@@ -59,25 +59,25 @@ class MangaHandler(
         }
     }
 
-    fun fetchMangaDetailsObservable(manga: SManga, sourceId: Long, coverQuality: String, tryUsingFirstVolumeCover: Boolean, altTitlesInDesc: Boolean): Observable<SManga> {
+    fun fetchAnimeDetailsObservable(anime: SAnime, sourceId: Long, coverQuality: String, tryUsingFirstVolumeCover: Boolean, altTitlesInDesc: Boolean): Observable<SAnime> {
         return runAsObservable {
-            getMangaDetails(manga, sourceId, coverQuality, tryUsingFirstVolumeCover, altTitlesInDesc)
+            getAnimeDetails(anime, sourceId, coverQuality, tryUsingFirstVolumeCover, altTitlesInDesc)
         }
     }
 
-    fun fetchChapterListObservable(
-        manga: SManga,
+    fun fetchEpisodeListObservable(
+        anime: SAnime,
         blockedGroups: String,
         blockedUploaders: String,
-    ): Observable<List<SChapter>> = runAsObservable {
-        getChapterList(manga, blockedGroups, blockedUploaders)
+    ): Observable<List<SEpisode>> = runAsObservable {
+        getEpisodeList(anime, blockedGroups, blockedUploaders)
     }
 
-    suspend fun getChapterList(manga: SManga, blockedGroups: String, blockedUploaders: String): List<SChapter> {
+    suspend fun getEpisodeList(anime: SAnime, blockedGroups: String, blockedUploaders: String): List<SEpisode> {
         return withIOContext {
             val results = mdListCall {
-                service.viewChapters(
-                    MdUtil.getMangaId(manga.url),
+                service.viewEpisodes(
+                    MdUtil.getAnimeId(anime.url),
                     lang,
                     it,
                     blockedGroups,
@@ -87,32 +87,32 @@ class MangaHandler(
 
             val groupMap = getGroupMap(results)
 
-            apiMangaParser.chapterListParse(results, groupMap)
+            apiAnimeParser.episodeListParse(results, groupMap)
         }
     }
 
-    private fun getGroupMap(results: List<ChapterDataDto>): Map<String, String> {
-        return results.map { chapter -> chapter.relationships }
+    private fun getGroupMap(results: List<EpisodeDataDto>): Map<String, String> {
+        return results.map { episode -> episode.relationships }
             .flatten()
             .filter { it.type == MdConstants.Types.scanlator }
             .map { it.id to it.attributes!!.name!! }
             .toMap()
     }
 
-    suspend fun fetchRandomMangaId(): String {
+    suspend fun fetchRandomAnimeId(): String {
         return withIOContext {
-            service.randomManga().data.id
+            service.randomAnime().data.id
         }
     }
 
     suspend fun getTrackingInfo(track: Track): Pair<Track, MangaDexSearchMetadata?> {
         return withIOContext {
             /*val metadata = async {
-                val mangaUrl = MdUtil.buildMangaUrl(MdUtil.getMangaId(track.tracking_url))
-                val manga = MangaInfo(mangaUrl, track.title)
-                val response = client.newCall(mangaRequest(manga)).await()
+                val animeUrl = MdUtil.buildAnimeUrl(MdUtil.getAnimeId(track.tracking_url))
+                val anime = AnimeInfo(animeUrl, track.title)
+                val response = client.newCall(animeRequest(anime)).await()
                 val metadata = MangaDexSearchMetadata()
-                apiMangaParser.parseIntoMetadata(metadata, response, emptyList())
+                apiAnimeParser.parseIntoMetadata(metadata, response, emptyList())
                 metadata
             }*/
             val remoteTrack = async {
@@ -122,29 +122,29 @@ class MangaHandler(
         }
     }
 
-    suspend fun getMangaFromChapterId(chapterId: String): String? {
+    suspend fun getAnimeFromEpisodeId(episodeId: String): String? {
         return withIOContext {
-            apiMangaParser.chapterParseForMangaId(service.viewChapter(chapterId))
+            apiAnimeParser.episodeParseForAnimeId(service.viewEpisode(episodeId))
         }
     }
 
-    suspend fun getMangaMetadata(
+    suspend fun getAnimeMetadata(
         track: Track,
         sourceId: Long,
         coverQuality: String,
         tryUsingFirstVolumeCover: Boolean,
         altTitlesInDesc: Boolean,
-    ): SManga? {
+    ): SAnime? {
         return withIOContext {
-            val mangaId = MdUtil.getMangaId(track.tracking_url)
-            val response = service.viewManga(mangaId)
+            val animeId = MdUtil.getAnimeId(track.tracking_url)
+            val response = service.viewAnime(animeId)
             val coverFileName = if (tryUsingFirstVolumeCover) {
                 service.fetchFirstVolumeCover(response)
             } else {
                 null
             }
-            apiMangaParser.parseToManga(
-                SManga.create().apply {
+            apiAnimeParser.parseToAnime(
+                SAnime.create().apply {
                     url = track.tracking_url
                 },
                 sourceId,
@@ -158,15 +158,15 @@ class MangaHandler(
         }
     }
 
-    private suspend fun getSimpleChapters(manga: SManga): List<String> {
-        return runCatching { service.aggregateChapters(MdUtil.getMangaId(manga.url), lang) }
+    private suspend fun getSimpleEpisodes(anime: SAnime): List<String> {
+        return runCatching { service.aggregateEpisodes(MdUtil.getAnimeId(anime.url), lang) }
             .onFailure {
                 if (it is CancellationException) throw it
             }
             .map { dto ->
                 dto.volumes.values
-                    .flatMap { it.chapters.values }
-                    .map { it.chapter }
+                    .flatMap { it.episodes.values }
+                    .map { it.episode }
             }
             .getOrElse { emptyList() }
     }

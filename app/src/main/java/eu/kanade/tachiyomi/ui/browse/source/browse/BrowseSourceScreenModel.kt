@@ -15,9 +15,9 @@ import cafe.adriel.voyager.core.model.StateScreenModel
 import cafe.adriel.voyager.core.model.screenModelScope
 import dev.icerock.moko.resources.StringResource
 import eu.kanade.core.preference.asState
+import eu.kanade.domain.anime.interactor.UpdateAnime
+import eu.kanade.domain.anime.model.toDomainAnime
 import eu.kanade.domain.base.BasePreferences
-import eu.kanade.domain.manga.interactor.UpdateManga
-import eu.kanade.domain.manga.model.toDomainManga
 import eu.kanade.domain.source.interactor.GetExhSavedSearch
 import eu.kanade.domain.source.service.SourcePreferences
 import eu.kanade.domain.track.interactor.AddTracks
@@ -60,19 +60,19 @@ import tachiyomi.core.common.util.lang.launchIO
 import tachiyomi.core.common.util.lang.launchNonCancellable
 import tachiyomi.core.common.util.lang.withUIContext
 import tachiyomi.domain.UnsortedPreferences
+import tachiyomi.domain.anime.interactor.GetAnime
+import tachiyomi.domain.anime.interactor.GetDuplicateLibraryAnime
+import tachiyomi.domain.anime.interactor.GetFlatMetadataById
+import tachiyomi.domain.anime.interactor.NetworkToLocalAnime
+import tachiyomi.domain.anime.model.Anime
+import tachiyomi.domain.anime.model.toAnimeUpdate
 import tachiyomi.domain.category.interactor.GetCategories
-import tachiyomi.domain.category.interactor.SetMangaCategories
+import tachiyomi.domain.category.interactor.SetAnimeCategories
 import tachiyomi.domain.category.model.Category
-import tachiyomi.domain.chapter.interactor.SetMangaDefaultChapterFlags
+import tachiyomi.domain.episode.interactor.SetAnimeDefaultEpisodeFlags
 import tachiyomi.domain.library.service.LibraryPreferences
-import tachiyomi.domain.manga.interactor.GetDuplicateLibraryManga
-import tachiyomi.domain.manga.interactor.GetFlatMetadataById
-import tachiyomi.domain.manga.interactor.GetManga
-import tachiyomi.domain.manga.interactor.NetworkToLocalManga
-import tachiyomi.domain.manga.model.Manga
-import tachiyomi.domain.manga.model.toMangaUpdate
 import tachiyomi.domain.source.interactor.DeleteSavedSearchById
-import tachiyomi.domain.source.interactor.GetRemoteManga
+import tachiyomi.domain.source.interactor.GetRemoteAnime
 import tachiyomi.domain.source.interactor.InsertSavedSearch
 import tachiyomi.domain.source.model.EXHSavedSearch
 import tachiyomi.domain.source.model.SavedSearch
@@ -97,14 +97,14 @@ open class BrowseSourceScreenModel(
     basePreferences: BasePreferences = Injekt.get(),
     private val libraryPreferences: LibraryPreferences = Injekt.get(),
     private val coverCache: CoverCache = Injekt.get(),
-    private val getRemoteManga: GetRemoteManga = Injekt.get(),
-    private val getDuplicateLibraryManga: GetDuplicateLibraryManga = Injekt.get(),
+    private val getRemoteAnime: GetRemoteAnime = Injekt.get(),
+    private val getDuplicateLibraryAnime: GetDuplicateLibraryAnime = Injekt.get(),
     private val getCategories: GetCategories = Injekt.get(),
-    private val setMangaCategories: SetMangaCategories = Injekt.get(),
-    private val setMangaDefaultChapterFlags: SetMangaDefaultChapterFlags = Injekt.get(),
-    private val getManga: GetManga = Injekt.get(),
-    private val networkToLocalManga: NetworkToLocalManga = Injekt.get(),
-    private val updateManga: UpdateManga = Injekt.get(),
+    private val setAnimeCategories: SetAnimeCategories = Injekt.get(),
+    private val setAnimeDefaultEpisodeFlags: SetAnimeDefaultEpisodeFlags = Injekt.get(),
+    private val getAnime: GetAnime = Injekt.get(),
+    private val networkToLocalAnime: NetworkToLocalAnime = Injekt.get(),
+    private val updateAnime: UpdateAnime = Injekt.get(),
     private val addTracks: AddTracks = Injekt.get(),
 
     // SY -->
@@ -203,7 +203,7 @@ open class BrowseSourceScreenModel(
      * Flow of Pager flow tied to [State.listing]
      */
     private val hideInLibraryItems = sourcePreferences.hideInLibraryItems().get()
-    val mangaPagerFlowFlow = state.map { it.listing }
+    val animePagerFlowFlow = state.map { it.listing }
         .distinctUntilChanged()
         .map { listing ->
             Pager(PagingConfig(pageSize = 25)) {
@@ -212,8 +212,8 @@ open class BrowseSourceScreenModel(
                 // SY <--
             }.flow.map { pagingData ->
                 pagingData.map { (it, metadata) ->
-                    networkToLocalManga.await(it.toDomainManga(sourceId))
-                        .let { localManga -> getManga.subscribe(localManga.url, localManga.source) }
+                    networkToLocalAnime.await(it.toDomainAnime(sourceId))
+                        .let { localAnime -> getAnime.subscribe(localAnime.url, localAnime.source) }
                         .filterNotNull()
                         // SY -->
                         .combineMetadata(metadata)
@@ -237,16 +237,16 @@ open class BrowseSourceScreenModel(
     }
 
     // SY -->
-    open fun Flow<Manga>.combineMetadata(metadata: RaisedSearchMetadata?): Flow<Pair<Manga, RaisedSearchMetadata?>> {
+    open fun Flow<Anime>.combineMetadata(metadata: RaisedSearchMetadata?): Flow<Pair<Anime, RaisedSearchMetadata?>> {
         val metadataSource = source.getMainSource<MetadataSource<*, *>>()
-        return flatMapLatest { manga ->
+        return flatMapLatest { anime ->
             if (metadataSource != null) {
-                getFlatMetadataById.subscribe(manga.id)
+                getFlatMetadataById.subscribe(anime.id)
                     .map { flatMetadata ->
-                        manga to (flatMetadata?.raise(metadataSource.metaClass) ?: metadata)
+                        anime to (flatMetadata?.raise(metadataSource.metaClass) ?: metadata)
                     }
             } else {
-                flowOf(manga to null)
+                flowOf(anime to null)
             }
         }
     }
@@ -365,15 +365,15 @@ open class BrowseSourceScreenModel(
     }
 
     /**
-     * Adds or removes a manga from the library.
+     * Adds or removes a anime from the library.
      *
-     * @param manga the manga to update.
+     * @param anime the anime to update.
      */
-    fun changeMangaFavorite(manga: Manga) {
+    fun changeAnimeFavorite(anime: Anime) {
         screenModelScope.launch {
-            var new = manga.copy(
-                favorite = !manga.favorite,
-                dateAdded = when (manga.favorite) {
+            var new = anime.copy(
+                favorite = !anime.favorite,
+                dateAdded = when (anime.favorite) {
                     true -> 0
                     false -> Instant.now().toEpochMilli()
                 },
@@ -382,15 +382,15 @@ open class BrowseSourceScreenModel(
             if (!new.favorite) {
                 new = new.removeCovers(coverCache)
             } else {
-                setMangaDefaultChapterFlags.await(manga)
-                addTracks.bindEnhancedTrackers(manga, source)
+                setAnimeDefaultEpisodeFlags.await(anime)
+                addTracks.bindEnhancedTrackers(anime, source)
             }
 
-            updateManga.await(new.toMangaUpdate())
+            updateAnime.await(new.toAnimeUpdate())
         }
     }
 
-    fun addFavorite(manga: Manga) {
+    fun addFavorite(anime: Anime) {
         screenModelScope.launch {
             val categories = getCategories()
             val defaultCategoryId = libraryPreferences.defaultCategory().get()
@@ -399,24 +399,24 @@ open class BrowseSourceScreenModel(
             when {
                 // Default category set
                 defaultCategory != null -> {
-                    moveMangaToCategories(manga, defaultCategory)
+                    moveAnimeToCategories(anime, defaultCategory)
 
-                    changeMangaFavorite(manga)
+                    changeAnimeFavorite(anime)
                 }
 
                 // Automatic 'Default' or no categories
                 defaultCategoryId == 0 || categories.isEmpty() -> {
-                    moveMangaToCategories(manga)
+                    moveAnimeToCategories(anime)
 
-                    changeMangaFavorite(manga)
+                    changeAnimeFavorite(anime)
                 }
 
                 // Choose a category
                 else -> {
-                    val preselectedIds = getCategories.await(manga.id).map { it.id }
+                    val preselectedIds = getCategories.await(anime.id).map { it.id }
                     setDialog(
-                        Dialog.ChangeMangaCategory(
-                            manga,
+                        Dialog.ChangeAnimeCategory(
+                            anime,
                             categories.mapAsCheckboxState { it.id in preselectedIds }.toImmutableList(),
                         ),
                     )
@@ -427,7 +427,7 @@ open class BrowseSourceScreenModel(
 
     // SY -->
     open fun createSourcePagingSource(query: String, filters: FilterList): SourcePagingSourceType {
-        return getRemoteManga.subscribe(sourceId, query, filters)
+        return getRemoteAnime.subscribe(sourceId, query, filters)
     }
     // SY <--
 
@@ -443,18 +443,18 @@ open class BrowseSourceScreenModel(
             .orEmpty()
     }
 
-    suspend fun getDuplicateLibraryManga(manga: Manga): Manga? {
-        return getDuplicateLibraryManga.await(manga).getOrNull(0)
+    suspend fun getDuplicateLibraryAnime(anime: Anime): Anime? {
+        return getDuplicateLibraryAnime.await(anime).getOrNull(0)
     }
 
-    private fun moveMangaToCategories(manga: Manga, vararg categories: Category) {
-        moveMangaToCategories(manga, categories.filter { it.id != 0L }.map { it.id })
+    private fun moveAnimeToCategories(anime: Anime, vararg categories: Category) {
+        moveAnimeToCategories(anime, categories.filter { it.id != 0L }.map { it.id })
     }
 
-    fun moveMangaToCategories(manga: Manga, categoryIds: List<Long>) {
+    fun moveAnimeToCategories(anime: Anime, categoryIds: List<Long>) {
         screenModelScope.launchIO {
-            setMangaCategories.await(
-                mangaId = manga.id,
+            setAnimeCategories.await(
+                animeId = anime.id,
                 categoryIds = categoryIds.toList(),
             )
         }
@@ -473,8 +473,8 @@ open class BrowseSourceScreenModel(
     }
 
     sealed class Listing(open val query: String?, open val filters: FilterList) {
-        data object Popular : Listing(query = GetRemoteManga.QUERY_POPULAR, filters = FilterList())
-        data object Latest : Listing(query = GetRemoteManga.QUERY_LATEST, filters = FilterList())
+        data object Popular : Listing(query = GetRemoteAnime.QUERY_POPULAR, filters = FilterList())
+        data object Latest : Listing(query = GetRemoteAnime.QUERY_LATEST, filters = FilterList())
         data class Search(
             override val query: String?,
             override val filters: FilterList,
@@ -486,8 +486,8 @@ open class BrowseSourceScreenModel(
         companion object {
             fun valueOf(query: String?): Listing {
                 return when (query) {
-                    GetRemoteManga.QUERY_POPULAR -> Popular
-                    GetRemoteManga.QUERY_LATEST -> Latest
+                    GetRemoteAnime.QUERY_POPULAR -> Popular
+                    GetRemoteAnime.QUERY_LATEST -> Latest
                     else -> Search(query = query, filters = FilterList()) // filters are filled in later
                 }
             }
@@ -496,13 +496,13 @@ open class BrowseSourceScreenModel(
 
     sealed interface Dialog {
         data object Filter : Dialog
-        data class RemoveManga(val manga: Manga) : Dialog
-        data class AddDuplicateManga(val manga: Manga, val duplicate: Manga) : Dialog
-        data class ChangeMangaCategory(
-            val manga: Manga,
+        data class RemoveAnime(val anime: Anime) : Dialog
+        data class AddDuplicateAnime(val anime: Anime, val duplicate: Anime) : Dialog
+        data class ChangeAnimeCategory(
+            val anime: Anime,
             val initialSelection: ImmutableList<CheckboxState.State<Category>>,
         ) : Dialog
-        data class Migrate(val newManga: Manga, val oldManga: Manga) : Dialog
+        data class Migrate(val newAnime: Anime, val oldAnime: Anime) : Dialog
 
         // SY -->
         data class DeleteSavedSearch(val idToDelete: Long, val name: String) : Dialog
@@ -521,7 +521,7 @@ open class BrowseSourceScreenModel(
         val filterable: Boolean = true,
         // SY <--
         // KMK -->
-        val mangaDisplayingList: MutableSet<Manga> = mutableSetOf(),
+        val animeDisplayingList: MutableSet<Anime> = mutableSetOf(),
         // KMK <--
     ) {
         val isUserQuery get() = listing is Listing.Search && !listing.query.isNullOrEmpty()
@@ -613,7 +613,7 @@ open class BrowseSourceScreenModel(
         if (source !is CatalogueSource) return
         screenModelScope.launchNonCancellable {
             val query = state.value.toolbarQuery?.takeUnless {
-                it.isBlank() || it == GetRemoteManga.QUERY_POPULAR || it == GetRemoteManga.QUERY_LATEST
+                it.isBlank() || it == GetRemoteAnime.QUERY_POPULAR || it == GetRemoteAnime.QUERY_LATEST
             }?.trim()
             val filterList = state.value.filters.ifEmpty { source.getFilterList() }
             insertSavedSearch.await(
@@ -638,7 +638,7 @@ open class BrowseSourceScreenModel(
 
     fun onMangaDexRandom(onRandomFound: (String) -> Unit) {
         screenModelScope.launchIO {
-            val random = source.getMainSource<MangaDex>()?.fetchRandomMangaUrl()
+            val random = source.getMainSource<MangaDex>()?.fetchRandomAnimeUrl()
                 ?: return@launchIO
             onRandomFound(random)
         }

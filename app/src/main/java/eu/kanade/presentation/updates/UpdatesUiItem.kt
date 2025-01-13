@@ -33,11 +33,11 @@ import androidx.compose.ui.platform.LocalHapticFeedback
 import androidx.compose.ui.text.font.FontStyle
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
+import eu.kanade.presentation.anime.components.AnimeCover
+import eu.kanade.presentation.anime.components.DotSeparatorText
+import eu.kanade.presentation.anime.components.EpisodeDownloadAction
+import eu.kanade.presentation.anime.components.EpisodeDownloadIndicator
 import eu.kanade.presentation.components.relativeDateText
-import eu.kanade.presentation.manga.components.ChapterDownloadAction
-import eu.kanade.presentation.manga.components.ChapterDownloadIndicator
-import eu.kanade.presentation.manga.components.DotSeparatorText
-import eu.kanade.presentation.manga.components.MangaCover
 import eu.kanade.presentation.util.animateItemFastScroll
 import eu.kanade.presentation.util.relativeTimeSpanString
 import eu.kanade.tachiyomi.data.download.model.Download
@@ -76,7 +76,7 @@ internal fun LazyListScope.updatesUiItems(
     onUpdateSelected: (UpdatesItem, Boolean, Boolean, Boolean) -> Unit,
     onClickCover: (UpdatesItem) -> Unit,
     onClickUpdate: (UpdatesItem) -> Unit,
-    onDownloadChapter: (List<UpdatesItem>, ChapterDownloadAction) -> Unit,
+    onDownloadEpisode: (List<UpdatesItem>, EpisodeDownloadAction) -> Unit,
 ) {
     items(
         items = uiModels,
@@ -89,7 +89,7 @@ internal fun LazyListScope.updatesUiItems(
         key = {
             when (it) {
                 is UpdatesUiModel.Header -> "updatesHeader-${it.hashCode()}"
-                is UpdatesUiModel.Item -> "updates-${it.item.update.mangaId}-${it.item.update.chapterId}"
+                is UpdatesUiModel.Item -> "updates-${it.item.update.animeId}-${it.item.update.episodeId}"
             }
         },
     ) { item ->
@@ -106,17 +106,17 @@ internal fun LazyListScope.updatesUiItems(
                     modifier = Modifier.animateItemFastScroll(),
                     update = updatesItem.update,
                     selected = updatesItem.selected,
-                    readProgress = updatesItem.update.lastPageRead
+                    readProgress = updatesItem.update.lastSecondSeen
                         .takeIf {
                             /* SY --> */(
-                                !updatesItem.update.read ||
+                                !updatesItem.update.seen ||
                                     (preserveReadingPosition && updatesItem.isEhBasedUpdate())
                                 )/* SY <-- */ &&
                                 it > 0L
                         }
                         ?.let {
                             stringResource(
-                                MR.strings.chapter_progress,
+                                MR.strings.episode_progress,
                                 it + 1,
                             )
                         },
@@ -130,8 +130,8 @@ internal fun LazyListScope.updatesUiItems(
                         }
                     },
                     onClickCover = { onClickCover(updatesItem) }.takeIf { !selectionMode },
-                    onDownloadChapter = { action: ChapterDownloadAction ->
-                        onDownloadChapter(listOf(updatesItem), action)
+                    onDownloadEpisode = { action: EpisodeDownloadAction ->
+                        onDownloadEpisode(listOf(updatesItem), action)
                     }.takeIf { !selectionMode },
                     downloadStateProvider = updatesItem.downloadStateProvider,
                     downloadProgressProvider = updatesItem.downloadProgressProvider,
@@ -149,14 +149,14 @@ private fun UpdatesUiItem(
     onClick: () -> Unit,
     onLongClick: () -> Unit,
     onClickCover: (() -> Unit)?,
-    onDownloadChapter: ((ChapterDownloadAction) -> Unit)?,
+    onDownloadEpisode: ((EpisodeDownloadAction) -> Unit)?,
     // Download Indicator
     downloadStateProvider: () -> Download.State,
     downloadProgressProvider: () -> Int,
     modifier: Modifier = Modifier,
 ) {
     val haptic = LocalHapticFeedback.current
-    val textAlpha = if (update.read) DISABLED_ALPHA else 1f
+    val textAlpha = if (update.seen) DISABLED_ALPHA else 1f
 
     Row(
         modifier = modifier
@@ -173,20 +173,20 @@ private fun UpdatesUiItem(
         verticalAlignment = Alignment.CenterVertically,
     ) {
         // KMK -->
-        val mangaCover = update.coverData
-        val bgColor = mangaCover.dominantCoverColors?.first?.let { Color(it) }
-        val onBgColor = mangaCover.dominantCoverColors?.second
+        val animeCover = update.coverData
+        val bgColor = animeCover.dominantCoverColors?.first?.let { Color(it) }
+        val onBgColor = animeCover.dominantCoverColors?.second
         // KMK <--
-        MangaCover.Square(
+        AnimeCover.Square(
             modifier = Modifier
                 .padding(vertical = 6.dp)
                 .fillMaxHeight(),
-            data = mangaCover,
+            data = animeCover,
             onClick = onClickCover,
             // KMK -->
             bgColor = bgColor,
             tint = onBgColor,
-            size = MangaCover.Size.Big,
+            size = AnimeCover.Size.Big,
             // KMK <--
         )
 
@@ -196,7 +196,7 @@ private fun UpdatesUiItem(
                 .weight(1f),
         ) {
             Text(
-                text = update.mangaTitle,
+                text = update.animeTitle,
                 maxLines = 1,
                 style = MaterialTheme.typography.bodyMedium,
                 color = LocalContentColor.current.copy(alpha = textAlpha),
@@ -205,7 +205,7 @@ private fun UpdatesUiItem(
 
             Row(verticalAlignment = Alignment.CenterVertically) {
                 var textHeight by remember { mutableIntStateOf(0) }
-                if (!update.read) {
+                if (!update.seen) {
                     Icon(
                         imageVector = Icons.Filled.Circle,
                         contentDescription = stringResource(MR.strings.unread),
@@ -226,7 +226,7 @@ private fun UpdatesUiItem(
                     Spacer(modifier = Modifier.width(2.dp))
                 }
                 Text(
-                    text = update.chapterName,
+                    text = update.episodeName,
                     maxLines = 1,
                     style = MaterialTheme.typography.bodySmall,
                     color = LocalContentColor.current.copy(alpha = textAlpha),
@@ -247,12 +247,12 @@ private fun UpdatesUiItem(
             }
         }
 
-        ChapterDownloadIndicator(
-            enabled = onDownloadChapter != null,
+        EpisodeDownloadIndicator(
+            enabled = onDownloadEpisode != null,
             modifier = Modifier.padding(start = 4.dp),
             downloadStateProvider = downloadStateProvider,
             downloadProgressProvider = downloadProgressProvider,
-            onClick = { onDownloadChapter?.invoke(it) },
+            onClick = { onDownloadEpisode?.invoke(it) },
         )
     }
 }

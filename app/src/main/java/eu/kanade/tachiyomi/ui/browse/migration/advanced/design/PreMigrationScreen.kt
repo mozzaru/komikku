@@ -95,8 +95,8 @@ import kotlin.math.roundToInt
 import kotlin.time.Duration.Companion.seconds
 
 sealed class MigrationType : Serializable {
-    data class MangaList(val mangaIds: List<Long>) : MigrationType()
-    data class MangaSingle(val fromMangaId: Long, val toManga: Long?) : MigrationType()
+    data class AnimeList(val animeIds: List<Long>) : MigrationType()
+    data class AnimeSingle(val fromAnimeId: Long, val toAnime: Long?) : MigrationType()
 }
 
 class PreMigrationScreen(val migration: MigrationType) : Screen() {
@@ -376,26 +376,26 @@ class PreMigrationScreen(val migration: MigrationType) : Screen() {
     // KMK <--
 
     companion object {
-        fun navigateToMigration(skipPre: Boolean, navigator: Navigator, mangaIds: List<Long>) {
+        fun navigateToMigration(skipPre: Boolean, navigator: Navigator, animeIds: List<Long>) {
             navigator.push(
                 if (skipPre) {
                     MigrationListScreen(
-                        MigrationProcedureConfig(MigrationType.MangaList(mangaIds), null),
+                        MigrationProcedureConfig(MigrationType.AnimeList(animeIds), null),
                     )
                 } else {
-                    PreMigrationScreen(MigrationType.MangaList(mangaIds))
+                    PreMigrationScreen(MigrationType.AnimeList(animeIds))
                 },
             )
         }
 
-        fun navigateToMigration(skipPre: Boolean, navigator: Navigator, fromMangaId: Long, toManga: Long?) {
+        fun navigateToMigration(skipPre: Boolean, navigator: Navigator, fromAnimeId: Long, toAnime: Long?) {
             navigator.push(
                 if (skipPre) {
                     MigrationListScreen(
-                        MigrationProcedureConfig(MigrationType.MangaSingle(fromMangaId, toManga), null),
+                        MigrationProcedureConfig(MigrationType.AnimeSingle(fromAnimeId, toAnime), null),
                     )
                 } else {
-                    PreMigrationScreen(MigrationType.MangaSingle(fromMangaId, toManga))
+                    PreMigrationScreen(MigrationType.AnimeSingle(fromAnimeId, toAnime))
                 },
             )
         }

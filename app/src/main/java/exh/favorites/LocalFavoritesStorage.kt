@@ -1,6 +1,6 @@
 package exh.favorites
 
-import eu.kanade.domain.manga.model.toDomainManga
+import eu.kanade.domain.anime.model.toDomainAnime
 import eu.kanade.tachiyomi.source.online.all.EHentai
 import exh.metadata.metadata.EHentaiSearchMetadata
 import exh.source.EXH_SOURCE_ID
@@ -11,14 +11,14 @@ import kotlinx.coroutines.flow.filter
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.mapNotNull
 import kotlinx.coroutines.flow.toList
+import tachiyomi.domain.anime.interactor.DeleteFavoriteEntries
+import tachiyomi.domain.anime.interactor.GetFavoriteEntries
+import tachiyomi.domain.anime.interactor.GetFavorites
+import tachiyomi.domain.anime.interactor.InsertFavoriteEntries
+import tachiyomi.domain.anime.model.Anime
+import tachiyomi.domain.anime.model.FavoriteEntry
 import tachiyomi.domain.category.interactor.GetCategories
 import tachiyomi.domain.category.model.Category
-import tachiyomi.domain.manga.interactor.DeleteFavoriteEntries
-import tachiyomi.domain.manga.interactor.GetFavoriteEntries
-import tachiyomi.domain.manga.interactor.GetFavorites
-import tachiyomi.domain.manga.interactor.InsertFavoriteEntries
-import tachiyomi.domain.manga.model.FavoriteEntry
-import tachiyomi.domain.manga.model.Manga
 import uy.kohesive.injekt.Injekt
 import uy.kohesive.injekt.api.get
 
@@ -36,10 +36,10 @@ class LocalFavoritesStorage(
         .parseToFavoriteEntries()
         .getChangedEntries()
 
-    suspend fun getChangedRemoteEntries(entries: List<EHentai.ParsedManga>) = entries
+    suspend fun getChangedRemoteEntries(entries: List<EHentai.ParsedAnime>) = entries
         .asFlow()
         .map {
-            it.fav to it.manga.toDomainManga(EXH_SOURCE_ID).copy(
+            it.fav to it.anime.toDomainAnime(EXH_SOURCE_ID).copy(
                 favorite = true,
                 dateAdded = System.currentTimeMillis(),
             )
@@ -48,7 +48,7 @@ class LocalFavoritesStorage(
         .getChangedEntries()
 
     suspend fun snapshotEntries() {
-        val dbMangas = getFavorites.await()
+        val dbAnimes = getFavorites.await()
             .asFlow()
             .loadDbCategories()
             .parseToFavoriteEntries()
@@ -57,7 +57,7 @@ class LocalFavoritesStorage(
         deleteFavoriteEntries.await()
 
         // Insert new snapshots
-        insertFavoriteEntries.await(dbMangas.toList())
+        insertFavoriteEntries.await(dbAnimes.toList())
     }
 
     suspend fun clearSnapshots() {
@@ -100,11 +100,11 @@ class LocalFavoritesStorage(
     private fun queryListForEntry(list: List<FavoriteEntry>, entry: FavoriteEntry) =
         list.find { it.urlEquals(entry) && it.category == entry.category }
 
-    private suspend fun Flow<Manga>.loadDbCategories(): Flow<Pair<Int, Manga>> {
+    private suspend fun Flow<Anime>.loadDbCategories(): Flow<Pair<Int, Anime>> {
         val dbCategories = getCategories.await()
             .filterNot(Category::isSystemCategory)
 
-        return filter(::validateDbManga).mapNotNull {
+        return filter(::validateDbAnime).mapNotNull {
             val category = getCategories.await(it.id)
 
             dbCategories.indexOf(
@@ -114,14 +114,14 @@ class LocalFavoritesStorage(
         }
     }
 
-    private fun Flow<Pair<Int, Manga>>.parseToFavoriteEntries() =
-        filter { (_, manga) ->
-            validateDbManga(manga)
-        }.mapNotNull { (categoryId, manga) ->
+    private fun Flow<Pair<Int, Anime>>.parseToFavoriteEntries() =
+        filter { (_, anime) ->
+            validateDbAnime(anime)
+        }.mapNotNull { (categoryId, anime) ->
             FavoriteEntry(
-                title = manga.ogTitle,
-                gid = EHentaiSearchMetadata.galleryId(manga.url),
-                token = EHentaiSearchMetadata.galleryToken(manga.url),
+                title = anime.ogTitle,
+                gid = EHentaiSearchMetadata.galleryId(anime.url),
+                token = EHentaiSearchMetadata.galleryToken(anime.url),
                 category = categoryId,
             ).also {
                 if (it.category > MAX_CATEGORIES) {
@@ -130,8 +130,8 @@ class LocalFavoritesStorage(
             }
         }
 
-    private fun validateDbManga(manga: Manga) =
-        manga.favorite && manga.isEhBasedManga()
+    private fun validateDbAnime(anime: Anime) =
+        anime.favorite && anime.isEhBasedManga()
 
     companion object {
         const val MAX_CATEGORIES = 9

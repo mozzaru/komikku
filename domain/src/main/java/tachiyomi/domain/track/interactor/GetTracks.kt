@@ -29,10 +29,10 @@ class GetTracks(
         }
     }
 
-    suspend fun await(mangaIds: List<Long>): Map<Long, List<Track>> {
+    suspend fun await(animeIds: List<Long>): Map<Long, List<Track>> {
         return try {
-            trackRepository.getTracksByMangaIds(mangaIds)
-                .groupBy { it.mangaId }
+            trackRepository.getTracksByAnimeIds(animeIds)
+                .groupBy { it.animeId }
         } catch (e: Exception) {
             logcat(LogPriority.ERROR, e)
             emptyMap()
@@ -40,16 +40,16 @@ class GetTracks(
     }
     // SY <--
 
-    suspend fun await(mangaId: Long): List<Track> {
+    suspend fun await(animeId: Long): List<Track> {
         return try {
-            trackRepository.getTracksByMangaId(mangaId)
+            trackRepository.getTracksByAnimeId(animeId)
         } catch (e: Exception) {
             logcat(LogPriority.ERROR, e)
             emptyList()
         }
     }
 
-    fun subscribe(mangaId: Long): Flow<List<Track>> {
-        return trackRepository.getTracksByMangaIdAsFlow(mangaId)
+    fun subscribe(animeId: Long): Flow<List<Track>> {
+        return trackRepository.getTracksByAnimeIdAsFlow(animeId)
     }
 }

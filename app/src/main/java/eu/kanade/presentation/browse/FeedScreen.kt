@@ -37,13 +37,13 @@ import eu.kanade.presentation.browse.components.GlobalSearchResultItem
 import eu.kanade.presentation.browse.components.SourceIcon
 import eu.kanade.presentation.components.SourcesSearchBox
 import eu.kanade.tachiyomi.source.CatalogueSource
-import eu.kanade.tachiyomi.source.getNameForMangaInfo
+import eu.kanade.tachiyomi.source.getNameForAnimeInfo
 import eu.kanade.tachiyomi.ui.browse.feed.FeedScreenState
 import kotlinx.collections.immutable.ImmutableList
 import kotlinx.collections.immutable.toImmutableList
 import kotlinx.coroutines.delay
 import tachiyomi.core.common.i18n.stringResource
-import tachiyomi.domain.manga.model.Manga
+import tachiyomi.domain.anime.model.Anime
 import tachiyomi.domain.source.model.FeedSavedSearch
 import tachiyomi.domain.source.model.SavedSearch
 import tachiyomi.domain.source.model.Source
@@ -65,7 +65,7 @@ data class FeedItemUI(
     val source: CatalogueSource?,
     val title: String,
     val subtitle: String,
-    val results: List<Manga>?,
+    val results: List<Anime>?,
 )
 
 @Composable
@@ -77,13 +77,13 @@ fun FeedScreen(
     // KMK -->
     onLongClickFeed: (FeedItemUI, Boolean, Boolean) -> Unit,
     // KMK <--
-    onClickManga: (Manga) -> Unit,
+    onClickAnime: (Anime) -> Unit,
     // KMK -->
-    onLongClickManga: (Manga) -> Unit,
-    selection: List<Manga>,
+    onLongClickAnime: (Anime) -> Unit,
+    selection: List<Anime>,
     // KMK <--
     onRefresh: () -> Unit,
-    getMangaState: @Composable (Manga) -> State<Manga>,
+    getAnimeState: @Composable (Anime) -> State<Anime>,
 ) {
     when {
         state.isLoading -> LoadingScreen()
@@ -141,10 +141,10 @@ fun FeedScreen(
                         ) {
                             FeedItem(
                                 item = item,
-                                getMangaState = { getMangaState(it) },
-                                onClickManga = onClickManga,
+                                getAnimeState = { getAnimeState(it) },
+                                onClickAnime = onClickAnime,
                                 // KMK -->
-                                onLongClickManga = onLongClickManga,
+                                onLongClickAnime = onLongClickAnime,
                                 selection = selection,
                                 // KMK <--
                             )
@@ -159,11 +159,11 @@ fun FeedScreen(
 @Composable
 fun FeedItem(
     item: FeedItemUI,
-    getMangaState: @Composable ((Manga) -> State<Manga>),
-    onClickManga: (Manga) -> Unit,
+    getAnimeState: @Composable ((Anime) -> State<Anime>),
+    onClickAnime: (Anime) -> Unit,
     // KMK -->
-    onLongClickManga: (Manga) -> Unit,
-    selection: List<Manga>,
+    onLongClickAnime: (Anime) -> Unit,
+    selection: List<Anime>,
     // KMK <--
 ) {
     when {
@@ -176,10 +176,10 @@ fun FeedItem(
         else -> {
             GlobalSearchCardRow(
                 titles = item.results,
-                getManga = getMangaState,
-                onClick = onClickManga,
+                getAnime = getAnimeState,
+                onClick = onClickAnime,
                 // KMK -->
-                onLongClick = onLongClickManga,
+                onLongClick = onLongClickAnime,
                 selection = selection,
                 // KMK <--
             )
@@ -217,7 +217,7 @@ fun FeedAddDialog(
                 )
                 SourceIcon(source = source)
                 Spacer(modifier = Modifier.width(MaterialTheme.padding.extraSmall))
-                Text(text = it.getNameForMangaInfo())
+                Text(text = it.getNameForAnimeInfo())
             }
         }
     // KMK <--

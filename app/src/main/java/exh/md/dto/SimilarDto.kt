@@ -3,16 +3,16 @@ package exh.md.dto
 import kotlinx.serialization.Serializable
 
 @Serializable
-data class SimilarMangaDto(
+data class SimilarAnimeDto(
     val id: String,
     val title: Map<String, String>,
     val contentRating: String,
-    val matches: List<SimilarMangaMatchListDto>,
+    val matches: List<SimilarAnimeMatchListDto>,
     val updatedAt: String,
 )
 
 @Serializable
-data class SimilarMangaMatchListDto(
+data class SimilarAnimeMatchListDto(
     val id: String,
     val title: Map<String, String>,
     val contentRating: String,
@@ -28,11 +28,11 @@ data class RelationListDto(
 @Serializable
 data class RelationDto(
     val attributes: RelationAttributesDto,
-    val relationships: List<RelationMangaDto>,
+    val relationships: List<RelationAnimeDto>,
 )
 
 @Serializable
-data class RelationMangaDto(
+data class RelationAnimeDto(
     val id: String,
 )
 

@@ -1,14 +1,14 @@
-package eu.kanade.tachiyomi.data.track.mangaupdates
+package eu.kanade.tachiyomi.data.track.animeupdates
 
 import eu.kanade.tachiyomi.data.database.models.Track
-import eu.kanade.tachiyomi.data.track.mangaupdates.MangaUpdates.Companion.READING_LIST
-import eu.kanade.tachiyomi.data.track.mangaupdates.MangaUpdates.Companion.WISH_LIST
-import eu.kanade.tachiyomi.data.track.mangaupdates.dto.MUContext
-import eu.kanade.tachiyomi.data.track.mangaupdates.dto.MUListItem
-import eu.kanade.tachiyomi.data.track.mangaupdates.dto.MULoginResponse
-import eu.kanade.tachiyomi.data.track.mangaupdates.dto.MURating
-import eu.kanade.tachiyomi.data.track.mangaupdates.dto.MURecord
-import eu.kanade.tachiyomi.data.track.mangaupdates.dto.MUSearchResult
+import eu.kanade.tachiyomi.data.track.animeupdates.AnimeUpdates.Companion.READING_LIST
+import eu.kanade.tachiyomi.data.track.animeupdates.AnimeUpdates.Companion.WISH_LIST
+import eu.kanade.tachiyomi.data.track.animeupdates.dto.MUContext
+import eu.kanade.tachiyomi.data.track.animeupdates.dto.MUListItem
+import eu.kanade.tachiyomi.data.track.animeupdates.dto.MULoginResponse
+import eu.kanade.tachiyomi.data.track.animeupdates.dto.MURating
+import eu.kanade.tachiyomi.data.track.animeupdates.dto.MURecord
+import eu.kanade.tachiyomi.data.track.animeupdates.dto.MUSearchResult
 import eu.kanade.tachiyomi.network.DELETE
 import eu.kanade.tachiyomi.network.GET
 import eu.kanade.tachiyomi.network.POST
@@ -28,8 +28,8 @@ import okhttp3.RequestBody.Companion.toRequestBody
 import uy.kohesive.injekt.injectLazy
 import tachiyomi.domain.track.model.Track as DomainTrack
 
-class MangaUpdatesApi(
-    interceptor: MangaUpdatesInterceptor,
+class AnimeUpdatesApi(
+    interceptor: AnimeUpdatesInterceptor,
     private val client: OkHttpClient,
 ) {
     private val json: Json by injectLazy()
@@ -52,8 +52,8 @@ class MangaUpdatesApi(
         return listItem to rating
     }
 
-    suspend fun addSeriesToList(track: Track, hasReadChapters: Boolean) {
-        val status = if (hasReadChapters) READING_LIST else WISH_LIST
+    suspend fun addSeriesToList(track: Track, hasReadEpisodes: Boolean) {
+        val status = if (hasReadEpisodes) READING_LIST else WISH_LIST
         val body = buildJsonArray {
             addJsonObject {
                 putJsonObject("series") {
@@ -72,7 +72,7 @@ class MangaUpdatesApi(
             .let {
                 if (it.code == 200) {
                     track.status = status
-                    track.last_chapter_read = 1.0
+                    track.last_episode_seen = 1.0
                 }
             }
     }
@@ -85,7 +85,7 @@ class MangaUpdatesApi(
                 }
                 put("list_id", track.status)
                 putJsonObject("status") {
-                    put("chapter", track.last_chapter_read.toInt())
+                    put("episode", track.last_episode_seen.toInt())
                 }
             }
         }
@@ -199,7 +199,7 @@ class MangaUpdatesApi(
     }
 
     companion object {
-        private const val BASE_URL = "https://api.mangaupdates.com"
+        private const val BASE_URL = "https://api.animeupdates.com"
 
         private val CONTENT_TYPE = "application/vnd.api+json".toMediaType()
     }

@@ -14,11 +14,11 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.AbstractComposeView
 import eu.kanade.domain.ui.UiPreferences
-import eu.kanade.presentation.reader.ChapterTransition
+import eu.kanade.presentation.reader.EpisodeTransition
 import eu.kanade.presentation.theme.TachiyomiTheme
 import eu.kanade.tachiyomi.data.download.DownloadManager
-import eu.kanade.tachiyomi.ui.reader.model.ChapterTransition
-import tachiyomi.domain.manga.model.Manga
+import eu.kanade.tachiyomi.ui.reader.model.EpisodeTransition
+import tachiyomi.domain.anime.model.Anime
 import tachiyomi.source.local.isLocal
 import uy.kohesive.injekt.Injekt
 import uy.kohesive.injekt.api.get
@@ -38,18 +38,18 @@ class ReaderTransitionView @JvmOverloads constructor(
         layoutParams = LayoutParams(LayoutParams.WRAP_CONTENT, LayoutParams.WRAP_CONTENT)
     }
 
-    fun bind(transition: ChapterTransition, downloadManager: DownloadManager, manga: Manga?) {
-        data = if (manga != null) {
+    fun bind(transition: EpisodeTransition, downloadManager: DownloadManager, anime: Anime?) {
+        data = if (anime != null) {
             Data(
                 transition = transition,
-                currChapterDownloaded = transition.from.pageLoader?.isLocal == true,
-                goingToChapterDownloaded = manga.isLocal() ||
-                    transition.to?.chapter?.let { goingToChapter ->
-                        downloadManager.isChapterDownloaded(
-                            chapterName = goingToChapter.name,
-                            chapterScanlator = goingToChapter.scanlator,
-                            mangaTitle = /* SY --> */ manga.ogTitle, /* SY <-- */
-                            sourceId = manga.source,
+                currEpisodeDownloaded = transition.from.pageLoader?.isLocal == true,
+                goingToEpisodeDownloaded = anime.isLocal() ||
+                    transition.to?.episode?.let { goingToEpisode ->
+                        downloadManager.isEpisodeDownloaded(
+                            episodeName = goingToEpisode.name,
+                            episodeScanlator = goingToEpisode.scanlator,
+                            animeTitle = /* SY --> */ anime.ogTitle, /* SY <-- */
+                            sourceId = anime.source,
                             skipCache = true,
                         )
                     } ?: false,
@@ -75,10 +75,10 @@ class ReaderTransitionView @JvmOverloads constructor(
                     LocalTextStyle provides MaterialTheme.typography.bodySmall,
                     LocalContentColor provides MaterialTheme.colorScheme.onBackground,
                 ) {
-                    ChapterTransition(
+                    EpisodeTransition(
                         transition = it.transition,
-                        currChapterDownloaded = it.currChapterDownloaded,
-                        goingToChapterDownloaded = it.goingToChapterDownloaded,
+                        currEpisodeDownloaded = it.currEpisodeDownloaded,
+                        goingToEpisodeDownloaded = it.goingToEpisodeDownloaded,
                     )
                 }
             }
@@ -86,8 +86,8 @@ class ReaderTransitionView @JvmOverloads constructor(
     }
 
     private data class Data(
-        val transition: ChapterTransition,
-        val currChapterDownloaded: Boolean,
-        val goingToChapterDownloaded: Boolean,
+        val transition: EpisodeTransition,
+        val currEpisodeDownloaded: Boolean,
+        val goingToEpisodeDownloaded: Boolean,
     )
 }

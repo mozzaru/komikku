@@ -5,28 +5,28 @@ import cafe.adriel.voyager.core.model.StateScreenModel
 import cafe.adriel.voyager.core.model.screenModelScope
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
-import tachiyomi.domain.manga.interactor.GetManga
-import tachiyomi.domain.manga.model.Manga
+import tachiyomi.domain.anime.interactor.GetAnime
+import tachiyomi.domain.anime.model.Anime
 import uy.kohesive.injekt.Injekt
 import uy.kohesive.injekt.api.get
 
 class MigrateSearchScreenDialogScreenModel(
-    val mangaId: Long,
-    getManga: GetManga = Injekt.get(),
+    val animeId: Long,
+    getAnime: GetAnime = Injekt.get(),
 ) : StateScreenModel<MigrateSearchScreenDialogScreenModel.State>(State()) {
 
     init {
         screenModelScope.launch {
-            val manga = getManga.await(mangaId)!!
+            val anime = getAnime.await(animeId)!!
 
             mutableState.update {
-                it.copy(manga = manga)
+                it.copy(anime = anime)
             }
         }
     }
 
     @Immutable
     data class State(
-        val manga: Manga? = null,
+        val anime: Anime? = null,
     )
 }

@@ -1,7 +1,7 @@
 package exh.metadata.metadata
 
 import android.content.Context
-import eu.kanade.tachiyomi.source.model.SManga
+import eu.kanade.tachiyomi.source.model.SAnime
 import eu.kanade.tachiyomi.source.model.copy
 import exh.metadata.MetadataUtil
 import kotlinx.serialization.Serializable
@@ -45,7 +45,7 @@ class NHentaiSearchMetadata : RaisedSearchMetadata() {
 
     var preferredTitle: Int? = null
 
-    override fun createMangaInfo(manga: SManga): SManga {
+    override fun createAnimeInfo(anime: SAnime): SAnime {
         val key = nhId?.let { nhIdToPath(it) }
 
         val cover = if (mediaId != null) {
@@ -60,9 +60,9 @@ class NHentaiSearchMetadata : RaisedSearchMetadata() {
         }
 
         val title = when (preferredTitle) {
-            TITLE_TYPE_SHORT -> shortTitle ?: englishTitle ?: japaneseTitle ?: manga.title
-            0, TITLE_TYPE_ENGLISH -> englishTitle ?: japaneseTitle ?: shortTitle ?: manga.title
-            else -> englishTitle ?: japaneseTitle ?: shortTitle ?: manga.title
+            TITLE_TYPE_SHORT -> shortTitle ?: englishTitle ?: japaneseTitle ?: anime.title
+            0, TITLE_TYPE_ENGLISH -> englishTitle ?: japaneseTitle ?: shortTitle ?: anime.title
+            else -> englishTitle ?: japaneseTitle ?: shortTitle ?: anime.title
         }
 
         // Set artist (if we can find one)
@@ -75,22 +75,22 @@ class NHentaiSearchMetadata : RaisedSearchMetadata() {
 
         // Try to automatically identify if it is ongoing, we try not to be too lenient here to avoid making mistakes
         // We default to completed
-        var status = SManga.COMPLETED
+        var status = SAnime.COMPLETED
         englishTitle?.let { t ->
             MetadataUtil.ONGOING_SUFFIX.find {
                 t.endsWith(it, ignoreCase = true)
             }?.let {
-                status = SManga.ONGOING
+                status = SAnime.ONGOING
             }
         }
 
         val description = null
 
-        return manga.copy(
-            url = key ?: manga.url,
-            thumbnail_url = cover ?: manga.thumbnail_url,
+        return anime.copy(
+            url = key ?: anime.url,
+            thumbnail_url = cover ?: anime.thumbnail_url,
             title = title,
-            artist = artist ?: manga.artist,
+            artist = artist ?: anime.artist,
             genre = genres,
             status = status,
             description = description,

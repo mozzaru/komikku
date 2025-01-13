@@ -16,16 +16,16 @@ import androidx.compose.ui.text.input.TextFieldValue
 import androidx.compose.ui.window.DialogProperties
 import eu.kanade.tachiyomi.util.system.toast
 import kotlinx.collections.immutable.ImmutableList
-import tachiyomi.domain.manga.model.Manga
+import tachiyomi.domain.anime.model.Anime
 import tachiyomi.i18n.MR
 import tachiyomi.i18n.sy.SYMR
 import tachiyomi.presentation.core.i18n.stringResource
 
 @Composable
-fun RemoveMangaDialog(
+fun RemoveAnimeDialog(
     onDismissRequest: () -> Unit,
     onConfirm: () -> Unit,
-    mangaToRemove: Manga,
+    animeToRemove: Anime,
 ) {
     AlertDialog(
         onDismissRequest = onDismissRequest,
@@ -48,7 +48,7 @@ fun RemoveMangaDialog(
             Text(text = stringResource(MR.strings.are_you_sure))
         },
         text = {
-            Text(text = stringResource(MR.strings.remove_manga, mangaToRemove.title))
+            Text(text = stringResource(MR.strings.remove_anime, animeToRemove.title))
         },
     )
 }

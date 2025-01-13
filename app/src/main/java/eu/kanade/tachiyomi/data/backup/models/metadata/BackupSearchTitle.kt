@@ -9,10 +9,10 @@ data class BackupSearchTitle(
     @ProtoNumber(1) var title: String,
     @ProtoNumber(2) var type: Int,
 ) {
-    fun getSearchTitle(mangaId: Long): SearchTitle {
+    fun getSearchTitle(animeId: Long): SearchTitle {
         return SearchTitle(
             id = null,
-            mangaId = mangaId,
+            animeId = animeId,
             title = title,
             type = type,
         )

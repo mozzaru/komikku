@@ -8,7 +8,7 @@ data class SearchTitle(
     val id: Long?,
 
     // Metadata this title is attached to
-    val mangaId: Long,
+    val animeId: Long,
 
     // Title
     val title: String,

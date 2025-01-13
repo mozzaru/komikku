@@ -4,7 +4,7 @@ import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
 import tachiyomi.data.AndroidDatabaseHandler
 import tachiyomi.data.DatabaseHandler
-import tachiyomi.domain.manga.model.MangaCover
+import tachiyomi.domain.anime.model.AnimeCover
 import tachiyomi.domain.updates.model.UpdatesWithRelations
 import tachiyomi.domain.updates.repository.UpdatesRepository
 import tachiyomi.view.UpdatesView
@@ -13,14 +13,14 @@ class UpdatesRepositoryImpl(
     private val databaseHandler: DatabaseHandler,
 ) : UpdatesRepository {
 
-    override suspend fun awaitWithRead(
-        read: Boolean,
+    override suspend fun awaitWithSeen(
+        seen: Boolean,
         after: Long,
         limit: Long,
     ): List<UpdatesWithRelations> {
         return databaseHandler.awaitList {
-            updatesViewQueries.getUpdatesByReadStatus(
-                read = read,
+            updatesViewQueries.getUpdatesBySeenStatus(
+                seen = seen,
                 after = after,
                 limit = limit,
                 mapper = ::mapUpdatesWithRelations,
@@ -39,14 +39,14 @@ class UpdatesRepositoryImpl(
         }
     }
 
-    override fun subscribeWithRead(
-        read: Boolean,
+    override fun subscribeWithSeen(
+        seen: Boolean,
         after: Long,
         limit: Long,
     ): Flow<List<UpdatesWithRelations>> {
         return databaseHandler.subscribeToList {
-            updatesViewQueries.getUpdatesByReadStatus(
-                read = read,
+            updatesViewQueries.getUpdatesBySeenStatus(
+                seen = seen,
                 after = after,
                 limit = limit,
                 mapper = ::mapUpdatesWithRelations,
@@ -55,14 +55,14 @@ class UpdatesRepositoryImpl(
     }
 
     private fun mapUpdatesWithRelations(
-        mangaId: Long,
-        mangaTitle: String,
-        chapterId: Long,
-        chapterName: String,
+        animeId: Long,
+        animeTitle: String,
+        episodeId: Long,
+        episodeName: String,
         scanlator: String?,
-        read: Boolean,
+        seen: Boolean,
         bookmark: Boolean,
-        lastPageRead: Long,
+        lastSecondSeen: Long,
         sourceId: Long,
         favorite: Boolean,
         thumbnailUrl: String?,
@@ -70,22 +70,22 @@ class UpdatesRepositoryImpl(
         dateUpload: Long,
         dateFetch: Long,
     ): UpdatesWithRelations = UpdatesWithRelations(
-        mangaId = mangaId,
+        animeId = animeId,
         // SY -->
-        ogMangaTitle = mangaTitle,
+        ogAnimeTitle = animeTitle,
         // SY <--
-        chapterId = chapterId,
-        chapterName = chapterName,
+        episodeId = episodeId,
+        episodeName = episodeName,
         scanlator = scanlator,
-        read = read,
+        seen = seen,
         bookmark = bookmark,
-        lastPageRead = lastPageRead,
+        lastSecondSeen = lastSecondSeen,
         sourceId = sourceId,
         dateFetch = dateFetch,
-        coverData = MangaCover(
-            mangaId = mangaId,
+        coverData = AnimeCover(
+            animeId = animeId,
             sourceId = sourceId,
-            isMangaFavorite = favorite,
+            isAnimeFavorite = favorite,
             ogUrl = thumbnailUrl,
             lastModified = coverLastModified,
         ),
@@ -93,20 +93,20 @@ class UpdatesRepositoryImpl(
 
     fun mapUpdatesView(updatesView: UpdatesView): UpdatesWithRelations {
         return UpdatesWithRelations(
-            mangaId = updatesView.mangaId,
-            ogMangaTitle = updatesView.mangaTitle,
-            chapterId = updatesView.chapterId,
-            chapterName = updatesView.chapterName,
+            animeId = updatesView.animeId,
+            ogAnimeTitle = updatesView.animeTitle,
+            episodeId = updatesView.episodeId,
+            episodeName = updatesView.episodeName,
             scanlator = updatesView.scanlator,
-            read = updatesView.read,
+            seen = updatesView.seen,
             bookmark = updatesView.bookmark,
-            lastPageRead = updatesView.last_page_read,
+            lastSecondSeen = updatesView.last_second_seen,
             sourceId = updatesView.source,
             dateFetch = updatesView.datefetch,
-            coverData = MangaCover(
-                mangaId = updatesView.mangaId,
+            coverData = AnimeCover(
+                animeId = updatesView.animeId,
                 sourceId = updatesView.source,
-                isMangaFavorite = updatesView.favorite,
+                isAnimeFavorite = updatesView.favorite,
                 ogUrl = updatesView.thumbnailUrl,
                 lastModified = updatesView.coverLastModified,
             ),

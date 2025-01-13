@@ -5,13 +5,13 @@ import eu.kanade.tachiyomi.network.POST
 import eu.kanade.tachiyomi.network.awaitSuccess
 import eu.kanade.tachiyomi.network.parseAs
 import exh.md.dto.AggregateDto
+import exh.md.dto.AnimeDto
+import exh.md.dto.AnimeListDto
 import exh.md.dto.AtHomeDto
 import exh.md.dto.AtHomeImageReportDto
-import exh.md.dto.ChapterDto
-import exh.md.dto.ChapterListDto
 import exh.md.dto.CoverListDto
-import exh.md.dto.MangaDto
-import exh.md.dto.MangaListDto
+import exh.md.dto.EpisodeDto
+import exh.md.dto.EpisodeListDto
 import exh.md.dto.RelationListDto
 import exh.md.dto.ResultDto
 import exh.md.dto.StatisticsDto
@@ -29,13 +29,13 @@ class MangaDexService(
     private val client: OkHttpClient,
 ) {
 
-    suspend fun viewMangas(
+    suspend fun viewAnimes(
         ids: List<String>,
-    ): MangaListDto {
+    ): AnimeListDto {
         return with(MdUtil.jsonParser) {
             client.newCall(
                 GET(
-                    MdApi.manga.toHttpUrl()
+                    MdApi.anime.toHttpUrl()
                         .newBuilder()
                         .apply {
                             addQueryParameter("includes[]", MdConstants.Types.coverArt)
@@ -51,13 +51,13 @@ class MangaDexService(
         }
     }
 
-    suspend fun viewManga(
+    suspend fun viewAnime(
         id: String,
-    ): MangaDto {
+    ): AnimeDto {
         return with(MdUtil.jsonParser) {
             client.newCall(
                 GET(
-                    MdApi.manga.toHttpUrl()
+                    MdApi.anime.toHttpUrl()
                         .newBuilder()
                         .apply {
                             addPathSegment(id)
@@ -72,7 +72,7 @@ class MangaDexService(
         }
     }
 
-    suspend fun mangasRating(
+    suspend fun animesRating(
         vararg ids: String,
     ): StatisticsDto {
         return with(MdUtil.jsonParser) {
@@ -82,7 +82,7 @@ class MangaDexService(
                         .newBuilder()
                         .apply {
                             ids.forEach { id ->
-                                addQueryParameter("manga[]", id)
+                                addQueryParameter("anime[]", id)
                             }
                         }
                         .build(),
@@ -92,14 +92,14 @@ class MangaDexService(
         }
     }
 
-    suspend fun aggregateChapters(
+    suspend fun aggregateEpisodes(
         id: String,
         translatedLanguage: String,
     ): AggregateDto {
         return with(MdUtil.jsonParser) {
             client.newCall(
                 GET(
-                    MdApi.manga.toHttpUrl()
+                    MdApi.anime.toHttpUrl()
                         .newBuilder()
                         .apply {
                             addPathSegment(id)
@@ -115,14 +115,14 @@ class MangaDexService(
 
     private fun String.splitString() = replace("\n", "").split(',').trimAll().dropEmpty()
 
-    suspend fun viewChapters(
+    suspend fun viewEpisodes(
         id: String,
         translatedLanguage: String,
         offset: Int,
         blockedGroups: String,
         blockedUploaders: String,
-    ): ChapterListDto {
-        val url = MdApi.manga.toHttpUrl()
+    ): EpisodeListDto {
+        val url = MdApi.anime.toHttpUrl()
             .newBuilder()
             .apply {
                 addPathSegment(id)
@@ -130,7 +130,7 @@ class MangaDexService(
                 addQueryParameter("limit", "500")
                 addQueryParameter("includes[]", MdConstants.Types.scanlator)
                 addQueryParameter("order[volume]", "desc")
-                addQueryParameter("order[chapter]", "desc")
+                addQueryParameter("order[episode]", "desc")
                 addQueryParameter("contentRating[]", "safe")
                 addQueryParameter("contentRating[]", "suggestive")
                 addQueryParameter("contentRating[]", "erotica")
@@ -156,17 +156,17 @@ class MangaDexService(
         }
     }
 
-    suspend fun viewChapter(id: String): ChapterDto {
+    suspend fun viewEpisode(id: String): EpisodeDto {
         return with(MdUtil.jsonParser) {
-            client.newCall(GET("${MdApi.chapter}/$id", cache = CacheControl.FORCE_NETWORK))
+            client.newCall(GET("${MdApi.episode}/$id", cache = CacheControl.FORCE_NETWORK))
                 .awaitSuccess()
                 .parseAs()
         }
     }
 
-    suspend fun randomManga(): MangaDto {
+    suspend fun randomAnime(): AnimeDto {
         return with(MdUtil.jsonParser) {
-            client.newCall(GET("${MdApi.manga}/random", cache = CacheControl.FORCE_NETWORK))
+            client.newCall(GET("${MdApi.anime}/random", cache = CacheControl.FORCE_NETWORK))
                 .awaitSuccess()
                 .parseAs()
         }
@@ -195,11 +195,11 @@ class MangaDexService(
         }
     }
 
-    suspend fun relatedManga(id: String): RelationListDto {
+    suspend fun relatedAnime(id: String): RelationListDto {
         return with(MdUtil.jsonParser) {
             client.newCall(
                 GET(
-                    MdApi.manga.toHttpUrl().newBuilder()
+                    MdApi.anime.toHttpUrl().newBuilder()
                         .apply {
                             addPathSegment(id)
                             addPathSegment("relation")
@@ -211,16 +211,16 @@ class MangaDexService(
         }
     }
 
-    suspend fun fetchFirstVolumeCover(mangaDto: MangaDto): String? {
-        val mangaData = mangaDto.data
+    suspend fun fetchFirstVolumeCover(animeDto: AnimeDto): String? {
+        val animeData = animeDto.data
         val result: CoverListDto = with(MdUtil.jsonParser) {
             client.newCall(
                 GET(
                     MdApi.cover.toHttpUrl().newBuilder()
                         .apply {
                             addQueryParameter("order[volume]", "asc")
-                            addQueryParameter("manga[]", mangaData.id)
-                            addQueryParameter("locales[]", mangaData.attributes.originalLanguage)
+                            addQueryParameter("anime[]", animeData.id)
+                            addQueryParameter("locales[]", animeData.attributes.originalLanguage)
                             addQueryParameter("limit", "1")
                         }
                         .build(),

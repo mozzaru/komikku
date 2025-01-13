@@ -1,11 +1,11 @@
 package eu.kanade.tachiyomi.ui.reader.loader
 
 import eu.kanade.domain.source.service.SourcePreferences
-import eu.kanade.tachiyomi.data.cache.ChapterCache
-import eu.kanade.tachiyomi.data.database.models.toDomainChapter
+import eu.kanade.tachiyomi.data.cache.EpisodeCache
+import eu.kanade.tachiyomi.data.database.models.toDomainEpisode
 import eu.kanade.tachiyomi.source.model.Page
 import eu.kanade.tachiyomi.source.online.HttpSource
-import eu.kanade.tachiyomi.ui.reader.model.ReaderChapter
+import eu.kanade.tachiyomi.ui.reader.model.ReaderEpisode
 import eu.kanade.tachiyomi.ui.reader.model.ReaderPage
 import eu.kanade.tachiyomi.ui.reader.setting.ReaderPreferences
 import exh.source.isEhBasedSource
@@ -30,13 +30,13 @@ import java.util.concurrent.atomic.AtomicInteger
 import kotlin.math.min
 
 /**
- * Loader used to load chapters from an online source.
+ * Loader used to load episodes from an online source.
  */
 @OptIn(DelicateCoroutinesApi::class)
 internal class HttpPageLoader(
-    private val chapter: ReaderChapter,
+    private val episode: ReaderEpisode,
     private val source: HttpSource,
-    private val chapterCache: ChapterCache = Injekt.get(),
+    private val episodeCache: EpisodeCache = Injekt.get(),
     // SY -->
     private val readerPreferences: ReaderPreferences = Injekt.get(),
     private val sourcePreferences: SourcePreferences = Injekt.get(),
@@ -77,17 +77,17 @@ internal class HttpPageLoader(
     override var isLocal: Boolean = false
 
     /**
-     * Returns the page list for a chapter. It tries to return the page list from the local cache,
+     * Returns the page list for a episode. It tries to return the page list from the local cache,
      * otherwise fallbacks to network.
      */
     override suspend fun getPages(): List<ReaderPage> {
         val pages = try {
-            chapterCache.getPageListFromCache(chapter.chapter.toDomainChapter()!!)
+            episodeCache.getPageListFromCache(episode.episode.toDomainEpisode()!!)
         } catch (e: Throwable) {
             if (e is CancellationException) {
                 throw e
             }
-            source.getPageList(chapter.chapter)
+            source.getPageList(episode.episode)
         }
         // SY -->
         val rp = pages.mapIndexed { index, page ->
@@ -112,7 +112,7 @@ internal class HttpPageLoader(
         val imageUrl = page.imageUrl
 
         // Check if the image has been deleted
-        if (page.status == Page.State.READY && imageUrl != null && !chapterCache.isImageInCache(imageUrl)) {
+        if (page.status == Page.State.READY && imageUrl != null && !episodeCache.isImageInCache(imageUrl)) {
             page.status = Page.State.QUEUE
         }
 
@@ -165,13 +165,13 @@ internal class HttpPageLoader(
         scope.cancel()
         queue.clear()
 
-        // Cache current page list progress for online chapters to allow a faster reopen
-        chapter.pages?.let { pages ->
+        // Cache current page list progress for online episodes to allow a faster reopen
+        episode.pages?.let { pages ->
             launchIO {
                 try {
                     // Convert to pages without reader information
                     val pagesToSave = pages.map { Page(it.index, it.url, it.imageUrl) }
-                    chapterCache.putPageListToCache(chapter.chapter.toDomainChapter()!!, pagesToSave)
+                    episodeCache.putPageListToCache(episode.episode.toDomainEpisode()!!, pagesToSave)
                 } catch (e: Throwable) {
                     if (e is CancellationException) {
                         throw e
@@ -188,7 +188,7 @@ internal class HttpPageLoader(
      */
     private fun preloadNextPages(currentPage: ReaderPage, amount: Int): List<PriorityPage> {
         val pageIndex = currentPage.index
-        val pages = currentPage.chapter.pages ?: return emptyList()
+        val pages = currentPage.episode.pages ?: return emptyList()
         if (pageIndex == pages.lastIndex) return emptyList()
 
         return pages
@@ -204,7 +204,7 @@ internal class HttpPageLoader(
 
     /**
      * Loads the page, retrieving the image URL and downloading the image if necessary.
-     * Downloaded images are stored in the chapter cache.
+     * Downloaded images are stored in the episode cache.
      *
      * @param page the page whose source image has to be downloaded.
      */
@@ -216,13 +216,13 @@ internal class HttpPageLoader(
             }
             val imageUrl = page.imageUrl!!
 
-            if (!chapterCache.isImageInCache(imageUrl)) {
+            if (!episodeCache.isImageInCache(imageUrl)) {
                 page.status = Page.State.DOWNLOAD_IMAGE
                 val imageResponse = source.getImage(page, dataSaver)
-                chapterCache.putImageToCache(imageUrl, imageResponse)
+                episodeCache.putImageToCache(imageUrl, imageResponse)
             }
 
-            page.stream = { chapterCache.getImageFile(imageUrl).inputStream() }
+            page.stream = { episodeCache.getImageFile(imageUrl).inputStream() }
             page.status = Page.State.READY
         } catch (e: Throwable) {
             page.status = Page.State.ERROR

@@ -20,8 +20,8 @@ import eu.kanade.tachiyomi.ui.library.LibraryItem
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import tachiyomi.domain.category.model.Category
+import tachiyomi.domain.library.model.LibraryAnime
 import tachiyomi.domain.library.model.LibraryDisplayMode
-import tachiyomi.domain.library.model.LibraryManga
 import tachiyomi.presentation.core.components.material.PullRefresh
 import kotlin.time.Duration.Companion.seconds
 
@@ -29,19 +29,19 @@ import kotlin.time.Duration.Companion.seconds
 fun LibraryContent(
     categories: List<Category>,
     searchQuery: String?,
-    selection: List<LibraryManga>,
+    selection: List<LibraryAnime>,
     contentPadding: PaddingValues,
     currentPage: () -> Int,
     hasActiveFilters: Boolean,
     showPageTabs: Boolean,
     onChangeCurrentPage: (Int) -> Unit,
-    onMangaClicked: (Long) -> Unit,
-    onContinueReadingClicked: ((LibraryManga) -> Unit)?,
-    onToggleSelection: (LibraryManga) -> Unit,
-    onToggleRangeSelection: (LibraryManga) -> Unit,
+    onAnimeClicked: (Long) -> Unit,
+    onContinueReadingClicked: ((LibraryAnime) -> Unit)?,
+    onToggleSelection: (LibraryAnime) -> Unit,
+    onToggleRangeSelection: (LibraryAnime) -> Unit,
     onRefresh: (Category?) -> Boolean,
     onGlobalSearchClicked: () -> Unit,
-    getNumberOfMangaForCategory: (Category) -> Int?,
+    getNumberOfAnimeForCategory: (Category) -> Int?,
     getDisplayMode: (Int) -> PreferenceMutableState<LibraryDisplayMode>,
     getColumnsForOrientation: (Boolean) -> PreferenceMutableState<Int>,
     getLibraryForPage: (Int) -> List<LibraryItem>,
@@ -70,16 +70,16 @@ fun LibraryContent(
             LibraryTabs(
                 categories = categories,
                 pagerState = pagerState,
-                getNumberOfMangaForCategory = getNumberOfMangaForCategory,
+                getNumberOfAnimeForCategory = getNumberOfAnimeForCategory,
             ) { scope.launch { pagerState.animateScrollToPage(it) } }
         }
 
         val notSelectionMode = selection.isEmpty()
-        val onClickManga = { manga: LibraryManga ->
+        val onClickAnime = { anime: LibraryAnime ->
             if (notSelectionMode) {
-                onMangaClicked(manga.manga.id)
+                onAnimeClicked(anime.anime.id)
             } else {
-                onToggleSelection(manga)
+                onToggleSelection(anime)
             }
         }
 
@@ -101,14 +101,14 @@ fun LibraryContent(
                 state = pagerState,
                 contentPadding = PaddingValues(bottom = contentPadding.calculateBottomPadding()),
                 hasActiveFilters = hasActiveFilters,
-                selectedManga = selection,
+                selectedAnime = selection,
                 searchQuery = searchQuery,
                 onGlobalSearchClicked = onGlobalSearchClicked,
                 getDisplayMode = getDisplayMode,
                 getColumnsForOrientation = getColumnsForOrientation,
                 getLibraryForPage = getLibraryForPage,
-                onClickManga = onClickManga,
-                onLongClickManga = onToggleRangeSelection,
+                onClickAnime = onClickAnime,
+                onLongClickAnime = onToggleRangeSelection,
                 onClickContinueReading = onContinueReadingClicked,
             )
         }

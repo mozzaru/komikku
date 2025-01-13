@@ -93,7 +93,7 @@ fun TrackStatusSelector(
 }
 
 @Composable
-fun TrackChapterSelector(
+fun TrackEpisodeSelector(
     selection: Int,
     onSelectionChange: (Int) -> Unit,
     range: Iterable<Int>,
@@ -101,7 +101,7 @@ fun TrackChapterSelector(
     onDismissRequest: () -> Unit,
 ) {
     BaseSelector(
-        title = stringResource(MR.strings.chapters),
+        title = stringResource(MR.strings.episodes),
         content = {
             WheelNumberPicker(
                 items = range.toImmutableList(),

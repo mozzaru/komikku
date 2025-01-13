@@ -33,10 +33,10 @@ import androidx.paging.compose.LazyPagingItems
 import com.gowtham.ratingbar.RatingBar
 import com.gowtham.ratingbar.RatingBarStyle
 import dev.icerock.moko.resources.StringResource
-import eu.kanade.presentation.library.components.CommonMangaItemDefaults
+import eu.kanade.presentation.anime.components.AnimeCover
+import eu.kanade.presentation.anime.components.AnimeCoverHide
+import eu.kanade.presentation.library.components.CommonAnimeItemDefaults
 import eu.kanade.presentation.library.components.GRID_SELECTED_COVER_ALPHA
-import eu.kanade.presentation.manga.components.MangaCover
-import eu.kanade.presentation.manga.components.MangaCoverHide
 import exh.debug.DebugToggles
 import exh.metadata.MetadataUtil
 import exh.metadata.metadata.EHentaiSearchMetadata
@@ -47,8 +47,8 @@ import exh.util.floor
 import kotlinx.coroutines.flow.StateFlow
 import tachiyomi.core.common.i18n.pluralStringResource
 import tachiyomi.core.common.util.lang.withIOContext
-import tachiyomi.domain.manga.model.Manga
-import tachiyomi.domain.manga.model.asMangaCover
+import tachiyomi.domain.anime.model.Anime
+import tachiyomi.domain.anime.model.asAnimeCover
 import tachiyomi.i18n.sy.SYMR
 import tachiyomi.presentation.core.components.BadgeGroup
 import tachiyomi.presentation.core.components.material.padding
@@ -60,43 +60,43 @@ import java.time.ZoneId
 
 @Composable
 fun BrowseSourceEHentaiList(
-    mangaList: LazyPagingItems<StateFlow</* SY --> */Pair<Manga, RaisedSearchMetadata?>/* SY <-- */>>,
+    animeList: LazyPagingItems<StateFlow</* SY --> */Pair<Anime, RaisedSearchMetadata?>/* SY <-- */>>,
     contentPadding: PaddingValues,
-    onMangaClick: (Manga) -> Unit,
-    onMangaLongClick: (Manga) -> Unit,
+    onAnimeClick: (Anime) -> Unit,
+    onAnimeLongClick: (Anime) -> Unit,
     // KMK -->
-    selection: List<Manga>,
+    selection: List<Anime>,
     // KMK <--
 ) {
     LazyColumn(
         contentPadding = contentPadding,
     ) {
         item {
-            if (mangaList.loadState.prepend is LoadState.Loading) {
+            if (animeList.loadState.prepend is LoadState.Loading) {
                 BrowseSourceLoadingItem()
             }
         }
 
-        items(count = mangaList.itemCount) { index ->
-            val pair by mangaList[index]?.collectAsState() ?: return@items
-            val manga = pair.first
+        items(count = animeList.itemCount) { index ->
+            val pair by animeList[index]?.collectAsState() ?: return@items
+            val anime = pair.first
             val metadata = pair.second
 
             BrowseSourceEHentaiListItem(
-                manga = manga,
+                anime = anime,
                 // SY -->
                 metadata = metadata,
                 // SY <--
-                onClick = { onMangaClick(manga) },
-                onLongClick = { onMangaLongClick(manga) },
+                onClick = { onAnimeClick(anime) },
+                onLongClick = { onAnimeLongClick(anime) },
                 // KMK -->
-                isSelected = selection.fastAny { selected -> selected.id == manga.id },
+                isSelected = selection.fastAny { selected -> selected.id == anime.id },
                 // KMK <--
             )
         }
 
         item {
-            if (mangaList.loadState.refresh is LoadState.Loading || mangaList.loadState.append is LoadState.Loading) {
+            if (animeList.loadState.refresh is LoadState.Loading || animeList.loadState.append is LoadState.Loading) {
                 BrowseSourceLoadingItem()
             }
         }
@@ -105,7 +105,7 @@ fun BrowseSourceEHentaiList(
 
 @Composable
 fun BrowseSourceEHentaiListItem(
-    manga: Manga,
+    anime: Anime,
     // SY -->
     metadata: RaisedSearchMetadata?,
     // SY <--
@@ -118,10 +118,10 @@ fun BrowseSourceEHentaiListItem(
 ) {
     if (metadata !is EHentaiSearchMetadata) return
     // KMK -->
-    val coverData = manga.asMangaCover()
+    val coverData = anime.asAnimeCover()
     val bgColor = coverData.dominantCoverColors?.first?.let { Color(it) }.takeIf { libraryColored }
     val onBgColor = coverData.dominantCoverColors?.second.takeIf { libraryColored }
-    val coverAlpha = if (manga.favorite) CommonMangaItemDefaults.BrowseFavoriteCoverAlpha else 1f
+    val coverAlpha = if (anime.favorite) CommonAnimeItemDefaults.BrowseFavoriteCoverAlpha else 1f
     // KMK <--
 
     val context = LocalContext.current
@@ -169,7 +169,7 @@ fun BrowseSourceEHentaiListItem(
         value = withIOContext {
             when (metadata.genre) {
                 "doujinshi" -> GenreColor.DOUJINSHI_COLOR to SYMR.strings.doujinshi
-                "manga" -> GenreColor.MANGA_COLOR to SYMR.strings.entry_type_manga
+                "anime" -> GenreColor.MANGA_COLOR to SYMR.strings.entry_type_anime
                 "artistcg" -> GenreColor.ARTIST_CG_COLOR to SYMR.strings.artist_cg
                 "gamecg" -> GenreColor.GAME_CG_COLOR to SYMR.strings.game_cg
                 "western" -> GenreColor.WESTERN_COLOR to SYMR.strings.western
@@ -203,7 +203,7 @@ fun BrowseSourceEHentaiListItem(
         Box {
             // KMK -->
             if (DebugToggles.HIDE_COVER_IMAGE_ONLY_SHOW_COLOR.enabled) {
-                MangaCoverHide.Book(
+                AnimeCoverHide.Book(
                     modifier = Modifier
                         .fillMaxHeight(),
                     bgColor = bgColor ?: (MaterialTheme.colorScheme.surface.takeIf { isSelected }),
@@ -211,7 +211,7 @@ fun BrowseSourceEHentaiListItem(
                 )
             } else {
                 // KMK <--
-                MangaCover.Book(
+                AnimeCover.Book(
                     modifier = Modifier
                         .fillMaxHeight(),
                     // KMK -->
@@ -222,7 +222,7 @@ fun BrowseSourceEHentaiListItem(
                     data = coverData,
                 )
             }
-            if (manga.favorite) {
+            if (anime.favorite) {
                 BadgeGroup(
                     modifier = Modifier
                         .padding(4.dp)
@@ -237,7 +237,7 @@ fun BrowseSourceEHentaiListItem(
         Column(Modifier.fillMaxSize(), verticalArrangement = Arrangement.SpaceBetween) {
             Column(Modifier.fillMaxWidth()) {
                 Text(
-                    text = manga.title,
+                    text = anime.title,
                     maxLines = 2,
                     modifier = Modifier.padding(start = 8.dp, top = 8.dp),
                     style = MaterialTheme.typography.titleSmall,

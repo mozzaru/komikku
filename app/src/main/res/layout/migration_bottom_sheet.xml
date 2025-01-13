@@ -58,7 +58,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:checked="true"
-                android:text="@string/chapters" />
+                android:text="@string/episodes" />
 
             <CheckBox
                 android:id="@+id/mig_categories"
@@ -140,7 +140,7 @@
                 android:id="@+id/radioButton2"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="@string/use_most_chapters" />
+                android:text="@string/use_most_episodes" />
 
         </RadioGroup>
 

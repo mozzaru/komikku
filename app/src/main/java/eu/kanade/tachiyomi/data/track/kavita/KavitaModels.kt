@@ -38,11 +38,11 @@ data class VolumeDto(
     val lastModified: String,
     val created: String,
     val seriesId: Int,
-    val chapters: List<ChapterDto> = emptyList(),
+    val episodes: List<EpisodeDto> = emptyList(),
 )
 
 @Serializable
-data class ChapterDto(
+data class EpisodeDto(
     val id: Int? = -1,
     val range: String? = "",
     val number: String? = "-1",

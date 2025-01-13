@@ -176,7 +176,7 @@ object Entry {
         fun categoryConfigs(list: List<Boolean>): List<ConfigItem> {
             return listOf(
                 GenreConfigItem("ct_doujinshi", list[0]),
-                GenreConfigItem("ct_manga", list[1]),
+                GenreConfigItem("ct_anime", list[1]),
                 GenreConfigItem("ct_artistcg", list[2]),
                 GenreConfigItem("ct_gamecg", list[3]),
                 GenreConfigItem("ct_western", list[4]),

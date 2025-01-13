@@ -15,16 +15,16 @@ import kotlinx.collections.immutable.toImmutableMap
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
-import mihon.domain.upcoming.interactor.GetUpcomingManga
+import mihon.domain.upcoming.interactor.GetUpcomingAnime
+import tachiyomi.domain.anime.model.Anime
 import tachiyomi.domain.library.service.LibraryPreferences
-import tachiyomi.domain.manga.model.Manga
 import uy.kohesive.injekt.Injekt
 import uy.kohesive.injekt.api.get
 import java.time.LocalDate
 import java.time.YearMonth
 
 class UpcomingScreenModel(
-    private val getUpcomingManga: GetUpcomingManga = Injekt.get(),
+    private val getUpcomingAnime: GetUpcomingAnime = Injekt.get(),
 ) : StateScreenModel<UpcomingScreenModel.State>(State()) {
     // KMK -->
     private val libraryPreferences: LibraryPreferences = Injekt.get()
@@ -32,7 +32,7 @@ class UpcomingScreenModel(
 
     init {
         screenModelScope.launch {
-            getUpcomingManga.subscribe().collectLatest {
+            getUpcomingAnime.subscribe().collectLatest {
                 mutableState.update { state ->
                     val upcomingItems = it.toUpcomingUIModels()
                     state.copy(
@@ -49,7 +49,7 @@ class UpcomingScreenModel(
         // KMK -->
         screenModelScope.launch {
             mutableState.update { state ->
-                val updatingItems = getUpcomingManga.updatingMangas().toUpcomingUIModels()
+                val updatingItems = getUpcomingAnime.updatingAnimes().toUpcomingUIModels()
                 state.copy(
                     isLoadingUpdating = false,
                     updatingItems = updatingItems,
@@ -61,17 +61,17 @@ class UpcomingScreenModel(
         // KMK <--
     }
 
-    private fun List<Manga>.toUpcomingUIModels(): ImmutableList<UpcomingUIModel> {
-        var mangaCount = 0
+    private fun List<Anime>.toUpcomingUIModels(): ImmutableList<UpcomingUIModel> {
+        var animeCount = 0
         return fastMap { UpcomingUIModel.Item(it) }
             .insertSeparatorsReversed { before, after ->
-                if (after != null) mangaCount++
+                if (after != null) animeCount++
 
-                val beforeDate = before?.manga?.expectedNextUpdate?.toLocalDate()
-                val afterDate = after?.manga?.expectedNextUpdate?.toLocalDate()
+                val beforeDate = before?.anime?.expectedNextUpdate?.toLocalDate()
+                val afterDate = after?.anime?.expectedNextUpdate?.toLocalDate()
 
                 if (beforeDate != afterDate && afterDate != null) {
-                    UpcomingUIModel.Header(afterDate, mangaCount).also { mangaCount = 0 }
+                    UpcomingUIModel.Header(afterDate, animeCount).also { animeCount = 0 }
                 } else {
                     null
                 }
@@ -81,7 +81,7 @@ class UpcomingScreenModel(
 
     private fun List<UpcomingUIModel>.toEvents(): ImmutableMap<LocalDate, Int> {
         return filterIsInstance<UpcomingUIModel.Header>()
-            .associate { it.date to it.mangaCount }
+            .associate { it.date to it.animeCount }
             .toImmutableMap()
     }
 
@@ -102,20 +102,20 @@ class UpcomingScreenModel(
     }
 
     // KMK -->
-    val restriction by lazy { libraryPreferences.autoUpdateMangaRestrictions().get() }
+    val restriction by lazy { libraryPreferences.autoUpdateAnimeRestrictions().get() }
 
-    fun showUpdatingMangas() {
+    fun showUpdatingAnimes() {
         mutableState.update { state ->
             state.copy(
-                isShowingUpdatingMangas = true,
+                isShowingUpdatingAnimes = true,
             )
         }
     }
 
-    fun hideUpdatingMangas() {
+    fun hideUpdatingAnimes() {
         mutableState.update { state ->
             state.copy(
-                isShowingUpdatingMangas = false,
+                isShowingUpdatingAnimes = false,
             )
         }
     }
@@ -128,7 +128,7 @@ class UpcomingScreenModel(
         val headerIndexes: ImmutableMap<LocalDate, Int> = persistentMapOf(),
         // KMK -->
         val isLoadingUpcoming: Boolean = true,
-        val isShowingUpdatingMangas: Boolean = false,
+        val isShowingUpdatingAnimes: Boolean = false,
         val updatingItems: ImmutableList<UpcomingUIModel> = persistentListOf(),
         val updatingEvents: ImmutableMap<LocalDate, Int> = persistentMapOf(),
         val updatingHeaderIndexes: ImmutableMap<LocalDate, Int> = persistentMapOf(),

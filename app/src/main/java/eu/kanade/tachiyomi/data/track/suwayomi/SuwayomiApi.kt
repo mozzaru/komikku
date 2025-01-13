@@ -48,29 +48,29 @@ class SuwayomiApi(private val trackId: Long) {
 
     suspend fun getTrackSearch(trackUrl: String): TrackSearch = withIOContext {
         val url = try {
-            // test if getting api url or manga id
-            val mangaId = trackUrl.toLong()
-            "$baseUrl/api/v1/manga/$mangaId"
+            // test if getting api url or anime id
+            val animeId = trackUrl.toLong()
+            "$baseUrl/api/v1/anime/$animeId"
         } catch (e: NumberFormatException) {
             trackUrl
         }
 
-        val manga = with(json) {
+        val anime = with(json) {
             client.newCall(GET("$url/full", headers))
                 .awaitSuccess()
-                .parseAs<MangaDataClass>()
+                .parseAs<AnimeDataClass>()
         }
 
         TrackSearch.create(trackId).apply {
-            title = manga.title
+            title = anime.title
             cover_url = "$url/thumbnail"
-            summary = manga.description.orEmpty()
+            summary = anime.description.orEmpty()
             tracking_url = url
-            total_chapters = manga.chapterCount
-            publishing_status = manga.status
-            last_chapter_read = manga.lastChapterRead?.chapterNumber ?: 0.0
-            status = when (manga.unreadCount) {
-                manga.chapterCount -> Suwayomi.UNREAD
+            total_episodes = anime.episodeCount
+            publishing_status = anime.status
+            last_episode_seen = anime.lastEpisodeRead?.episodeNumber ?: 0.0
+            status = when (anime.unreadCount) {
+                anime.episodeCount -> Suwayomi.UNREAD
                 0L -> Suwayomi.COMPLETED
                 else -> Suwayomi.READING
             }
@@ -79,16 +79,16 @@ class SuwayomiApi(private val trackId: Long) {
 
     suspend fun updateProgress(track: Track): Track {
         val url = track.tracking_url
-        val chapters = with(json) {
-            client.newCall(GET("$url/chapters", headers))
+        val episodes = with(json) {
+            client.newCall(GET("$url/episodes", headers))
                 .awaitSuccess()
-                .parseAs<List<ChapterDataClass>>()
+                .parseAs<List<EpisodeDataClass>>()
         }
-        val lastChapterIndex = chapters.first { it.chapterNumber == track.last_chapter_read }.index
+        val lastEpisodeIndex = episodes.first { it.episodeNumber == track.last_episode_seen }.index
 
         client.newCall(
             PUT(
-                "$url/chapter/$lastChapterIndex",
+                "$url/episode/$lastEpisodeIndex",
                 headers,
                 FormBody.Builder(Charset.forName("utf8"))
                     .add("markPrevRead", "true")

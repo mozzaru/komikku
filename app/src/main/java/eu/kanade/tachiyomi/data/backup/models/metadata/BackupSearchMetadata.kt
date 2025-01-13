@@ -11,9 +11,9 @@ data class BackupSearchMetadata(
     @ProtoNumber(3) var indexedExtra: String? = null,
     @ProtoNumber(4) var extraVersion: Int,
 ) {
-    fun getSearchMetadata(mangaId: Long): SearchMetadata {
+    fun getSearchMetadata(animeId: Long): SearchMetadata {
         return SearchMetadata(
-            mangaId = mangaId,
+            animeId = animeId,
             uploader = uploader,
             extra = extra,
             indexedExtra = indexedExtra,

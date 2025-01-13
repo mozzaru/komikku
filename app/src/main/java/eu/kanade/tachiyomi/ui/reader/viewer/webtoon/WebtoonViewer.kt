@@ -15,9 +15,9 @@ import androidx.recyclerview.widget.RecyclerView
 import androidx.recyclerview.widget.WebtoonLayoutManager
 import eu.kanade.tachiyomi.data.download.DownloadManager
 import eu.kanade.tachiyomi.ui.reader.ReaderActivity
-import eu.kanade.tachiyomi.ui.reader.model.ChapterTransition
+import eu.kanade.tachiyomi.ui.reader.model.EpisodeTransition
 import eu.kanade.tachiyomi.ui.reader.model.ReaderPage
-import eu.kanade.tachiyomi.ui.reader.model.ViewerChapters
+import eu.kanade.tachiyomi.ui.reader.model.ViewerEpisodes
 import eu.kanade.tachiyomi.ui.reader.setting.ReaderPreferences
 import eu.kanade.tachiyomi.ui.reader.viewer.Viewer
 import eu.kanade.tachiyomi.ui.reader.viewer.ViewerNavigation.NavigationRegion
@@ -83,7 +83,7 @@ class WebtoonViewer(
     )
 
     /**
-     * Currently active item. It can be a chapter page or a chapter transition.
+     * Currently active item. It can be a episode page or a episode transition.
      */
     /* [EXH] private */
     var currentPage: Any? = null
@@ -114,14 +114,14 @@ class WebtoonViewer(
                     if (dy < 0) {
                         val firstIndex = layoutManager.findFirstVisibleItemPosition()
                         val firstItem = adapter.items.getOrNull(firstIndex)
-                        if (firstItem is ChapterTransition.Prev && firstItem.to != null) {
-                            activity.requestPreloadChapter(firstItem.to)
+                        if (firstItem is EpisodeTransition.Prev && firstItem.to != null) {
+                            activity.requestPreloadEpisode(firstItem.to)
                         }
                     }
 
                     val lastIndex = layoutManager.findLastEndVisibleItemPosition()
                     val lastItem = adapter.items.getOrNull(lastIndex)
-                    if (lastItem is ChapterTransition.Next && lastItem.to == null) {
+                    if (lastItem is EpisodeTransition.Next && lastItem.to == null) {
                         activity.showMenu()
                     }
                 }
@@ -190,14 +190,14 @@ class WebtoonViewer(
         currentPage ?: return true
 
         val nextItem = adapter.items.getOrNull(adapter.items.size - 1)
-        val nextChapter = (nextItem as? ChapterTransition.Next)?.to ?: (nextItem as? ReaderPage)?.chapter
+        val nextEpisode = (nextItem as? EpisodeTransition.Next)?.to ?: (nextItem as? ReaderPage)?.episode
 
         // Allow preload for
-        // 1. Going between pages of same chapter
-        // 2. Next chapter page
-        return when (page.chapter) {
-            (currentPage as? ReaderPage)?.chapter -> true
-            nextChapter -> true
+        // 1. Going between pages of same episode
+        // 2. Next episode page
+        return when (page.episode) {
+            (currentPage as? ReaderPage)?.episode -> true
+            nextEpisode -> true
             else -> false
         }
     }
@@ -219,50 +219,50 @@ class WebtoonViewer(
 
     /**
      * Called from the RecyclerView listener when a [page] is marked as active. It notifies the
-     * activity of the change and requests the preload of the next chapter if this is the last page.
+     * activity of the change and requests the preload of the next episode if this is the last page.
      */
     private fun onPageSelected(page: ReaderPage, allowPreload: Boolean) {
-        val pages = page.chapter.pages ?: return
+        val pages = page.episode.pages ?: return
         logcat { "onPageSelected: ${page.number}/${pages.size}" }
         activity.onPageSelected(page)
 
-        // Preload next chapter once we're within the last 5 pages of the current chapter
+        // Preload next episode once we're within the last 5 pages of the current episode
         val inPreloadRange = pages.size - page.number < 5
-        if (inPreloadRange && allowPreload && page.chapter == adapter.currentChapter) {
-            logcat { "Request preload next chapter because we're at page ${page.number} of ${pages.size}" }
+        if (inPreloadRange && allowPreload && page.episode == adapter.currentEpisode) {
+            logcat { "Request preload next episode because we're at page ${page.number} of ${pages.size}" }
             val nextItem = adapter.items.getOrNull(adapter.items.size - 1)
-            val transitionChapter = (nextItem as? ChapterTransition.Next)?.to ?: (nextItem as?ReaderPage)?.chapter
-            if (transitionChapter != null) {
-                logcat { "Requesting to preload chapter ${transitionChapter.chapter.chapter_number}" }
-                activity.requestPreloadChapter(transitionChapter)
+            val transitionEpisode = (nextItem as? EpisodeTransition.Next)?.to ?: (nextItem as?ReaderPage)?.episode
+            if (transitionEpisode != null) {
+                logcat { "Requesting to preload episode ${transitionEpisode.episode.episode_number}" }
+                activity.requestPreloadEpisode(transitionEpisode)
             }
         }
     }
 
     /**
      * Called from the RecyclerView listener when a [transition] is marked as active. It request the
-     * preload of the destination chapter of the transition.
+     * preload of the destination episode of the transition.
      */
-    private fun onTransitionSelected(transition: ChapterTransition) {
+    private fun onTransitionSelected(transition: EpisodeTransition) {
         logcat { "onTransitionSelected: $transition" }
-        val toChapter = transition.to
-        if (toChapter != null) {
-            logcat { "Request preload destination chapter because we're on the transition" }
-            activity.requestPreloadChapter(toChapter)
+        val toEpisode = transition.to
+        if (toEpisode != null) {
+            logcat { "Request preload destination episode because we're on the transition" }
+            activity.requestPreloadEpisode(toEpisode)
         }
     }
 
     /**
-     * Tells this viewer to set the given [chapters] as active.
+     * Tells this viewer to set the given [episodes] as active.
      */
-    override fun setChapters(chapters: ViewerChapters) {
-        val forceTransition = config.alwaysShowChapterTransition || currentPage is ChapterTransition
-        adapter.setChapters(chapters, forceTransition)
+    override fun setEpisodes(episodes: ViewerEpisodes) {
+        val forceTransition = config.alwaysShowEpisodeTransition || currentPage is EpisodeTransition
+        adapter.setEpisodes(episodes, forceTransition)
 
         if (recycler.isGone) {
             logcat { "Recycler first layout" }
-            val pages = chapters.currChapter.pages ?: return
-            moveToPage(pages[min(chapters.currChapter.requestedPage, pages.lastIndex)])
+            val pages = episodes.currEpisode.pages ?: return
+            moveToPage(pages[min(episodes.currEpisode.requestedPage, pages.lastIndex)])
             recycler.isVisible = true
         }
     }
@@ -290,7 +290,7 @@ class WebtoonViewer(
             currentPage = item
             when (item) {
                 is ReaderPage -> onPageSelected(item, allowPreload)
-                is ChapterTransition -> onTransitionSelected(item)
+                is EpisodeTransition -> onTransitionSelected(item)
             }
         }
     }

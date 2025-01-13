@@ -15,7 +15,7 @@ import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.res.vectorResource
 import androidx.compose.ui.tooling.preview.PreviewLightDark
 import dev.icerock.moko.resources.StringResource
-import eu.kanade.domain.manga.model.readingMode
+import eu.kanade.domain.anime.model.readingMode
 import eu.kanade.presentation.components.AdaptiveSheet
 import eu.kanade.presentation.reader.components.ModeSelectionDialog
 import eu.kanade.presentation.theme.TachiyomiPreviewTheme
@@ -34,8 +34,8 @@ fun ReadingModeSelectDialog(
     screenModel: ReaderSettingsScreenModel,
     onChange: (StringResource) -> Unit,
 ) {
-    val manga by screenModel.mangaFlow.collectAsState()
-    val readingMode = remember(manga) { ReadingMode.fromPreference(manga?.readingMode?.toInt()) }
+    val anime by screenModel.animeFlow.collectAsState()
+    val readingMode = remember(anime) { ReadingMode.fromPreference(anime?.readingMode?.toInt()) }
 
     AdaptiveSheet(onDismissRequest = onDismissRequest) {
         DialogContent(

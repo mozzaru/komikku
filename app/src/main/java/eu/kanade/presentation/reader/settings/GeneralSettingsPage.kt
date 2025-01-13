@@ -103,8 +103,8 @@ internal fun ColumnScope.GeneralPage(screenModel: ReaderSettingsScreenModel) {
     )
 
     CheckboxItem(
-        label = stringResource(MR.strings.pref_always_show_chapter_transition),
-        pref = screenModel.preferences.alwaysShowChapterTransition(),
+        label = stringResource(MR.strings.pref_always_show_episode_transition),
+        pref = screenModel.preferences.alwaysShowEpisodeTransition(),
     )
 
     // SY -->

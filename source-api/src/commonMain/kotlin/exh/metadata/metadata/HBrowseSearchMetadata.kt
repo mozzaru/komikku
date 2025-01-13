@@ -1,7 +1,7 @@
 package exh.metadata.metadata
 
 import android.content.Context
-import eu.kanade.tachiyomi.source.model.SManga
+import eu.kanade.tachiyomi.source.model.SAnime
 import eu.kanade.tachiyomi.source.model.copy
 import kotlinx.serialization.Serializable
 import tachiyomi.core.common.i18n.stringResource
@@ -21,13 +21,13 @@ class HBrowseSearchMetadata : RaisedSearchMetadata() {
     // Length in pages
     var length: Int? = null
 
-    override fun createMangaInfo(manga: SManga): SManga {
+    override fun createAnimeInfo(anime: SAnime): SAnime {
         val key = hbUrl
 
         val title = title
 
-        // Guess thumbnail URL if manga does not have thumbnail URL
-        val cover = if (manga.thumbnail_url.isNullOrBlank()) {
+        // Guess thumbnail URL if anime does not have thumbnail URL
+        val cover = if (anime.thumbnail_url.isNullOrBlank()) {
             guessThumbnailUrl(hbId.toString())
         } else {
             null
@@ -39,10 +39,10 @@ class HBrowseSearchMetadata : RaisedSearchMetadata() {
 
         val description = null
 
-        return manga.copy(
-            url = key ?: manga.url,
-            title = title ?: manga.title,
-            thumbnail_url = cover ?: manga.thumbnail_url,
+        return anime.copy(
+            url = key ?: anime.url,
+            title = title ?: anime.title,
+            thumbnail_url = cover ?: anime.thumbnail_url,
             artist = artist,
             genre = genres,
             description = description,

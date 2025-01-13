@@ -27,11 +27,11 @@ import eu.kanade.presentation.browse.components.MigrationItem
 import eu.kanade.presentation.browse.components.MigrationItemResult
 import eu.kanade.presentation.components.AppBar
 import eu.kanade.presentation.components.AppBarActions
-import eu.kanade.tachiyomi.ui.browse.migration.advanced.process.MigratingManga
+import eu.kanade.tachiyomi.ui.browse.migration.advanced.process.MigratingAnime
 import kotlinx.collections.immutable.ImmutableList
 import kotlinx.collections.immutable.persistentListOf
 import tachiyomi.core.common.util.lang.withIOContext
-import tachiyomi.domain.manga.model.Manga
+import tachiyomi.domain.anime.model.Anime
 import tachiyomi.i18n.MR
 import tachiyomi.i18n.sy.SYMR
 import tachiyomi.presentation.core.components.ScrollbarLazyColumn
@@ -42,20 +42,20 @@ import tachiyomi.presentation.core.util.plus
 
 @Composable
 fun MigrationListScreen(
-    items: ImmutableList<MigratingManga>,
+    items: ImmutableList<MigratingAnime>,
     migrationDone: Boolean,
     finishedCount: Int,
-    getManga: suspend (MigratingManga.SearchResult.Result) -> Manga?,
-    getChapterInfo: suspend (MigratingManga.SearchResult.Result) -> MigratingManga.ChapterInfo,
-    getSourceName: (Manga) -> String,
-    onMigrationItemClick: (Manga) -> Unit,
+    getAnime: suspend (MigratingAnime.SearchResult.Result) -> Anime?,
+    getEpisodeInfo: suspend (MigratingAnime.SearchResult.Result) -> MigratingAnime.EpisodeInfo,
+    getSourceName: (Anime) -> String,
+    onMigrationItemClick: (Anime) -> Unit,
     openMigrationDialog: (Boolean) -> Unit,
-    skipManga: (Long) -> Unit,
+    skipAnime: (Long) -> Unit,
     // KMK -->
-    cancelManga: (Long) -> Unit,
+    cancelAnime: (Long) -> Unit,
     navigateUp: () -> Unit,
     // KMK <--
-    searchManually: (MigratingManga) -> Unit,
+    searchManually: (MigratingAnime) -> Unit,
     migrateNow: (Long) -> Unit,
     copyNow: (Long) -> Unit,
 ) {
@@ -97,7 +97,7 @@ fun MigrationListScreen(
         ScrollbarLazyColumn(
             contentPadding = contentPadding + topSmallPaddingValues,
         ) {
-            items(items, key = { "migration-list-${it.manga.id}" }) { migrationItem ->
+            items(items, key = { "migration-list-${it.anime.id}" }) { migrationItem ->
                 Row(
                     Modifier
                         .fillMaxWidth()
@@ -114,10 +114,10 @@ fun MigrationListScreen(
                             .weight(1f)
                             .align(Alignment.Top)
                             .fillMaxHeight(),
-                        manga = migrationItem.manga,
+                        anime = migrationItem.anime,
                         sourcesString = migrationItem.sourcesString,
-                        chapterInfo = migrationItem.chapterInfo,
-                        onClick = { onMigrationItemClick(migrationItem.manga) },
+                        episodeInfo = migrationItem.episodeInfo,
+                        onClick = { onMigrationItemClick(migrationItem.anime) },
                     )
 
                     Icon(
@@ -134,8 +134,8 @@ fun MigrationListScreen(
                             .fillMaxHeight(),
                         migrationItem = migrationItem,
                         result = result,
-                        getManga = getManga,
-                        getChapterInfo = getChapterInfo,
+                        getAnime = getAnime,
+                        getEpisodeInfo = getEpisodeInfo,
                         getSourceName = getSourceName,
                         onMigrationItemClick = onMigrationItemClick,
                     )
@@ -144,16 +144,16 @@ fun MigrationListScreen(
                         modifier = Modifier
                             .weight(0.2f),
                         result = result,
-                        skipManga = { skipManga(migrationItem.manga.id) },
+                        skipAnime = { skipAnime(migrationItem.anime.id) },
                         // KMK -->
-                        cancelManga = { cancelManga(migrationItem.manga.id) },
+                        cancelAnime = { cancelAnime(migrationItem.anime.id) },
                         // KMK <--
                         searchManually = { searchManually(migrationItem) },
                         migrateNow = {
-                            migrateNow(migrationItem.manga.id)
+                            migrateNow(migrationItem.anime.id)
                         },
                         copyNow = {
-                            copyNow(migrationItem.manga.id)
+                            copyNow(migrationItem.anime.id)
                         },
                     )
                 }

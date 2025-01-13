@@ -5,11 +5,11 @@ import kotlinx.serialization.Serializable
 @Serializable
 data class AtHomeDto(
     val baseUrl: String,
-    val chapter: AtHomeChapterDto,
+    val episode: AtHomeEpisodeDto,
 )
 
 @Serializable
-data class AtHomeChapterDto(
+data class AtHomeEpisodeDto(
     val hash: String,
     val data: List<String>,
     val dataSaver: List<String>,

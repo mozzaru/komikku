@@ -16,18 +16,18 @@ import cafe.adriel.voyager.core.model.StateScreenModel
 import cafe.adriel.voyager.core.model.screenModelScope
 import cafe.adriel.voyager.navigator.LocalNavigator
 import cafe.adriel.voyager.navigator.currentOrThrow
-import eu.kanade.domain.manga.interactor.UpdateManga
+import eu.kanade.domain.anime.interactor.UpdateAnime
 import eu.kanade.domain.track.interactor.AddTracks
-import eu.kanade.presentation.browse.components.RemoveMangaDialog
+import eu.kanade.presentation.anime.DuplicateAnimeDialog
+import eu.kanade.presentation.anime.DuplicateAnimesDialog
+import eu.kanade.presentation.browse.components.RemoveAnimeDialog
 import eu.kanade.presentation.category.components.ChangeCategoryDialog
 import eu.kanade.presentation.components.AppBar
 import eu.kanade.presentation.components.BulkSelectionToolbar
-import eu.kanade.presentation.manga.DuplicateMangaDialog
-import eu.kanade.presentation.manga.DuplicateMangasDialog
 import eu.kanade.tachiyomi.data.cache.CoverCache
+import eu.kanade.tachiyomi.ui.anime.AnimeScreen
 import eu.kanade.tachiyomi.ui.browse.migration.advanced.design.PreMigrationScreen
 import eu.kanade.tachiyomi.ui.category.CategoryScreen
-import eu.kanade.tachiyomi.ui.manga.MangaScreen
 import eu.kanade.tachiyomi.util.removeCovers
 import kotlinx.collections.immutable.ImmutableList
 import kotlinx.collections.immutable.PersistentList
@@ -43,14 +43,14 @@ import tachiyomi.core.common.preference.mapAsCheckboxState
 import tachiyomi.core.common.util.lang.launchIO
 import tachiyomi.core.common.util.lang.launchNonCancellable
 import tachiyomi.domain.UnsortedPreferences
+import tachiyomi.domain.anime.interactor.GetDuplicateLibraryAnime
+import tachiyomi.domain.anime.model.Anime
+import tachiyomi.domain.anime.model.toAnimeUpdate
 import tachiyomi.domain.category.interactor.GetCategories
-import tachiyomi.domain.category.interactor.SetMangaCategories
+import tachiyomi.domain.category.interactor.SetAnimeCategories
 import tachiyomi.domain.category.model.Category
-import tachiyomi.domain.chapter.interactor.SetMangaDefaultChapterFlags
+import tachiyomi.domain.episode.interactor.SetAnimeDefaultEpisodeFlags
 import tachiyomi.domain.library.service.LibraryPreferences
-import tachiyomi.domain.manga.interactor.GetDuplicateLibraryManga
-import tachiyomi.domain.manga.model.Manga
-import tachiyomi.domain.manga.model.toMangaUpdate
 import tachiyomi.domain.source.service.SourceManager
 import tachiyomi.i18n.kmk.KMR
 import tachiyomi.presentation.core.i18n.stringResource
@@ -62,12 +62,12 @@ class BulkFavoriteScreenModel(
     initialState: State = State(),
     private val sourceManager: SourceManager = Injekt.get(),
     private val libraryPreferences: LibraryPreferences = Injekt.get(),
-    private val getDuplicateLibraryManga: GetDuplicateLibraryManga = Injekt.get(),
+    private val getDuplicateLibraryAnime: GetDuplicateLibraryAnime = Injekt.get(),
     private val getCategories: GetCategories = Injekt.get(),
-    private val setMangaCategories: SetMangaCategories = Injekt.get(),
-    private val updateManga: UpdateManga = Injekt.get(),
+    private val setAnimeCategories: SetAnimeCategories = Injekt.get(),
+    private val updateAnime: UpdateAnime = Injekt.get(),
     private val coverCache: CoverCache = Injekt.get(),
-    private val setMangaDefaultChapterFlags: SetMangaDefaultChapterFlags = Injekt.get(),
+    private val setAnimeDefaultEpisodeFlags: SetAnimeDefaultEpisodeFlags = Injekt.get(),
     private val addTracks: AddTracks = Injekt.get(),
 ) : StateScreenModel<BulkFavoriteScreenModel.State>(initialState) {
 
@@ -86,20 +86,20 @@ class BulkFavoriteScreenModel(
         mutableState.update { it.copy(selection = persistentListOf()) }
     }
 
-    fun select(manga: Manga) {
-        toggleSelection(manga, toSelectedState = true)
+    fun select(anime: Anime) {
+        toggleSelection(anime, toSelectedState = true)
     }
 
     /**
      * @param toSelectedState set to true to only Select, set to false to only Unselect
      */
-    fun toggleSelection(manga: Manga, toSelectedState: Boolean? = null) {
+    fun toggleSelection(anime: Anime, toSelectedState: Boolean? = null) {
         mutableState.update { state ->
             val newSelection = state.selection.mutate { list ->
-                if (toSelectedState != true && list.fastAny { it.id == manga.id }) {
-                    list.removeAll { it.id == manga.id }
-                } else if (toSelectedState != false && list.none { it.id == manga.id }) {
-                    list.add(manga)
+                if (toSelectedState != true && list.fastAny { it.id == anime.id }) {
+                    list.removeAll { it.id == anime.id }
+                } else if (toSelectedState != false && list.none { it.id == anime.id }) {
+                    list.add(anime)
                 }
             }
             state.copy(
@@ -109,10 +109,10 @@ class BulkFavoriteScreenModel(
         }
     }
 
-    fun reverseSelection(mangas: List<Manga>) {
+    fun reverseSelection(animes: List<Anime>) {
         mutableState.update { state ->
-            val newSelection = mangas.filterNot { manga ->
-                state.selection.contains(manga)
+            val newSelection = animes.filterNot { anime ->
+                state.selection.contains(anime)
             }.toPersistentList()
             state.copy(
                 selection = newSelection,
@@ -123,16 +123,16 @@ class BulkFavoriteScreenModel(
 
     /**
      * Called when user click on [BulkSelectionToolbar]'s `Favorite` button.
-     * It will then look for any duplicated mangas.
-     * - If there is any, it will show the [DuplicateMangasDialog].
+     * It will then look for any duplicated animes.
+     * - If there is any, it will show the [DuplicateAnimesDialog].
      * - If not then it will call the [addFavoriteDuplicate].
      */
     fun addFavorite(startIdx: Int = 0) {
         screenModelScope.launch {
             startRunning()
-            val mangaWithDup = getDuplicateLibraryManga(startIdx)
-            if (mangaWithDup != null) {
-                setDialog(Dialog.AllowDuplicate(mangaWithDup))
+            val animeWithDup = getDuplicateLibraryAnime(startIdx)
+            if (animeWithDup != null) {
+                setDialog(Dialog.AllowDuplicate(animeWithDup))
             } else {
                 addFavoriteDuplicate()
             }
@@ -140,13 +140,13 @@ class BulkFavoriteScreenModel(
     }
 
     /**
-     * Add mangas to library if there is default category or no category exists.
+     * Add animes to library if there is default category or no category exists.
      * If not, it shows the categories list.
      */
     fun addFavoriteDuplicate(skipAllDuplicates: Boolean = false) {
         screenModelScope.launch {
-            val mangaList = if (skipAllDuplicates) getNotDuplicateLibraryMangas() else state.value.selection
-            if (mangaList.isEmpty()) {
+            val animeList = if (skipAllDuplicates) getNotDuplicateLibraryAnimes() else state.value.selection
+            if (animeList.isEmpty()) {
                 stopRunning()
                 toggleSelectionMode()
                 return@launch
@@ -159,21 +159,21 @@ class BulkFavoriteScreenModel(
                 // Default category set
                 defaultCategory != null -> {
                     stopRunning()
-                    setMangasCategories(mangaList, listOf(defaultCategory.id), emptyList())
+                    setAnimesCategories(animeList, listOf(defaultCategory.id), emptyList())
                 }
 
                 // Automatic 'Default' or no categories
                 defaultCategoryId == 0 || categories.isEmpty() -> {
                     stopRunning()
                     // Automatic 'Default' or no categories
-                    setMangasCategories(mangaList, emptyList(), emptyList())
+                    setAnimesCategories(animeList, emptyList(), emptyList())
                 }
 
                 else -> {
                     // Get indexes of the common categories to preselect.
-                    val common = getCommonCategories(mangaList)
+                    val common = getCommonCategories(animeList)
                     // Get indexes of the mix categories to preselect.
-                    val mix = getMixCategories(mangaList)
+                    val mix = getMixCategories(animeList)
                     val preselected = categories
                         .map {
                             when (it) {
@@ -184,30 +184,30 @@ class BulkFavoriteScreenModel(
                         }
                         .toImmutableList()
                     stopRunning()
-                    setDialog(Dialog.ChangeMangasCategory(mangaList, preselected))
+                    setDialog(Dialog.ChangeAnimesCategory(animeList, preselected))
                 }
             }
         }
     }
 
-    private suspend fun getNotDuplicateLibraryMangas(): List<Manga> {
-        return state.value.selection.filterNot { manga ->
-            getDuplicateLibraryManga.await(manga).isNotEmpty()
+    private suspend fun getNotDuplicateLibraryAnimes(): List<Anime> {
+        return state.value.selection.filterNot { anime ->
+            getDuplicateLibraryAnime.await(anime).isNotEmpty()
         }
     }
 
-    private suspend fun getDuplicateLibraryManga(startIdx: Int = 0): Pair<Int, Manga>? {
-        val mangas = state.value.selection
-        mangas.fastForEachIndexed { index, manga ->
+    private suspend fun getDuplicateLibraryAnime(startIdx: Int = 0): Pair<Int, Anime>? {
+        val animes = state.value.selection
+        animes.fastForEachIndexed { index, anime ->
             if (index < startIdx) return@fastForEachIndexed
-            val dup = getDuplicateLibraryManga.await(manga)
+            val dup = getDuplicateLibraryAnime.await(anime)
             if (dup.isEmpty()) return@fastForEachIndexed
             return Pair(index, dup.first())
         }
         return null
     }
 
-    fun removeDuplicateSelectedManga(index: Int) {
+    fun removeDuplicateSelectedAnime(index: Int) {
         mutableState.update { state ->
             val newSelection = state.selection.mutate { list ->
                 list.removeAt(index)
@@ -217,66 +217,66 @@ class BulkFavoriteScreenModel(
     }
 
     /**
-     * Bulk update categories of manga using old and new common categories.
+     * Bulk update categories of anime using old and new common categories.
      *
-     * @param mangaList the list of manga to move.
-     * @param addCategories the categories to add for all mangas.
-     * @param removeCategories the categories to remove in all mangas.
+     * @param animeList the list of anime to move.
+     * @param addCategories the categories to add for all animes.
+     * @param removeCategories the categories to remove in all animes.
      */
-    fun setMangasCategories(mangaList: List<Manga>, addCategories: List<Long>, removeCategories: List<Long>) {
+    fun setAnimesCategories(animeList: List<Anime>, addCategories: List<Long>, removeCategories: List<Long>) {
         screenModelScope.launchNonCancellable {
             startRunning()
-            mangaList.fastForEach { manga ->
-                val categoryIds = getCategories.await(manga.id)
+            animeList.fastForEach { anime ->
+                val categoryIds = getCategories.await(anime.id)
                     .map { it.id }
                     .subtract(removeCategories.toSet())
                     .plus(addCategories)
                     .toList()
 
-                moveMangaToCategoriesAndAddToLibrary(manga, categoryIds)
+                moveAnimeToCategoriesAndAddToLibrary(anime, categoryIds)
             }
             stopRunning()
         }
         toggleSelectionMode()
     }
 
-    private fun moveMangaToCategoriesAndAddToLibrary(manga: Manga, categories: List<Long>) {
-        moveMangaToCategory(manga.id, categories)
-        if (manga.favorite) return
+    private fun moveAnimeToCategoriesAndAddToLibrary(anime: Anime, categories: List<Long>) {
+        moveAnimeToCategory(anime.id, categories)
+        if (anime.favorite) return
 
         screenModelScope.launchIO {
-            updateManga.awaitUpdateFavorite(manga.id, true)
+            updateAnime.awaitUpdateFavorite(anime.id, true)
         }
     }
 
-    private fun moveMangaToCategory(mangaId: Long, categoryIds: List<Long>) {
+    private fun moveAnimeToCategory(animeId: Long, categoryIds: List<Long>) {
         screenModelScope.launchIO {
-            setMangaCategories.await(mangaId, categoryIds)
+            setAnimeCategories.await(animeId, categoryIds)
         }
     }
 
     /**
-     * Returns the common categories for the given list of manga.
+     * Returns the common categories for the given list of anime.
      *
-     * @param mangas the list of manga.
+     * @param animes the list of anime.
      */
-    private suspend fun getCommonCategories(mangas: List<Manga>): Collection<Category> {
-        if (mangas.isEmpty()) return emptyList()
-        return mangas
+    private suspend fun getCommonCategories(animes: List<Anime>): Collection<Category> {
+        if (animes.isEmpty()) return emptyList()
+        return animes
             .map { getCategories.await(it.id).toSet() }
             .reduce { set1, set2 -> set1.intersect(set2) }
     }
 
     /**
-     * Returns the mix (non-common) categories for the given list of manga.
+     * Returns the mix (non-common) categories for the given list of anime.
      *
-     * @param mangas the list of manga.
+     * @param animes the list of anime.
      */
-    private suspend fun getMixCategories(mangas: List<Manga>): Collection<Category> {
-        if (mangas.isEmpty()) return emptyList()
-        val mangaCategories = mangas.map { getCategories.await(it.id).toSet() }
-        val common = mangaCategories.reduce { set1, set2 -> set1.intersect(set2) }
-        return mangaCategories.flatten().distinct().subtract(common)
+    private suspend fun getMixCategories(animes: List<Anime>): Collection<Category> {
+        if (animes.isEmpty()) return emptyList()
+        val animeCategories = animes.map { getCategories.await(it.id).toSet() }
+        val common = animeCategories.reduce { set1, set2 -> set1.intersect(set2) }
+        return animeCategories.flatten().distinct().subtract(common)
     }
 
     /**
@@ -291,52 +291,52 @@ class BulkFavoriteScreenModel(
             .orEmpty()
     }
 
-    private suspend fun getDuplicateLibraryManga(manga: Manga): Manga? {
-        return getDuplicateLibraryManga.await(manga).getOrNull(0)
+    private suspend fun getDuplicateLibraryAnime(anime: Anime): Anime? {
+        return getDuplicateLibraryAnime.await(anime).getOrNull(0)
     }
 
-    private fun moveMangaToCategories(manga: Manga, vararg categories: Category) {
-        moveMangaToCategories(manga, categories.filter { it.id != 0L }.map { it.id })
+    private fun moveAnimeToCategories(anime: Anime, vararg categories: Category) {
+        moveAnimeToCategories(anime, categories.filter { it.id != 0L }.map { it.id })
     }
 
-    fun moveMangaToCategories(manga: Manga, categoryIds: List<Long>) {
+    fun moveAnimeToCategories(anime: Anime, categoryIds: List<Long>) {
         screenModelScope.launchIO {
-            setMangaCategories.await(
-                mangaId = manga.id,
+            setAnimeCategories.await(
+                animeId = anime.id,
                 categoryIds = categoryIds.toList(),
             )
         }
     }
 
     /**
-     * Adds or removes a manga from the library.
+     * Adds or removes a anime from the library.
      *
-     * @param manga the manga to update.
+     * @param anime the anime to update.
      */
-    fun changeMangaFavorite(manga: Manga) {
-        val source = sourceManager.getOrStub(manga.source)
+    fun changeAnimeFavorite(anime: Anime) {
+        val source = sourceManager.getOrStub(anime.source)
 
         screenModelScope.launch {
-            var new = manga.copy(
-                favorite = !manga.favorite,
-                dateAdded = when (manga.favorite) {
+            var new = anime.copy(
+                favorite = !anime.favorite,
+                dateAdded = when (anime.favorite) {
                     true -> 0
                     false -> Instant.now().toEpochMilli()
                 },
             )
-            // TODO: also allow deleting chapters when remove favorite (just like in [MangaScreenModel])
+            // TODO: also allow deleting episodes when remove favorite (just like in [AnimeScreenModel])
             if (!new.favorite) {
                 new = new.removeCovers(coverCache)
             } else {
-                setMangaDefaultChapterFlags.await(manga)
-                addTracks.bindEnhancedTrackers(manga, source)
+                setAnimeDefaultEpisodeFlags.await(anime)
+                addTracks.bindEnhancedTrackers(anime, source)
             }
 
-            updateManga.await(new.toMangaUpdate())
+            updateAnime.await(new.toAnimeUpdate())
         }
     }
 
-    fun addFavorite(manga: Manga) {
+    fun addFavorite(anime: Anime) {
         screenModelScope.launch {
             val categories = getCategories()
             val defaultCategoryId = libraryPreferences.defaultCategory().get()
@@ -345,22 +345,22 @@ class BulkFavoriteScreenModel(
             when {
                 // Default category set
                 defaultCategory != null -> {
-                    moveMangaToCategories(manga, defaultCategory)
-                    changeMangaFavorite(manga)
+                    moveAnimeToCategories(anime, defaultCategory)
+                    changeAnimeFavorite(anime)
                 }
 
                 // Automatic 'Default' or no categories
                 defaultCategoryId == 0 || categories.isEmpty() -> {
-                    moveMangaToCategories(manga)
-                    changeMangaFavorite(manga)
+                    moveAnimeToCategories(anime)
+                    changeAnimeFavorite(anime)
                 }
 
                 // Choose a category
                 else -> {
-                    val preselectedIds = getCategories.await(manga.id).map { it.id }
+                    val preselectedIds = getCategories.await(anime.id).map { it.id }
                     setDialog(
-                        Dialog.ChangeMangaCategory(
-                            manga,
+                        Dialog.ChangeAnimeCategory(
+                            anime,
                             categories.mapAsCheckboxState { it.id in preselectedIds }.toImmutableList(),
                         ),
                     )
@@ -369,20 +369,20 @@ class BulkFavoriteScreenModel(
         }
     }
 
-    fun addRemoveManga(manga: Manga, haptic: HapticFeedback? = null) {
+    fun addRemoveAnime(anime: Anime, haptic: HapticFeedback? = null) {
         screenModelScope.launchIO {
-            val duplicateManga = getDuplicateLibraryManga(manga)
+            val duplicateAnime = getDuplicateLibraryAnime(anime)
             when {
-                manga.favorite -> setDialog(
-                    Dialog.RemoveManga(manga),
+                anime.favorite -> setDialog(
+                    Dialog.RemoveAnime(anime),
                 )
-                duplicateManga != null -> setDialog(
-                    Dialog.AddDuplicateManga(
-                        manga,
-                        duplicateManga,
+                duplicateAnime != null -> setDialog(
+                    Dialog.AddDuplicateAnime(
+                        anime,
+                        duplicateAnime,
                     ),
                 )
-                else -> addFavorite(manga)
+                else -> addFavorite(anime)
             }
             haptic?.performHapticFeedback(HapticFeedbackType.LongPress)
         }
@@ -413,44 +413,44 @@ class BulkFavoriteScreenModel(
     }
 
     interface Dialog {
-        data class RemoveManga(val manga: Manga) : Dialog
-        data class AddDuplicateManga(val manga: Manga, val duplicate: Manga) : Dialog
-        data class ChangeMangaCategory(
-            val manga: Manga,
+        data class RemoveAnime(val anime: Anime) : Dialog
+        data class AddDuplicateAnime(val anime: Anime, val duplicate: Anime) : Dialog
+        data class ChangeAnimeCategory(
+            val anime: Anime,
             val initialSelection: ImmutableList<CheckboxState.State<Category>>,
         ) : Dialog
-        data class ChangeMangasCategory(
-            val mangas: List<Manga>,
+        data class ChangeAnimesCategory(
+            val animes: List<Anime>,
             val initialSelection: ImmutableList<CheckboxState<Category>>,
         ) : Dialog
-        data class AllowDuplicate(val duplicatedManga: Pair<Int, Manga>) : Dialog
+        data class AllowDuplicate(val duplicatedAnime: Pair<Int, Anime>) : Dialog
     }
 
     @Immutable
     data class State(
         val dialog: Dialog? = null,
-        val selection: PersistentList<Manga> = persistentListOf(),
+        val selection: PersistentList<Anime> = persistentListOf(),
         val selectionMode: Boolean = false,
         val isRunning: Boolean = false,
     )
 }
 
 @Composable
-fun AddDuplicateMangaDialog(bulkFavoriteScreenModel: BulkFavoriteScreenModel) {
+fun AddDuplicateAnimeDialog(bulkFavoriteScreenModel: BulkFavoriteScreenModel) {
     val navigator = LocalNavigator.currentOrThrow
     val bulkFavoriteState by bulkFavoriteScreenModel.state.collectAsState()
-    val dialog = bulkFavoriteState.dialog as BulkFavoriteScreenModel.Dialog.AddDuplicateManga
+    val dialog = bulkFavoriteState.dialog as BulkFavoriteScreenModel.Dialog.AddDuplicateAnime
 
-    DuplicateMangaDialog(
+    DuplicateAnimeDialog(
         onDismissRequest = bulkFavoriteScreenModel::dismissDialog,
-        onConfirm = { bulkFavoriteScreenModel.addFavorite(dialog.manga) },
-        onOpenManga = { navigator.push(MangaScreen(dialog.duplicate.id)) },
+        onConfirm = { bulkFavoriteScreenModel.addFavorite(dialog.anime) },
+        onOpenAnime = { navigator.push(AnimeScreen(dialog.duplicate.id)) },
         onMigrate = {
             PreMigrationScreen.navigateToMigration(
                 Injekt.get<UnsortedPreferences>().skipPreMigration().get(),
                 navigator,
                 dialog.duplicate.id,
-                dialog.manga.id,
+                dialog.anime.id,
             )
         },
         duplicate = dialog.duplicate,
@@ -458,48 +458,48 @@ fun AddDuplicateMangaDialog(bulkFavoriteScreenModel: BulkFavoriteScreenModel) {
 }
 
 @Composable
-fun RemoveMangaDialog(bulkFavoriteScreenModel: BulkFavoriteScreenModel) {
+fun RemoveAnimeDialog(bulkFavoriteScreenModel: BulkFavoriteScreenModel) {
     val bulkFavoriteState by bulkFavoriteScreenModel.state.collectAsState()
-    val dialog = bulkFavoriteState.dialog as BulkFavoriteScreenModel.Dialog.RemoveManga
+    val dialog = bulkFavoriteState.dialog as BulkFavoriteScreenModel.Dialog.RemoveAnime
 
-    RemoveMangaDialog(
+    RemoveAnimeDialog(
         onDismissRequest = bulkFavoriteScreenModel::dismissDialog,
         onConfirm = {
-            bulkFavoriteScreenModel.changeMangaFavorite(dialog.manga)
+            bulkFavoriteScreenModel.changeAnimeFavorite(dialog.anime)
         },
-        mangaToRemove = dialog.manga,
+        animeToRemove = dialog.anime,
     )
 }
 
 @Composable
-fun ChangeMangaCategoryDialog(bulkFavoriteScreenModel: BulkFavoriteScreenModel) {
+fun ChangeAnimeCategoryDialog(bulkFavoriteScreenModel: BulkFavoriteScreenModel) {
     val navigator = LocalNavigator.currentOrThrow
     val bulkFavoriteState by bulkFavoriteScreenModel.state.collectAsState()
-    val dialog = bulkFavoriteState.dialog as BulkFavoriteScreenModel.Dialog.ChangeMangaCategory
+    val dialog = bulkFavoriteState.dialog as BulkFavoriteScreenModel.Dialog.ChangeAnimeCategory
 
     ChangeCategoryDialog(
         initialSelection = dialog.initialSelection,
         onDismissRequest = bulkFavoriteScreenModel::dismissDialog,
         onEditCategories = { navigator.push(CategoryScreen()) },
         onConfirm = { include, _ ->
-            bulkFavoriteScreenModel.changeMangaFavorite(dialog.manga)
-            bulkFavoriteScreenModel.moveMangaToCategories(dialog.manga, include)
+            bulkFavoriteScreenModel.changeAnimeFavorite(dialog.anime)
+            bulkFavoriteScreenModel.moveAnimeToCategories(dialog.anime, include)
         },
     )
 }
 
 @Composable
-fun ChangeMangasCategoryDialog(bulkFavoriteScreenModel: BulkFavoriteScreenModel) {
+fun ChangeAnimesCategoryDialog(bulkFavoriteScreenModel: BulkFavoriteScreenModel) {
     val navigator = LocalNavigator.currentOrThrow
     val bulkFavoriteState by bulkFavoriteScreenModel.state.collectAsState()
-    val dialog = bulkFavoriteState.dialog as BulkFavoriteScreenModel.Dialog.ChangeMangasCategory
+    val dialog = bulkFavoriteState.dialog as BulkFavoriteScreenModel.Dialog.ChangeAnimesCategory
 
     ChangeCategoryDialog(
         initialSelection = dialog.initialSelection,
         onDismissRequest = bulkFavoriteScreenModel::dismissDialog,
         onEditCategories = { navigator.push(CategoryScreen()) },
         onConfirm = { include, exclude ->
-            bulkFavoriteScreenModel.setMangasCategories(dialog.mangas, include, exclude)
+            bulkFavoriteScreenModel.setAnimesCategories(dialog.animes, include, exclude)
         },
     )
 }
@@ -510,25 +510,25 @@ fun AllowDuplicateDialog(bulkFavoriteScreenModel: BulkFavoriteScreenModel) {
     val bulkFavoriteState by bulkFavoriteScreenModel.state.collectAsState()
     val dialog = bulkFavoriteState.dialog as BulkFavoriteScreenModel.Dialog.AllowDuplicate
 
-    DuplicateMangasDialog(
+    DuplicateAnimesDialog(
         onDismissRequest = bulkFavoriteScreenModel::dismissDialog,
         onAllowAllDuplicate = bulkFavoriteScreenModel::addFavoriteDuplicate,
         onSkipAllDuplicate = {
             bulkFavoriteScreenModel.addFavoriteDuplicate(skipAllDuplicates = true)
         },
-        onOpenManga = {
-            navigator.push(MangaScreen(dialog.duplicatedManga.second.id))
+        onOpenAnime = {
+            navigator.push(AnimeScreen(dialog.duplicatedAnime.second.id))
         },
         onAllowDuplicate = {
-            bulkFavoriteScreenModel.addFavorite(startIdx = dialog.duplicatedManga.first + 1)
+            bulkFavoriteScreenModel.addFavorite(startIdx = dialog.duplicatedAnime.first + 1)
         },
         onSkipDuplicate = {
-            bulkFavoriteScreenModel.removeDuplicateSelectedManga(index = dialog.duplicatedManga.first)
-            bulkFavoriteScreenModel.addFavorite(startIdx = dialog.duplicatedManga.first)
+            bulkFavoriteScreenModel.removeDuplicateSelectedAnime(index = dialog.duplicatedAnime.first)
+            bulkFavoriteScreenModel.addFavorite(startIdx = dialog.duplicatedAnime.first)
         },
-        mangaName = dialog.duplicatedManga.second.title,
+        animeName = dialog.duplicatedAnime.second.title,
         stopRunning = bulkFavoriteScreenModel::stopRunning,
-        duplicate = dialog.duplicatedManga.second,
+        duplicate = dialog.duplicatedAnime.second,
     )
 }
 

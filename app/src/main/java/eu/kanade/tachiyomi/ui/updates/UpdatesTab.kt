@@ -23,10 +23,10 @@ import eu.kanade.presentation.updates.UpdateScreen
 import eu.kanade.presentation.updates.UpdatesDeleteConfirmationDialog
 import eu.kanade.presentation.util.Tab
 import eu.kanade.tachiyomi.R
+import eu.kanade.tachiyomi.ui.anime.AnimeScreen
 import eu.kanade.tachiyomi.ui.download.DownloadQueueScreen
 import eu.kanade.tachiyomi.ui.home.HomeScreen
 import eu.kanade.tachiyomi.ui.main.MainActivity
-import eu.kanade.tachiyomi.ui.manga.MangaScreen
 import eu.kanade.tachiyomi.ui.reader.ReaderActivity
 import eu.kanade.tachiyomi.ui.updates.UpdatesScreenModel.Event
 import kotlinx.coroutines.flow.collectLatest
@@ -80,17 +80,17 @@ data object UpdatesTab : Tab {
             // SY -->
             preserveReadingPosition = screenModel.preserveReadingPosition,
             // SY <--
-            onClickCover = { item -> navigator.push(MangaScreen(item.update.mangaId)) },
+            onClickCover = { item -> navigator.push(AnimeScreen(item.update.animeId)) },
             onSelectAll = screenModel::toggleAllSelection,
             onInvertSelection = screenModel::invertSelection,
             onUpdateLibrary = screenModel::updateLibrary,
-            onDownloadChapter = screenModel::downloadChapters,
+            onDownloadEpisode = screenModel::downloadEpisodes,
             onMultiBookmarkClicked = screenModel::bookmarkUpdates,
             onMultiMarkAsReadClicked = screenModel::markUpdatesRead,
-            onMultiDeleteClicked = screenModel::showConfirmDeleteChapters,
+            onMultiDeleteClicked = screenModel::showConfirmDeleteEpisodes,
             onUpdateSelected = screenModel::toggleSelection,
-            onOpenChapter = {
-                val intent = ReaderActivity.newIntent(context, it.update.mangaId, it.update.chapterId)
+            onOpenEpisode = {
+                val intent = ReaderActivity.newIntent(context, it.update.animeId, it.update.episodeId)
                 context.startActivity(intent)
             },
             onCalendarClicked = { navigator.push(UpcomingScreen()) },
@@ -101,7 +101,7 @@ data object UpdatesTab : Tab {
             is UpdatesScreenModel.Dialog.DeleteConfirmation -> {
                 UpdatesDeleteConfirmationDialog(
                     onDismissRequest = onDismissDialog,
-                    onConfirm = { screenModel.deleteChapters(dialog.toDelete) },
+                    onConfirm = { screenModel.deleteEpisodes(dialog.toDelete) },
                 )
             }
             null -> {}

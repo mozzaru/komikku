@@ -2,9 +2,9 @@ package exh.md.handlers
 
 import eu.kanade.tachiyomi.data.database.models.Track
 import eu.kanade.tachiyomi.data.track.TrackerManager
-import eu.kanade.tachiyomi.source.model.MetadataMangasPage
-import eu.kanade.tachiyomi.source.model.SManga
-import exh.md.dto.MangaDataDto
+import eu.kanade.tachiyomi.source.model.MetadataAnimesPage
+import eu.kanade.tachiyomi.source.model.SAnime
+import exh.md.dto.AnimeDataDto
 import exh.md.dto.PersonalRatingDto
 import exh.md.dto.ReadingStatusDto
 import exh.md.service.MangaDexAuthService
@@ -25,35 +25,35 @@ class FollowsHandler(
     /**
      * fetch follows page
      */
-    suspend fun fetchFollows(page: Int): MetadataMangasPage {
+    suspend fun fetchFollows(page: Int): MetadataAnimesPage {
         return withIOContext {
-            val follows = service.userFollowList(MdUtil.mangaLimit * page)
+            val follows = service.userFollowList(MdUtil.animeLimit * page)
 
             if (follows.data.isEmpty()) {
-                return@withIOContext MetadataMangasPage(emptyList(), false, emptyList())
+                return@withIOContext MetadataAnimesPage(emptyList(), false, emptyList())
             }
 
             val hasMoreResults = follows.limit + follows.offset under follows.total
-            val statusListResponse = service.readingStatusAllManga()
-            val results = followsParseMangaPage(follows.data, statusListResponse.statuses)
+            val statusListResponse = service.readingStatusAllAnime()
+            val results = followsParseAnimePage(follows.data, statusListResponse.statuses)
 
-            MetadataMangasPage(results.map { it.first }, hasMoreResults, results.map { it.second })
+            MetadataAnimesPage(results.map { it.first }, hasMoreResults, results.map { it.second })
         }
     }
 
     /**
-     * Parse follows api to manga page
+     * Parse follows api to anime page
      * used when multiple follows
      */
-    private fun followsParseMangaPage(
-        response: List<MangaDataDto>,
+    private fun followsParseAnimePage(
+        response: List<AnimeDataDto>,
         statuses: Map<String, String?>,
-    ): List<Pair<SManga, MangaDexSearchMetadata>> {
-        val comparator = compareBy<Pair<SManga, MangaDexSearchMetadata>> { it.second.followStatus }
+    ): List<Pair<SAnime, MangaDexSearchMetadata>> {
+        val comparator = compareBy<Pair<SAnime, MangaDexSearchMetadata>> { it.second.followStatus }
             .thenBy { it.first.title }
 
         return response.map {
-            MdUtil.createMangaEntry(
+            MdUtil.createAnimeEntry(
                 it,
                 lang,
             ) to MangaDexSearchMetadata().apply {
@@ -63,9 +63,9 @@ class FollowsHandler(
     }
 
     /**
-     * Change the status of a manga
+     * Change the status of a anime
      */
-    suspend fun updateFollowStatus(mangaId: String, followStatus: FollowStatus): Boolean {
+    suspend fun updateFollowStatus(animeId: String, followStatus: FollowStatus): Boolean {
         return withIOContext {
             val status = when (followStatus == FollowStatus.UNFOLLOWED) {
                 true -> null
@@ -74,27 +74,27 @@ class FollowsHandler(
             val readingStatusDto = ReadingStatusDto(status)
 
             if (followStatus == FollowStatus.UNFOLLOWED) {
-                service.unfollowManga(mangaId)
+                service.unfollowAnime(animeId)
             } else {
-                service.followManga(mangaId)
+                service.followAnime(animeId)
             }
 
-            service.updateReadingStatusForManga(mangaId, readingStatusDto).result == "ok"
+            service.updateReadingStatusForAnime(animeId, readingStatusDto).result == "ok"
         }
     }
 
     /*suspend fun updateReadingProgress(track: Track): Boolean {
         return true
         return withIOContext {
-            val mangaID = getMangaId(track.tracking_url)
+            val animeID = getAnimeId(track.tracking_url)
             val formBody = FormBody.Builder()
                 .add("volume", "0")
-                .add("chapter", track.last_chapter_read.toString())
-            XLog.d("chapter to update %s", track.last_chapter_read.toString())
+                .add("episode", track.last_episode_read.toString())
+            XLog.d("episode to update %s", track.last_episode_read.toString())
             val result = runCatching {
                 client.newCall(
                     POST(
-                        "$baseUrl/ajax/actions.ajax.php?function=edit_progress&id=$mangaID",
+                        "$baseUrl/ajax/actions.ajax.php?function=edit_progress&id=$animeID",
                         headers,
                         formBody.build()
                     )
@@ -114,12 +114,12 @@ class FollowsHandler(
 
     suspend fun updateRating(track: Track): Boolean {
         return withIOContext {
-            val mangaId = MdUtil.getMangaId(track.tracking_url)
+            val animeId = MdUtil.getAnimeId(track.tracking_url)
             val result = runCatching {
                 if (track.score == 0.0) {
-                    service.deleteMangaRating(mangaId)
+                    service.deleteAnimeRating(animeId)
                 } else {
-                    service.updateMangaRating(mangaId, track.score.toInt())
+                    service.updateAnimeRating(animeId, track.score.toInt())
                 }.result == "ok"
             }
             result.getOrDefault(false)
@@ -127,9 +127,9 @@ class FollowsHandler(
     }
 
     /**
-     * fetch all manga from all possible pages
+     * fetch all anime from all possible pages
      */
-    suspend fun fetchAllFollows(): List<Pair<SManga, MangaDexSearchMetadata>> {
+    suspend fun fetchAllFollows(): List<Pair<SAnime, MangaDexSearchMetadata>> {
         return withIOContext {
             val results = async {
                 mdListCall {
@@ -137,20 +137,20 @@ class FollowsHandler(
                 }
             }
 
-            val readingStatusResponse = async { service.readingStatusAllManga().statuses }
+            val readingStatusResponse = async { service.readingStatusAllAnime().statuses }
 
-            followsParseMangaPage(results.await(), readingStatusResponse.await())
+            followsParseAnimePage(results.await(), readingStatusResponse.await())
         }
     }
 
     suspend fun fetchTrackingInfo(url: String): Track {
         return withIOContext {
-            val mangaId = MdUtil.getMangaId(url)
+            val animeId = MdUtil.getAnimeId(url)
             val followStatusDef = async {
-                FollowStatus.fromDex(service.readingStatusForManga(mangaId).status)
+                FollowStatus.fromDex(service.readingStatusForAnime(animeId).status)
             }
             val ratingDef = async {
-                service.mangasRating(mangaId).ratings.asMdMap<PersonalRatingDto>()[mangaId]
+                service.animesRating(animeId).ratings.asMdMap<PersonalRatingDto>()[animeId]
             }
             val (followStatus, rating) = followStatusDef.await() to ratingDef.await()
             Track.create(TrackerManager.MDLIST).apply {

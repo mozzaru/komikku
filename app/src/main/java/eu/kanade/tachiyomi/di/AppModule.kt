@@ -13,8 +13,8 @@ import eu.kanade.tachiyomi.core.security.SecurityPreferences
 import eu.kanade.tachiyomi.data.BackupRestoreStatus
 import eu.kanade.tachiyomi.data.LibraryUpdateStatus
 import eu.kanade.tachiyomi.data.SyncStatus
-import eu.kanade.tachiyomi.data.cache.ChapterCache
 import eu.kanade.tachiyomi.data.cache.CoverCache
+import eu.kanade.tachiyomi.data.cache.EpisodeCache
 import eu.kanade.tachiyomi.data.cache.PagePreviewCache
 import eu.kanade.tachiyomi.data.download.DownloadCache
 import eu.kanade.tachiyomi.data.download.DownloadManager
@@ -38,14 +38,14 @@ import nl.adaptivity.xmlutil.serialization.XML
 import tachiyomi.core.common.storage.AndroidStorageFolderProvider
 import tachiyomi.core.common.storage.UniFileTempFileManager
 import tachiyomi.data.AndroidDatabaseHandler
+import tachiyomi.data.Animes
 import tachiyomi.data.Database
 import tachiyomi.data.DatabaseHandler
 import tachiyomi.data.DateColumnAdapter
 import tachiyomi.data.History
-import tachiyomi.data.Mangas
 import tachiyomi.data.StringListColumnAdapter
 import tachiyomi.data.UpdateStrategyColumnAdapter
-import tachiyomi.domain.manga.interactor.GetCustomMangaInfo
+import tachiyomi.domain.anime.interactor.GetCustomAnimeInfo
 import tachiyomi.domain.source.service.SourceManager
 import tachiyomi.domain.storage.service.StorageManager
 import tachiyomi.source.local.image.LocalCoverManager
@@ -113,9 +113,9 @@ class AppModule(val app: Application) : InjektModule {
             Database(
                 driver = get(),
                 historyAdapter = History.Adapter(
-                    last_readAdapter = DateColumnAdapter,
+                    last_seenAdapter = DateColumnAdapter,
                 ),
-                mangasAdapter = Mangas.Adapter(
+                animesAdapter = Animes.Adapter(
                     genreAdapter = StringListColumnAdapter,
                     update_strategyAdapter = UpdateStrategyColumnAdapter,
                 ),
@@ -146,7 +146,7 @@ class AppModule(val app: Application) : InjektModule {
 
         addSingletonFactory { UniFileTempFileManager(app) }
 
-        addSingletonFactory { ChapterCache(app, get(), get()) }
+        addSingletonFactory { EpisodeCache(app, get(), get()) }
         addSingletonFactory { CoverCache(app) }
 
         addSingletonFactory { NetworkHelper(app, get(), BuildConfig.DEBUG) }
@@ -192,7 +192,7 @@ class AppModule(val app: Application) : InjektModule {
             get<DownloadManager>()
 
             // SY -->
-            get<GetCustomMangaInfo>()
+            get<GetCustomAnimeInfo>()
             // SY <--
         }
 

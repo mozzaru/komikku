@@ -33,7 +33,7 @@ import kotlinx.coroutines.launch
 import mihon.feature.upcoming.components.UpcomingItem
 import mihon.feature.upcoming.components.calendar.Calendar
 import tachiyomi.core.common.Constants
-import tachiyomi.domain.manga.model.Manga
+import tachiyomi.domain.anime.model.Anime
 import tachiyomi.i18n.MR
 import tachiyomi.i18n.kmk.KMR
 import tachiyomi.presentation.core.components.FastScrollLazyColumn
@@ -49,10 +49,10 @@ import java.time.YearMonth
 fun UpcomingScreenContent(
     state: UpcomingScreenModel.State,
     setSelectedYearMonth: (YearMonth) -> Unit,
-    onClickUpcoming: (manga: Manga) -> Unit,
+    onClickUpcoming: (anime: Anime) -> Unit,
     // KMK -->
-    showUpdatingMangas: () -> Unit,
-    hideUpdatingMangas: () -> Unit,
+    showUpdatingAnimes: () -> Unit,
+    hideUpdatingAnimes: () -> Unit,
     isPredictReleaseDate: Boolean,
     // KMK <--
     modifier: Modifier = Modifier,
@@ -61,10 +61,10 @@ fun UpcomingScreenContent(
     val listState = rememberLazyListState()
 
     // KMK -->
-    val headerIndexes = if (state.isShowingUpdatingMangas) state.updatingHeaderIndexes else state.headerIndexes
-    val items = if (state.isShowingUpdatingMangas) state.updatingItems else state.items
-    val events = if (state.isShowingUpdatingMangas) state.updatingEvents else state.events
-    val isLoading = if (state.isShowingUpdatingMangas) state.isLoadingUpdating else state.isLoadingUpcoming
+    val headerIndexes = if (state.isShowingUpdatingAnimes) state.updatingHeaderIndexes else state.headerIndexes
+    val items = if (state.isShowingUpdatingAnimes) state.updatingItems else state.items
+    val events = if (state.isShowingUpdatingAnimes) state.updatingEvents else state.events
+    val isLoading = if (state.isShowingUpdatingAnimes) state.isLoadingUpdating else state.isLoadingUpcoming
     // KMK <--
 
     val onClickDay: (LocalDate, Int) -> Unit = { date, offset ->
@@ -78,9 +78,9 @@ fun UpcomingScreenContent(
         topBar = {
             UpcomingToolbar(
                 // KMK -->
-                state.isShowingUpdatingMangas,
-                showUpdatingMangas = showUpdatingMangas,
-                hideUpdatingMangas = hideUpdatingMangas,
+                state.isShowingUpdatingAnimes,
+                showUpdatingAnimes = showUpdatingAnimes,
+                hideUpdatingAnimes = hideUpdatingAnimes,
                 isPredictReleaseDate = isPredictReleaseDate,
                 // KMK <--
             )
@@ -104,7 +104,7 @@ fun UpcomingScreenContent(
                 onClickDay = { onClickDay(it, 0) },
                 onClickUpcoming = onClickUpcoming,
                 // KMK -->
-                state.isShowingUpdatingMangas,
+                state.isShowingUpdatingAnimes,
                 // KMK <--
             )
         } else {
@@ -118,7 +118,7 @@ fun UpcomingScreenContent(
                 onClickDay = { onClickDay(it, 1) },
                 onClickUpcoming = onClickUpcoming,
                 // KMK -->
-                state.isShowingUpdatingMangas,
+                state.isShowingUpdatingAnimes,
                 // KMK <--
             )
         }
@@ -128,9 +128,9 @@ fun UpcomingScreenContent(
 @Composable
 private fun UpcomingToolbar(
     // KMK -->
-    isShowingUpdatingMangas: Boolean,
-    showUpdatingMangas: () -> Unit,
-    hideUpdatingMangas: () -> Unit,
+    isShowingUpdatingAnimes: Boolean,
+    showUpdatingAnimes: () -> Unit,
+    hideUpdatingAnimes: () -> Unit,
     isPredictReleaseDate: Boolean,
     // KMK <--
 ) {
@@ -139,7 +139,7 @@ private fun UpcomingToolbar(
 
     AppBar(
         title =
-        if (isShowingUpdatingMangas) {
+        if (isShowingUpdatingAnimes) {
             stringResource(KMR.strings.label_to_be_updated)
         } else {
             stringResource(MR.strings.label_upcoming)
@@ -150,17 +150,17 @@ private fun UpcomingToolbar(
             if (isPredictReleaseDate) {
                 IconButton(
                     onClick = {
-                        if (isShowingUpdatingMangas) {
-                            hideUpdatingMangas()
+                        if (isShowingUpdatingAnimes) {
+                            hideUpdatingAnimes()
                         } else {
-                            showUpdatingMangas()
+                            showUpdatingAnimes()
                         }
                     },
                 ) {
                     Icon(
                         imageVector = Icons.Outlined.NewReleases,
                         contentDescription = stringResource(MR.strings.pref_library_update_smart_update),
-                        tint = if (isShowingUpdatingMangas) MaterialTheme.colorScheme.primary else LocalContentColor.current,
+                        tint = if (isShowingUpdatingAnimes) MaterialTheme.colorScheme.primary else LocalContentColor.current,
                     )
                 }
             }
@@ -178,7 +178,7 @@ private fun UpcomingToolbar(
 @Composable
 private fun DateHeading(
     date: LocalDate,
-    mangaCount: Int,
+    animeCount: Int,
 ) {
     Row(
         verticalAlignment = Alignment.CenterVertically,
@@ -197,7 +197,7 @@ private fun DateHeading(
             containerColor = MaterialTheme.colorScheme.primary,
             contentColor = MaterialTheme.colorScheme.onPrimary,
         ) {
-            Text("$mangaCount")
+            Text("$animeCount")
         }
     }
 }
@@ -211,9 +211,9 @@ private fun UpcomingScreenSmallImpl(
     selectedYearMonth: YearMonth,
     setSelectedYearMonth: (YearMonth) -> Unit,
     onClickDay: (LocalDate) -> Unit,
-    onClickUpcoming: (manga: Manga) -> Unit,
+    onClickUpcoming: (anime: Anime) -> Unit,
     // KMK -->
-    isShowingUpdatingMangas: Boolean,
+    isShowingUpdatingAnimes: Boolean,
     // KMK <--
 ) {
     FastScrollLazyColumn(
@@ -230,7 +230,7 @@ private fun UpcomingScreenSmallImpl(
         }
         items(
             items = items,
-            key = { (if (isShowingUpdatingMangas) "updating" else "upcoming") + it.hashCode() },
+            key = { (if (isShowingUpdatingAnimes) "updating" else "upcoming") + it.hashCode() },
             contentType = {
                 when (it) {
                     is UpcomingUIModel.Header -> "header"
@@ -241,15 +241,15 @@ private fun UpcomingScreenSmallImpl(
             when (item) {
                 is UpcomingUIModel.Item -> {
                     UpcomingItem(
-                        upcoming = item.manga,
-                        onClick = { onClickUpcoming(item.manga) },
+                        upcoming = item.anime,
+                        onClick = { onClickUpcoming(item.anime) },
                     )
                 }
 
                 is UpcomingUIModel.Header -> {
                     DateHeading(
                         date = item.date,
-                        mangaCount = item.mangaCount,
+                        animeCount = item.animeCount,
                     )
                 }
             }
@@ -266,9 +266,9 @@ private fun UpcomingScreenLargeImpl(
     selectedYearMonth: YearMonth,
     setSelectedYearMonth: (YearMonth) -> Unit,
     onClickDay: (LocalDate) -> Unit,
-    onClickUpcoming: (manga: Manga) -> Unit,
+    onClickUpcoming: (anime: Anime) -> Unit,
     // KMK -->
-    isShowingUpdatingMangas: Boolean,
+    isShowingUpdatingAnimes: Boolean,
     // KMK <--
 ) {
     TwoPanelBox(
@@ -285,7 +285,7 @@ private fun UpcomingScreenLargeImpl(
             FastScrollLazyColumn(state = listState) {
                 items(
                     items = items,
-                    key = { (if (isShowingUpdatingMangas) "updating" else "upcoming") + it.hashCode() },
+                    key = { (if (isShowingUpdatingAnimes) "updating" else "upcoming") + it.hashCode() },
                     contentType = {
                         when (it) {
                             is UpcomingUIModel.Header -> "header"
@@ -296,15 +296,15 @@ private fun UpcomingScreenLargeImpl(
                     when (item) {
                         is UpcomingUIModel.Item -> {
                             UpcomingItem(
-                                upcoming = item.manga,
-                                onClick = { onClickUpcoming(item.manga) },
+                                upcoming = item.anime,
+                                onClick = { onClickUpcoming(item.anime) },
                             )
                         }
 
                         is UpcomingUIModel.Header -> {
                             DateHeading(
                                 date = item.date,
-                                mangaCount = item.mangaCount,
+                                animeCount = item.animeCount,
                             )
                         }
                     }

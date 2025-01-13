@@ -2,61 +2,61 @@ package eu.kanade.tachiyomi.data.backup.models
 
 import kotlinx.serialization.Serializable
 import kotlinx.serialization.protobuf.ProtoNumber
-import tachiyomi.domain.manga.model.MergedMangaReference
+import tachiyomi.domain.anime.model.MergedAnimeReference
 
 /*
-* SY merged manga backup class
+* SY merged anime backup class
  */
 @Serializable
-data class BackupMergedMangaReference(
-    @ProtoNumber(1) var isInfoManga: Boolean,
-    @ProtoNumber(2) var getChapterUpdates: Boolean,
-    @ProtoNumber(3) var chapterSortMode: Int,
-    @ProtoNumber(4) var chapterPriority: Int,
-    @ProtoNumber(5) var downloadChapters: Boolean,
+data class BackupMergedAnimeReference(
+    @ProtoNumber(1) var isInfoAnime: Boolean,
+    @ProtoNumber(2) var getEpisodeUpdates: Boolean,
+    @ProtoNumber(3) var episodeSortMode: Int,
+    @ProtoNumber(4) var episodePriority: Int,
+    @ProtoNumber(5) var downloadEpisodes: Boolean,
     @ProtoNumber(6) var mergeUrl: String,
-    @ProtoNumber(7) var mangaUrl: String,
-    @ProtoNumber(8) var mangaSourceId: Long,
+    @ProtoNumber(7) var animeUrl: String,
+    @ProtoNumber(8) var animeSourceId: Long,
 ) {
-    fun getMergedMangaReference(): MergedMangaReference {
-        return MergedMangaReference(
-            isInfoManga = isInfoManga,
-            getChapterUpdates = getChapterUpdates,
-            chapterSortMode = chapterSortMode,
-            chapterPriority = chapterPriority,
-            downloadChapters = downloadChapters,
+    fun getMergedAnimeReference(): MergedAnimeReference {
+        return MergedAnimeReference(
+            isInfoAnime = isInfoAnime,
+            getEpisodeUpdates = getEpisodeUpdates,
+            episodeSortMode = episodeSortMode,
+            episodePriority = episodePriority,
+            downloadEpisodes = downloadEpisodes,
             mergeUrl = mergeUrl,
-            mangaUrl = mangaUrl,
-            mangaSourceId = mangaSourceId,
+            animeUrl = animeUrl,
+            animeSourceId = animeSourceId,
             mergeId = null,
-            mangaId = null,
+            animeId = null,
             id = -1,
         )
     }
 }
 
-val backupMergedMangaReferenceMapper =
+val backupMergedAnimeReferenceMapper =
     {
             _: Long,
-            isInfoManga: Boolean,
-            getChapterUpdates: Boolean,
-            chapterSortMode: Long,
-            chapterPriority: Long,
-            downloadChapters: Boolean,
+            isInfoAnime: Boolean,
+            getEpisodeUpdates: Boolean,
+            episodeSortMode: Long,
+            episodePriority: Long,
+            downloadEpisodes: Boolean,
             _: Long,
             mergeUrl: String,
             _: Long?,
-            mangaUrl: String,
-            mangaSourceId: Long,
+            animeUrl: String,
+            animeSourceId: Long,
         ->
-        BackupMergedMangaReference(
-            isInfoManga = isInfoManga,
-            getChapterUpdates = getChapterUpdates,
-            chapterSortMode = chapterSortMode.toInt(),
-            chapterPriority = chapterPriority.toInt(),
-            downloadChapters = downloadChapters,
+        BackupMergedAnimeReference(
+            isInfoAnime = isInfoAnime,
+            getEpisodeUpdates = getEpisodeUpdates,
+            episodeSortMode = episodeSortMode.toInt(),
+            episodePriority = episodePriority.toInt(),
+            downloadEpisodes = downloadEpisodes,
             mergeUrl = mergeUrl,
-            mangaUrl = mangaUrl,
-            mangaSourceId = mangaSourceId,
+            animeUrl = animeUrl,
+            animeSourceId = animeSourceId,
         )
     }

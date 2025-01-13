@@ -5,34 +5,34 @@ import kotlinx.collections.immutable.persistentListOf
 import tachiyomi.i18n.sy.SYMR
 
 data class SyncTriggerOptions(
-    val syncOnChapterRead: Boolean = false,
-    val syncOnChapterOpen: Boolean = false,
+    val syncOnEpisodeRead: Boolean = false,
+    val syncOnEpisodeOpen: Boolean = false,
     val syncOnAppStart: Boolean = false,
     val syncOnAppResume: Boolean = false,
 ) {
     fun asBooleanArray() = booleanArrayOf(
-        syncOnChapterRead,
-        syncOnChapterOpen,
+        syncOnEpisodeRead,
+        syncOnEpisodeOpen,
         syncOnAppStart,
         syncOnAppResume,
     )
 
-    fun anyEnabled() = syncOnChapterRead ||
-        syncOnChapterOpen ||
+    fun anyEnabled() = syncOnEpisodeRead ||
+        syncOnEpisodeOpen ||
         syncOnAppStart ||
         syncOnAppResume
 
     companion object {
         val mainOptions = persistentListOf(
             Entry(
-                label = SYMR.strings.sync_on_chapter_read,
-                getter = SyncTriggerOptions::syncOnChapterRead,
-                setter = { options, enabled -> options.copy(syncOnChapterRead = enabled) },
+                label = SYMR.strings.sync_on_episode_read,
+                getter = SyncTriggerOptions::syncOnEpisodeRead,
+                setter = { options, enabled -> options.copy(syncOnEpisodeRead = enabled) },
             ),
             Entry(
-                label = SYMR.strings.sync_on_chapter_open,
-                getter = SyncTriggerOptions::syncOnChapterOpen,
-                setter = { options, enabled -> options.copy(syncOnChapterOpen = enabled) },
+                label = SYMR.strings.sync_on_episode_open,
+                getter = SyncTriggerOptions::syncOnEpisodeOpen,
+                setter = { options, enabled -> options.copy(syncOnEpisodeOpen = enabled) },
             ),
             Entry(
                 label = SYMR.strings.sync_on_app_start,
@@ -47,8 +47,8 @@ data class SyncTriggerOptions(
         )
 
         fun fromBooleanArray(array: BooleanArray) = SyncTriggerOptions(
-            syncOnChapterRead = array[0],
-            syncOnChapterOpen = array[1],
+            syncOnEpisodeRead = array[0],
+            syncOnEpisodeOpen = array[1],
             syncOnAppStart = array[2],
             syncOnAppResume = array[3],
         )

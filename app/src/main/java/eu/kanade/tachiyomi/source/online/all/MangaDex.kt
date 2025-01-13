@@ -9,26 +9,26 @@ import eu.kanade.tachiyomi.data.track.TrackerManager
 import eu.kanade.tachiyomi.data.track.mdlist.MdList
 import eu.kanade.tachiyomi.network.asObservableSuccess
 import eu.kanade.tachiyomi.network.awaitSuccess
-import eu.kanade.tachiyomi.source.model.MangasPage
-import eu.kanade.tachiyomi.source.model.MetadataMangasPage
+import eu.kanade.tachiyomi.source.model.AnimesPage
+import eu.kanade.tachiyomi.source.model.MetadataAnimesPage
 import eu.kanade.tachiyomi.source.model.Page
-import eu.kanade.tachiyomi.source.model.SChapter
-import eu.kanade.tachiyomi.source.model.SManga
+import eu.kanade.tachiyomi.source.model.SAnime
+import eu.kanade.tachiyomi.source.model.SEpisode
 import eu.kanade.tachiyomi.source.online.FollowsSource
 import eu.kanade.tachiyomi.source.online.HttpSource
 import eu.kanade.tachiyomi.source.online.LoginSource
 import eu.kanade.tachiyomi.source.online.MetadataSource
 import eu.kanade.tachiyomi.source.online.NamespaceSource
-import eu.kanade.tachiyomi.source.online.RandomMangaSource
+import eu.kanade.tachiyomi.source.online.RandomAnimeSource
 import eu.kanade.tachiyomi.source.online.UrlImportableSource
-import exh.md.dto.MangaDto
-import exh.md.dto.StatisticsMangaDto
-import exh.md.handlers.ApiMangaParser
+import exh.md.dto.AnimeDto
+import exh.md.dto.StatisticsAnimeDto
+import exh.md.handlers.AnimeHandler
+import exh.md.handlers.ApiAnimeParser
 import exh.md.handlers.AzukiHandler
 import exh.md.handlers.BilibiliHandler
 import exh.md.handlers.ComikeyHandler
 import exh.md.handlers.FollowsHandler
-import exh.md.handlers.MangaHandler
 import exh.md.handlers.MangaHotHandler
 import exh.md.handlers.MangaPlusHandler
 import exh.md.handlers.NamicomiHandler
@@ -56,11 +56,11 @@ import kotlin.reflect.KClass
 @Suppress("OverridingDeprecatedMember")
 class MangaDex(delegate: HttpSource, val context: Context) :
     DelegatedHttpSource(delegate),
-    MetadataSource<MangaDexSearchMetadata, Triple<MangaDto, List<String>, StatisticsMangaDto>>,
+    MetadataSource<MangaDexSearchMetadata, Triple<AnimeDto, List<String>, StatisticsAnimeDto>>,
     UrlImportableSource,
     FollowsSource,
     LoginSource,
-    RandomMangaSource,
+    RandomAnimeSource,
     NamespaceSource {
     override val lang: String = delegate.lang
 
@@ -100,14 +100,14 @@ class MangaDex(delegate: HttpSource, val context: Context) :
     private val similarService by lazy {
         SimilarService(client)
     }
-    private val apiMangaParser by lazy {
-        ApiMangaParser(mdLang.lang)
+    private val apiAnimeParser by lazy {
+        ApiAnimeParser(mdLang.lang)
     }
     private val followsHandler by lazy {
         FollowsHandler(mdLang.lang, mangadexAuthService)
     }
     private val mangaHandler by lazy {
-        MangaHandler(mdLang.lang, mangadexService, apiMangaParser, followsHandler)
+        AnimeHandler(mdLang.lang, mangadexService, apiAnimeParser, followsHandler)
     }
     private val similarHandler by lazy {
         SimilarHandler(mdLang.lang, mangadexService, similarService)
@@ -146,29 +146,29 @@ class MangaDex(delegate: HttpSource, val context: Context) :
     }
 
     // UrlImportableSource methods
-    override suspend fun mapUrlToMangaUrl(uri: Uri): String? {
+    override suspend fun mapUrlToAnimeUrl(uri: Uri): String? {
         val lcFirstPathSegment = uri.pathSegments.firstOrNull()?.lowercase() ?: return null
 
-        return if (lcFirstPathSegment == "title" || lcFirstPathSegment == "manga") {
-            MdUtil.buildMangaUrl(uri.pathSegments[1])
+        return if (lcFirstPathSegment == "title" || lcFirstPathSegment == "anime") {
+            MdUtil.buildAnimeUrl(uri.pathSegments[1])
         } else {
             null
         }
     }
 
-    override fun mapUrlToChapterUrl(uri: Uri): String? {
-        if (!uri.pathSegments.firstOrNull().equals("chapter", true)) return null
+    override fun mapUrlToEpisodeUrl(uri: Uri): String? {
+        if (!uri.pathSegments.firstOrNull().equals("episode", true)) return null
         val id = uri.pathSegments.getOrNull(1) ?: return null
-        return MdApi.chapter + '/' + id
+        return MdApi.episode + '/' + id
     }
 
-    override suspend fun mapChapterUrlToMangaUrl(uri: Uri): String? {
+    override suspend fun mapEpisodeUrlToAnimeUrl(uri: Uri): String? {
         val id = uri.pathSegments.getOrNull(1) ?: return null
-        return mangaHandler.getMangaFromChapterId(id)?.let { MdUtil.buildMangaUrl(it) }
+        return mangaHandler.getAnimeFromEpisodeId(id)?.let { MdUtil.buildAnimeUrl(it) }
     }
 
     @Deprecated("Use the non-RxJava API instead", replaceWith = ReplaceWith("getLatestUpdates"))
-    override fun fetchLatestUpdates(page: Int): Observable<MangasPage> {
+    override fun fetchLatestUpdates(page: Int): Observable<AnimesPage> {
         val request = delegate.latestUpdatesRequest(page)
         val url = request.url.newBuilder()
             .removeAllQueryParameters("includeFutureUpdates")
@@ -180,7 +180,7 @@ class MangaDex(delegate: HttpSource, val context: Context) :
             }
     }
 
-    override suspend fun getLatestUpdates(page: Int): MangasPage {
+    override suspend fun getLatestUpdates(page: Int): AnimesPage {
         val request = delegate.latestUpdatesRequest(page)
         val url = request.url.newBuilder()
             .removeAllQueryParameters("includeFutureUpdates")
@@ -190,31 +190,31 @@ class MangaDex(delegate: HttpSource, val context: Context) :
         return delegate.latestUpdatesParse(response)
     }
 
-    @Deprecated("Use the 1.x API instead", replaceWith = ReplaceWith("getMangaDetails"))
-    override fun fetchMangaDetails(manga: SManga): Observable<SManga> {
-        return mangaHandler.fetchMangaDetailsObservable(manga, id, coverQuality(), tryUsingFirstVolumeCover(), altTitlesInDesc())
+    @Deprecated("Use the 1.x API instead", replaceWith = ReplaceWith("getAnimeDetails"))
+    override fun fetchAnimeDetails(anime: SAnime): Observable<SAnime> {
+        return mangaHandler.fetchAnimeDetailsObservable(anime, id, coverQuality(), tryUsingFirstVolumeCover(), altTitlesInDesc())
     }
 
-    override suspend fun getMangaDetails(manga: SManga): SManga {
-        return mangaHandler.getMangaDetails(manga, id, coverQuality(), tryUsingFirstVolumeCover(), altTitlesInDesc())
+    override suspend fun getAnimeDetails(anime: SAnime): SAnime {
+        return mangaHandler.getAnimeDetails(anime, id, coverQuality(), tryUsingFirstVolumeCover(), altTitlesInDesc())
     }
 
-    @Deprecated("Use the 1.x API instead", replaceWith = ReplaceWith("getChapterList"))
-    override fun fetchChapterList(manga: SManga): Observable<List<SChapter>> {
-        return mangaHandler.fetchChapterListObservable(manga, blockedGroups(), blockedUploaders())
+    @Deprecated("Use the 1.x API instead", replaceWith = ReplaceWith("getEpisodeList"))
+    override fun fetchEpisodeList(anime: SAnime): Observable<List<SEpisode>> {
+        return mangaHandler.fetchEpisodeListObservable(anime, blockedGroups(), blockedUploaders())
     }
 
-    override suspend fun getChapterList(manga: SManga): List<SChapter> {
-        return mangaHandler.getChapterList(manga, blockedGroups(), blockedUploaders())
+    override suspend fun getEpisodeList(anime: SAnime): List<SEpisode> {
+        return mangaHandler.getEpisodeList(anime, blockedGroups(), blockedUploaders())
     }
 
     @Deprecated("Use the 1.x API instead", replaceWith = ReplaceWith("getPageList"))
-    override fun fetchPageList(chapter: SChapter): Observable<List<Page>> {
-        return runAsObservable { pageHandler.fetchPageList(chapter, usePort443Only(), dataSaver(), delegate) }
+    override fun fetchPageList(episode: SEpisode): Observable<List<Page>> {
+        return runAsObservable { pageHandler.fetchPageList(episode, usePort443Only(), dataSaver(), delegate) }
     }
 
-    override suspend fun getPageList(chapter: SChapter): List<Page> {
-        return pageHandler.fetchPageList(chapter, usePort443Only(), dataSaver(), delegate)
+    override suspend fun getPageList(episode: SEpisode): List<Page> {
+        return pageHandler.fetchPageList(episode, usePort443Only(), dataSaver(), delegate)
     }
 
     override suspend fun getImage(page: Page): Response {
@@ -241,8 +241,8 @@ class MangaDex(delegate: HttpSource, val context: Context) :
 
     override fun newMetaInstance() = MangaDexSearchMetadata()
 
-    override suspend fun parseIntoMetadata(metadata: MangaDexSearchMetadata, input: Triple<MangaDto, List<String>, StatisticsMangaDto>) {
-        apiMangaParser.parseIntoMetadata(metadata, input.first, input.second, input.third, null, coverQuality(), altTitlesInDesc())
+    override suspend fun parseIntoMetadata(metadata: MangaDexSearchMetadata, input: Triple<AnimeDto, List<String>, StatisticsAnimeDto>) {
+        apiAnimeParser.parseIntoMetadata(metadata, input.first, input.second, input.third, null, coverQuality(), altTitlesInDesc())
     }
 
     // LoginSource methods
@@ -271,16 +271,16 @@ class MangaDex(delegate: HttpSource, val context: Context) :
     }
 
     // FollowsSource methods
-    override suspend fun fetchFollows(page: Int): MangasPage {
+    override suspend fun fetchFollows(page: Int): AnimesPage {
         return followsHandler.fetchFollows(page)
     }
 
-    override suspend fun fetchAllFollows(): List<Pair<SManga, MangaDexSearchMetadata>> {
+    override suspend fun fetchAllFollows(): List<Pair<SAnime, MangaDexSearchMetadata>> {
         return followsHandler.fetchAllFollows()
     }
 
-    suspend fun updateFollowStatus(mangaID: String, followStatus: FollowStatus): Boolean {
-        return followsHandler.updateFollowStatus(mangaID, followStatus)
+    suspend fun updateFollowStatus(animeID: String, followStatus: FollowStatus): Boolean {
+        return followsHandler.updateFollowStatus(animeID, followStatus)
     }
 
     suspend fun fetchTrackingInfo(url: String): Track {
@@ -296,25 +296,25 @@ class MangaDex(delegate: HttpSource, val context: Context) :
         return followsHandler.updateRating(track)
     }
 
-    suspend fun getTrackingAndMangaInfo(track: Track): Pair<Track, MangaDexSearchMetadata?> {
+    suspend fun getTrackingAndAnimeInfo(track: Track): Pair<Track, MangaDexSearchMetadata?> {
         return mangaHandler.getTrackingInfo(track)
     }
 
-    // RandomMangaSource method
-    override suspend fun fetchRandomMangaUrl(): String {
-        return mangaHandler.fetchRandomMangaId()
+    // RandomAnimeSource method
+    override suspend fun fetchRandomAnimeUrl(): String {
+        return mangaHandler.fetchRandomAnimeId()
     }
 
-    suspend fun getMangaSimilar(manga: SManga): MetadataMangasPage {
-        return similarHandler.getSimilar(manga)
+    suspend fun getAnimeSimilar(anime: SAnime): MetadataAnimesPage {
+        return similarHandler.getSimilar(anime)
     }
 
-    suspend fun getMangaRelated(manga: SManga): MetadataMangasPage {
-        return similarHandler.getRelated(manga)
+    suspend fun getAnimeRelated(anime: SAnime): MetadataAnimesPage {
+        return similarHandler.getRelated(anime)
     }
 
-    suspend fun getMangaMetadata(track: Track): SManga? {
-        return mangaHandler.getMangaMetadata(track, id, coverQuality(), tryUsingFirstVolumeCover(), altTitlesInDesc())
+    suspend fun getAnimeMetadata(track: Track): SAnime? {
+        return mangaHandler.getAnimeMetadata(track, id, coverQuality(), tryUsingFirstVolumeCover(), altTitlesInDesc())
     }
 
     companion object {

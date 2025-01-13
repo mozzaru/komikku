@@ -5,7 +5,7 @@ import eu.kanade.tachiyomi.network.awaitSuccess
 import eu.kanade.tachiyomi.network.interceptor.rateLimit
 import eu.kanade.tachiyomi.network.parseAs
 import eu.kanade.tachiyomi.source.model.Page
-import eu.kanade.tachiyomi.source.model.SChapter
+import eu.kanade.tachiyomi.source.model.SEpisode
 import exh.log.xLogD
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
@@ -39,24 +39,24 @@ class BilibiliHandler(currentClient: OkHttpClient) {
 
     val json by injectLazy<Json>()
 
-    suspend fun fetchPageList(externalUrl: String, chapterNumber: String): List<Page> {
-        // Sometimes the urls direct it to the manga page instead, so we try to find the correct chapter
-        // Though these seem to be older chapters, so maybe remove this later
-        val chapterUrl = if (externalUrl.contains("mc\\d*/\\d*".toRegex())) {
-            getChapterUrl(externalUrl)
+    suspend fun fetchPageList(externalUrl: String, episodeNumber: String): List<Page> {
+        // Sometimes the urls direct it to the anime page instead, so we try to find the correct episode
+        // Though these seem to be older episodes, so maybe remove this later
+        val episodeUrl = if (externalUrl.contains("mc\\d*/\\d*".toRegex())) {
+            getEpisodeUrl(externalUrl)
         } else {
-            val mangaUrl = getMangaUrl(externalUrl)
-            val chapters = getChapterList(mangaUrl)
-            val chapter = chapters
-                .find { it.chapter_number == chapterNumber.toFloatOrNull() }
-                ?: throw Exception("Unknown chapter $chapterNumber")
-            chapter.url
+            val animeUrl = getAnimeUrl(externalUrl)
+            val episodes = getEpisodeList(animeUrl)
+            val episode = episodes
+                .find { it.episode_number == episodeNumber.toFloatOrNull() }
+                ?: throw Exception("Unknown episode $episodeNumber")
+            episode.url
         }
 
-        return fetchPageList(chapterUrl)
+        return fetchPageList(episodeUrl)
     }
 
-    private fun getMangaUrl(externalUrl: String): String {
+    private fun getAnimeUrl(externalUrl: String): String {
         xLogD(externalUrl)
         val comicId = externalUrl
             .substringAfter("/mc")
@@ -66,7 +66,7 @@ class BilibiliHandler(currentClient: OkHttpClient) {
         return "/detail/mc$comicId"
     }
 
-    private fun getChapterUrl(externalUrl: String): String {
+    private fun getEpisodeUrl(externalUrl: String): String {
         val comicId = externalUrl.substringAfterLast("/mc")
             .substringBefore('/')
             .toInt()
@@ -76,8 +76,8 @@ class BilibiliHandler(currentClient: OkHttpClient) {
         return "/mc$comicId/$episodeId"
     }
 
-    private fun mangaDetailsApiRequest(mangaUrl: String): Request {
-        val comicId = mangaUrl.substringAfterLast("/mc").toInt()
+    private fun animeDetailsApiRequest(animeUrl: String): Request {
+        val comicId = animeUrl.substringAfterLast("/mc").toInt()
 
         val jsonPayload = buildJsonObject { put("comic_id", comicId) }
         val requestBody = jsonPayload.toString().toRequestBody(JSON_MEDIA_TYPE)
@@ -85,7 +85,7 @@ class BilibiliHandler(currentClient: OkHttpClient) {
         val newHeaders = headers.newBuilder()
             .add("Content-Length", requestBody.contentLength().toString())
             .add("Content-Type", requestBody.contentType().toString())
-            .set("Referer", baseUrl + mangaUrl)
+            .set("Referer", baseUrl + animeUrl)
             .build()
 
         return POST(
@@ -95,12 +95,12 @@ class BilibiliHandler(currentClient: OkHttpClient) {
         )
     }
 
-    suspend fun getChapterList(mangaUrl: String): List<SChapter> {
-        val response = client.newCall(mangaDetailsApiRequest(mangaUrl)).awaitSuccess()
-        return chapterListParse(response)
+    suspend fun getEpisodeList(animeUrl: String): List<SEpisode> {
+        val response = client.newCall(animeDetailsApiRequest(animeUrl)).awaitSuccess()
+        return episodeListParse(response)
     }
 
-    fun chapterListParse(response: Response): List<SChapter> {
+    fun episodeListParse(response: Response): List<SEpisode> {
         val result = with(json) { response.parseAs<BilibiliResultDto<BilibiliComicDto>>() }
 
         if (result.code != 0) {
@@ -109,31 +109,31 @@ class BilibiliHandler(currentClient: OkHttpClient) {
 
         return result.data!!.episodeList
             .filter { episode -> episode.isLocked.not() }
-            .map { ep -> chapterFromObject(ep, result.data.id) }
+            .map { ep -> episodeFromObject(ep, result.data.id) }
     }
 
-    private fun chapterFromObject(episode: BilibiliEpisodeDto, comicId: Int): SChapter = SChapter(
+    private fun episodeFromObject(episode: BilibiliEpisodeDto, comicId: Int): SEpisode = SEpisode(
         url = "/mc$comicId/${episode.id}",
         name = "Ep. " + episode.order.toString().removeSuffix(".0") + " - " + episode.title,
-        chapter_number = episode.order,
+        episode_number = episode.order,
     )
 
-    private suspend fun fetchPageList(chapterUrl: String): List<Page> {
-        val response = client.newCall(pageListRequest(chapterUrl)).awaitSuccess()
+    private suspend fun fetchPageList(episodeUrl: String): List<Page> {
+        val response = client.newCall(pageListRequest(episodeUrl)).awaitSuccess()
         return pageListParse(response)
     }
 
-    private fun pageListRequest(chapterUrl: String): Request {
-        val chapterId = chapterUrl.substringAfterLast("/").toInt()
+    private fun pageListRequest(episodeUrl: String): Request {
+        val episodeId = episodeUrl.substringAfterLast("/").toInt()
 
-        val jsonPayload = buildJsonObject { put("ep_id", chapterId) }
+        val jsonPayload = buildJsonObject { put("ep_id", episodeId) }
         val requestBody = jsonPayload.toString().toRequestBody(JSON_MEDIA_TYPE)
 
         val newHeaders = headers
             .newBuilder()
             .add("Content-Length", requestBody.contentLength().toString())
             .add("Content-Type", requestBody.contentType().toString())
-            .set("Referer", baseUrl + chapterUrl)
+            .set("Referer", baseUrl + episodeUrl)
             .build()
 
         return POST(

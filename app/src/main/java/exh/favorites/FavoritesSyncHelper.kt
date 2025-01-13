@@ -4,7 +4,7 @@ import android.content.Context
 import android.net.wifi.WifiManager
 import android.os.Build
 import android.os.PowerManager
-import eu.kanade.domain.manga.interactor.UpdateManga
+import eu.kanade.domain.anime.interactor.UpdateAnime
 import eu.kanade.tachiyomi.network.POST
 import eu.kanade.tachiyomi.network.await
 import eu.kanade.tachiyomi.source.online.all.EHentai
@@ -31,16 +31,16 @@ import tachiyomi.core.common.i18n.stringResource
 import tachiyomi.core.common.util.lang.withIOContext
 import tachiyomi.core.common.util.lang.withUIContext
 import tachiyomi.domain.UnsortedPreferences
+import tachiyomi.domain.anime.interactor.GetAnime
+import tachiyomi.domain.anime.interactor.GetLibraryAnime
+import tachiyomi.domain.anime.model.Anime
+import tachiyomi.domain.anime.model.FavoriteEntry
 import tachiyomi.domain.category.interactor.CreateCategoryWithName
 import tachiyomi.domain.category.interactor.GetCategories
-import tachiyomi.domain.category.interactor.SetMangaCategories
+import tachiyomi.domain.category.interactor.SetAnimeCategories
 import tachiyomi.domain.category.interactor.UpdateCategory
 import tachiyomi.domain.category.model.Category
 import tachiyomi.domain.category.model.CategoryUpdate
-import tachiyomi.domain.manga.interactor.GetLibraryManga
-import tachiyomi.domain.manga.interactor.GetManga
-import tachiyomi.domain.manga.model.FavoriteEntry
-import tachiyomi.domain.manga.model.Manga
 import tachiyomi.domain.source.service.SourceManager
 import tachiyomi.i18n.sy.SYMR
 import uy.kohesive.injekt.Injekt
@@ -50,11 +50,11 @@ import kotlin.time.Duration.Companion.seconds
 
 // TODO only apply database changes after sync
 class FavoritesSyncHelper(val context: Context) {
-    private val getLibraryManga: GetLibraryManga by injectLazy()
+    private val getLibraryAnime: GetLibraryAnime by injectLazy()
     private val getCategories: GetCategories by injectLazy()
-    private val getManga: GetManga by injectLazy()
-    private val updateManga: UpdateManga by injectLazy()
-    private val setMangaCategories: SetMangaCategories by injectLazy()
+    private val getAnime: GetAnime by injectLazy()
+    private val updateAnime: UpdateAnime by injectLazy()
+    private val setAnimeCategories: SetAnimeCategories by injectLazy()
     private val createCategoryWithName: CreateCategoryWithName by injectLazy()
     private val updateCategory: UpdateCategory by injectLazy()
 
@@ -98,20 +98,20 @@ class FavoritesSyncHelper(val context: Context) {
 
         // Validate library state
         status.value = FavoritesSyncStatus.Processing.VerifyingLibrary
-        val libraryManga = getLibraryManga.await()
-        val seenManga = HashSet<Long>(libraryManga.size)
-        libraryManga.forEach { (manga) ->
-            if (!manga.isEhBasedManga()) return@forEach
+        val libraryAnime = getLibraryAnime.await()
+        val seenAnime = HashSet<Long>(libraryAnime.size)
+        libraryAnime.forEach { (anime) ->
+            if (!anime.isEhBasedManga()) return@forEach
 
-            if (manga.id in seenManga) {
-                val inCategories = getCategories.await(manga.id)
+            if (anime.id in seenAnime) {
+                val inCategories = getCategories.await(anime.id)
                 status.value = FavoritesSyncStatus.BadLibraryState
-                    .MangaInMultipleCategories(manga.id, manga.title, inCategories.map { it.name })
+                    .AnimeInMultipleCategories(anime.id, anime.title, inCategories.map { it.name })
 
-                logger.w(context.stringResource(SYMR.strings.favorites_sync_gallery_multiple_categories_error, manga.id))
+                logger.w(context.stringResource(SYMR.strings.favorites_sync_gallery_multiple_categories_error, anime.id))
                 return
             } else {
-                seenManga += manga.id
+                seenAnime += anime.id
             }
         }
 
@@ -337,7 +337,7 @@ class FavoritesSyncHelper(val context: Context) {
         errorList: MutableList<FavoritesSyncStatus.SyncError.GallerySyncError>,
         changeSet: ChangeSet,
     ) {
-        val removedManga = mutableListOf<Manga>()
+        val removedAnime = mutableListOf<Anime>()
 
         // Apply removals
         changeSet.removed.forEachIndexed { index, it ->
@@ -352,21 +352,21 @@ class FavoritesSyncHelper(val context: Context) {
                 EXH_SOURCE_ID,
                 EH_SOURCE_ID,
             ).forEach {
-                val manga = getManga.await(url, it)
+                val anime = getAnime.await(url, it)
 
-                if (manga?.favorite == true) {
-                    updateManga.awaitUpdateFavorite(manga.id, false)
-                    removedManga += manga
+                if (anime?.favorite == true) {
+                    updateAnime.awaitUpdateFavorite(anime.id, false)
+                    removedAnime += anime
                 }
             }
         }
 
         // Can't do too many DB OPs in one go
-        removedManga.forEach {
-            setMangaCategories.await(it.id, emptyList())
+        removedAnime.forEach {
+            setAnimeCategories.await(it.id, emptyList())
         }
 
-        val insertedMangaCategories = mutableListOf<Pair<Long, Manga>>()
+        val insertedAnimeCategories = mutableListOf<Pair<Long, Anime>>()
         val categories = getCategories.await()
             .filterNot(Category::isSystemCategory)
 
@@ -418,13 +418,13 @@ class FavoritesSyncHelper(val context: Context) {
                     throw IgnoredException(error)
                 }
             } else if (result is GalleryAddEvent.Success) {
-                insertedMangaCategories += categories[it.category].id to result.manga
+                insertedAnimeCategories += categories[it.category].id to result.anime
             }
         }
 
         // Can't do too many DB OPs in one go
-        insertedMangaCategories.forEach { (category, manga) ->
-            setMangaCategories.await(manga.id, listOf(category))
+        insertedAnimeCategories.forEach { (category, anime) ->
+            setAnimeCategories.await(anime.id, listOf(category))
         }
     }
 
@@ -473,9 +473,9 @@ sealed class FavoritesSyncStatus {
     @Serializable
     sealed class BadLibraryState : FavoritesSyncStatus() {
         @Serializable
-        data class MangaInMultipleCategories(
-            val mangaId: Long,
-            val mangaTitle: String,
+        data class AnimeInMultipleCategories(
+            val animeId: Long,
+            val animeTitle: String,
             val categories: List<String>,
         ) : BadLibraryState()
     }

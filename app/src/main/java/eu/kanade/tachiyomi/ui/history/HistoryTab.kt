@@ -25,14 +25,14 @@ import eu.kanade.presentation.history.components.HistoryDeleteAllDialog
 import eu.kanade.presentation.history.components.HistoryDeleteDialog
 import eu.kanade.presentation.util.Tab
 import eu.kanade.tachiyomi.R
+import eu.kanade.tachiyomi.ui.anime.AnimeScreen
 import eu.kanade.tachiyomi.ui.main.MainActivity
-import eu.kanade.tachiyomi.ui.manga.MangaScreen
 import eu.kanade.tachiyomi.ui.reader.ReaderActivity
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.flow.receiveAsFlow
 import tachiyomi.core.common.i18n.stringResource
-import tachiyomi.domain.chapter.model.Chapter
+import tachiyomi.domain.episode.model.Episode
 import tachiyomi.i18n.MR
 import tachiyomi.presentation.core.i18n.stringResource
 import uy.kohesive.injekt.Injekt
@@ -43,7 +43,7 @@ data object HistoryTab : Tab {
 
     private val snackbarHostState = SnackbarHostState()
 
-    private val resumeLastChapterReadEvent = Channel<Unit>()
+    private val resumeLastEpisodeReadEvent = Channel<Unit>()
 
     override val options: TabOptions
         @Composable
@@ -52,13 +52,13 @@ data object HistoryTab : Tab {
             val image = AnimatedImageVector.animatedVectorResource(R.drawable.anim_history_enter)
             return TabOptions(
                 index = 2u,
-                title = stringResource(MR.strings.label_recent_manga),
+                title = stringResource(MR.strings.label_recent_anime),
                 icon = rememberAnimatedVectorPainter(image, isSelected),
             )
         }
 
     override suspend fun onReselect(navigator: Navigator) {
-        resumeLastChapterReadEvent.send(Unit)
+        resumeLastEpisodeReadEvent.send(Unit)
     }
 
     // SY -->
@@ -82,8 +82,8 @@ data object HistoryTab : Tab {
             state = state,
             snackbarHostState = snackbarHostState,
             onSearchQueryChange = screenModel::updateSearchQuery,
-            onClickCover = { navigator.push(MangaScreen(it)) },
-            onClickResume = screenModel::getNextChapterForManga,
+            onClickCover = { navigator.push(AnimeScreen(it)) },
+            onClickResume = screenModel::getNextEpisodeForAnime,
             onDialogChange = screenModel::setDialog,
         )
 
@@ -94,7 +94,7 @@ data object HistoryTab : Tab {
                     onDismissRequest = onDismissRequest,
                     onDelete = { all ->
                         if (all) {
-                            screenModel.removeAllFromHistory(dialog.history.mangaId)
+                            screenModel.removeAllFromHistory(dialog.history.animeId)
                         } else {
                             screenModel.removeFromHistory(dialog.history)
                         }
@@ -123,24 +123,24 @@ data object HistoryTab : Tab {
                         snackbarHostState.showSnackbar(context.stringResource(MR.strings.internal_error))
                     HistoryScreenModel.Event.HistoryCleared ->
                         snackbarHostState.showSnackbar(context.stringResource(MR.strings.clear_history_completed))
-                    is HistoryScreenModel.Event.OpenChapter -> openChapter(context, e.chapter)
+                    is HistoryScreenModel.Event.OpenEpisode -> openEpisode(context, e.episode)
                 }
             }
         }
 
         LaunchedEffect(Unit) {
-            resumeLastChapterReadEvent.receiveAsFlow().collectLatest {
-                openChapter(context, screenModel.getNextChapter())
+            resumeLastEpisodeReadEvent.receiveAsFlow().collectLatest {
+                openEpisode(context, screenModel.getNextEpisode())
             }
         }
     }
 
-    private suspend fun openChapter(context: Context, chapter: Chapter?) {
-        if (chapter != null) {
-            val intent = ReaderActivity.newIntent(context, chapter.mangaId, chapter.id)
+    private suspend fun openEpisode(context: Context, episode: Episode?) {
+        if (episode != null) {
+            val intent = ReaderActivity.newIntent(context, episode.animeId, episode.id)
             context.startActivity(intent)
         } else {
-            snackbarHostState.showSnackbar(context.stringResource(MR.strings.no_next_chapter))
+            snackbarHostState.showSnackbar(context.stringResource(MR.strings.no_next_episode))
         }
     }
 }

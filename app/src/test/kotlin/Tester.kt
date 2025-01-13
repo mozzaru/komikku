@@ -1,6 +1,6 @@
 
 import eu.kanade.tachiyomi.data.backup.models.Backup
-import eu.kanade.tachiyomi.source.model.SManga
+import eu.kanade.tachiyomi.source.model.SAnime
 import eu.kanade.tachiyomi.source.online.all.EHentai
 import exh.favorites.LocalFavoritesStorage
 import exh.metadata.metadata.EHentaiSearchMetadata
@@ -17,15 +17,15 @@ import okio.source
 import org.junit.jupiter.api.BeforeAll
 import org.junit.jupiter.api.Disabled
 import org.junit.jupiter.api.Test
+import tachiyomi.domain.anime.interactor.GetCustomAnimeInfo
+import tachiyomi.domain.anime.interactor.GetFavoriteEntries
+import tachiyomi.domain.anime.interactor.GetFavorites
+import tachiyomi.domain.anime.model.Anime
+import tachiyomi.domain.anime.model.CustomAnimeInfo
+import tachiyomi.domain.anime.model.FavoriteEntry
+import tachiyomi.domain.anime.repository.CustomAnimeRepository
 import tachiyomi.domain.category.interactor.GetCategories
 import tachiyomi.domain.category.model.Category
-import tachiyomi.domain.manga.interactor.GetCustomMangaInfo
-import tachiyomi.domain.manga.interactor.GetFavoriteEntries
-import tachiyomi.domain.manga.interactor.GetFavorites
-import tachiyomi.domain.manga.model.CustomMangaInfo
-import tachiyomi.domain.manga.model.FavoriteEntry
-import tachiyomi.domain.manga.model.Manga
-import tachiyomi.domain.manga.repository.CustomMangaRepository
 import uy.kohesive.injekt.Injekt
 import uy.kohesive.injekt.api.addSingletonFactory
 import java.io.File
@@ -43,7 +43,7 @@ class Tester {
         val newBytes = ProtoBuf.encodeToByteArray(
             Backup.serializer(),
             backup.copy(
-                backupManga = backup.backupManga.filter { it.favorite },
+                backupAnime = backup.backupAnime.filter { it.favorite },
             ),
         )
         File("D:\\Downloads\\pacthiyomi_2023-05-08_13-30 (2).proto.gz").outputStream().sink().gzip().buffer().use {
@@ -54,21 +54,21 @@ class Tester {
     @Test
     fun localFavoritesStorageTester(): Unit = runBlocking {
         val favorites = listOf(
-            Manga.create().copy(
+            Anime.create().copy(
                 id = 1,
                 favorite = true,
                 source = EXH_SOURCE_ID,
                 url = "/g/gid/token",
             ),
             // an alias for gid2/token2
-            Manga.create().copy(
+            Anime.create().copy(
                 id = 3,
                 favorite = true,
                 source = EXH_SOURCE_ID,
                 url = "/g/gid3/token3",
             ),
             // add this one to library
-            Manga.create().copy(
+            Anime.create().copy(
                 id = 3,
                 favorite = true,
                 source = EXH_SOURCE_ID,
@@ -141,20 +141,20 @@ class Tester {
 
         val (remoteAdded, remoteRemoved) = storage.getChangedRemoteEntries(
             listOf(
-                EHentai.ParsedManga(
+                EHentai.ParsedAnime(
                     0,
-                    SManga("/g/gid/token", "a"),
+                    SAnime("/g/gid/token", "a"),
                     EHentaiSearchMetadata(),
                 ),
-                EHentai.ParsedManga(
+                EHentai.ParsedAnime(
                     0,
-                    SManga("/g/gid2/token2", "a"),
+                    SAnime("/g/gid2/token2", "a"),
                     EHentaiSearchMetadata(),
                 ),
                 // added on remote
-                EHentai.ParsedManga(
+                EHentai.ParsedAnime(
                     0,
-                    SManga("/g/gid5/token5", "a"),
+                    SAnime("/g/gid5/token5", "a"),
                     EHentaiSearchMetadata(),
                 ),
             ),
@@ -169,10 +169,10 @@ class Tester {
         @BeforeAll
         fun before() {
             Injekt.addSingletonFactory {
-                GetCustomMangaInfo(
-                    object : CustomMangaRepository {
-                        override fun get(mangaId: Long) = null
-                        override fun set(mangaInfo: CustomMangaInfo) = Unit
+                GetCustomAnimeInfo(
+                    object : CustomAnimeRepository {
+                        override fun get(animeId: Long) = null
+                        override fun set(animeInfo: CustomAnimeInfo) = Unit
                     },
                 )
             }

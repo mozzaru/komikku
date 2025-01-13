@@ -33,7 +33,7 @@ import tachiyomi.core.common.util.system.ImageUtil
 import tachiyomi.core.common.util.system.logcat
 
 /**
- * Holder of the webtoon reader for a single page of a chapter.
+ * Holder of the webtoon reader for a single page of a episode.
  *
  * @param frame the root view for this holder.
  * @param viewer the webtoon viewer.
@@ -70,7 +70,7 @@ class WebtoonPageHolder(
         get() = viewer.recycler.height
 
     /**
-     * Page of a chapter.
+     * Page of a episode.
      */
     private var page: ReaderPage? = null
 
@@ -133,7 +133,7 @@ class WebtoonPageHolder(
      */
     private suspend fun loadPageAndProcessStatus() {
         val page = page ?: return
-        val loader = page.chapter.pageLoader ?: return
+        val loader = page.episode.pageLoader ?: return
         supervisorScope {
             launchIO {
                 loader.loadPage(page)
@@ -289,7 +289,7 @@ class WebtoonPageHolder(
             errorLayout = ReaderErrorBinding.inflate(LayoutInflater.from(context), frame, true)
             errorLayout?.root?.layoutParams = FrameLayout.LayoutParams(MATCH_PARENT, (parentHeight * 0.8).toInt())
             errorLayout?.actionRetry?.setOnClickListener {
-                page?.let { it.chapter.pageLoader?.retryPage(it) }
+                page?.let { it.episode.pageLoader?.retryPage(it) }
             }
         }
 

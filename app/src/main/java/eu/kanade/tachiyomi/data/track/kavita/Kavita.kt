@@ -12,7 +12,7 @@ import eu.kanade.tachiyomi.source.Source
 import eu.kanade.tachiyomi.source.sourcePreferences
 import kotlinx.collections.immutable.ImmutableList
 import kotlinx.collections.immutable.persistentListOf
-import tachiyomi.domain.manga.model.Manga
+import tachiyomi.domain.anime.model.Anime
 import tachiyomi.domain.source.service.SourceManager
 import tachiyomi.i18n.MR
 import uy.kohesive.injekt.injectLazy
@@ -57,10 +57,10 @@ class Kavita(id: Long) : BaseTracker(id, "Kavita"), EnhancedTracker {
 
     override fun displayScore(track: DomainTrack): String = ""
 
-    override suspend fun update(track: Track, didReadChapter: Boolean): Track {
+    override suspend fun update(track: Track, didSeenEpisode: Boolean): Track {
         if (track.status != COMPLETED) {
-            if (didReadChapter) {
-                if (track.last_chapter_read.toLong() == track.total_chapters && track.total_chapters > 0) {
+            if (didSeenEpisode) {
+                if (track.last_episode_seen.toLong() == track.total_episodes && track.total_episodes > 0) {
                     track.status = COMPLETED
                 } else {
                     track.status = READING
@@ -70,7 +70,7 @@ class Kavita(id: Long) : BaseTracker(id, "Kavita"), EnhancedTracker {
         return api.updateProgress(track)
     }
 
-    override suspend fun bind(track: Track, hasReadChapters: Boolean): Track {
+    override suspend fun bind(track: Track, hasSeenEpisodes: Boolean): Track {
         return track
     }
 
@@ -81,7 +81,7 @@ class Kavita(id: Long) : BaseTracker(id, "Kavita"), EnhancedTracker {
     override suspend fun refresh(track: Track): Track {
         val remoteTrack = api.getTrackSearch(track.tracking_url)
         track.copyPersonalFrom(remoteTrack)
-        track.total_chapters = remoteTrack.total_chapters
+        track.total_episodes = remoteTrack.total_episodes
         return track
     }
 
@@ -97,19 +97,19 @@ class Kavita(id: Long) : BaseTracker(id, "Kavita"), EnhancedTracker {
 
     override fun getAcceptedSources() = listOf("eu.kanade.tachiyomi.extension.all.kavita.Kavita")
 
-    override suspend fun match(manga: Manga): TrackSearch? =
+    override suspend fun match(anime: Anime): TrackSearch? =
         try {
-            api.getTrackSearch(manga.url)
+            api.getTrackSearch(anime.url)
         } catch (e: Exception) {
             null
         }
 
-    override fun isTrackFrom(track: DomainTrack, manga: Manga, source: Source?): Boolean =
-        track.remoteUrl == manga.url && source?.let { accept(it) } == true
+    override fun isTrackFrom(track: DomainTrack, anime: Anime, source: Source?): Boolean =
+        track.remoteUrl == anime.url && source?.let { accept(it) } == true
 
-    override fun migrateTrack(track: DomainTrack, manga: Manga, newSource: Source): DomainTrack? =
+    override fun migrateTrack(track: DomainTrack, anime: Anime, newSource: Source): DomainTrack? =
         if (accept(newSource)) {
-            track.copy(remoteUrl = manga.url)
+            track.copy(remoteUrl = anime.url)
         } else {
             null
         }
@@ -146,6 +146,6 @@ class Kavita(id: Long) : BaseTracker(id, "Kavita"), EnhancedTracker {
     }
 
     // KMK -->
-    override fun hasNotStartedReading(status: Long): Boolean = status == UNREAD
+    override fun hasNotStartedWatching(status: Long): Boolean = status == UNREAD
     // KMK <--
 }

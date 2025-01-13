@@ -7,22 +7,22 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.SupervisorJob
 import kotlinx.coroutines.flow.MutableStateFlow
 import tachiyomi.core.common.i18n.stringResource
-import tachiyomi.domain.manga.model.Manga
+import tachiyomi.domain.anime.model.Anime
 import tachiyomi.i18n.MR
 import tachiyomi.i18n.sy.SYMR
 import java.text.DecimalFormat
 import kotlin.coroutines.CoroutineContext
 
-class MigratingManga(
-    val manga: Manga,
-    val chapterInfo: ChapterInfo,
+class MigratingAnime(
+    val anime: Anime,
+    val episodeInfo: EpisodeInfo,
     val sourcesString: String,
     parentContext: CoroutineContext,
 ) {
     val migrationScope = CoroutineScope(parentContext + SupervisorJob() + Dispatchers.Default)
 
     // KMK -->
-    var searchingJob: Deferred<Manga?>? = null
+    var searchingJob: Deferred<Anime?>? = null
     // KMK <--
 
     val searchResult = MutableStateFlow<SearchResult>(SearchResult.Searching)
@@ -36,15 +36,15 @@ class MigratingManga(
         data class Result(val id: Long) : SearchResult()
     }
 
-    data class ChapterInfo(
-        val latestChapter: Double?,
-        val chapterCount: Int,
+    data class EpisodeInfo(
+        val latestEpisode: Double?,
+        val episodeCount: Int,
     ) {
-        fun getFormattedLatestChapter(context: Context): String {
-            return if (latestChapter != null && latestChapter > 0.0) {
+        fun getFormattedLatestEpisode(context: Context): String {
+            return if (latestEpisode != null && latestEpisode > 0.0) {
                 context.stringResource(
                     SYMR.strings.latest_,
-                    DecimalFormat("#.#").format(latestChapter),
+                    DecimalFormat("#.#").format(latestEpisode),
                 )
             } else {
                 context.stringResource(

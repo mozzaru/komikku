@@ -31,8 +31,8 @@ import kotlinx.collections.immutable.persistentListOf
 import kotlinx.collections.immutable.toImmutableList
 import kotlinx.coroutines.flow.StateFlow
 import tachiyomi.core.common.i18n.stringResource
+import tachiyomi.domain.anime.model.Anime
 import tachiyomi.domain.library.model.LibraryDisplayMode
-import tachiyomi.domain.manga.model.Manga
 import tachiyomi.domain.source.model.StubSource
 import tachiyomi.i18n.MR
 import tachiyomi.presentation.core.components.material.Scaffold
@@ -45,7 +45,7 @@ import tachiyomi.source.local.LocalSource
 @Composable
 fun BrowseSourceContent(
     source: Source?,
-    mangaList: LazyPagingItems<StateFlow</* SY --> */Pair<Manga, RaisedSearchMetadata?>/* SY <-- */>>,
+    animeList: LazyPagingItems<StateFlow</* SY --> */Pair<Anime, RaisedSearchMetadata?>/* SY <-- */>>,
     columns: GridCells,
     // SY -->
     ehentaiBrowseDisplayMode: Boolean,
@@ -58,24 +58,24 @@ fun BrowseSourceContent(
     onHelpClick: (() -> Unit)?,
     onLocalSourceHelpClick: (() -> Unit)?,
     // SY <--
-    onMangaClick: (Manga) -> Unit,
-    onMangaLongClick: (Manga) -> Unit,
+    onAnimeClick: (Anime) -> Unit,
+    onAnimeLongClick: (Anime) -> Unit,
     // KMK -->
-    selection: List<Manga>,
+    selection: List<Anime>,
     browseSourceState: BrowseSourceScreenModel.State,
     // KMK <--
 ) {
     val context = LocalContext.current
 
-    val errorState = mangaList.loadState.refresh.takeIf { it is LoadState.Error }
-        ?: mangaList.loadState.append.takeIf { it is LoadState.Error }
+    val errorState = animeList.loadState.refresh.takeIf { it is LoadState.Error }
+        ?: animeList.loadState.append.takeIf { it is LoadState.Error }
 
     val getErrorMessage: (LoadState.Error) -> String = { state ->
         with(context) { state.error.formattedMessage }
     }
 
     LaunchedEffect(errorState) {
-        if (mangaList.itemCount > 0 && errorState != null && errorState is LoadState.Error) {
+        if (animeList.itemCount > 0 && errorState != null && errorState is LoadState.Error) {
             val result = snackbarHostState.showSnackbar(
                 message = getErrorMessage(errorState),
                 actionLabel = context.stringResource(MR.strings.action_retry),
@@ -83,12 +83,12 @@ fun BrowseSourceContent(
             )
             when (result) {
                 SnackbarResult.Dismissed -> snackbarHostState.currentSnackbarData?.dismiss()
-                SnackbarResult.ActionPerformed -> mangaList.retry()
+                SnackbarResult.ActionPerformed -> animeList.retry()
             }
         }
     }
 
-    if (mangaList.itemCount <= 0 && errorState != null && errorState is LoadState.Error) {
+    if (animeList.itemCount <= 0 && errorState != null && errorState is LoadState.Error) {
         EmptyScreen(
             modifier = Modifier.padding(contentPadding),
             message = getErrorMessage(errorState),
@@ -105,7 +105,7 @@ fun BrowseSourceContent(
                     EmptyScreenAction(
                         stringRes = MR.strings.action_retry,
                         icon = Icons.Outlined.Refresh,
-                        onClick = mangaList::refresh,
+                        onClick = animeList::refresh,
                     ),
                     // SY -->
                     if (onWebViewClick != null) {
@@ -134,21 +134,21 @@ fun BrowseSourceContent(
         return
     }
 
-    if (mangaList.itemCount == 0 && mangaList.loadState.refresh is LoadState.Loading) {
+    if (animeList.itemCount == 0 && animeList.loadState.refresh is LoadState.Loading) {
         LoadingScreen(
             modifier = Modifier.padding(contentPadding),
         )
         // KMK -->
-        browseSourceState.mangaDisplayingList.clear()
+        browseSourceState.animeDisplayingList.clear()
         // KMK <--
         return
     }
 
     // KMK -->
-    for (idx in browseSourceState.mangaDisplayingList.size..<mangaList.itemCount) {
-        mangaList[idx]?.collectAsState()?.value?.first?.let { manga ->
-            if (!browseSourceState.mangaDisplayingList.map { it.id }.contains(manga.id)) {
-                browseSourceState.mangaDisplayingList.add(manga)
+    for (idx in browseSourceState.animeDisplayingList.size..<animeList.itemCount) {
+        animeList[idx]?.collectAsState()?.value?.first?.let { anime ->
+            if (!browseSourceState.animeDisplayingList.map { it.id }.contains(anime.id)) {
+                browseSourceState.animeDisplayingList.add(anime)
             }
         }
     }
@@ -157,10 +157,10 @@ fun BrowseSourceContent(
     // SY -->
     if (source?.isEhBasedSource() == true && ehentaiBrowseDisplayMode) {
         BrowseSourceEHentaiList(
-            mangaList = mangaList,
+            animeList = animeList,
             contentPadding = contentPadding,
-            onMangaClick = onMangaClick,
-            onMangaLongClick = onMangaLongClick,
+            onAnimeClick = onAnimeClick,
+            onAnimeLongClick = onAnimeLongClick,
             // KMK -->
             selection = selection,
             // KMK <--
@@ -172,11 +172,11 @@ fun BrowseSourceContent(
     when (displayMode) {
         LibraryDisplayMode.ComfortableGrid -> {
             BrowseSourceComfortableGrid(
-                mangaList = mangaList,
+                animeList = animeList,
                 columns = columns,
                 contentPadding = contentPadding,
-                onMangaClick = onMangaClick,
-                onMangaLongClick = onMangaLongClick,
+                onAnimeClick = onAnimeClick,
+                onAnimeLongClick = onAnimeLongClick,
                 // KMK -->
                 selection = selection,
                 // KMK <--
@@ -185,11 +185,11 @@ fun BrowseSourceContent(
         // KMK -->
         LibraryDisplayMode.ComfortableGridPanorama -> {
             BrowseSourceComfortableGrid(
-                mangaList = mangaList,
+                animeList = animeList,
                 columns = columns,
                 contentPadding = contentPadding,
-                onMangaClick = onMangaClick,
-                onMangaLongClick = onMangaLongClick,
+                onAnimeClick = onAnimeClick,
+                onAnimeLongClick = onAnimeLongClick,
                 // KMK -->
                 selection = selection,
                 usePanoramaCover = true,
@@ -199,10 +199,10 @@ fun BrowseSourceContent(
         // KMK <--
         LibraryDisplayMode.List -> {
             BrowseSourceList(
-                mangaList = mangaList,
+                animeList = animeList,
                 contentPadding = contentPadding,
-                onMangaClick = onMangaClick,
-                onMangaLongClick = onMangaLongClick,
+                onAnimeClick = onAnimeClick,
+                onAnimeLongClick = onAnimeLongClick,
                 // KMK -->
                 selection = selection,
                 // KMK <--
@@ -210,11 +210,11 @@ fun BrowseSourceContent(
         }
         LibraryDisplayMode.CompactGrid, LibraryDisplayMode.CoverOnlyGrid -> {
             BrowseSourceCompactGrid(
-                mangaList = mangaList,
+                animeList = animeList,
                 columns = columns,
                 contentPadding = contentPadding,
-                onMangaClick = onMangaClick,
-                onMangaLongClick = onMangaLongClick,
+                onAnimeClick = onAnimeClick,
+                onAnimeLongClick = onAnimeLongClick,
                 // KMK -->
                 selection = selection,
                 // KMK <--

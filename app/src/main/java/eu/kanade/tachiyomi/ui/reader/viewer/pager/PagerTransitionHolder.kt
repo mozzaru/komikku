@@ -10,8 +10,8 @@ import android.view.ViewGroup.LayoutParams.WRAP_CONTENT
 import android.widget.LinearLayout
 import androidx.annotation.ColorInt
 import androidx.appcompat.widget.AppCompatTextView
-import eu.kanade.tachiyomi.ui.reader.model.ChapterTransition
-import eu.kanade.tachiyomi.ui.reader.model.ReaderChapter
+import eu.kanade.tachiyomi.ui.reader.model.EpisodeTransition
+import eu.kanade.tachiyomi.ui.reader.model.ReaderEpisode
 import eu.kanade.tachiyomi.ui.reader.viewer.ReaderButton
 import eu.kanade.tachiyomi.ui.reader.viewer.ReaderProgressIndicator
 import eu.kanade.tachiyomi.ui.reader.viewer.ReaderTransitionView
@@ -25,13 +25,13 @@ import tachiyomi.core.common.i18n.stringResource
 import tachiyomi.i18n.MR
 
 /**
- * View of the ViewPager that contains a chapter transition.
+ * View of the ViewPager that contains a episode transition.
  */
 @SuppressLint("ViewConstructor")
 class PagerTransitionHolder(
     readerThemedContext: Context,
     val viewer: PagerViewer,
-    val transition: ChapterTransition,
+    val transition: EpisodeTransition,
     // KMK -->
     @ColorInt private val seedColor: Int? = null,
     // KMK <--
@@ -71,7 +71,7 @@ class PagerTransitionHolder(
         addView(transitionView)
         addView(pagesContainer)
 
-        transitionView.bind(transition, viewer.downloadManager, viewer.activity.viewModel.manga)
+        transitionView.bind(transition, viewer.downloadManager, viewer.activity.viewModel.anime)
 
         transition.to?.let(::observeStatus)
     }
@@ -85,19 +85,19 @@ class PagerTransitionHolder(
     }
 
     /**
-     * Observes the status of the page list of the next/previous chapter. Whenever there's a new
+     * Observes the status of the page list of the next/previous episode. Whenever there's a new
      * state, the pages container is cleaned up before setting the new state.
      */
-    private fun observeStatus(chapter: ReaderChapter) {
+    private fun observeStatus(episode: ReaderEpisode) {
         stateJob?.cancel()
         stateJob = scope.launch {
-            chapter.stateFlow
+            episode.stateFlow
                 .collectLatest { state ->
                     pagesContainer.removeAllViews()
                     when (state) {
-                        is ReaderChapter.State.Loading -> setLoading()
-                        is ReaderChapter.State.Error -> setError(state.error)
-                        is ReaderChapter.State.Wait, is ReaderChapter.State.Loaded -> {
+                        is ReaderEpisode.State.Loading -> setLoading()
+                        is ReaderEpisode.State.Error -> setError(state.error)
+                        is ReaderEpisode.State.Wait, is ReaderEpisode.State.Loaded -> {
                             // No additional view is added
                         }
                     }
@@ -139,9 +139,9 @@ class PagerTransitionHolder(
             wrapContent()
             text = context.stringResource(MR.strings.action_retry)
             setOnClickListener {
-                val toChapter = transition.to
-                if (toChapter != null) {
-                    this@PagerTransitionHolder.viewer.activity.requestPreloadChapter(toChapter)
+                val toEpisode = transition.to
+                if (toEpisode != null) {
+                    this@PagerTransitionHolder.viewer.activity.requestPreloadEpisode(toEpisode)
                 }
             }
         }

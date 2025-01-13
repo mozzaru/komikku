@@ -136,7 +136,7 @@ fun MoreScreen(
             if (!showNavHistory) {
                 item {
                     TextPreferenceWidget(
-                        title = stringResource(MR.strings.label_recent_manga),
+                        title = stringResource(MR.strings.label_recent_anime),
                         icon = Icons.Outlined.History,
                         onPreferenceClick = onClickHistory,
                     )

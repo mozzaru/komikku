@@ -12,11 +12,11 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
+import eu.kanade.presentation.anime.components.AnimeEpisodeListItem
 import eu.kanade.presentation.components.AdaptiveSheet
-import eu.kanade.presentation.manga.components.MangaChapterListItem
 import eu.kanade.tachiyomi.data.download.DownloadManager
 import eu.kanade.tachiyomi.data.download.model.Download
-import eu.kanade.tachiyomi.ui.reader.chapter.ReaderChapterItem
+import eu.kanade.tachiyomi.ui.reader.episode.ReaderEpisodeItem
 import eu.kanade.tachiyomi.ui.reader.setting.ReaderSettingsScreenModel
 import eu.kanade.tachiyomi.util.lang.toRelativeString
 import exh.metadata.MetadataUtil
@@ -24,7 +24,7 @@ import exh.source.isEhBasedManga
 import kotlinx.collections.immutable.ImmutableList
 import kotlinx.coroutines.flow.filter
 import kotlinx.coroutines.flow.map
-import tachiyomi.domain.chapter.model.Chapter
+import tachiyomi.domain.episode.model.Episode
 import tachiyomi.domain.library.service.LibraryPreferences
 import tachiyomi.source.local.isLocal
 import uy.kohesive.injekt.Injekt
@@ -35,17 +35,17 @@ import java.time.ZoneId
 import java.time.ZonedDateTime
 
 @Composable
-fun ChapterListDialog(
+fun EpisodeListDialog(
     onDismissRequest: () -> Unit,
     screenModel: ReaderSettingsScreenModel,
-    chapters: ImmutableList<ReaderChapterItem>,
-    onClickChapter: (Chapter) -> Unit,
-    onBookmark: (Chapter) -> Unit,
+    episodes: ImmutableList<ReaderEpisodeItem>,
+    onClickEpisode: (Episode) -> Unit,
+    onBookmark: (Episode) -> Unit,
     dateRelativeTime: Boolean,
 ) {
-    val manga by screenModel.mangaFlow.collectAsState()
+    val anime by screenModel.animeFlow.collectAsState()
     val context = LocalContext.current
-    val state = rememberLazyListState(chapters.indexOfFirst { it.isCurrent }.coerceAtLeast(0))
+    val state = rememberLazyListState(episodes.indexOfFirst { it.isCurrent }.coerceAtLeast(0))
     val downloadManager: DownloadManager = remember { Injekt.get() }
     val downloadQueueState by downloadManager.queueState.collectAsState()
 
@@ -58,24 +58,24 @@ fun ChapterListDialog(
             contentPadding = PaddingValues(vertical = 16.dp),
         ) {
             items(
-                items = chapters,
-                key = { "chapter-list-${it.chapter.id}" },
-            ) { chapterItem ->
-                val activeDownload = downloadQueueState.find { it.chapter.id == chapterItem.chapter.id }
+                items = episodes,
+                key = { "episode-list-${it.episode.id}" },
+            ) { episodeItem ->
+                val activeDownload = downloadQueueState.find { it.episode.id == episodeItem.episode.id }
                 val progress = activeDownload?.let {
                     downloadManager.progressFlow()
-                        .filter { it.chapter.id == chapterItem.chapter.id }
+                        .filter { it.episode.id == episodeItem.episode.id }
                         .map { it.progress }
                         .collectAsState(0).value
                 } ?: 0
-                val downloaded = if (chapterItem.manga.isLocal()) {
+                val downloaded = if (episodeItem.anime.isLocal()) {
                     true
                 } else {
-                    downloadManager.isChapterDownloaded(
-                        chapterItem.chapter.name,
-                        chapterItem.chapter.scanlator,
-                        chapterItem.manga.ogTitle,
-                        chapterItem.manga.source,
+                    downloadManager.isEpisodeDownloaded(
+                        episodeItem.episode.name,
+                        episodeItem.episode.scanlator,
+                        episodeItem.anime.ogTitle,
+                        episodeItem.anime.source,
                     )
                 }
                 val downloadState = when {
@@ -83,39 +83,39 @@ fun ChapterListDialog(
                     downloaded -> Download.State.DOWNLOADED
                     else -> Download.State.NOT_DOWNLOADED
                 }
-                MangaChapterListItem(
-                    title = chapterItem.chapter.name,
-                    date = chapterItem.chapter.dateUpload
+                AnimeEpisodeListItem(
+                    title = episodeItem.episode.name,
+                    date = episodeItem.episode.dateUpload
                         .takeIf { it > 0L }
                         ?.let {
                             // SY -->
-                            if (manga?.isEhBasedManga() == true) {
+                            if (anime?.isEhBasedManga() == true) {
                                 MetadataUtil.EX_DATE_FORMAT
                                     .format(ZonedDateTime.ofInstant(Instant.ofEpochMilli(it), ZoneId.systemDefault()))
                             } else {
                                 LocalDate.ofInstant(
                                     Instant.ofEpochMilli(it),
                                     ZoneId.systemDefault(),
-                                ).toRelativeString(context, dateRelativeTime, chapterItem.dateFormat)
+                                ).toRelativeString(context, dateRelativeTime, episodeItem.dateFormat)
                             }
                             // SY <--
                         },
                     readProgress = null,
-                    scanlator = chapterItem.chapter.scanlator,
+                    scanlator = episodeItem.episode.scanlator,
                     sourceName = null,
-                    read = chapterItem.chapter.read,
-                    bookmark = chapterItem.chapter.bookmark,
+                    read = episodeItem.episode.seen,
+                    bookmark = episodeItem.episode.bookmark,
                     selected = false,
                     downloadIndicatorEnabled = false,
                     downloadStateProvider = { downloadState },
                     downloadProgressProvider = { progress },
-                    chapterSwipeStartAction = LibraryPreferences.ChapterSwipeAction.ToggleBookmark,
-                    chapterSwipeEndAction = LibraryPreferences.ChapterSwipeAction.ToggleBookmark,
+                    episodeSwipeStartAction = LibraryPreferences.EpisodeSwipeAction.ToggleBookmark,
+                    episodeSwipeEndAction = LibraryPreferences.EpisodeSwipeAction.ToggleBookmark,
                     onLongClick = { /*TODO*/ },
-                    onClick = { onClickChapter(chapterItem.chapter) },
+                    onClick = { onClickEpisode(episodeItem.episode) },
                     onDownloadClick = null,
-                    onChapterSwipe = {
-                        onBookmark(chapterItem.chapter)
+                    onEpisodeSwipe = {
+                        onBookmark(episodeItem.episode)
                     },
                 )
             }

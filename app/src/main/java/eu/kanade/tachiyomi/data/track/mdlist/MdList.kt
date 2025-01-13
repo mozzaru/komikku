@@ -6,10 +6,10 @@ import eu.kanade.domain.track.model.toDbTrack
 import eu.kanade.tachiyomi.R
 import eu.kanade.tachiyomi.data.database.models.Track
 import eu.kanade.tachiyomi.data.track.BaseTracker
-import eu.kanade.tachiyomi.data.track.model.TrackMangaMetadata
+import eu.kanade.tachiyomi.data.track.model.TrackAnimeMetadata
 import eu.kanade.tachiyomi.data.track.model.TrackSearch
 import eu.kanade.tachiyomi.source.model.FilterList
-import eu.kanade.tachiyomi.source.model.SManga
+import eu.kanade.tachiyomi.source.model.SAnime
 import exh.md.network.MangaDexAuthInterceptor
 import exh.md.utils.FollowStatus
 import exh.md.utils.MdUtil
@@ -17,7 +17,7 @@ import kotlinx.collections.immutable.toImmutableList
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
 import tachiyomi.core.common.util.lang.withIOContext
-import tachiyomi.domain.manga.model.Manga
+import tachiyomi.domain.anime.model.Anime
 import tachiyomi.i18n.MR
 import tachiyomi.i18n.sy.SYMR
 import uy.kohesive.injekt.Injekt
@@ -63,7 +63,7 @@ class MdList(id: Long) : BaseTracker(id, "MDList") {
 
     override fun displayScore(track: DomainTrack) = track.score.toInt().toString()
 
-    override suspend fun update(track: Track, didReadChapter: Boolean): Track {
+    override suspend fun update(track: Track, didSeenEpisode: Boolean): Track {
         return withIOContext {
             val mdex = mdex ?: throw MangaDexNotFoundException()
 
@@ -73,7 +73,7 @@ class MdList(id: Long) : BaseTracker(id, "MDList") {
             // this updates the follow status in the metadata
             // allow follow status to update
             if (remoteTrack.status != followStatus.long) {
-                if (mdex.updateFollowStatus(MdUtil.getMangaId(track.tracking_url), followStatus)) {
+                if (mdex.updateFollowStatus(MdUtil.getAnimeId(track.tracking_url), followStatus)) {
                     remoteTrack.status = followStatus.long
                 } else {
                     track.status = remoteTrack.status
@@ -84,24 +84,24 @@ class MdList(id: Long) : BaseTracker(id, "MDList") {
                 mdex.updateRating(track)
             }
 
-            // mangadex wont update chapters if manga is not follows this prevents unneeded network call
+            // mangadex wont update episodes if anime is not follows this prevents unneeded network call
 
             /*if (followStatus != FollowStatus.UNFOLLOWED) {
-                if (track.total_chapters != 0 && track.last_chapter_read == track.total_chapters) {
+                if (track.total_episodes != 0 && track.last_episode_read == track.total_episodes) {
                     track.status = FollowStatus.COMPLETED.int
-                    mdex.updateFollowStatus(MdUtil.getMangaId(track.tracking_url), FollowStatus.COMPLETED)
+                    mdex.updateFollowStatus(MdUtil.getAnimeId(track.tracking_url), FollowStatus.COMPLETED)
                 }
-                if (followStatus == FollowStatus.PLAN_TO_READ && track.last_chapter_read > 0) {
+                if (followStatus == FollowStatus.PLAN_TO_READ && track.last_episode_read > 0) {
                     val newFollowStatus = FollowStatus.READING
                     track.status = FollowStatus.READING.int
-                    mdex.updateFollowStatus(MdUtil.getMangaId(track.tracking_url), newFollowStatus)
+                    mdex.updateFollowStatus(MdUtil.getAnimeId(track.tracking_url), newFollowStatus)
                     remoteTrack.status = newFollowStatus.int
                 }
 
                 mdex.updateReadingProgress(track)
-            } else if (track.last_chapter_read != 0) {
-                // When followStatus has been changed to unfollowed 0 out read chapters since dex does
-                track.last_chapter_read = 0
+            } else if (track.last_episode_read != 0) {
+                // When followStatus has been changed to unfollowed 0 out read episodes since dex does
+                track.last_episode_read = 0
             }*/
             track
         }
@@ -113,10 +113,10 @@ class MdList(id: Long) : BaseTracker(id, "MDList") {
 
     override fun getRereadingStatus(): Long = FollowStatus.RE_READING.long
 
-    override suspend fun bind(track: Track, hasReadChapters: Boolean): Track = update(
+    override suspend fun bind(track: Track, hasSeenEpisodes: Boolean): Track = update(
         refresh(track).also {
             if (it.status == FollowStatus.UNFOLLOWED.long) {
-                it.status = if (hasReadChapters) {
+                it.status = if (hasSeenEpisodes) {
                     FollowStatus.READING.long
                 } else {
                     FollowStatus.PLAN_TO_READ.long
@@ -130,39 +130,39 @@ class MdList(id: Long) : BaseTracker(id, "MDList") {
             val mdex = mdex ?: throw MangaDexNotFoundException()
             val remoteTrack = mdex.fetchTrackingInfo(track.tracking_url)
             track.copyPersonalFrom(remoteTrack)
-            /*if (track.total_chapters == 0 && mangaMetadata.status == SManga.COMPLETED) {
-                track.total_chapters = mangaMetadata.maxChapterNumber ?: 0
+            /*if (track.total_episodes == 0 && animeMetadata.status == SAnime.COMPLETED) {
+                track.total_episodes = animeMetadata.maxEpisodeNumber ?: 0
             }*/
             track
         }
     }
 
-    fun createInitialTracker(dbManga: Manga, mdManga: Manga = dbManga): Track {
+    fun createInitialTracker(dbAnime: Anime, mdAnime: Anime = dbAnime): Track {
         return Track.create(id).apply {
-            manga_id = dbManga.id
+            anime_id = dbAnime.id
             status = FollowStatus.UNFOLLOWED.long
-            tracking_url = MdUtil.baseUrl + mdManga.url
-            title = mdManga.title
+            tracking_url = MdUtil.baseUrl + mdAnime.url
+            title = mdAnime.title
         }
     }
 
     override suspend fun search(query: String): List<TrackSearch> {
         return withIOContext {
             val mdex = mdex ?: throw MangaDexNotFoundException()
-            mdex.getSearchManga(1, query, FilterList())
-                .mangas
+            mdex.getSearchAnime(1, query, FilterList())
+                .animes
                 .map {
-                    toTrackSearch(mdex.getMangaDetails(it))
+                    toTrackSearch(mdex.getAnimeDetails(it))
                 }
                 .distinct()
         }
     }
 
-    private fun toTrackSearch(mangaInfo: SManga): TrackSearch = TrackSearch.create(id).apply {
-        tracking_url = MdUtil.baseUrl + mangaInfo.url
-        title = mangaInfo.title
-        cover_url = mangaInfo.thumbnail_url.orEmpty()
-        summary = mangaInfo.description.orEmpty()
+    private fun toTrackSearch(animeInfo: SAnime): TrackSearch = TrackSearch.create(id).apply {
+        tracking_url = MdUtil.baseUrl + animeInfo.url
+        title = animeInfo.title
+        cover_url = animeInfo.thumbnail_url.orEmpty()
+        summary = animeInfo.description.orEmpty()
     }
 
     override suspend fun login(username: String, password: String): Unit = throw Exception("not used")
@@ -172,17 +172,17 @@ class MdList(id: Long) : BaseTracker(id, "MDList") {
         trackPreferences.trackToken(this).delete()
     }
 
-    override suspend fun getMangaMetadata(track: DomainTrack): TrackMangaMetadata? {
+    override suspend fun getAnimeMetadata(track: DomainTrack): TrackAnimeMetadata? {
         return withIOContext {
             val mdex = mdex ?: throw MangaDexNotFoundException()
-            val manga = mdex.getMangaMetadata(track.toDbTrack())
-            TrackMangaMetadata(
+            val anime = mdex.getAnimeMetadata(track.toDbTrack())
+            TrackAnimeMetadata(
                 remoteId = 0,
-                title = manga?.title,
-                thumbnailUrl = manga?.thumbnail_url, // Doesn't load the actual cover because of Refer header
-                description = manga?.description,
-                authors = manga?.author,
-                artists = manga?.artist,
+                title = anime?.title,
+                thumbnailUrl = anime?.thumbnail_url, // Doesn't load the actual cover because of Refer header
+                description = anime?.description,
+                authors = anime?.author,
+                artists = anime?.artist,
             )
         }
     }
@@ -197,6 +197,6 @@ class MdList(id: Long) : BaseTracker(id, "MDList") {
     class MangaDexNotFoundException : Exception("Mangadex not enabled")
 
     // KMK -->
-    override fun hasNotStartedReading(status: Long): Boolean = status == FollowStatus.PLAN_TO_READ.long
+    override fun hasNotStartedWatching(status: Long): Boolean = status == FollowStatus.PLAN_TO_READ.long
     // KMK <--
 }

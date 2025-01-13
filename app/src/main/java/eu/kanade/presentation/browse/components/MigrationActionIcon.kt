@@ -17,7 +17,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.DpOffset
 import androidx.compose.ui.unit.dp
-import eu.kanade.tachiyomi.ui.browse.migration.advanced.process.MigratingManga
+import eu.kanade.tachiyomi.ui.browse.migration.advanced.process.MigratingAnime
 import tachiyomi.i18n.MR
 import tachiyomi.i18n.sy.SYMR
 import tachiyomi.presentation.core.i18n.stringResource
@@ -25,10 +25,10 @@ import tachiyomi.presentation.core.i18n.stringResource
 @Composable
 fun MigrationActionIcon(
     modifier: Modifier,
-    result: MigratingManga.SearchResult,
-    skipManga: () -> Unit,
+    result: MigratingAnime.SearchResult,
+    skipAnime: () -> Unit,
     // KMK -->
-    cancelManga: () -> Unit,
+    cancelAnime: () -> Unit,
     // KMK <--
     searchManually: () -> Unit,
     migrateNow: () -> Unit,
@@ -38,16 +38,16 @@ fun MigrationActionIcon(
     val closeMenu = { moreExpanded = false }
 
     Box(modifier) {
-        if (result is MigratingManga.SearchResult.Searching) {
+        if (result is MigratingAnime.SearchResult.Searching) {
             // KMK -->
-            IconButton(onClick = cancelManga) {
+            IconButton(onClick = cancelAnime) {
                 // KMK <--
                 Icon(
                     imageVector = Icons.Outlined.Close,
                     contentDescription = stringResource(SYMR.strings.action_stop),
                 )
             }
-        } else if (result is MigratingManga.SearchResult.Result || result is MigratingManga.SearchResult.NotFound) {
+        } else if (result is MigratingAnime.SearchResult.Result || result is MigratingAnime.SearchResult.NotFound) {
             IconButton(onClick = { moreExpanded = !moreExpanded }) {
                 Icon(
                     imageVector = Icons.Outlined.MoreVert,
@@ -69,11 +69,11 @@ fun MigrationActionIcon(
                 DropdownMenuItem(
                     text = { Text(stringResource(SYMR.strings.action_skip_entry)) },
                     onClick = {
-                        skipManga()
+                        skipAnime()
                         closeMenu()
                     },
                 )
-                if (result is MigratingManga.SearchResult.Result) {
+                if (result is MigratingAnime.SearchResult.Result) {
                     DropdownMenuItem(
                         text = { Text(stringResource(SYMR.strings.action_migrate_now)) },
                         onClick = {

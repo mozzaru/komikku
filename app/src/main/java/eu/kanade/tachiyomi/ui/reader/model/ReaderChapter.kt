@@ -1,12 +1,12 @@
 package eu.kanade.tachiyomi.ui.reader.model
 
-import eu.kanade.domain.chapter.model.toDbChapter
-import eu.kanade.tachiyomi.data.database.models.Chapter
+import eu.kanade.domain.episode.model.toDbEpisode
+import eu.kanade.tachiyomi.data.database.models.Episode
 import eu.kanade.tachiyomi.ui.reader.loader.PageLoader
 import kotlinx.coroutines.flow.MutableStateFlow
 import tachiyomi.core.common.util.system.logcat
 
-data class ReaderChapter(val chapter: Chapter) {
+data class ReaderEpisode(val episode: Episode) {
 
     val stateFlow = MutableStateFlow<State>(State.Wait)
     var state: State
@@ -24,7 +24,7 @@ data class ReaderChapter(val chapter: Chapter) {
 
     private var references = 0
 
-    constructor(chapter: tachiyomi.domain.chapter.model.Chapter) : this(chapter.toDbChapter())
+    constructor(episode: tachiyomi.domain.episode.model.Episode) : this(episode.toDbEpisode())
 
     fun ref() {
         references++
@@ -34,7 +34,7 @@ data class ReaderChapter(val chapter: Chapter) {
         references--
         if (references == 0) {
             if (pageLoader != null) {
-                logcat { "Recycling chapter ${chapter.name}" }
+                logcat { "Recycling episode ${episode.name}" }
             }
             pageLoader?.recycle()
             pageLoader = null

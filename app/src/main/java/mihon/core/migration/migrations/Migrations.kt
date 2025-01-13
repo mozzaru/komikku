@@ -10,7 +10,7 @@ val migrations: List<Migration>
         SetupSyncDataMigration(),
         DelegateHBrowseMigration(),
         DelegateNHentaiMigration(),
-        MergedMangaRewriteMigration(),
+        MergedAnimeRewriteMigration(),
         LogoutFromMALMigration(),
         MoveDOHSettingMigration(),
         ResetRotationSettingMigration(),

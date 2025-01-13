@@ -1,34 +1,34 @@
 package exh.md.similar
 
-import eu.kanade.domain.manga.model.toSManga
-import eu.kanade.tachiyomi.source.model.MangasPage
-import eu.kanade.tachiyomi.source.model.MetadataMangasPage
+import eu.kanade.domain.anime.model.toSAnime
+import eu.kanade.tachiyomi.source.model.AnimesPage
+import eu.kanade.tachiyomi.source.model.MetadataAnimesPage
 import eu.kanade.tachiyomi.source.online.all.MangaDex
 import kotlinx.coroutines.async
 import kotlinx.coroutines.coroutineScope
 import tachiyomi.data.source.NoResultsException
 import tachiyomi.data.source.SourcePagingSource
-import tachiyomi.domain.manga.model.Manga
+import tachiyomi.domain.anime.model.Anime
 
 /**
  * MangaDexSimilarPagingSource inherited from the general Pager.
  */
-class MangaDexSimilarPagingSource(val manga: Manga, val mangadex: MangaDex) : SourcePagingSource(mangadex) {
+class MangaDexSimilarPagingSource(val anime: Anime, val mangadex: MangaDex) : SourcePagingSource(mangadex) {
 
-    override suspend fun requestNextPage(currentPage: Int): MangasPage {
-        val mangasPage = coroutineScope {
-            val similarPageDef = async { mangadex.getMangaSimilar(manga.toSManga()) }
-            val relatedPageDef = async { mangadex.getMangaRelated(manga.toSManga()) }
+    override suspend fun requestNextPage(currentPage: Int): AnimesPage {
+        val animesPage = coroutineScope {
+            val similarPageDef = async { mangadex.getAnimeSimilar(anime.toSAnime()) }
+            val relatedPageDef = async { mangadex.getAnimeRelated(anime.toSAnime()) }
             val similarPage = similarPageDef.await()
             val relatedPage = relatedPageDef.await()
 
-            MetadataMangasPage(
-                relatedPage.mangas + similarPage.mangas,
+            MetadataAnimesPage(
+                relatedPage.animes + similarPage.animes,
                 false,
-                relatedPage.mangasMetadata + similarPage.mangasMetadata,
+                relatedPage.animesMetadata + similarPage.animesMetadata,
             )
         }
 
-        return mangasPage.takeIf { it.mangas.isNotEmpty() } ?: throw NoResultsException()
+        return animesPage.takeIf { it.animes.isNotEmpty() } ?: throw NoResultsException()
     }
 }

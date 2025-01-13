@@ -4,8 +4,8 @@ import eu.kanade.tachiyomi.network.GET
 import eu.kanade.tachiyomi.network.awaitSuccess
 import eu.kanade.tachiyomi.network.interceptor.rateLimitHost
 import eu.kanade.tachiyomi.source.model.Page
-import exh.md.dto.MangaPlusPage
-import exh.md.dto.MangaPlusResponse
+import exh.md.dto.AnimePlusPage
+import exh.md.dto.AnimePlusResponse
 import kotlinx.serialization.json.Json
 import okhttp3.Headers
 import okhttp3.HttpUrl.Companion.toHttpUrl
@@ -33,18 +33,18 @@ class MangaPlusHandler(currentClient: OkHttpClient) {
         .rateLimitHost(WEB_URL.toHttpUrl(), 2)
         .build()
 
-    suspend fun fetchPageList(chapterId: String, dataSaver: Boolean): List<Page> {
-        val response = client.newCall(pageListRequest(chapterId.substringAfterLast("/"), dataSaver)).awaitSuccess()
+    suspend fun fetchPageList(episodeId: String, dataSaver: Boolean): List<Page> {
+        val response = client.newCall(pageListRequest(episodeId.substringAfterLast("/"), dataSaver)).awaitSuccess()
         return pageListParse(response)
     }
 
-    private fun pageListRequest(chapterId: String, dataSaver: Boolean): Request {
+    private fun pageListRequest(episodeId: String, dataSaver: Boolean): Request {
         val newHeaders = headers.newBuilder()
-            .set("Referer", "$WEB_URL/viewer/$chapterId")
+            .set("Referer", "$WEB_URL/viewer/$episodeId")
             .build()
 
-        val url = "$API_URL/manga_viewer".toHttpUrl().newBuilder()
-            .addQueryParameter("chapter_id", chapterId)
+        val url = "$API_URL/anime_viewer".toHttpUrl().newBuilder()
+            .addQueryParameter("episode_id", episodeId)
             .addQueryParameter("split", "yes")
             .addQueryParameter(
                 "img_quality",
@@ -61,7 +61,7 @@ class MangaPlusHandler(currentClient: OkHttpClient) {
     }
 
     private fun pageListParse(response: Response): List<Page> {
-        val result = json.decodeFromString<MangaPlusResponse>(response.body.string())
+        val result = json.decodeFromString<AnimePlusResponse>(response.body.string())
 
         if (result.success == null) {
             throw Exception("error getting images")
@@ -69,8 +69,8 @@ class MangaPlusHandler(currentClient: OkHttpClient) {
 
         val referer = response.request.header("Referer")!!
 
-        return result.success.mangaViewer!!.pages
-            .mapNotNull(MangaPlusPage::mangaPage)
+        return result.success.animeViewer!!.pages
+            .mapNotNull(AnimePlusPage::animePage)
             .mapIndexed { i, page ->
                 val encryptionKey = if (page.encryptionKey == null) "" else "#${page.encryptionKey}"
                 Page(i, referer, page.imageUrl + encryptionKey)

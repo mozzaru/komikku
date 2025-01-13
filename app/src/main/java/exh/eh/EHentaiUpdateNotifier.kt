@@ -13,7 +13,7 @@ import eu.kanade.tachiyomi.util.system.cancelNotification
 import eu.kanade.tachiyomi.util.system.notificationBuilder
 import eu.kanade.tachiyomi.util.system.notify
 import tachiyomi.core.common.i18n.stringResource
-import tachiyomi.domain.manga.model.Manga
+import tachiyomi.domain.anime.model.Anime
 import tachiyomi.i18n.MR
 import uy.kohesive.injekt.injectLazy
 import java.math.RoundingMode
@@ -49,13 +49,13 @@ class EHentaiUpdateNotifier(private val context: Context) {
     }
 
     /**
-     * Shows the notification containing the currently updating manga and the progress.
+     * Shows the notification containing the currently updating anime and the progress.
      *
-     * @param manga the manga that are being updated.
+     * @param anime the anime that are being updated.
      * @param current the current progress.
      * @param total the total progress.
      */
-    fun showProgressNotification(manga: Manga, current: Int, total: Int) {
+    fun showProgressNotification(anime: Anime, current: Int, total: Int) {
         progressNotificationBuilder
             .setContentTitle(
                 context.stringResource(
@@ -65,7 +65,7 @@ class EHentaiUpdateNotifier(private val context: Context) {
             )
 
         if (!securityPreferences.hideNotificationContent().get()) {
-            val updatingText = manga.title.chop(40)
+            val updatingText = anime.title.chop(40)
             progressNotificationBuilder.setStyle(NotificationCompat.BigTextStyle().bigText(updatingText))
         }
 

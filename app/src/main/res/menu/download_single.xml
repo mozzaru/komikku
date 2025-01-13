@@ -27,6 +27,6 @@
 
     <item
         android:id="@+id/show_manga"
-        android:title="@string/action_show_manga" />
+        android:title="@string/action_show_anime" />
 
 </menu>

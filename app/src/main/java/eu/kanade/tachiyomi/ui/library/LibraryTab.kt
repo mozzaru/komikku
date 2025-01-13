@@ -29,27 +29,27 @@ import cafe.adriel.voyager.navigator.Navigator
 import cafe.adriel.voyager.navigator.currentOrThrow
 import cafe.adriel.voyager.navigator.tab.LocalTabNavigator
 import cafe.adriel.voyager.navigator.tab.TabOptions
+import eu.kanade.presentation.anime.components.LibraryBottomActionMenu
 import eu.kanade.presentation.category.components.ChangeCategoryDialog
-import eu.kanade.presentation.library.DeleteLibraryMangaDialog
+import eu.kanade.presentation.library.DeleteLibraryAnimeDialog
 import eu.kanade.presentation.library.LibrarySettingsDialog
 import eu.kanade.presentation.library.components.LibraryContent
 import eu.kanade.presentation.library.components.LibraryToolbar
 import eu.kanade.presentation.library.components.SyncFavoritesConfirmDialog
 import eu.kanade.presentation.library.components.SyncFavoritesProgressDialog
 import eu.kanade.presentation.library.components.SyncFavoritesWarningDialog
-import eu.kanade.presentation.manga.components.LibraryBottomActionMenu
 import eu.kanade.presentation.more.onboarding.GETTING_STARTED_URL
 import eu.kanade.presentation.util.Tab
 import eu.kanade.tachiyomi.R
 import eu.kanade.tachiyomi.data.library.LibraryUpdateJob
 import eu.kanade.tachiyomi.data.sync.SyncDataJob
+import eu.kanade.tachiyomi.ui.anime.AnimeScreen
 import eu.kanade.tachiyomi.ui.browse.migration.advanced.design.PreMigrationScreen
 import eu.kanade.tachiyomi.ui.browse.source.SourcesScreen
 import eu.kanade.tachiyomi.ui.browse.source.globalsearch.GlobalSearchScreen
 import eu.kanade.tachiyomi.ui.category.CategoryScreen
 import eu.kanade.tachiyomi.ui.home.HomeScreen
 import eu.kanade.tachiyomi.ui.main.MainActivity
-import eu.kanade.tachiyomi.ui.manga.MangaScreen
 import eu.kanade.tachiyomi.ui.reader.ReaderActivity
 import eu.kanade.tachiyomi.util.system.toast
 import exh.favorites.FavoritesSyncStatus
@@ -62,10 +62,10 @@ import kotlinx.coroutines.launch
 import tachiyomi.core.common.i18n.stringResource
 import tachiyomi.core.common.util.lang.launchIO
 import tachiyomi.domain.UnsortedPreferences
+import tachiyomi.domain.anime.model.Anime
 import tachiyomi.domain.category.model.Category
+import tachiyomi.domain.library.model.LibraryAnime
 import tachiyomi.domain.library.model.LibraryGroup
-import tachiyomi.domain.library.model.LibraryManga
-import tachiyomi.domain.manga.model.Manga
 import tachiyomi.i18n.MR
 import tachiyomi.i18n.kmk.KMR
 import tachiyomi.i18n.sy.SYMR
@@ -155,11 +155,11 @@ data object LibraryTab : Tab {
                         onClickRefresh(state.categories[screenModel.activeCategoryIndex.coerceAtMost(state.categories.lastIndex)])
                     },
                     onClickGlobalUpdate = { onClickRefresh(null) },
-                    onClickOpenRandomManga = {
+                    onClickOpenRandomAnime = {
                         scope.launch {
                             val randomItem = screenModel.getRandomLibraryItemForCurrentCategory()
                             if (randomItem != null) {
-                                navigator.push(MangaScreen(randomItem.libraryManga.manga.id))
+                                navigator.push(AnimeScreen(randomItem.libraryAnime.anime.id))
                             } else {
                                 snackbarHostState.showSnackbar(
                                     context.stringResource(MR.strings.information_no_entries_found),
@@ -190,58 +190,58 @@ data object LibraryTab : Tab {
                     onMarkAsReadClicked = { screenModel.markReadSelection(true) },
                     onMarkAsUnreadClicked = { screenModel.markReadSelection(false) },
                     onDownloadClicked = screenModel::runDownloadActionSelection
-                        .takeIf { state.selection.fastAll { !it.manga.isLocal() } },
-                    onDeleteClicked = screenModel::openDeleteMangaDialog,
+                        .takeIf { state.selection.fastAll { !it.anime.isLocal() } },
+                    onDeleteClicked = screenModel::openDeleteAnimeDialog,
                     // SY -->
                     onClickCleanTitles = screenModel::cleanTitles.takeIf { state.showCleanTitles },
                     onClickMigrate = {
-                        val selectedMangaIds = state.selection
-                            .filterNot { it.manga.source == MERGED_SOURCE_ID }
-                            .map { it.manga.id }
+                        val selectedAnimeIds = state.selection
+                            .filterNot { it.anime.source == MERGED_SOURCE_ID }
+                            .map { it.anime.id }
                         screenModel.clearSelection()
-                        if (selectedMangaIds.isNotEmpty()) {
+                        if (selectedAnimeIds.isNotEmpty()) {
                             PreMigrationScreen.navigateToMigration(
                                 Injekt.get<UnsortedPreferences>().skipPreMigration().get(),
                                 navigator,
-                                selectedMangaIds,
+                                selectedAnimeIds,
                             )
                         } else {
                             context.toast(SYMR.strings.no_valid_entry)
                         }
                     },
-                    onClickAddToMangaDex = screenModel::syncMangaToDex.takeIf { state.showAddToMangadex },
+                    onClickAddToMangaDex = screenModel::syncAnimeToDex.takeIf { state.showAddToMangadex },
                     onClickResetInfo = screenModel::resetInfo.takeIf { state.showResetInfo },
                     // SY <--
                     // KMK -->
                     onClickMerge = {
                         if (state.selection.size == 1) {
-                            val manga = state.selection.first().manga
-                            // Invoke merging for this manga
+                            val anime = state.selection.first().anime
+                            // Invoke merging for this anime
                             screenModel.clearSelection()
-                            val smartSearchConfig = SourcesScreen.SmartSearchConfig(manga.title, manga.id)
+                            val smartSearchConfig = SourcesScreen.SmartSearchConfig(anime.title, anime.id)
                             navigator.push(SourcesScreen(smartSearchConfig))
                         } else if (state.selection.isNotEmpty()) {
                             // Invoke multiple merge
                             val selection = state.selection
                             screenModel.clearSelection()
                             scope.launchIO {
-                                val mergingMangas = selection.filterNot { it.manga.source == MERGED_SOURCE_ID }
-                                val mergedMangaId = screenModel.smartSearchMerge(selection)
+                                val mergingAnimes = selection.filterNot { it.anime.source == MERGED_SOURCE_ID }
+                                val mergedAnimeId = screenModel.smartSearchMerge(selection)
                                 snackbarHostState.showSnackbar(context.stringResource(SYMR.strings.entry_merged))
-                                if (mergedMangaId != null) {
+                                if (mergedAnimeId != null) {
                                     val result = snackbarHostState.showSnackbar(
                                         message = context.stringResource(KMR.strings.action_remove_merged),
                                         actionLabel = context.stringResource(MR.strings.action_remove),
                                         withDismissAction = true,
                                     )
                                     if (result == SnackbarResult.ActionPerformed) {
-                                        screenModel.removeMangas(
-                                            mangaList = mergingMangas.map { it.manga },
+                                        screenModel.removeAnimes(
+                                            animeList = mergingAnimes.map { it.anime },
                                             deleteFromLibrary = true,
-                                            deleteChapters = false,
+                                            deleteEpisodes = false,
                                         )
                                     }
-                                    navigator.push(MangaScreen(mergedMangaId))
+                                    navigator.push(AnimeScreen(mergedAnimeId))
                                 } else {
                                     snackbarHostState.showSnackbar(context.stringResource(SYMR.strings.merged_references_invalid))
                                 }
@@ -282,20 +282,20 @@ data object LibraryTab : Tab {
                         hasActiveFilters = state.hasActiveFilters,
                         showPageTabs = state.showCategoryTabs || !state.searchQuery.isNullOrEmpty(),
                         onChangeCurrentPage = { screenModel.activeCategoryIndex = it },
-                        onMangaClicked = { navigator.push(MangaScreen(it)) },
-                        onContinueReadingClicked = { it: LibraryManga ->
+                        onAnimeClicked = { navigator.push(AnimeScreen(it)) },
+                        onContinueReadingClicked = { it: LibraryAnime ->
                             scope.launchIO {
-                                val chapter = screenModel.getNextUnreadChapter(it.manga)
-                                if (chapter != null) {
+                                val episode = screenModel.getNextUnreadEpisode(it.anime)
+                                if (episode != null) {
                                     context.startActivity(
-                                        ReaderActivity.newIntent(context, chapter.mangaId, chapter.id),
+                                        ReaderActivity.newIntent(context, episode.animeId, episode.id),
                                     )
                                 } else {
-                                    snackbarHostState.showSnackbar(context.stringResource(MR.strings.no_next_chapter))
+                                    snackbarHostState.showSnackbar(context.stringResource(MR.strings.no_next_episode))
                                 }
                             }
                             Unit
-                        }.takeIf { state.showMangaContinueButton },
+                        }.takeIf { state.showAnimeContinueButton },
                         onToggleSelection = screenModel::toggleSelection,
                         onToggleRangeSelection = {
                             screenModel.toggleRangeSelection(it)
@@ -305,7 +305,7 @@ data object LibraryTab : Tab {
                         onGlobalSearchClicked = {
                             navigator.push(GlobalSearchScreen(screenModel.state.value.searchQuery ?: ""))
                         },
-                        getNumberOfMangaForCategory = { state.getMangaCountForCategory(it) },
+                        getNumberOfAnimeForCategory = { state.getAnimeCountForCategory(it) },
                         getDisplayMode = { screenModel.getDisplayMode() },
                         getColumnsForOrientation = { screenModel.getColumnsPreferenceForCurrentOrientation(it) },
                     ) { state.getLibraryItemsByPage(it) }
@@ -342,16 +342,16 @@ data object LibraryTab : Tab {
                     },
                     onConfirm = { include, exclude ->
                         screenModel.clearSelection()
-                        screenModel.setMangaCategories(dialog.manga, include, exclude)
+                        screenModel.setAnimeCategories(dialog.anime, include, exclude)
                     },
                 )
             }
-            is LibraryScreenModel.Dialog.DeleteManga -> {
-                DeleteLibraryMangaDialog(
-                    containsLocalManga = dialog.manga.any(Manga::isLocal),
+            is LibraryScreenModel.Dialog.DeleteAnime -> {
+                DeleteLibraryAnimeDialog(
+                    containsLocalAnime = dialog.anime.any(Anime::isLocal),
                     onDismissRequest = onDismissRequest,
-                    onConfirm = { deleteManga, deleteChapter ->
-                        screenModel.removeMangas(dialog.manga, deleteManga, deleteChapter)
+                    onConfirm = { deleteAnime, deleteEpisode ->
+                        screenModel.removeAnimes(dialog.anime, deleteAnime, deleteEpisode)
                         screenModel.clearSelection()
                     },
                 )
@@ -381,7 +381,7 @@ data object LibraryTab : Tab {
         SyncFavoritesProgressDialog(
             status = screenModel.favoritesSync.status.collectAsState().value,
             setStatusIdle = { screenModel.favoritesSync.status.value = FavoritesSyncStatus.Idle },
-            openManga = { navigator.push(MangaScreen(it)) },
+            openAnime = { navigator.push(AnimeScreen(it)) },
         )
         // SY <--
 

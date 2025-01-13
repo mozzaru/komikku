@@ -1,8 +1,8 @@
 package exh.util
 
 import android.content.Context
-import eu.kanade.domain.manga.model.toSManga
-import eu.kanade.tachiyomi.source.model.MangasPage
+import eu.kanade.domain.anime.model.toSAnime
+import eu.kanade.tachiyomi.source.model.AnimesPage
 import eu.kanade.tachiyomi.source.online.UrlImportableSource
 import exh.GalleryAddEvent
 import exh.GalleryAdder
@@ -14,22 +14,22 @@ private val galleryAdder by lazy {
 }
 
 /**
- * A version of fetchSearchManga that supports URL importing
+ * A version of fetchSearchAnime that supports URL importing
  */
-fun UrlImportableSource.urlImportFetchSearchManga(
+fun UrlImportableSource.urlImportFetchSearchAnime(
     context: Context,
     query: String,
-    fail: () -> Observable<MangasPage>,
-): Observable<MangasPage> =
+    fail: () -> Observable<AnimesPage>,
+): Observable<AnimesPage> =
     when {
         query.startsWith("http://") || query.startsWith("https://") -> {
             runAsObservable {
-                galleryAdder.addGallery(context, query, false, this@urlImportFetchSearchManga)
+                galleryAdder.addGallery(context, query, false, this@urlImportFetchSearchAnime)
             }
                 .map { res ->
-                    MangasPage(
+                    AnimesPage(
                         if (res is GalleryAddEvent.Success) {
-                            listOf(res.manga.toSManga())
+                            listOf(res.anime.toSAnime())
                         } else {
                             emptyList()
                         },
@@ -41,13 +41,13 @@ fun UrlImportableSource.urlImportFetchSearchManga(
     }
 
 /**
- * A version of fetchSearchManga that supports URL importing
+ * A version of fetchSearchAnime that supports URL importing
  */
-suspend fun UrlImportableSource.urlImportFetchSearchMangaSuspend(
+suspend fun UrlImportableSource.urlImportFetchSearchAnimeSuspend(
     context: Context,
     query: String,
-    fail: suspend () -> MangasPage,
-): MangasPage =
+    fail: suspend () -> AnimesPage,
+): AnimesPage =
     when {
         query.startsWith("http://") || query.startsWith("https://") -> {
             val res = galleryAdder.addGallery(
@@ -57,9 +57,9 @@ suspend fun UrlImportableSource.urlImportFetchSearchMangaSuspend(
                 forceSource = this,
             )
 
-            MangasPage(
+            AnimesPage(
                 if (res is GalleryAddEvent.Success) {
-                    listOf(res.manga.toSManga())
+                    listOf(res.anime.toSAnime())
                 } else {
                     emptyList()
                 },

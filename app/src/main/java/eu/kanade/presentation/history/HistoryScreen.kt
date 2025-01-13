@@ -42,8 +42,8 @@ fun HistoryScreen(
     state: HistoryScreenModel.State,
     snackbarHostState: SnackbarHostState,
     onSearchQueryChange: (String?) -> Unit,
-    onClickCover: (mangaId: Long) -> Unit,
-    onClickResume: (mangaId: Long, chapterId: Long) -> Unit,
+    onClickCover: (animeId: Long) -> Unit,
+    onClickResume: (animeId: Long, episodeId: Long) -> Unit,
     onDialogChange: (HistoryScreenModel.Dialog?) -> Unit,
 ) {
     // KMK -->
@@ -100,7 +100,7 @@ fun HistoryScreen(
                 val msg = if (!state.searchQuery.isNullOrEmpty()) {
                     MR.strings.no_results_found
                 } else {
-                    MR.strings.information_no_recent_manga
+                    MR.strings.information_no_recent_anime
                 }
                 EmptyScreen(
                     stringRes = msg,
@@ -110,8 +110,8 @@ fun HistoryScreen(
                 HistoryScreenContent(
                     history = it,
                     contentPadding = contentPadding,
-                    onClickCover = { history -> onClickCover(history.mangaId) },
-                    onClickResume = { history -> onClickResume(history.mangaId, history.chapterId) },
+                    onClickCover = { history -> onClickCover(history.animeId) },
+                    onClickResume = { history -> onClickResume(history.animeId, history.episodeId) },
                     onClickDelete = { item -> onDialogChange(HistoryScreenModel.Dialog.Delete(item)) },
                     // KMK -->
                     usePanoramaCover = usePanoramaCover.value,

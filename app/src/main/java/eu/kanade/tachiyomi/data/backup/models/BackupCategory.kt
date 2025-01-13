@@ -14,7 +14,7 @@ class BackupCategory(
     @ProtoNumber(900) var hidden: Boolean = false,
     // KMK <--
     // SY specific values
-    /*@ProtoNumber(600) var mangaOrder: List<Long> = emptyList(),*/
+    /*@ProtoNumber(600) var animeOrder: List<Long> = emptyList(),*/
 ) {
     fun toCategory(id: Long) = Category(
         id = id,
@@ -24,7 +24,7 @@ class BackupCategory(
         // KMK -->
         hidden = this@BackupCategory.hidden,
         // KMK <--
-        /*mangaOrder = this@BackupCategory.mangaOrder*/
+        /*animeOrder = this@BackupCategory.animeOrder*/
     )
 }
 

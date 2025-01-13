@@ -21,7 +21,7 @@ abstract class ViewerConfig(readerPreferences: ReaderPreferences, private val sc
     var doubleTapAnimDuration = 500
     var volumeKeysEnabled = false
     var volumeKeysInverted = false
-    var alwaysShowChapterTransition = true
+    var alwaysShowEpisodeTransition = true
     var navigationMode = 0
         protected set
 
@@ -57,8 +57,8 @@ abstract class ViewerConfig(readerPreferences: ReaderPreferences, private val sc
         readerPreferences.readWithVolumeKeysInverted()
             .register({ volumeKeysInverted = it })
 
-        readerPreferences.alwaysShowChapterTransition()
-            .register({ alwaysShowChapterTransition = it })
+        readerPreferences.alwaysShowEpisodeTransition()
+            .register({ alwaysShowEpisodeTransition = it })
 
         forceNavigationOverlay = readerPreferences.showNavigationOverlayNewUser().get()
         if (forceNavigationOverlay) {

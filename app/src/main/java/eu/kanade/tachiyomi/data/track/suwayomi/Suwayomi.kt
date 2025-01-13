@@ -11,7 +11,7 @@ import eu.kanade.tachiyomi.source.Source
 import kotlinx.collections.immutable.ImmutableList
 import kotlinx.collections.immutable.persistentListOf
 import tachiyomi.i18n.MR
-import tachiyomi.domain.manga.model.Manga as DomainManga
+import tachiyomi.domain.anime.model.Anime as DomainAnime
 import tachiyomi.domain.track.model.Track as DomainTrack
 
 class Suwayomi(id: Long) : BaseTracker(id, "Suwayomi"), EnhancedTracker {
@@ -47,10 +47,10 @@ class Suwayomi(id: Long) : BaseTracker(id, "Suwayomi"), EnhancedTracker {
 
     override fun displayScore(track: DomainTrack): String = ""
 
-    override suspend fun update(track: Track, didReadChapter: Boolean): Track {
+    override suspend fun update(track: Track, didSeenEpisode: Boolean): Track {
         if (track.status != COMPLETED) {
-            if (didReadChapter) {
-                if (track.last_chapter_read.toLong() == track.total_chapters && track.total_chapters > 0) {
+            if (didSeenEpisode) {
+                if (track.last_episode_seen.toLong() == track.total_episodes && track.total_episodes > 0) {
                     track.status = COMPLETED
                 } else {
                     track.status = READING
@@ -61,7 +61,7 @@ class Suwayomi(id: Long) : BaseTracker(id, "Suwayomi"), EnhancedTracker {
         return api.updateProgress(track)
     }
 
-    override suspend fun bind(track: Track, hasReadChapters: Boolean): Track {
+    override suspend fun bind(track: Track, hasSeenEpisodes: Boolean): Track {
         return track
     }
 
@@ -72,7 +72,7 @@ class Suwayomi(id: Long) : BaseTracker(id, "Suwayomi"), EnhancedTracker {
     override suspend fun refresh(track: Track): Track {
         val remoteTrack = api.getTrackSearch(track.tracking_url)
         track.copyPersonalFrom(remoteTrack)
-        track.total_chapters = remoteTrack.total_chapters
+        track.total_episodes = remoteTrack.total_episodes
         return track
     }
 
@@ -86,25 +86,25 @@ class Suwayomi(id: Long) : BaseTracker(id, "Suwayomi"), EnhancedTracker {
 
     override fun getAcceptedSources(): List<String> = listOf("eu.kanade.tachiyomi.extension.all.tachidesk.Tachidesk")
 
-    override suspend fun match(manga: DomainManga): TrackSearch? =
+    override suspend fun match(anime: DomainAnime): TrackSearch? =
         try {
-            api.getTrackSearch(manga.url)
+            api.getTrackSearch(anime.url)
         } catch (e: Exception) {
             null
         }
 
-    override fun isTrackFrom(track: DomainTrack, manga: DomainManga, source: Source?): Boolean = source?.let {
+    override fun isTrackFrom(track: DomainTrack, anime: DomainAnime, source: Source?): Boolean = source?.let {
         accept(it)
     } == true
 
-    override fun migrateTrack(track: DomainTrack, manga: DomainManga, newSource: Source): DomainTrack? =
+    override fun migrateTrack(track: DomainTrack, anime: DomainAnime, newSource: Source): DomainTrack? =
         if (accept(newSource)) {
-            track.copy(remoteUrl = manga.url)
+            track.copy(remoteUrl = anime.url)
         } else {
             null
         }
 
     // KMK -->
-    override fun hasNotStartedReading(status: Long): Boolean = status == UNREAD
+    override fun hasNotStartedWatching(status: Long): Boolean = status == UNREAD
     // KMK <--
 }

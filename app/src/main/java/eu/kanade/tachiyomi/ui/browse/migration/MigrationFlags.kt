@@ -9,7 +9,7 @@ object MigrationFlags {
     const val EXTRA = 0b010000
     const val DELETE_CHAPTERS = 0b100000
 
-    fun hasChapters(value: Int): Boolean {
+    fun hasEpisodes(value: Int): Boolean {
         return value and CHAPTERS != 0
     }
 
@@ -29,7 +29,7 @@ object MigrationFlags {
         return value and EXTRA != 0
     }
 
-    fun hasDeleteChapters(value: Int): Boolean {
+    fun hasDeleteEpisodes(value: Int): Boolean {
         return value and DELETE_CHAPTERS != 0
     }
 }

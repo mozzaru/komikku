@@ -9,19 +9,19 @@ import exh.source.getMainSource
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import tachiyomi.core.common.util.lang.launchIO
-import tachiyomi.domain.manga.interactor.GetFlatMetadataById
-import tachiyomi.domain.manga.interactor.GetManga
-import tachiyomi.domain.manga.model.Manga
+import tachiyomi.domain.anime.interactor.GetAnime
+import tachiyomi.domain.anime.interactor.GetFlatMetadataById
+import tachiyomi.domain.anime.model.Anime
 import tachiyomi.domain.source.service.SourceManager
 import uy.kohesive.injekt.Injekt
 import uy.kohesive.injekt.api.get
 
 class MetadataViewScreenModel(
-    val mangaId: Long,
+    val animeId: Long,
     val sourceId: Long,
-    private val getFlatMetadataById: GetFlatMetadataById = Injekt.get(),
+    private val getFlatMetadataById: tachiyomi.domain.anime.interactor.GetFlatMetadataById = Injekt.get(),
     private val sourceManager: SourceManager = Injekt.get(),
-    private val getManga: GetManga = Injekt.get(),
+    private val getAnime: GetAnime = Injekt.get(),
 ) : StateScreenModel<MetadataViewState>(MetadataViewState.Loading) {
 
     // KMK -->
@@ -29,12 +29,12 @@ class MetadataViewScreenModel(
     val themeCoverBased = uiPreferences.themeCoverBased().get()
     // KMK <--
 
-    private val _manga = MutableStateFlow<Manga?>(null)
-    val manga = _manga.asStateFlow()
+    private val _anime = MutableStateFlow<Anime?>(null)
+    val anime = _anime.asStateFlow()
 
     init {
         screenModelScope.launchIO {
-            _manga.value = getManga.await(mangaId)
+            _anime.value = getAnime.await(animeId)
         }
 
         screenModelScope.launchIO {
@@ -44,7 +44,7 @@ class MetadataViewScreenModel(
                 return@launchIO
             }
 
-            mutableState.value = when (val flatMetadata = getFlatMetadataById.await(mangaId)) {
+            mutableState.value = when (val flatMetadata = getFlatMetadataById.await(animeId)) {
                 null -> MetadataViewState.MetadataNotFound
                 else -> MetadataViewState.Success(flatMetadata.raise(metadataSource.metaClass))
             }

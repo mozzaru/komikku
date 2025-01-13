@@ -37,8 +37,8 @@ import tachiyomi.core.common.Constants
 import tachiyomi.core.common.i18n.stringResource
 import tachiyomi.core.common.util.lang.launchIO
 import tachiyomi.core.common.util.lang.withUIContext
-import tachiyomi.domain.chapter.model.Chapter
-import tachiyomi.domain.manga.model.Manga
+import tachiyomi.domain.anime.model.Anime
+import tachiyomi.domain.episode.model.Episode
 import tachiyomi.domain.source.service.SourceManager
 import tachiyomi.i18n.MR
 import tachiyomi.i18n.sy.SYMR
@@ -129,19 +129,19 @@ class InterceptActivity : BaseActivity() {
                     is InterceptResult.Success -> {
                         finish()
                         startActivity(
-                            if (it.chapter != null) {
-                                ReaderActivity.newIntent(this, it.manga.id, it.chapter.id)
+                            if (it.episode != null) {
+                                ReaderActivity.newIntent(this, it.anime.id, it.episode.id)
                             } else {
                                 Intent(this, MainActivity::class.java)
                                     .setAction(Constants.SHORTCUT_MANGA)
                                     .addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP)
-                                    .putExtra(Constants.MANGA_EXTRA, it.mangaId)
+                                    .putExtra(Constants.MANGA_EXTRA, it.animeId)
                             },
                         )
                     }
                     is InterceptResult.Failure -> {
                         MaterialAlertDialogBuilder(this)
-                            .setTitle(MR.strings.chapter_error.getString(this))
+                            .setTitle(MR.strings.episode_error.getString(this))
                             .setMessage(stringResource(SYMR.strings.could_not_open_entry, it.reason))
                             .setPositiveButton(MR.strings.action_ok.getString(this), null)
                             .setOnCancelListener { finish() }
@@ -202,7 +202,7 @@ class InterceptActivity : BaseActivity() {
         val result = galleryAdder.addGallery(this@InterceptActivity, gallery, forceSource = source)
 
         status.value = when (result) {
-            is GalleryAddEvent.Success -> InterceptResult.Success(result.manga.id, result.manga, result.chapter)
+            is GalleryAddEvent.Success -> InterceptResult.Success(result.anime.id, result.anime, result.episode)
             is GalleryAddEvent.Fail -> InterceptResult.Failure(result.logMessage)
         }
     }
@@ -215,6 +215,6 @@ class InterceptActivity : BaseActivity() {
 sealed class InterceptResult {
     data object Idle : InterceptResult()
     data object Loading : InterceptResult()
-    data class Success(val mangaId: Long, val manga: Manga, val chapter: Chapter? = null) : InterceptResult()
+    data class Success(val animeId: Long, val anime: Anime, val episode: Episode? = null) : InterceptResult()
     data class Failure(val reason: String) : InterceptResult()
 }

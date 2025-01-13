@@ -13,24 +13,24 @@ import cafe.adriel.voyager.core.model.rememberScreenModel
 import cafe.adriel.voyager.navigator.LocalNavigator
 import cafe.adriel.voyager.navigator.Navigator
 import cafe.adriel.voyager.navigator.currentOrThrow
+import eu.kanade.core.util.ifSourcesLoaded
 import eu.kanade.presentation.browse.BrowseSourceContent
 import eu.kanade.presentation.browse.components.BrowseSourceSimpleToolbar
 import eu.kanade.presentation.components.BulkSelectionToolbar
 import eu.kanade.presentation.util.Screen
-import eu.kanade.tachiyomi.ui.browse.AddDuplicateMangaDialog
+import eu.kanade.tachiyomi.ui.browse.AddDuplicateAnimeDialog
 import eu.kanade.tachiyomi.ui.browse.AllowDuplicateDialog
 import eu.kanade.tachiyomi.ui.browse.BulkFavoriteScreenModel
-import eu.kanade.tachiyomi.ui.browse.ChangeMangaCategoryDialog
-import eu.kanade.tachiyomi.ui.browse.ChangeMangasCategoryDialog
-import eu.kanade.tachiyomi.ui.browse.RemoveMangaDialog
+import eu.kanade.tachiyomi.ui.browse.ChangeAnimeCategoryDialog
+import eu.kanade.tachiyomi.ui.browse.ChangeAnimesCategoryDialog
+import eu.kanade.tachiyomi.ui.browse.RemoveAnimeDialog
 import eu.kanade.tachiyomi.ui.browse.source.SourcesScreen
-import exh.ui.ifSourcesLoaded
 import mihon.presentation.core.util.collectAsLazyPagingItems
-import tachiyomi.domain.manga.model.Manga
+import tachiyomi.domain.anime.model.Anime
 import tachiyomi.presentation.core.components.material.Scaffold
 import tachiyomi.presentation.core.screens.LoadingScreen
 
-class RecommendsScreen(val mangaId: Long, val sourceId: Long) : Screen() {
+class RecommendsScreen(val animeId: Long, val sourceId: Long) : Screen() {
 
     @Composable
     override fun Content() {
@@ -39,7 +39,7 @@ class RecommendsScreen(val mangaId: Long, val sourceId: Long) : Screen() {
             return
         }
 
-        val screenModel = rememberScreenModel { RecommendsScreenModel(mangaId, sourceId) }
+        val screenModel = rememberScreenModel { RecommendsScreenModel(animeId, sourceId) }
         val navigator = LocalNavigator.currentOrThrow
 
         // KMK -->
@@ -54,8 +54,8 @@ class RecommendsScreen(val mangaId: Long, val sourceId: Long) : Screen() {
         }
         // KMK <--
 
-        val onMangaClick: (Manga) -> Unit = { manga ->
-            openSmartSearch(navigator, manga.ogTitle)
+        val onAnimeClick: (Anime) -> Unit = { anime ->
+            openSmartSearch(navigator, anime.ogTitle)
         }
 
         val snackbarHostState = remember { SnackbarHostState() }
@@ -70,19 +70,19 @@ class RecommendsScreen(val mangaId: Long, val sourceId: Long) : Screen() {
                         onClickClearSelection = bulkFavoriteScreenModel::toggleSelectionMode,
                         onChangeCategoryClick = bulkFavoriteScreenModel::addFavorite,
                         onSelectAll = {
-                            state.mangaDisplayingList.forEach { manga ->
-                                bulkFavoriteScreenModel.select(manga)
+                            state.animeDisplayingList.forEach { anime ->
+                                bulkFavoriteScreenModel.select(anime)
                             }
                         },
                         onReverseSelection = {
-                            bulkFavoriteScreenModel.reverseSelection(state.mangaDisplayingList.toList())
+                            bulkFavoriteScreenModel.reverseSelection(state.animeDisplayingList.toList())
                         },
                     )
                 } else {
                     // KMK <--
                     BrowseSourceSimpleToolbar(
                         navigateUp = navigator::pop,
-                        title = screenModel.manga.title,
+                        title = screenModel.anime.title,
                         displayMode = screenModel.displayMode,
                         onDisplayModeChange = { screenModel.displayMode = it },
                         scrollBehavior = scrollBehavior,
@@ -97,7 +97,7 @@ class RecommendsScreen(val mangaId: Long, val sourceId: Long) : Screen() {
         ) { paddingValues ->
             BrowseSourceContent(
                 source = screenModel.source,
-                mangaList = screenModel.mangaPagerFlowFlow.collectAsLazyPagingItems(),
+                animeList = screenModel.animePagerFlowFlow.collectAsLazyPagingItems(),
                 columns = screenModel.getColumnsPreference(LocalConfiguration.current.orientation),
                 // SY -->
                 ehentaiBrowseDisplayMode = false,
@@ -108,19 +108,19 @@ class RecommendsScreen(val mangaId: Long, val sourceId: Long) : Screen() {
                 onWebViewClick = null,
                 onHelpClick = null,
                 onLocalSourceHelpClick = null,
-                onMangaClick = { manga ->
+                onAnimeClick = { anime ->
                     // KMK -->
                     if (bulkFavoriteState.selectionMode) {
-                        bulkFavoriteScreenModel.toggleSelection(manga)
+                        bulkFavoriteScreenModel.toggleSelection(anime)
                     } else {
                         // KMK <--
-                        onMangaClick(manga)
+                        onAnimeClick(anime)
                     }
                 },
-                onMangaLongClick = { manga ->
+                onAnimeLongClick = { anime ->
                     // KMK -->
                     if (!bulkFavoriteState.selectionMode) {
-                        bulkFavoriteScreenModel.addRemoveManga(manga, haptic)
+                        bulkFavoriteScreenModel.addRemoveAnime(anime, haptic)
                     }
                     // KMK <--
                 },
@@ -133,14 +133,14 @@ class RecommendsScreen(val mangaId: Long, val sourceId: Long) : Screen() {
 
         // KMK -->
         when (bulkFavoriteState.dialog) {
-            is BulkFavoriteScreenModel.Dialog.AddDuplicateManga ->
-                AddDuplicateMangaDialog(bulkFavoriteScreenModel)
-            is BulkFavoriteScreenModel.Dialog.RemoveManga ->
-                RemoveMangaDialog(bulkFavoriteScreenModel)
-            is BulkFavoriteScreenModel.Dialog.ChangeMangaCategory ->
-                ChangeMangaCategoryDialog(bulkFavoriteScreenModel)
-            is BulkFavoriteScreenModel.Dialog.ChangeMangasCategory ->
-                ChangeMangasCategoryDialog(bulkFavoriteScreenModel)
+            is BulkFavoriteScreenModel.Dialog.AddDuplicateAnime ->
+                AddDuplicateAnimeDialog(bulkFavoriteScreenModel)
+            is BulkFavoriteScreenModel.Dialog.RemoveAnime ->
+                RemoveAnimeDialog(bulkFavoriteScreenModel)
+            is BulkFavoriteScreenModel.Dialog.ChangeAnimeCategory ->
+                ChangeAnimeCategoryDialog(bulkFavoriteScreenModel)
+            is BulkFavoriteScreenModel.Dialog.ChangeAnimesCategory ->
+                ChangeAnimesCategoryDialog(bulkFavoriteScreenModel)
             is BulkFavoriteScreenModel.Dialog.AllowDuplicate ->
                 AllowDuplicateDialog(bulkFavoriteScreenModel)
             else -> {}

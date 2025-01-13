@@ -2,31 +2,31 @@ import kotlin.Int;
 
 CREATE TABLE search_tags (
     _id INTEGER NOT NULL PRIMARY KEY,
-    manga_id INTEGER NOT NULL,
+    anime_id INTEGER NOT NULL,
     namespace TEXT,
     name TEXT NOT NULL,
     type INTEGER NOT NULL,
-    FOREIGN KEY(manga_id) REFERENCES mangas (_id)
+    FOREIGN KEY(anime_id) REFERENCES animes (_id)
     ON DELETE CASCADE
 );
 
-CREATE INDEX search_tags_manga_id_index ON search_tags(manga_id);
+CREATE INDEX search_tags_anime_id_index ON search_tags(anime_id);
 CREATE INDEX search_tags_namespace_name_index ON search_tags(namespace, name);
 
 
-selectByMangaId:
+selectByAnimeId:
 SELECT * FROM search_tags
-WHERE manga_id = ?;
+WHERE anime_id = ?;
 
-deleteByManga:
-DELETE FROM search_tags WHERE manga_id = ?;
+deleteByAnime:
+DELETE FROM search_tags WHERE anime_id = ?;
 
 insert:
-INSERT INTO search_tags (manga_id, namespace, name, type)
+INSERT INTO search_tags (anime_id, namespace, name, type)
 VALUES (?, ?, ?, ?);
 
 insertItem:
-INSERT INTO search_tags (_id, manga_id, namespace, name, type)
+INSERT INTO search_tags (_id, anime_id, namespace, name, type)
 VALUES ?;
 
 deleteAll:

@@ -1,4 +1,4 @@
-package eu.kanade.tachiyomi.data.track.mangaupdates.dto
+package eu.kanade.tachiyomi.data.track.animeupdates.dto
 
 import eu.kanade.tachiyomi.data.database.models.Track
 import kotlinx.serialization.Serializable

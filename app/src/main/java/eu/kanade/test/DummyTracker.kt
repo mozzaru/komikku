@@ -66,12 +66,12 @@ data class DummyTracker(
 
     override suspend fun update(
         track: eu.kanade.tachiyomi.data.database.models.Track,
-        didReadChapter: Boolean,
+        didSeenEpisode: Boolean,
     ): eu.kanade.tachiyomi.data.database.models.Track = track
 
     override suspend fun bind(
         track: eu.kanade.tachiyomi.data.database.models.Track,
-        hasReadChapters: Boolean,
+        hasSeenEpisodes: Boolean,
     ): eu.kanade.tachiyomi.data.database.models.Track = track
 
     override suspend fun search(query: String): List<TrackSearch> = valSearchResults
@@ -92,7 +92,7 @@ data class DummyTracker(
 
     override suspend fun register(
         item: eu.kanade.tachiyomi.data.database.models.Track,
-        mangaId: Long,
+        animeId: Long,
     ) = Unit
 
     override suspend fun setRemoteStatus(
@@ -100,9 +100,9 @@ data class DummyTracker(
         status: Long,
     ) = Unit
 
-    override suspend fun setRemoteLastChapterRead(
+    override suspend fun setRemoteLastEpisodeSeen(
         track: eu.kanade.tachiyomi.data.database.models.Track,
-        chapterNumber: Int,
+        episodeNumber: Int,
     ) = Unit
 
     override suspend fun setRemoteScore(
@@ -120,13 +120,13 @@ data class DummyTracker(
         epochMillis: Long,
     ) = Unit
 
-    override suspend fun getMangaMetadata(
+    override suspend fun getAnimeMetadata(
         track: tachiyomi.domain.track.model.Track,
-    ): eu.kanade.tachiyomi.data.track.model.TrackMangaMetadata = eu.kanade.tachiyomi.data.track.model.TrackMangaMetadata(
+    ): eu.kanade.tachiyomi.data.track.model.TrackAnimeMetadata = eu.kanade.tachiyomi.data.track.model.TrackAnimeMetadata(
         0, "test", "test", "test", "test", "test",
     )
 
     // KMK -->
-    override fun hasNotStartedReading(status: Long): Boolean = status == 2L
+    override fun hasNotStartedWatching(status: Long): Boolean = status == 2L
     // KMK <--
 }

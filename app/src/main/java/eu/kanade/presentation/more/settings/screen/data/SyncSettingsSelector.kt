@@ -110,7 +110,7 @@ private class SyncSettingsSelectorModel(
             return BackupOptions(
                 libraryEntries = syncSettings.libraryEntries,
                 categories = syncSettings.categories,
-                chapters = syncSettings.chapters,
+                episodes = syncSettings.episodes,
                 tracking = syncSettings.tracking,
                 history = syncSettings.history,
                 appSettings = syncSettings.appSettings,
@@ -130,7 +130,7 @@ private class SyncSettingsSelectorModel(
             return SyncSettings(
                 libraryEntries = backupOptions.libraryEntries,
                 categories = backupOptions.categories,
-                chapters = backupOptions.chapters,
+                episodes = backupOptions.episodes,
                 tracking = backupOptions.tracking,
                 history = backupOptions.history,
                 appSettings = backupOptions.appSettings,

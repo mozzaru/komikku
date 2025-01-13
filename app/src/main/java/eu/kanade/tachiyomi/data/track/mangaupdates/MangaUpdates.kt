@@ -1,4 +1,4 @@
-package eu.kanade.tachiyomi.data.track.mangaupdates
+package eu.kanade.tachiyomi.data.track.animeupdates
 
 import android.graphics.Color
 import dev.icerock.moko.resources.StringResource
@@ -6,11 +6,11 @@ import eu.kanade.tachiyomi.R
 import eu.kanade.tachiyomi.data.database.models.Track
 import eu.kanade.tachiyomi.data.track.BaseTracker
 import eu.kanade.tachiyomi.data.track.DeletableTracker
-import eu.kanade.tachiyomi.data.track.mangaupdates.dto.MUListItem
-import eu.kanade.tachiyomi.data.track.mangaupdates.dto.MURating
-import eu.kanade.tachiyomi.data.track.mangaupdates.dto.copyTo
-import eu.kanade.tachiyomi.data.track.mangaupdates.dto.toTrackSearch
-import eu.kanade.tachiyomi.data.track.model.TrackMangaMetadata
+import eu.kanade.tachiyomi.data.track.animeupdates.dto.MUListItem
+import eu.kanade.tachiyomi.data.track.animeupdates.dto.MURating
+import eu.kanade.tachiyomi.data.track.animeupdates.dto.copyTo
+import eu.kanade.tachiyomi.data.track.animeupdates.dto.toTrackSearch
+import eu.kanade.tachiyomi.data.track.model.TrackAnimeMetadata
 import eu.kanade.tachiyomi.data.track.model.TrackSearch
 import eu.kanade.tachiyomi.util.lang.htmlDecode
 import kotlinx.collections.immutable.ImmutableList
@@ -18,7 +18,7 @@ import kotlinx.collections.immutable.toImmutableList
 import tachiyomi.i18n.MR
 import tachiyomi.domain.track.model.Track as DomainTrack
 
-class MangaUpdates(id: Long) : BaseTracker(id, "MangaUpdates"), DeletableTracker {
+class AnimeUpdates(id: Long) : BaseTracker(id, "AnimeUpdates"), DeletableTracker {
 
     companion object {
         const val READING_LIST = 0L
@@ -40,9 +40,9 @@ class MangaUpdates(id: Long) : BaseTracker(id, "MangaUpdates"), DeletableTracker
             .toImmutableList()
     }
 
-    private val interceptor by lazy { MangaUpdatesInterceptor(this) }
+    private val interceptor by lazy { AnimeUpdatesInterceptor(this) }
 
-    private val api by lazy { MangaUpdatesApi(interceptor, client) }
+    private val api by lazy { AnimeUpdatesApi(interceptor, client) }
 
     override fun getLogo(): Int = R.drawable.ic_manga_updates
 
@@ -73,8 +73,8 @@ class MangaUpdates(id: Long) : BaseTracker(id, "MangaUpdates"), DeletableTracker
 
     override fun displayScore(track: DomainTrack): String = track.score.toString()
 
-    override suspend fun update(track: Track, didReadChapter: Boolean): Track {
-        if (track.status != COMPLETE_LIST && didReadChapter) {
+    override suspend fun update(track: Track, didSeenEpisode: Boolean): Track {
+        if (track.status != COMPLETE_LIST && didSeenEpisode) {
             track.status = READING_LIST
         }
         api.updateSeriesListItem(track)
@@ -85,13 +85,13 @@ class MangaUpdates(id: Long) : BaseTracker(id, "MangaUpdates"), DeletableTracker
         api.deleteSeriesFromList(track)
     }
 
-    override suspend fun bind(track: Track, hasReadChapters: Boolean): Track {
+    override suspend fun bind(track: Track, hasSeenEpisodes: Boolean): Track {
         return try {
             val (series, rating) = api.getSeriesListItem(track)
             track.copyFrom(series, rating)
         } catch (e: Exception) {
             track.score = 0.0
-            api.addSeriesToList(track, hasReadChapters)
+            api.addSeriesToList(track, hasSeenEpisodes)
             track
         }
     }
@@ -119,10 +119,10 @@ class MangaUpdates(id: Long) : BaseTracker(id, "MangaUpdates"), DeletableTracker
         interceptor.newAuth(authenticated.sessionToken)
     }
 
-    override suspend fun getMangaMetadata(track: DomainTrack): TrackMangaMetadata? {
+    override suspend fun getAnimeMetadata(track: DomainTrack): TrackAnimeMetadata? {
         val series = api.getSeries(track)
         return series?.let {
-            TrackMangaMetadata(
+            TrackAnimeMetadata(
                 it.seriesId,
                 it.title?.htmlDecode(),
                 it.image?.url?.original,
@@ -138,6 +138,6 @@ class MangaUpdates(id: Long) : BaseTracker(id, "MangaUpdates"), DeletableTracker
     }
 
     // KMK -->
-    override fun hasNotStartedReading(status: Long): Boolean = status == WISH_LIST
+    override fun hasNotStartedWatching(status: Long): Boolean = status == WISH_LIST
     // KMK <--
 }

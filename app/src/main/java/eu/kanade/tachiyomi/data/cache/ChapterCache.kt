@@ -20,19 +20,19 @@ import okhttp3.Response
 import okio.buffer
 import okio.sink
 import tachiyomi.core.common.util.system.logcat
-import tachiyomi.domain.chapter.model.Chapter
+import tachiyomi.domain.episode.model.Episode
 import java.io.File
 import java.io.IOException
 
 /**
- * Class used to create chapter cache
- * For each image in a chapter a file is created
- * For each chapter a Json list is created and converted to a file.
+ * Class used to create episode cache
+ * For each image in a episode a file is created
+ * For each episode a Json list is created and converted to a file.
  * The files are in format *md5key*.0
  *
  * @param context the application context.
  */
-class ChapterCache(
+class EpisodeCache(
     private val context: Context,
     private val json: Json,
     // SY -->
@@ -80,7 +80,7 @@ class ChapterCache(
     // Cache size is in MB
     private fun setupDiskCache(cacheSize: Long): DiskLruCache {
         return DiskLruCache.open(
-            File(context.cacheDir, "chapter_disk_cache"),
+            File(context.cacheDir, "episode_disk_cache"),
             PARAMETER_APP_VERSION,
             PARAMETER_VALUE_COUNT,
             cacheSize * 1024 * 1024,
@@ -91,12 +91,12 @@ class ChapterCache(
     /**
      * Get page list from cache.
      *
-     * @param chapter the chapter.
+     * @param episode the episode.
      * @return the list of pages.
      */
-    fun getPageListFromCache(chapter: Chapter): List<Page> {
-        // Get the key for the chapter.
-        val key = DiskUtil.hashKeyForDisk(getKey(chapter))
+    fun getPageListFromCache(episode: Episode): List<Page> {
+        // Get the key for the episode.
+        val key = DiskUtil.hashKeyForDisk(getKey(episode))
 
         // Convert JSON string to list of objects. Throws an exception if snapshot is null
         return diskCache.get(key).use {
@@ -107,10 +107,10 @@ class ChapterCache(
     /**
      * Add page list to disk cache.
      *
-     * @param chapter the chapter.
+     * @param episode the episode.
      * @param pages list of pages.
      */
-    fun putPageListToCache(chapter: Chapter, pages: List<Page>) {
+    fun putPageListToCache(episode: Episode, pages: List<Page>) {
         // Convert list of pages to json string.
         val cachedValue = json.encodeToString(pages)
 
@@ -119,10 +119,10 @@ class ChapterCache(
 
         try {
             // Get editor from md5 key.
-            val key = DiskUtil.hashKeyForDisk(getKey(chapter))
+            val key = DiskUtil.hashKeyForDisk(getKey(episode))
             editor = diskCache.edit(key) ?: return
 
-            // Write chapter urls to cache.
+            // Write episode urls to cache.
             editor.newOutputStream(0).sink().buffer().use {
                 it.write(cachedValue.toByteArray())
                 it.flush()
@@ -226,8 +226,8 @@ class ChapterCache(
         }
     }
 
-    private fun getKey(chapter: Chapter): String {
-        return "${chapter.mangaId}${chapter.url}"
+    private fun getKey(episode: Episode): String {
+        return "${episode.animeId}${episode.url}"
     }
 }
 

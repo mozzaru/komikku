@@ -1,8 +1,8 @@
 package exh.debug
 
 import android.app.Application
-import eu.kanade.domain.manga.interactor.UpdateManga
-import eu.kanade.domain.manga.model.toSManga
+import eu.kanade.domain.anime.interactor.UpdateAnime
+import eu.kanade.domain.anime.model.toSAnime
 import eu.kanade.tachiyomi.BuildConfig
 import eu.kanade.tachiyomi.data.backup.models.Backup
 import eu.kanade.tachiyomi.data.library.LibraryUpdateJob
@@ -25,12 +25,12 @@ import mihon.core.migration.MigrationStrategyFactory
 import mihon.core.migration.Migrator
 import mihon.core.migration.migrations.migrations
 import tachiyomi.data.DatabaseHandler
-import tachiyomi.domain.manga.interactor.GetAllManga
-import tachiyomi.domain.manga.interactor.GetExhFavoriteMangaWithMetadata
-import tachiyomi.domain.manga.interactor.GetFavorites
-import tachiyomi.domain.manga.interactor.GetFlatMetadataById
-import tachiyomi.domain.manga.interactor.GetSearchMetadata
-import tachiyomi.domain.manga.interactor.InsertFlatMetadata
+import tachiyomi.domain.anime.interactor.GetAllAnime
+import tachiyomi.domain.anime.interactor.GetExhFavoriteAnimeWithMetadata
+import tachiyomi.domain.anime.interactor.GetFavorites
+import tachiyomi.domain.anime.interactor.GetFlatMetadataById
+import tachiyomi.domain.anime.interactor.GetSearchMetadata
+import tachiyomi.domain.anime.interactor.InsertFlatMetadata
 import tachiyomi.domain.source.service.SourceManager
 import uy.kohesive.injekt.Injekt
 import uy.kohesive.injekt.api.get
@@ -42,13 +42,13 @@ object DebugFunctions {
     private val app: Application by injectLazy()
     private val handler: DatabaseHandler by injectLazy()
     private val sourceManager: SourceManager by injectLazy()
-    private val updateManga: UpdateManga by injectLazy()
+    private val updateAnime: UpdateAnime by injectLazy()
     private val getFavorites: GetFavorites by injectLazy()
     private val getFlatMetadataById: GetFlatMetadataById by injectLazy()
     private val insertFlatMetadata: InsertFlatMetadata by injectLazy()
-    private val getExhFavoriteMangaWithMetadata: GetExhFavoriteMangaWithMetadata by injectLazy()
+    private val getExhFavoriteAnimeWithMetadata: GetExhFavoriteAnimeWithMetadata by injectLazy()
     private val getSearchMetadata: GetSearchMetadata by injectLazy()
-    private val getAllManga: GetAllManga by injectLazy()
+    private val getAllAnime: GetAllAnime by injectLazy()
 
     fun forceUpgradeMigration(): Boolean {
         val migrationContext = MigrationContext(dryrun = false)
@@ -66,10 +66,10 @@ object DebugFunctions {
         return runBlocking { strategy(migrations).await() }
     }
 
-    fun resetAgedFlagInEXHManga() {
+    fun resetAgedFlagInEXHAnime() {
         runBlocking {
-            getExhFavoriteMangaWithMetadata.await().forEach { manga ->
-                val meta = getFlatMetadataById.await(manga.id)?.raise<EHentaiSearchMetadata>() ?: return@forEach
+            getExhFavoriteAnimeWithMetadata.await().forEach { anime ->
+                val meta = getFlatMetadataById.await(anime.id)?.raise<EHentaiSearchMetadata>() ?: return@forEach
                 // remove age flag
                 meta.aged = false
                 insertFlatMetadata.await(meta)
@@ -85,39 +85,39 @@ object DebugFunctions {
     fun resetEHGalleriesForUpdater() {
         throttleManager.resetThrottle()
         runBlocking {
-            val allManga = getExhFavoriteMangaWithMetadata.await()
+            val allAnime = getExhFavoriteAnimeWithMetadata.await()
 
             val eh = sourceManager.get(EH_SOURCE_ID)
             val ex = sourceManager.get(EXH_SOURCE_ID)
 
-            allManga.forEach { manga ->
+            allAnime.forEach { anime ->
                 throttleManager.throttle()
 
-                val networkManga = when (manga.source) {
+                val networkAnime = when (anime.source) {
                     EH_SOURCE_ID -> eh
                     EXH_SOURCE_ID -> ex
                     else -> return@forEach
-                }?.getMangaDetails(manga.toSManga()) ?: return@forEach
+                }?.getAnimeDetails(anime.toSAnime()) ?: return@forEach
 
-                updateManga.awaitUpdateFromSource(manga, networkManga, true)
+                updateAnime.awaitUpdateFromSource(anime, networkAnime, true)
             }
         }
     }
 
-    fun getEHMangaListWithAgedFlagInfo(): String {
+    fun getEHAnimeListWithAgedFlagInfo(): String {
         return runBlocking {
-            getExhFavoriteMangaWithMetadata.await().map { manga ->
-                val meta = getFlatMetadataById.await(manga.id)?.raise<EHentaiSearchMetadata>() ?: return@map
-                "Aged: ${meta.aged}\t Title: ${manga.title}"
+            getExhFavoriteAnimeWithMetadata.await().map { anime ->
+                val meta = getFlatMetadataById.await(anime.id)?.raise<EHentaiSearchMetadata>() ?: return@map
+                "Aged: ${meta.aged}\t Title: ${anime.title}"
             }
         }.joinToString(",\n")
     }
 
-    fun countAgedFlagInEXHManga(): Int {
+    fun countAgedFlagInEXHAnime(): Int {
         return runBlocking {
-            getExhFavoriteMangaWithMetadata.await()
-                .count { manga ->
-                    val meta = getFlatMetadataById.await(manga.id)
+            getExhFavoriteAnimeWithMetadata.await()
+                .count { anime ->
+                    val meta = getFlatMetadataById.await(anime.id)
                         ?.raise<EHentaiSearchMetadata>()
                         ?: return@count false
                     meta.aged
@@ -125,20 +125,20 @@ object DebugFunctions {
         }
     }
 
-    fun addAllMangaInDatabaseToLibrary() {
-        runBlocking { handler.await { ehQueries.addAllMangaInDatabaseToLibrary() } }
+    fun addAllAnimeInDatabaseToLibrary() {
+        runBlocking { handler.await { ehQueries.addAllAnimeInDatabaseToLibrary() } }
     }
 
-    fun countMangaInDatabaseInLibrary() = runBlocking { getFavorites.await().size }
+    fun countAnimeInDatabaseInLibrary() = runBlocking { getFavorites.await().size }
 
-    fun countMangaInDatabaseNotInLibrary() = runBlocking { getAllManga.await() }.count { !it.favorite }
+    fun countAnimeInDatabaseNotInLibrary() = runBlocking { getAllAnime.await() }.count { !it.favorite }
 
-    fun countMangaInDatabase() = runBlocking { getAllManga.await() }.size
+    fun countAnimeInDatabase() = runBlocking { getAllAnime.await() }.size
 
     fun countMetadataInDatabase() = runBlocking { getSearchMetadata.await().size }
 
-    fun countMangaInLibraryWithMissingMetadata() = runBlocking {
-        runBlocking { getAllManga.await() }.count {
+    fun countAnimeInLibraryWithMissingMetadata() = runBlocking {
+        runBlocking { getAllAnime.await() }.count {
             it.favorite && getSearchMetadata.await(it.id) == null
         }
     }
@@ -294,8 +294,8 @@ object DebugFunctions {
         runBlocking { handler.await { ehQueries.fixReaderViewerBackupBug() } }
     }
 
-    fun resetReaderViewerForAllManga() {
-        runBlocking { handler.await { ehQueries.resetReaderViewerForAllManga() } }
+    fun resetReaderViewerForAllAnime() {
+        runBlocking { handler.await { ehQueries.resetReaderViewerForAllAnime() } }
     }
 
     fun migrateLangNhentaiToMultiLangSource() {

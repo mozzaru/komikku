@@ -22,13 +22,13 @@ class AzukiHandler(currentClient: OkHttpClient, userAgent: String) {
     val client: OkHttpClient = currentClient
 
     suspend fun fetchPageList(externalUrl: String): List<Page> {
-        val chapterId = externalUrl.substringAfterLast("/").substringBefore("?")
-        val request = pageListRequest(chapterId)
+        val episodeId = externalUrl.substringAfterLast("/").substringBefore("?")
+        val request = pageListRequest(episodeId)
         return pageListParse(client.newCall(request).awaitSuccess())
     }
 
-    private fun pageListRequest(chapterId: String): Request {
-        return GET("$apiUrl/chapter/$chapterId/pages/v0", headers)
+    private fun pageListRequest(episodeId: String): Request {
+        return GET("$apiUrl/episode/$episodeId/pages/v0", headers)
     }
 
     fun pageListParse(response: Response): List<Page> {

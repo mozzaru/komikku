@@ -36,8 +36,8 @@
             value="circle_ccw" />
     </action>
     <action
-        id="tachiyomi_kmk_next_chapter"
-        label="@string/action_next_chapter"
+        id="tachiyomi_kmk_next_episode"
+        label="@string/action_next_episode"
         priority="4"
         repeatable="true"
         repeatable_interval="short"
@@ -47,8 +47,8 @@
             value="swipe_right" />
     </action>
     <action
-        id="tachiyomi_kmk_previous_chapter"
-        label="@string/action_previous_chapter"
+        id="tachiyomi_kmk_previous_episode"
+        label="@string/action_previous_episode"
         priority="5"
         repeatable="true"
         repeatable_interval="short"

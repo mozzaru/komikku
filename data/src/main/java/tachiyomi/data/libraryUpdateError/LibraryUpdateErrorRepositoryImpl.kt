@@ -37,24 +37,24 @@ class LibraryUpdateErrorRepositoryImpl(
         }
     }
 
-    override suspend fun deleteMangaError(mangaId: Long) {
+    override suspend fun deleteAnimeError(animeId: Long) {
         return handler.await {
-            libraryUpdateErrorQueries.deleteMangaError(
-                mangaId = mangaId,
+            libraryUpdateErrorQueries.deleteAnimeError(
+                animeId = animeId,
             )
         }
     }
 
-    override suspend fun cleanUnrelevantMangaErrors() {
+    override suspend fun cleanUnrelevantAnimeErrors() {
         return handler.await {
-            libraryUpdateErrorQueries.cleanUnrelevantMangaErrors()
+            libraryUpdateErrorQueries.cleanUnrelevantAnimeErrors()
         }
     }
 
     override suspend fun upsert(libraryUpdateError: LibraryUpdateError) {
         return handler.await(inTransaction = true) {
             libraryUpdateErrorQueries.upsert(
-                mangaId = libraryUpdateError.mangaId,
+                animeId = libraryUpdateError.animeId,
                 messageId = libraryUpdateError.messageId,
             )
         }
@@ -63,7 +63,7 @@ class LibraryUpdateErrorRepositoryImpl(
     override suspend fun insert(libraryUpdateError: LibraryUpdateError) {
         return handler.await(inTransaction = true) {
             libraryUpdateErrorQueries.insert(
-                mangaId = libraryUpdateError.mangaId,
+                animeId = libraryUpdateError.animeId,
                 messageId = libraryUpdateError.messageId,
             )
         }
@@ -73,7 +73,7 @@ class LibraryUpdateErrorRepositoryImpl(
         return handler.await(inTransaction = true) {
             libraryUpdateErrors.forEach {
                 libraryUpdateErrorQueries.insert(
-                    mangaId = it.mangaId,
+                    animeId = it.animeId,
                     messageId = it.messageId,
                 )
             }

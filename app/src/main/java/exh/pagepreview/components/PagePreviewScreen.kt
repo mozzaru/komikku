@@ -27,10 +27,10 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
+import eu.kanade.presentation.anime.components.PagePreview
 import eu.kanade.presentation.components.AppBar
 import eu.kanade.presentation.components.AppBarActions
 import eu.kanade.presentation.components.AroundLayout
-import eu.kanade.presentation.manga.components.PagePreview
 import exh.pagepreview.PagePreviewState
 import exh.util.floor
 import kotlinx.collections.immutable.persistentListOf

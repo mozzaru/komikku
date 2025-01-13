@@ -9,7 +9,7 @@ import tachiyomi.i18n.sy.SYMR
 data class BackupOptions(
     val libraryEntries: Boolean = true,
     val categories: Boolean = true,
-    val chapters: Boolean = true,
+    val episodes: Boolean = true,
     val tracking: Boolean = true,
     val history: Boolean = true,
     val readEntries: Boolean = true,
@@ -26,7 +26,7 @@ data class BackupOptions(
     fun asBooleanArray() = booleanArrayOf(
         libraryEntries,
         categories,
-        chapters,
+        episodes,
         tracking,
         history,
         readEntries,
@@ -46,14 +46,14 @@ data class BackupOptions(
     companion object {
         val libraryOptions = persistentListOf(
             Entry(
-                label = MR.strings.manga,
+                label = MR.strings.anime,
                 getter = BackupOptions::libraryEntries,
                 setter = { options, enabled -> options.copy(libraryEntries = enabled) },
             ),
             Entry(
-                label = MR.strings.chapters,
-                getter = BackupOptions::chapters,
-                setter = { options, enabled -> options.copy(chapters = enabled) },
+                label = MR.strings.episodes,
+                getter = BackupOptions::episodes,
+                setter = { options, enabled -> options.copy(episodes = enabled) },
                 enabled = { it.libraryEntries },
             ),
             Entry(
@@ -123,7 +123,7 @@ data class BackupOptions(
         fun fromBooleanArray(array: BooleanArray) = BackupOptions(
             libraryEntries = array[0],
             categories = array[1],
-            chapters = array[2],
+            episodes = array[2],
             tracking = array[3],
             history = array[4],
             readEntries = array[5],

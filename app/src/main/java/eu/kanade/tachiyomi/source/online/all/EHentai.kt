@@ -13,13 +13,13 @@ import eu.kanade.tachiyomi.network.newCachelessCallWithProgress
 import eu.kanade.tachiyomi.source.PagePreviewInfo
 import eu.kanade.tachiyomi.source.PagePreviewPage
 import eu.kanade.tachiyomi.source.PagePreviewSource
+import eu.kanade.tachiyomi.source.model.AnimesPage
 import eu.kanade.tachiyomi.source.model.Filter
 import eu.kanade.tachiyomi.source.model.FilterList
-import eu.kanade.tachiyomi.source.model.MangasPage
-import eu.kanade.tachiyomi.source.model.MetadataMangasPage
+import eu.kanade.tachiyomi.source.model.MetadataAnimesPage
 import eu.kanade.tachiyomi.source.model.Page
-import eu.kanade.tachiyomi.source.model.SChapter
-import eu.kanade.tachiyomi.source.model.SManga
+import eu.kanade.tachiyomi.source.model.SAnime
+import eu.kanade.tachiyomi.source.model.SEpisode
 import eu.kanade.tachiyomi.source.model.copy
 import eu.kanade.tachiyomi.source.online.HttpSource
 import eu.kanade.tachiyomi.source.online.MetadataSource
@@ -53,8 +53,8 @@ import exh.util.ignore
 import exh.util.nullIfBlank
 import exh.util.trimAll
 import exh.util.trimOrNull
-import exh.util.urlImportFetchSearchManga
-import exh.util.urlImportFetchSearchMangaSuspend
+import exh.util.urlImportFetchSearchAnime
+import exh.util.urlImportFetchSearchAnimeSuspend
 import kotlinx.serialization.json.Json
 import kotlinx.serialization.json.JsonObject
 import kotlinx.serialization.json.add
@@ -123,11 +123,11 @@ class EHentai(
     /**
      * Gallery list entry
      */
-    data class ParsedManga(val fav: Int, val manga: SManga, val metadata: EHentaiSearchMetadata)
+    data class ParsedAnime(val fav: Int, val anime: SAnime, val metadata: EHentaiSearchMetadata)
 
-    private fun extendedGenericMangaParse(doc: Document) = with(doc) {
-        // Parse mangas (supports compact + extended layout)
-        val parsedMangas = select(".itg > tbody > tr").filter { element ->
+    private fun extendedGenericAnimeParse(doc: Document) = with(doc) {
+        // Parse animes (supports compact + extended layout)
+        val parsedAnimes = select(".itg > tbody > tr").filter { element ->
             // Do not parse header and ads
             element.selectFirst("th") == null && element.selectFirst(".itd") == null
         }.map { body ->
@@ -141,11 +141,11 @@ class EHentai(
             val infoElements = infoElement?.select("div")
             val parsedTags = mutableListOf<RaisedTag>()
 
-            ParsedManga(
+            ParsedAnime(
                 fav = FAVORITES_BORDER_HEX_COLORS.indexOf(
                     favElement?.attr("style")?.substring(14, 17),
                 ),
-                manga = SManga.create().apply {
+                anime = SAnime.create().apply {
                     // Get title
                     title = thumbnailElement.attr("title")
                     url = EHentaiSearchMetadata.normalizeUrl(linkElement.attr("href"))
@@ -244,15 +244,15 @@ class EHentai(
         val nextPage = if (parsedLocation?.pathSegments?.contains("toplist.php") == true) {
             ((parsedLocation.queryParameter("p")?.toLong() ?: 0) + 2).takeIf { it <= 200 }
         } else if (hasNextPage) {
-            parsedMangas.let { if (isReversed) it.first() else it.last() }
-                .manga
+            parsedAnimes.let { if (isReversed) it.first() else it.last() }
+                .anime
                 .url
                 .let { EHentaiSearchMetadata.galleryId(it).toLong() }
         } else {
             null
         }
 
-        parsedMangas.let { if (isReversed) it.reversed() else it } to nextPage
+        parsedAnimes.let { if (isReversed) it.reversed() else it } to nextPage
     }
 
     private fun getGenre(element: Element?): String? {
@@ -319,24 +319,24 @@ class EHentai(
     /**
      * Parse a list of galleries
      */
-    private fun genericMangaParse(
+    private fun genericAnimeParse(
         response: Response,
-    ) = extendedGenericMangaParse(response.asJsoup()).let { (parsedManga, nextPage) ->
-        MetadataMangasPage(
-            parsedManga.map { it.manga },
+    ) = extendedGenericAnimeParse(response.asJsoup()).let { (parsedAnime, nextPage) ->
+        MetadataAnimesPage(
+            parsedAnime.map { it.anime },
             nextPage != null,
-            parsedManga.map { it.metadata },
+            parsedAnime.map { it.metadata },
             nextPage,
         )
     }
 
-    override suspend fun getChapterList(manga: SManga): List<SChapter> = getChapterList(manga) {}
+    override suspend fun getEpisodeList(anime: SAnime): List<SEpisode> = getEpisodeList(anime) {}
 
-    suspend fun getChapterList(manga: SManga, throttleFunc: suspend () -> Unit): List<SChapter> {
+    suspend fun getEpisodeList(anime: SAnime, throttleFunc: suspend () -> Unit): List<SEpisode> {
         // Pull all the way to the root gallery
         // We can't do this with RxJava or we run into stack overflows on shit like this:
         //   https://exhentai.org/g/1073061/f9345f1c12/
-        var url = manga.url
+        var url = anime.url
         var doc: Document
 
         while (true) {
@@ -373,12 +373,12 @@ class EHentai(
             }
         }
         val newDisplay = doc.select("#gnd a")
-        // Build chapter for root gallery
+        // Build episode for root gallery
         val location = doc.location()
-        val self = SChapter(
+        val self = SEpisode(
             url = EHentaiSearchMetadata.normalizeUrl(location),
             name = "v1: " + doc.selectFirst("#gn")!!.text(),
-            chapter_number = 1f,
+            episode_number = 1f,
             date_upload = ZonedDateTime.parse(
                 doc.select("#gdd .gdt1").find { el ->
                     el.text().lowercase() == "posted:"
@@ -395,10 +395,10 @@ class EHentai(
                 val link = newGallery.attr("href")
                 val name = newGallery.text()
                 val posted = (newGallery.nextSibling() as TextNode).text().removePrefix(", added ")
-                SChapter(
+                SEpisode(
                     url = EHentaiSearchMetadata.normalizeUrl(link),
                     name = "v${index + 2}: $name",
-                    chapter_number = index + 2f,
+                    episode_number = index + 2f,
                     date_upload = ZonedDateTime.parse(
                         posted,
                         MetadataUtil.EX_DATE_FORMAT.withZone(ZoneOffset.UTC),
@@ -409,44 +409,44 @@ class EHentai(
         }
     }
 
-    @Deprecated("Use the 1.x API instead", replaceWith = ReplaceWith("getChapterList"))
+    @Deprecated("Use the 1.x API instead", replaceWith = ReplaceWith("getEpisodeList"))
     @Suppress("DEPRECATION")
-    override fun fetchChapterList(manga: SManga) = fetchChapterList(manga) {}
+    override fun fetchEpisodeList(anime: SAnime) = fetchEpisodeList(anime) {}
 
-    @Deprecated("Use the 1.x API instead", replaceWith = ReplaceWith("getChapterList"))
-    fun fetchChapterList(manga: SManga, throttleFunc: suspend () -> Unit) = runAsObservable {
-        getChapterList(manga, throttleFunc)
+    @Deprecated("Use the 1.x API instead", replaceWith = ReplaceWith("getEpisodeList"))
+    fun fetchEpisodeList(anime: SAnime, throttleFunc: suspend () -> Unit) = runAsObservable {
+        getEpisodeList(anime, throttleFunc)
     }
 
     @Deprecated("Use the 1.x API instead", replaceWith = ReplaceWith("getPageList"))
     override fun fetchPageList(
-        chapter: SChapter,
-    ): Observable<List<Page>> = fetchChapterPage(chapter, baseUrl + chapter.url)
+        episode: SEpisode,
+    ): Observable<List<Page>> = fetchEpisodePage(episode, baseUrl + episode.url)
         .map {
             it.mapIndexed { i, s ->
                 Page(i, s)
             }
         }!!
 
-    private fun fetchChapterPage(
-        chapter: SChapter,
+    private fun fetchEpisodePage(
+        episode: SEpisode,
         np: String,
         pastUrls: List<String> = emptyList(),
     ): Observable<List<String>> {
         val urls = ArrayList(pastUrls)
-        return chapterPageCall(np).flatMap {
+        return episodePageCall(np).flatMap {
             val jsoup = it.asJsoup()
-            urls += parseChapterPage(jsoup)
+            urls += parseEpisodePage(jsoup)
             val nextUrl = nextPageUrl(jsoup)
             if (nextUrl != null) {
-                fetchChapterPage(chapter, nextUrl, urls)
+                fetchEpisodePage(episode, nextUrl, urls)
             } else {
                 Observable.just(urls)
             }
         }
     }
 
-    private fun parseChapterPage(response: Element) = with(response) {
+    private fun parseEpisodePage(response: Element) = with(response) {
         select(".gdtm a").map {
             Pair(it.child(0).attr("alt").toInt(), it.attr("href"))
         }.plus(
@@ -456,10 +456,10 @@ class EHentai(
         ).sortedBy(Pair<Int, String>::first).map { it.second }
     }
 
-    private fun chapterPageCall(np: String): Observable<Response> {
-        return client.newCall(chapterPageRequest(np)).asObservableSuccess()
+    private fun episodePageCall(np: String): Observable<Response> {
+        return client.newCall(episodePageRequest(np)).asObservableSuccess()
     }
-    private fun chapterPageRequest(np: String): Request {
+    private fun episodePageRequest(np: String): Request {
         return exGet(url = np, additionalHeaders = headers)
     }
 
@@ -467,16 +467,16 @@ class EHentai(
         return if (it.text() == ">") it.attr("href") else null
     }
 
-    override fun popularMangaRequest(page: Int): Request {
+    override fun popularAnimeRequest(page: Int): Request {
         return exGet("$baseUrl/popular")
     }
 
-    private fun <T : MangasPage> Observable<T>.checkValid(): Observable<MangasPage> = map {
+    private fun <T : AnimesPage> Observable<T>.checkValid(): Observable<AnimesPage> = map {
         it.checkValid()
     }
 
-    private fun <T : MangasPage> T.checkValid(): MangasPage =
-        if (exh && mangas.isEmpty() && preferences.igneousVal().get().equals("mystery", true)) {
+    private fun <T : AnimesPage> T.checkValid(): AnimesPage =
+        if (exh && animes.isEmpty() && preferences.igneousVal().get().equals("mystery", true)) {
             throw Exception(
                 "Invalid igneous cookie, try re-logging or finding a correct one to input in the login menu",
             )
@@ -485,40 +485,40 @@ class EHentai(
         }
 
     @Deprecated("Use the non-RxJava API instead", replaceWith = ReplaceWith("getLatestUpdates"))
-    override fun fetchLatestUpdates(page: Int): Observable<MangasPage> {
+    override fun fetchLatestUpdates(page: Int): Observable<AnimesPage> {
         @Suppress("DEPRECATION")
         return super<HttpSource>.fetchLatestUpdates(page).checkValid()
     }
 
-    override suspend fun getLatestUpdates(page: Int): MangasPage {
+    override suspend fun getLatestUpdates(page: Int): AnimesPage {
         return super<HttpSource>.getLatestUpdates(page).checkValid()
     }
 
-    @Deprecated("Use the non-RxJava API instead", replaceWith = ReplaceWith("getPopularManga"))
-    override fun fetchPopularManga(page: Int): Observable<MangasPage> {
+    @Deprecated("Use the non-RxJava API instead", replaceWith = ReplaceWith("getPopularAnime"))
+    override fun fetchPopularAnime(page: Int): Observable<AnimesPage> {
         @Suppress("DEPRECATION")
-        return super<HttpSource>.fetchPopularManga(page).checkValid()
+        return super<HttpSource>.fetchPopularAnime(page).checkValid()
     }
 
-    override suspend fun getPopularManga(page: Int): MangasPage {
-        return super<HttpSource>.getPopularManga(page).checkValid()
+    override suspend fun getPopularAnime(page: Int): AnimesPage {
+        return super<HttpSource>.getPopularAnime(page).checkValid()
     }
 
     // Support direct URL importing
-    @Deprecated("Use the non-RxJava API instead", replaceWith = ReplaceWith("getSearchManga"))
-    override fun fetchSearchManga(page: Int, query: String, filters: FilterList): Observable<MangasPage> =
-        urlImportFetchSearchManga(context, query) {
+    @Deprecated("Use the non-RxJava API instead", replaceWith = ReplaceWith("getSearchAnime"))
+    override fun fetchSearchAnime(page: Int, query: String, filters: FilterList): Observable<AnimesPage> =
+        urlImportFetchSearchAnime(context, query) {
             @Suppress("DEPRECATION")
-            super<HttpSource>.fetchSearchManga(page, query, filters).checkValid()
+            super<HttpSource>.fetchSearchAnime(page, query, filters).checkValid()
         }
 
-    override suspend fun getSearchManga(page: Int, query: String, filters: FilterList): MangasPage {
-        return urlImportFetchSearchMangaSuspend(context, query) {
-            super<HttpSource>.getSearchManga(page, query, filters).checkValid()
+    override suspend fun getSearchAnime(page: Int, query: String, filters: FilterList): AnimesPage {
+        return urlImportFetchSearchAnimeSuspend(context, query) {
+            super<HttpSource>.getSearchAnime(page, query, filters).checkValid()
         }
     }
 
-    override fun searchMangaRequest(page: Int, query: String, filters: FilterList): Request {
+    override fun searchAnimeRequest(page: Int, query: String, filters: FilterList): Request {
         val toplist = ToplistOption.entries[filters.firstNotNullOfOrNull { (it as? ToplistOptions)?.state } ?: 0]
         if (toplist != ToplistOption.NONE) {
             val uri = "https://e-hentai.org".toUri().buildUpon()
@@ -567,9 +567,9 @@ class EHentai(
 
     override fun latestUpdatesRequest(page: Int) = exGet(baseUrl, page)
 
-    override fun popularMangaParse(response: Response) = genericMangaParse(response)
-    override fun searchMangaParse(response: Response) = genericMangaParse(response)
-    override fun latestUpdatesParse(response: Response) = genericMangaParse(response)
+    override fun popularAnimeParse(response: Response) = genericAnimeParse(response)
+    override fun searchAnimeParse(response: Response) = genericAnimeParse(response)
+    override fun latestUpdatesParse(response: Response) = genericAnimeParse(response)
 
     private fun exGet(
         url: String,
@@ -605,14 +605,14 @@ class EHentai(
     }
 
     /**
-     * Returns an observable with the updated details for a manga. Normally it's not needed to
+     * Returns an observable with the updated details for a anime. Normally it's not needed to
      * override this method.
      *
-     * @param manga the manga to be updated.
+     * @param anime the anime to be updated.
      */
-    @Deprecated("Use the 1.x API instead", replaceWith = ReplaceWith("getMangaDetails"))
-    override fun fetchMangaDetails(manga: SManga): Observable<SManga> {
-        return client.newCall(mangaDetailsRequest(manga))
+    @Deprecated("Use the 1.x API instead", replaceWith = ReplaceWith("getAnimeDetails"))
+    override fun fetchAnimeDetails(anime: SAnime): Observable<SAnime> {
+        return client.newCall(animeDetailsRequest(anime))
             .asObservableWithAsyncStacktrace()
             .flatMap { (stacktrace, response) ->
                 if (response.isSuccessful) {
@@ -622,8 +622,8 @@ class EHentai(
                     val pre = if (
                         newerGallery != null && DebugToggles.PULL_TO_ROOT_WHEN_LOADING_EXH_MANGA_DETAILS.enabled
                     ) {
-                        manga.url = EHentaiSearchMetadata.normalizeUrl(newerGallery.attr("href"))
-                        client.newCall(mangaDetailsRequest(manga))
+                        anime.url = EHentaiSearchMetadata.normalizeUrl(newerGallery.attr("href"))
+                        client.newCall(animeDetailsRequest(anime))
                             .asObservableSuccess().map { it.asJsoup() }
                     } else {
                         Observable.just(doc)
@@ -631,9 +631,9 @@ class EHentai(
 
                     pre.flatMap {
                         @Suppress("DEPRECATION")
-                        parseToMangaCompletable(manga, it).andThen(
+                        parseToAnimeCompletable(anime, it).andThen(
                             Observable.just(
-                                manga.apply {
+                                anime.apply {
                                     initialized = true
                                 },
                             ),
@@ -651,9 +651,9 @@ class EHentai(
             }
     }
 
-    override suspend fun getMangaDetails(manga: SManga): SManga {
+    override suspend fun getAnimeDetails(anime: SAnime): SAnime {
         val exception = Exception("Async stacktrace")
-        val response = client.newCall(mangaDetailsRequest(manga)).await()
+        val response = client.newCall(animeDetailsRequest(anime)).await()
         if (response.isSuccessful) {
             // Pull to most recent
             val doc = response.asJsoup()
@@ -661,14 +661,14 @@ class EHentai(
             val pre = if (
                 newerGallery != null && DebugToggles.PULL_TO_ROOT_WHEN_LOADING_EXH_MANGA_DETAILS.enabled
             ) {
-                val sManga = manga.copy(
+                val sAnime = anime.copy(
                     url = EHentaiSearchMetadata.normalizeUrl(newerGallery.attr("href")),
                 )
-                client.newCall(mangaDetailsRequest(sManga)).awaitSuccess().asJsoup()
+                client.newCall(animeDetailsRequest(sAnime)).awaitSuccess().asJsoup()
             } else {
                 doc
             }
-            return parseToManga(manga, pre)
+            return parseToAnime(anime, pre)
         } else {
             response.close()
 
@@ -683,7 +683,7 @@ class EHentai(
     /**
      * Parse gallery page to metadata model
      */
-    override fun mangaDetailsParse(response: Response) = throw UnsupportedOperationException()
+    override fun animeDetailsParse(response: Response) = throw UnsupportedOperationException()
 
     override fun newMetaInstance() = EHentaiSearchMetadata()
 
@@ -802,9 +802,9 @@ class EHentai(
         }
     }
 
-    override fun chapterListParse(response: Response) =
+    override fun episodeListParse(response: Response) =
         throw UnsupportedOperationException("Unused method was called somehow!")
-    override fun chapterPageParse(
+    override fun episodePageParse(
         response: Response,
     ) = throw UnsupportedOperationException("Unused method was called somehow!")
 
@@ -841,9 +841,9 @@ class EHentai(
         throw UnsupportedOperationException("Unused method was called somehow!")
     }
 
-    suspend fun fetchFavorites(): Pair<List<ParsedManga>, List<String>> {
+    suspend fun fetchFavorites(): Pair<List<ParsedAnime>, List<String>> {
         val favoriteUrl = "$baseUrl/favorites.php"
-        val result = mutableListOf<ParsedManga>()
+        val result = mutableListOf<ParsedAnime>()
         var page = 1
 
         var favNames: List<String>? = null
@@ -861,7 +861,7 @@ class EHentai(
             val doc = response2.asJsoup()
 
             // Parse favorites
-            val parsed = extendedGenericMangaParse(doc)
+            val parsed = extendedGenericAnimeParse(doc)
             result += parsed.first
 
             // Parse fav names
@@ -872,7 +872,7 @@ class EHentai(
             }
             // Next page
 
-            page = parsed.first.lastOrNull()?.manga?.url?.let { EHentaiSearchMetadata.galleryId(it) }?.toInt() ?: 0
+            page = parsed.first.lastOrNull()?.anime?.url?.let { EHentaiSearchMetadata.galleryId(it) }?.toInt() ?: 0
         } while (parsed.second != null)
 
         return Pair(result.toList(), favNames.orEmpty())
@@ -989,7 +989,7 @@ class EHentai(
             "Genres",
             listOf(
                 GenreOption("Dōjinshi", 2),
-                GenreOption("Manga", 4),
+                GenreOption("Anime", 4),
                 GenreOption("Artist CG", 8),
                 GenreOption("Game CG", 16),
                 GenreOption("Western", 512),
@@ -1144,7 +1144,7 @@ class EHentai(
         )
     }
 
-    override suspend fun mapUrlToMangaUrl(uri: Uri): String? {
+    override suspend fun mapUrlToAnimeUrl(uri: Uri): String? {
         return when (uri.pathSegments.firstOrNull()) {
             "g" -> {
                 // Is already gallery page, do nothing
@@ -1158,8 +1158,8 @@ class EHentai(
         }
     }
 
-    override fun cleanMangaUrl(url: String): String {
-        return EHentaiSearchMetadata.normalizeUrl(super.cleanMangaUrl(url))
+    override fun cleanAnimeUrl(url: String): String {
+        return EHentaiSearchMetadata.normalizeUrl(super.cleanAnimeUrl(url))
     }
 
     private fun getGalleryUrlFromPage(uri: Uri): String {
@@ -1200,13 +1200,13 @@ class EHentai(
     }
 
     override suspend fun getPagePreviewList(
-        manga: SManga,
-        chapters: List<SChapter>,
+        anime: SAnime,
+        episodes: List<SEpisode>,
         page: Int,
     ): PagePreviewPage {
         val doc = client.newCall(
             exGet(
-                (baseUrl + (chapters.lastOrNull()?.url ?: manga.url))
+                (baseUrl + (episodes.lastOrNull()?.url ?: anime.url))
                     .toHttpUrl()
                     .newBuilder()
                     .removeAllQueryParameters("nw")

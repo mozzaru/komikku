@@ -28,7 +28,7 @@ import androidx.compose.ui.unit.IntOffset
 import androidx.compose.ui.unit.LayoutDirection
 import androidx.compose.ui.unit.dp
 import eu.kanade.presentation.components.AppBar
-import eu.kanade.presentation.reader.components.ChapterNavigator
+import eu.kanade.presentation.reader.components.EpisodeNavigator
 import eu.kanade.tachiyomi.ui.reader.setting.ReaderOrientation
 import eu.kanade.tachiyomi.ui.reader.setting.ReadingMode
 import eu.kanade.tachiyomi.ui.reader.viewer.Viewer
@@ -67,8 +67,8 @@ fun ReaderAppBars(
     visible: Boolean,
     fullscreen: Boolean,
 
-    mangaTitle: String?,
-    chapterTitle: String?,
+    animeTitle: String?,
+    episodeTitle: String?,
     navigateUp: () -> Unit,
     onClickTopAppBar: () -> Unit,
     // bookmarked: Boolean,
@@ -78,9 +78,9 @@ fun ReaderAppBars(
     onShare: (() -> Unit)?,
 
     viewer: Viewer?,
-    onNextChapter: () -> Unit,
+    onNextEpisode: () -> Unit,
     enabledNext: Boolean,
-    onPreviousChapter: () -> Unit,
+    onPreviousEpisode: () -> Unit,
     enabledPrevious: Boolean,
     currentPage: Int,
     totalPages: Int,
@@ -112,7 +112,7 @@ fun ReaderAppBars(
     currentReadingMode: ReadingMode,
     dualPageSplitEnabled: Boolean,
     doublePages: Boolean,
-    onClickChapterList: () -> Unit,
+    onClickEpisodeList: () -> Unit,
     onClickPageLayout: () -> Unit,
     onClickShiftPage: () -> Unit,
     // SY <--
@@ -146,11 +146,11 @@ fun ReaderAppBars(
                 .padding(bottom = 48.dp, top = 120.dp)
                 .align(Alignment.TopStart),
         ) {
-            ChapterNavigator(
+            EpisodeNavigator(
                 isRtl = isRtl,
-                onNextChapter = onNextChapter,
+                onNextEpisode = onNextEpisode,
                 enabledNext = enabledNext,
-                onPreviousChapter = onPreviousChapter,
+                onPreviousEpisode = onPreviousEpisode,
                 enabledPrevious = enabledPrevious,
                 currentPage = currentPage,
                 totalPages = totalPages,
@@ -174,11 +174,11 @@ fun ReaderAppBars(
                 .padding(bottom = 48.dp, top = 120.dp)
                 .align(Alignment.TopEnd),
         ) {
-            ChapterNavigator(
+            EpisodeNavigator(
                 isRtl = isRtl,
-                onNextChapter = onNextChapter,
+                onNextEpisode = onNextEpisode,
                 enabledNext = enabledNext,
-                onPreviousChapter = onPreviousChapter,
+                onPreviousEpisode = onPreviousEpisode,
                 enabledPrevious = enabledPrevious,
                 currentPage = currentPage,
                 totalPages = totalPages,
@@ -210,8 +210,8 @@ fun ReaderAppBars(
                         modifier = /*SY --> */ Modifier /*SY <-- */
                             .clickable(onClick = onClickTopAppBar),
                         backgroundColor = backgroundColor,
-                        title = mangaTitle,
-                        subtitle = chapterTitle,
+                        title = animeTitle,
+                        subtitle = episodeTitle,
                         navigateUp = navigateUp,
                         /* SY -->
                         actions = {
@@ -303,11 +303,11 @@ fun ReaderAppBars(
                     verticalArrangement = Arrangement.spacedBy(MaterialTheme.padding.small),
                 ) {
                     if (navBarType == NavBarType.Bottom) {
-                        ChapterNavigator(
+                        EpisodeNavigator(
                             isRtl = isRtl,
-                            onNextChapter = onNextChapter,
+                            onNextEpisode = onNextEpisode,
                             enabledNext = enabledNext,
-                            onPreviousChapter = onPreviousChapter,
+                            onPreviousEpisode = onPreviousEpisode,
                             enabledPrevious = enabledPrevious,
                             currentPage = currentPage,
                             totalPages = totalPages,
@@ -332,7 +332,7 @@ fun ReaderAppBars(
                         currentReadingMode = currentReadingMode,
                         dualPageSplitEnabled = dualPageSplitEnabled,
                         doublePages = doublePages,
-                        onClickChapterList = onClickChapterList,
+                        onClickEpisodeList = onClickEpisodeList,
                         onClickWebView = onOpenInWebView,
                         onClickBrowser = onOpenInBrowser,
                         onClickShare = onShare,

@@ -15,13 +15,13 @@ actual class LocalSourceFileSystem(
         return getBaseDirectory()?.listFiles().orEmpty().toList()
     }
 
-    actual fun getMangaDirectory(name: String): UniFile? {
+    actual fun getAnimeDirectory(name: String): UniFile? {
         return getBaseDirectory()
             ?.findFile(name)
             ?.takeIf { it.isDirectory }
     }
 
-    actual fun getFilesInMangaDirectory(name: String): List<UniFile> {
+    actual fun getFilesInAnimeDirectory(name: String): List<UniFile> {
         return getBaseDirectory()
             ?.findFile(name)
             ?.takeIf { it.isDirectory }

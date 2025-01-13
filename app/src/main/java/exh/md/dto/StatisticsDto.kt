@@ -4,16 +4,16 @@ import kotlinx.serialization.Serializable
 
 @Serializable
 data class StatisticsDto(
-    val statistics: Map<String, StatisticsMangaDto>,
+    val statistics: Map<String, StatisticsAnimeDto>,
 )
 
 @Serializable
-data class StatisticsMangaDto(
-    val rating: StatisticsMangaRatingDto,
+data class StatisticsAnimeDto(
+    val rating: StatisticsAnimeRatingDto,
 )
 
 @Serializable
-data class StatisticsMangaRatingDto(
+data class StatisticsAnimeRatingDto(
     val average: Double?,
     val bayesian: Double?,
 )

@@ -1,7 +1,7 @@
 package exh.metadata.metadata
 
 import android.content.Context
-import eu.kanade.tachiyomi.source.model.SManga
+import eu.kanade.tachiyomi.source.model.SAnime
 import eu.kanade.tachiyomi.source.model.copy
 import kotlinx.serialization.Serializable
 import tachiyomi.core.common.i18n.stringResource
@@ -28,7 +28,7 @@ class PururinSearchMetadata : RaisedSearchMetadata() {
     var ratingCount: Int? = null
     var averageRating: Double? = null
 
-    override fun createMangaInfo(manga: SManga): SManga {
+    override fun createAnimeInfo(anime: SAnime): SAnime {
         val key = prId?.let { prId ->
             prShortLink?.let { prShortLink ->
                 "/gallery/$prId/$prShortLink"
@@ -45,10 +45,10 @@ class PururinSearchMetadata : RaisedSearchMetadata() {
 
         val description = null
 
-        return manga.copy(
-            url = key ?: manga.url,
-            title = title ?: manga.title,
-            thumbnail_url = cover ?: manga.thumbnail_url,
+        return anime.copy(
+            url = key ?: anime.url,
+            title = title ?: anime.title,
+            thumbnail_url = cover ?: anime.thumbnail_url,
             artist = artist,
             genre = genres,
             description = description,

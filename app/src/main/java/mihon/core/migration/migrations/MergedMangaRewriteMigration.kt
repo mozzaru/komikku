@@ -1,6 +1,6 @@
 package mihon.core.migration.migrations
 
-import eu.kanade.domain.manga.interactor.UpdateManga
+import eu.kanade.domain.anime.interactor.UpdateAnime
 import eu.kanade.tachiyomi.source.Source
 import exh.source.MERGED_SOURCE_ID
 import kotlinx.serialization.SerialName
@@ -10,125 +10,125 @@ import mihon.core.migration.Migration
 import mihon.core.migration.MigrationContext
 import tachiyomi.core.common.util.lang.withIOContext
 import tachiyomi.data.DatabaseHandler
-import tachiyomi.data.chapter.ChapterMapper
-import tachiyomi.domain.chapter.interactor.DeleteChapters
-import tachiyomi.domain.chapter.interactor.UpdateChapter
-import tachiyomi.domain.chapter.model.ChapterUpdate
-import tachiyomi.domain.manga.interactor.GetManga
-import tachiyomi.domain.manga.interactor.GetMangaBySource
-import tachiyomi.domain.manga.interactor.InsertMergedReference
-import tachiyomi.domain.manga.model.Manga
-import tachiyomi.domain.manga.model.MangaUpdate
-import tachiyomi.domain.manga.model.MergedMangaReference
+import tachiyomi.data.episode.EpisodeMapper
+import tachiyomi.domain.anime.interactor.GetAnime
+import tachiyomi.domain.anime.interactor.GetAnimeBySource
+import tachiyomi.domain.anime.interactor.InsertMergedReference
+import tachiyomi.domain.anime.model.Anime
+import tachiyomi.domain.anime.model.AnimeUpdate
+import tachiyomi.domain.anime.model.MergedAnimeReference
+import tachiyomi.domain.episode.interactor.DeleteEpisodes
+import tachiyomi.domain.episode.interactor.UpdateEpisode
+import tachiyomi.domain.episode.model.EpisodeUpdate
 import tachiyomi.domain.source.service.SourceManager
 
-class MergedMangaRewriteMigration : Migration {
+class MergedAnimeRewriteMigration : Migration {
     override val version: Float = 7f
 
     override suspend fun invoke(migrationContext: MigrationContext): Boolean = withIOContext {
         val handler = migrationContext.get<DatabaseHandler>() ?: return@withIOContext false
-        val getMangaBySource = migrationContext.get<GetMangaBySource>() ?: return@withIOContext false
-        val getManga = migrationContext.get<GetManga>() ?: return@withIOContext false
-        val updateManga = migrationContext.get<UpdateManga>() ?: return@withIOContext false
+        val getAnimeBySource = migrationContext.get<GetAnimeBySource>() ?: return@withIOContext false
+        val getAnime = migrationContext.get<GetAnime>() ?: return@withIOContext false
+        val updateAnime = migrationContext.get<UpdateAnime>() ?: return@withIOContext false
         val insertMergedReference = migrationContext.get<InsertMergedReference>() ?: return@withIOContext false
         val sourceManager = migrationContext.get<SourceManager>() ?: return@withIOContext false
-        val deleteChapters = migrationContext.get<DeleteChapters>() ?: return@withIOContext false
-        val updateChapter = migrationContext.get<UpdateChapter>() ?: return@withIOContext false
-        val mergedMangas = getMangaBySource.await(MERGED_SOURCE_ID)
+        val deleteEpisodes = migrationContext.get<DeleteEpisodes>() ?: return@withIOContext false
+        val updateEpisode = migrationContext.get<UpdateEpisode>() ?: return@withIOContext false
+        val mergedAnimes = getAnimeBySource.await(MERGED_SOURCE_ID)
 
-        if (mergedMangas.isNotEmpty()) {
-            val mangaConfigs = mergedMangas.mapNotNull { mergedManga ->
-                readMangaConfig(mergedManga)?.let { mergedManga to it }
+        if (mergedAnimes.isNotEmpty()) {
+            val animeConfigs = mergedAnimes.mapNotNull { mergedAnime ->
+                readAnimeConfig(mergedAnime)?.let { mergedAnime to it }
             }
-            if (mangaConfigs.isNotEmpty()) {
-                val mangaToUpdate = mutableListOf<MangaUpdate>()
-                val mergedMangaReferences = mutableListOf<MergedMangaReference>()
-                mangaConfigs.onEach { mergedManga ->
-                    val newFirst = mergedManga.second.children.firstOrNull()?.url?.let {
-                        if (getManga.await(it, MERGED_SOURCE_ID) != null) return@onEach
-                        mangaToUpdate += MangaUpdate(id = mergedManga.first.id, url = it)
-                        mergedManga.first.copy(url = it)
-                    } ?: mergedManga.first
-                    mergedMangaReferences += MergedMangaReference(
+            if (animeConfigs.isNotEmpty()) {
+                val animeToUpdate = mutableListOf<AnimeUpdate>()
+                val mergedAnimeReferences = mutableListOf<MergedAnimeReference>()
+                animeConfigs.onEach { mergedAnime ->
+                    val newFirst = mergedAnime.second.children.firstOrNull()?.url?.let {
+                        if (getAnime.await(it, MERGED_SOURCE_ID) != null) return@onEach
+                        animeToUpdate += AnimeUpdate(id = mergedAnime.first.id, url = it)
+                        mergedAnime.first.copy(url = it)
+                    } ?: mergedAnime.first
+                    mergedAnimeReferences += MergedAnimeReference(
                         id = -1,
-                        isInfoManga = false,
-                        getChapterUpdates = false,
-                        chapterSortMode = 0,
-                        chapterPriority = 0,
-                        downloadChapters = false,
+                        isInfoAnime = false,
+                        getEpisodeUpdates = false,
+                        episodeSortMode = 0,
+                        episodePriority = 0,
+                        downloadEpisodes = false,
                         mergeId = newFirst.id,
                         mergeUrl = newFirst.url,
-                        mangaId = newFirst.id,
-                        mangaUrl = newFirst.url,
-                        mangaSourceId = MERGED_SOURCE_ID,
+                        animeId = newFirst.id,
+                        animeUrl = newFirst.url,
+                        animeSourceId = MERGED_SOURCE_ID,
                     )
-                    mergedManga.second.children.distinct().forEachIndexed { index, mangaSource ->
-                        val load = mangaSource.load(getManga, sourceManager) ?: return@forEachIndexed
-                        mergedMangaReferences += MergedMangaReference(
+                    mergedAnime.second.children.distinct().forEachIndexed { index, animeSource ->
+                        val load = animeSource.load(getAnime, sourceManager) ?: return@forEachIndexed
+                        mergedAnimeReferences += MergedAnimeReference(
                             id = -1,
-                            isInfoManga = index == 0,
-                            getChapterUpdates = true,
-                            chapterSortMode = 0,
-                            chapterPriority = 0,
-                            downloadChapters = true,
+                            isInfoAnime = index == 0,
+                            getEpisodeUpdates = true,
+                            episodeSortMode = 0,
+                            episodePriority = 0,
+                            downloadEpisodes = true,
                             mergeId = newFirst.id,
                             mergeUrl = newFirst.url,
-                            mangaId = load.manga.id,
-                            mangaUrl = load.manga.url,
-                            mangaSourceId = load.source.id,
+                            animeId = load.anime.id,
+                            animeUrl = load.anime.url,
+                            animeSourceId = load.source.id,
                         )
                     }
                 }
 
-                updateManga.awaitAll(mangaToUpdate)
-                insertMergedReference.awaitAll(mergedMangaReferences)
+                updateAnime.awaitAll(animeToUpdate)
+                insertMergedReference.awaitAll(mergedAnimeReferences)
 
-                val loadedMangaList = mangaConfigs
+                val loadedAnimeList = animeConfigs
                     .map { it.second.children }
                     .flatten()
-                    .mapNotNull { it.load(getManga, sourceManager) }
+                    .mapNotNull { it.load(getAnime, sourceManager) }
                     .distinct()
-                val chapters =
+                val episodes =
                     handler.awaitList {
-                        ehQueries.getChaptersByMangaIds(
-                            mergedMangas.map { it.id },
-                            ChapterMapper::mapChapter,
+                        ehQueries.getEpisodesByAnimeIds(
+                            mergedAnimes.map { it.id },
+                            EpisodeMapper::mapEpisode,
                         )
                     }
 
-                val mergedMangaChapters =
+                val mergedAnimeEpisodes =
                     handler.awaitList {
-                        ehQueries.getChaptersByMangaIds(
-                            loadedMangaList.map { it.manga.id },
-                            ChapterMapper::mapChapter,
+                        ehQueries.getEpisodesByAnimeIds(
+                            loadedAnimeList.map { it.anime.id },
+                            EpisodeMapper::mapEpisode,
                         )
                     }
 
-                val mergedMangaChaptersMatched = mergedMangaChapters.mapNotNull { chapter ->
-                    loadedMangaList.firstOrNull {
-                        it.manga.id == chapter.id
-                    }?.let { it to chapter }
+                val mergedAnimeEpisodesMatched = mergedAnimeEpisodes.mapNotNull { episode ->
+                    loadedAnimeList.firstOrNull {
+                        it.anime.id == episode.id
+                    }?.let { it to episode }
                 }
-                val parsedChapters = chapters.filter {
-                    it.read || it.lastPageRead != 0L
-                }.mapNotNull { chapter -> readUrlConfig(chapter.url)?.let { chapter to it } }
-                val chaptersToUpdate = mutableListOf<ChapterUpdate>()
-                parsedChapters.forEach { parsedChapter ->
-                    mergedMangaChaptersMatched.firstOrNull {
-                        it.second.url == parsedChapter.second.url &&
-                            it.first.source.id == parsedChapter.second.source &&
-                            it.first.manga.url == parsedChapter.second.mangaUrl
+                val parsedEpisodes = episodes.filter {
+                    it.seen || it.lastSecondSeen != 0L
+                }.mapNotNull { episode -> readUrlConfig(episode.url)?.let { episode to it } }
+                val episodesToUpdate = mutableListOf<EpisodeUpdate>()
+                parsedEpisodes.forEach { parsedEpisode ->
+                    mergedAnimeEpisodesMatched.firstOrNull {
+                        it.second.url == parsedEpisode.second.url &&
+                            it.first.source.id == parsedEpisode.second.source &&
+                            it.first.anime.url == parsedEpisode.second.animeUrl
                     }?.let {
-                        chaptersToUpdate += ChapterUpdate(
+                        episodesToUpdate += EpisodeUpdate(
                             it.second.id,
-                            read = parsedChapter.first.read,
-                            lastPageRead = parsedChapter.first.lastPageRead,
+                            seen = parsedEpisode.first.seen,
+                            lastSecondSeen = parsedEpisode.first.lastSecondSeen,
                         )
                     }
                 }
 
-                deleteChapters.await(mergedMangaChapters.map { it.id })
-                updateChapter.awaitAll(chaptersToUpdate)
+                deleteEpisodes.await(mergedAnimeEpisodes.map { it.id })
+                updateEpisode.awaitAll(episodesToUpdate)
             }
         }
         return@withIOContext true
@@ -141,16 +141,16 @@ class MergedMangaRewriteMigration : Migration {
         @SerialName("u")
         val url: String,
         @SerialName("m")
-        val mangaUrl: String,
+        val animeUrl: String,
     )
 
     @Serializable
-    private data class MangaConfig(
+    private data class AnimeConfig(
         @SerialName("c")
-        val children: List<MangaSource>,
+        val children: List<AnimeSource>,
     ) {
         companion object {
-            fun readFromUrl(url: String): MangaConfig? {
+            fun readFromUrl(url: String): AnimeConfig? {
                 return try {
                     Json.decodeFromString(url)
                 } catch (e: Exception) {
@@ -160,21 +160,21 @@ class MergedMangaRewriteMigration : Migration {
         }
     }
 
-    private fun readMangaConfig(manga: Manga): MangaConfig? {
-        return MangaConfig.readFromUrl(manga.url)
+    private fun readAnimeConfig(anime: Anime): AnimeConfig? {
+        return AnimeConfig.readFromUrl(anime.url)
     }
 
     @Serializable
-    private data class MangaSource(
+    private data class AnimeSource(
         @SerialName("s")
         val source: Long,
         @SerialName("u")
         val url: String,
     ) {
-        suspend fun load(getManga: GetManga, sourceManager: SourceManager): LoadedMangaSource? {
-            val manga = getManga.await(url, source) ?: return null
+        suspend fun load(getAnime: GetAnime, sourceManager: SourceManager): LoadedAnimeSource? {
+            val anime = getAnime.await(url, source) ?: return null
             val source = sourceManager.getOrStub(source)
-            return LoadedMangaSource(source, manga)
+            return LoadedAnimeSource(source, anime)
         }
     }
 
@@ -186,5 +186,5 @@ class MergedMangaRewriteMigration : Migration {
         }
     }
 
-    private data class LoadedMangaSource(val source: Source, val manga: Manga)
+    private data class LoadedAnimeSource(val source: Source, val anime: Anime)
 }

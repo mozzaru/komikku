@@ -13,11 +13,11 @@ data class BackupFlatMetadata(
     @ProtoNumber(2) var searchTags: List<BackupSearchTag> = emptyList(),
     @ProtoNumber(3) var searchTitles: List<BackupSearchTitle> = emptyList(),
 ) {
-    fun getFlatMetadata(mangaId: Long): FlatMetadata {
+    fun getFlatMetadata(animeId: Long): FlatMetadata {
         return FlatMetadata(
-            metadata = searchMetadata.getSearchMetadata(mangaId),
-            tags = searchTags.map { it.getSearchTag(mangaId) },
-            titles = searchTitles.map { it.getSearchTitle(mangaId) },
+            metadata = searchMetadata.getSearchMetadata(animeId),
+            tags = searchTags.map { it.getSearchTag(animeId) },
+            titles = searchTitles.map { it.getSearchTitle(animeId) },
         )
     }
 

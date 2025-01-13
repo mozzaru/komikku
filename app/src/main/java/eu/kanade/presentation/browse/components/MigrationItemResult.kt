@@ -21,37 +21,37 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.unit.dp
-import eu.kanade.presentation.manga.components.MangaCover
+import eu.kanade.presentation.anime.components.AnimeCover
 import eu.kanade.presentation.util.rememberResourceBitmapPainter
 import eu.kanade.tachiyomi.R
-import eu.kanade.tachiyomi.ui.browse.migration.advanced.process.MigratingManga
+import eu.kanade.tachiyomi.ui.browse.migration.advanced.process.MigratingAnime
 import tachiyomi.core.common.util.lang.withIOContext
-import tachiyomi.domain.manga.model.Manga
+import tachiyomi.domain.anime.model.Anime
 import tachiyomi.i18n.sy.SYMR
 import tachiyomi.presentation.core.i18n.stringResource
 
 @Composable
 fun MigrationItemResult(
     modifier: Modifier,
-    migrationItem: MigratingManga,
-    result: MigratingManga.SearchResult,
-    getManga: suspend (MigratingManga.SearchResult.Result) -> Manga?,
-    getChapterInfo: suspend (MigratingManga.SearchResult.Result) -> MigratingManga.ChapterInfo,
-    getSourceName: (Manga) -> String,
-    onMigrationItemClick: (Manga) -> Unit,
+    migrationItem: MigratingAnime,
+    result: MigratingAnime.SearchResult,
+    getAnime: suspend (MigratingAnime.SearchResult.Result) -> Anime?,
+    getEpisodeInfo: suspend (MigratingAnime.SearchResult.Result) -> MigratingAnime.EpisodeInfo,
+    getSourceName: (Anime) -> String,
+    onMigrationItemClick: (Anime) -> Unit,
 ) {
     Box(modifier.height(IntrinsicSize.Min)) {
         when (result) {
-            MigratingManga.SearchResult.Searching -> Box(
+            MigratingAnime.SearchResult.Searching -> Box(
                 modifier = Modifier
                     .widthIn(max = 150.dp)
                     .fillMaxSize()
-                    .aspectRatio(MangaCover.Book.ratio),
+                    .aspectRatio(AnimeCover.Book.ratio),
                 contentAlignment = Alignment.Center,
             ) {
                 CircularProgressIndicator()
             }
-            MigratingManga.SearchResult.NotFound -> Column(
+            MigratingAnime.SearchResult.NotFound -> Column(
                 Modifier
                     .widthIn(max = 150.dp)
                     .fillMaxSize()
@@ -62,7 +62,7 @@ fun MigrationItemResult(
                     contentDescription = null,
                     modifier = Modifier
                         .fillMaxWidth()
-                        .aspectRatio(MangaCover.Book.ratio)
+                        .aspectRatio(AnimeCover.Book.ratio)
                         .clip(MaterialTheme.shapes.extraSmall),
                     contentScale = ContentScale.Crop,
                 )
@@ -72,30 +72,30 @@ fun MigrationItemResult(
                     style = MaterialTheme.typography.titleSmall,
                 )
             }
-            is MigratingManga.SearchResult.Result -> {
-                val item by produceState<Triple<Manga, MigratingManga.ChapterInfo, String>?>(
+            is MigratingAnime.SearchResult.Result -> {
+                val item by produceState<Triple<Anime, MigratingAnime.EpisodeInfo, String>?>(
                     initialValue = null,
                     migrationItem,
                     result,
                 ) {
                     value = withIOContext {
-                        val manga = getManga(result) ?: return@withIOContext null
+                        val anime = getAnime(result) ?: return@withIOContext null
                         Triple(
-                            manga,
-                            getChapterInfo(result),
-                            getSourceName(manga),
+                            anime,
+                            getEpisodeInfo(result),
+                            getSourceName(anime),
                         )
                     }
                 }
                 if (item != null) {
-                    val (manga, chapterInfo, source) = item!!
+                    val (anime, episodeInfo, source) = item!!
                     MigrationItem(
                         modifier = Modifier.fillMaxSize(),
-                        manga = manga,
+                        anime = anime,
                         sourcesString = source,
-                        chapterInfo = chapterInfo,
+                        episodeInfo = episodeInfo,
                         onClick = {
-                            onMigrationItemClick(manga)
+                            onMigrationItemClick(anime)
                         },
                     )
                 }

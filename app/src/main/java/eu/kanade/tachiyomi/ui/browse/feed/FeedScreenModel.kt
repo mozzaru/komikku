@@ -6,7 +6,7 @@ import androidx.compose.runtime.produceState
 import androidx.compose.ui.util.fastAny
 import cafe.adriel.voyager.core.model.StateScreenModel
 import cafe.adriel.voyager.core.model.screenModelScope
-import eu.kanade.domain.manga.model.toDomainManga
+import eu.kanade.domain.anime.model.toDomainAnime
 import eu.kanade.domain.source.service.SourcePreferences
 import eu.kanade.presentation.browse.FeedItemUI
 import eu.kanade.tachiyomi.source.CatalogueSource
@@ -32,8 +32,8 @@ import kotlinx.serialization.json.Json
 import tachiyomi.core.common.util.lang.launchIO
 import tachiyomi.core.common.util.lang.launchNonCancellable
 import tachiyomi.core.common.util.lang.withIOContext
-import tachiyomi.domain.manga.interactor.GetManga
-import tachiyomi.domain.manga.interactor.NetworkToLocalManga
+import tachiyomi.domain.anime.interactor.GetAnime
+import tachiyomi.domain.anime.interactor.NetworkToLocalAnime
 import tachiyomi.domain.source.interactor.CountFeedSavedSearchGlobal
 import tachiyomi.domain.source.interactor.DeleteFeedSavedSearchById
 import tachiyomi.domain.source.interactor.GetFeedSavedSearchGlobal
@@ -49,7 +49,7 @@ import uy.kohesive.injekt.Injekt
 import uy.kohesive.injekt.api.get
 import xyz.nulldev.ts.api.http.serializer.FilterSerializer
 import java.util.concurrent.Executors
-import tachiyomi.domain.manga.model.Manga as DomainManga
+import tachiyomi.domain.anime.model.Anime as DomainAnime
 
 /**
  * Presenter of [feedTab]
@@ -57,8 +57,8 @@ import tachiyomi.domain.manga.model.Manga as DomainManga
 open class FeedScreenModel(
     val sourceManager: SourceManager = Injekt.get(),
     val sourcePreferences: SourcePreferences = Injekt.get(),
-    private val getManga: GetManga = Injekt.get(),
-    private val networkToLocalManga: NetworkToLocalManga = Injekt.get(),
+    private val getAnime: GetAnime = Injekt.get(),
+    private val networkToLocalAnime: NetworkToLocalAnime = Injekt.get(),
     getFeedSavedSearchGlobal: GetFeedSavedSearchGlobal = Injekt.get(),
     private val getSavedSearchGlobalFeed: GetSavedSearchGlobalFeed = Injekt.get(),
     private val countFeedSavedSearchGlobal: CountFeedSavedSearchGlobal = Injekt.get(),
@@ -260,7 +260,7 @@ open class FeedScreenModel(
         feed: FeedSavedSearch,
         savedSearch: SavedSearch?,
         source: CatalogueSource?,
-        @Suppress("SameParameterValue") results: List<DomainManga>?,
+        @Suppress("SameParameterValue") results: List<DomainAnime>?,
     ): FeedItemUI {
         return FeedItemUI(
             feed,
@@ -281,7 +281,7 @@ open class FeedScreenModel(
     // KMK <--
 
     /**
-     * Initiates get manga per feed.
+     * Initiates get anime per feed.
      */
     private fun getFeed(feedSavedSearch: List<FeedItemUI>) {
         screenModelScope.launch {
@@ -297,17 +297,17 @@ open class FeedScreenModel(
                                         itemUI.source.getLatestUpdates(1)
                                         // KMK -->
                                     } else {
-                                        itemUI.source.getPopularManga(1)
+                                        itemUI.source.getPopularAnime(1)
                                     }
                                     // KMK <--
                                 } else {
-                                    itemUI.source.getSearchManga(
+                                    itemUI.source.getSearchAnime(
                                         1,
                                         itemUI.savedSearch.query.orEmpty(),
                                         getFilterList(itemUI.savedSearch, itemUI.source),
                                     )
                                 }
-                            }.mangas
+                            }.animes
                         } else {
                             emptyList()
                         }
@@ -318,7 +318,7 @@ open class FeedScreenModel(
                     val result = withIOContext {
                         itemUI.copy(
                             results = page.map {
-                                networkToLocalManga.await(it.toDomainManga(itemUI.source!!.id))
+                                networkToLocalAnime.await(it.toDomainAnime(itemUI.source!!.id))
                             }
                                 // KMK -->
                                 .filter { !hideInLibraryFeedItems.get() || !it.favorite },
@@ -351,12 +351,12 @@ open class FeedScreenModel(
     }
 
     @Composable
-    fun getManga(initialManga: DomainManga): State<DomainManga> {
-        return produceState(initialValue = initialManga) {
-            getManga.subscribe(initialManga.url, initialManga.source)
-                .collectLatest { manga ->
-                    if (manga == null) return@collectLatest
-                    value = manga
+    fun getAnime(initialAnime: DomainAnime): State<DomainAnime> {
+        return produceState(initialValue = initialAnime) {
+            getAnime.subscribe(initialAnime.url, initialAnime.source)
+                .collectLatest { anime ->
+                    if (anime == null) return@collectLatest
+                    value = anime
                 }
         }
     }

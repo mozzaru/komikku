@@ -62,7 +62,7 @@ class FilterHandler {
         Filter.Group<OriginalLanguage>("Original language", originalLanguage)
 
     private fun getOriginalLanguage() = listOf(
-        OriginalLanguage("Japanese (Manga)", "ja"),
+        OriginalLanguage("Japanese (Anime)", "ja"),
         OriginalLanguage("Chinese (Manhua)", "zh"),
         OriginalLanguage("Korean (Manhwa)", "ko"),
     )

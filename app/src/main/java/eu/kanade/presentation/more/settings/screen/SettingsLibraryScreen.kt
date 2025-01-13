@@ -66,7 +66,7 @@ object SettingsLibraryScreen : SearchableSettings {
         return listOf(
             getCategoriesGroup(LocalNavigator.currentOrThrow, allCategories, libraryPreferences),
             getGlobalUpdateGroup(allCategories, libraryPreferences),
-            getChapterSwipeActionsGroup(libraryPreferences),
+            getEpisodeSwipeActionsGroup(libraryPreferences),
             // SY -->
             getSortingCategory(LocalNavigator.currentOrThrow, libraryPreferences),
             getMigrationCategory(unsortedPreferences),
@@ -218,7 +218,7 @@ object SettingsLibraryScreen : SearchableSettings {
                     subtitle = stringResource(MR.strings.pref_library_update_refresh_metadata_summary),
                 ),
                 Preference.PreferenceItem.MultiSelectListPreference(
-                    pref = libraryPreferences.autoUpdateMangaRestrictions(),
+                    pref = libraryPreferences.autoUpdateAnimeRestrictions(),
                     title = stringResource(MR.strings.pref_library_update_smart_update),
                     entries = persistentMapOf(
                         MANGA_HAS_UNREAD to stringResource(MR.strings.pref_update_only_completely_read),
@@ -233,9 +233,9 @@ object SettingsLibraryScreen : SearchableSettings {
                 ),
                 // SY -->
                 Preference.PreferenceItem.SwitchPreference(
-                    pref = libraryPreferences.libraryReadDuplicateChapters(),
-                    title = stringResource(SYMR.strings.pref_library_mark_duplicate_chapters),
-                    subtitle = stringResource(SYMR.strings.pref_library_mark_duplicate_chapters_summary),
+                    pref = libraryPreferences.libraryReadDuplicateEpisodes(),
+                    title = stringResource(SYMR.strings.pref_library_mark_duplicate_episodes),
+                    subtitle = stringResource(SYMR.strings.pref_library_mark_duplicate_episodes_summary),
                 ),
                 // SY <--
                 // KMK -->
@@ -249,37 +249,37 @@ object SettingsLibraryScreen : SearchableSettings {
     }
 
     @Composable
-    private fun getChapterSwipeActionsGroup(
+    private fun getEpisodeSwipeActionsGroup(
         libraryPreferences: LibraryPreferences,
     ): Preference.PreferenceGroup {
         return Preference.PreferenceGroup(
-            title = stringResource(MR.strings.pref_chapter_swipe),
+            title = stringResource(MR.strings.pref_episode_swipe),
             preferenceItems = persistentListOf(
                 Preference.PreferenceItem.ListPreference(
                     pref = libraryPreferences.swipeToStartAction(),
-                    title = stringResource(MR.strings.pref_chapter_swipe_start),
+                    title = stringResource(MR.strings.pref_episode_swipe_start),
                     entries = persistentMapOf(
-                        LibraryPreferences.ChapterSwipeAction.Disabled to
+                        LibraryPreferences.EpisodeSwipeAction.Disabled to
                             stringResource(MR.strings.disabled),
-                        LibraryPreferences.ChapterSwipeAction.ToggleBookmark to
+                        LibraryPreferences.EpisodeSwipeAction.ToggleBookmark to
                             stringResource(MR.strings.action_bookmark),
-                        LibraryPreferences.ChapterSwipeAction.ToggleRead to
+                        LibraryPreferences.EpisodeSwipeAction.ToggleRead to
                             stringResource(MR.strings.action_mark_as_read),
-                        LibraryPreferences.ChapterSwipeAction.Download to
+                        LibraryPreferences.EpisodeSwipeAction.Download to
                             stringResource(MR.strings.action_download),
                     ),
                 ),
                 Preference.PreferenceItem.ListPreference(
                     pref = libraryPreferences.swipeToEndAction(),
-                    title = stringResource(MR.strings.pref_chapter_swipe_end),
+                    title = stringResource(MR.strings.pref_episode_swipe_end),
                     entries = persistentMapOf(
-                        LibraryPreferences.ChapterSwipeAction.Disabled to
+                        LibraryPreferences.EpisodeSwipeAction.Disabled to
                             stringResource(MR.strings.disabled),
-                        LibraryPreferences.ChapterSwipeAction.ToggleBookmark to
+                        LibraryPreferences.EpisodeSwipeAction.ToggleBookmark to
                             stringResource(MR.strings.action_bookmark),
-                        LibraryPreferences.ChapterSwipeAction.ToggleRead to
+                        LibraryPreferences.EpisodeSwipeAction.ToggleRead to
                             stringResource(MR.strings.action_mark_as_read),
-                        LibraryPreferences.ChapterSwipeAction.Download to
+                        LibraryPreferences.EpisodeSwipeAction.Download to
                             stringResource(MR.strings.action_download),
                     ),
                 ),

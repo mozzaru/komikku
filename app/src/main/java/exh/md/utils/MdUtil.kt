@@ -7,12 +7,12 @@ import eu.kanade.tachiyomi.R
 import eu.kanade.tachiyomi.data.track.mdlist.MdList
 import eu.kanade.tachiyomi.data.track.myanimelist.dto.MALOAuth
 import eu.kanade.tachiyomi.network.POST
-import eu.kanade.tachiyomi.source.model.SChapter
-import eu.kanade.tachiyomi.source.model.SManga
+import eu.kanade.tachiyomi.source.model.SAnime
+import eu.kanade.tachiyomi.source.model.SEpisode
 import eu.kanade.tachiyomi.source.online.all.MangaDex
 import eu.kanade.tachiyomi.util.PkceUtil
-import exh.md.dto.MangaAttributesDto
-import exh.md.dto.MangaDataDto
+import exh.md.dto.AnimeAttributesDto
+import exh.md.dto.AnimeDataDto
 import exh.source.getMainSource
 import exh.util.dropBlank
 import exh.util.floor
@@ -39,22 +39,22 @@ class MdUtil {
     companion object {
         const val cdnUrl = "https://uploads.mangadex.org"
         const val baseUrl = "https://mangadex.org"
-        const val chapterSuffix = "/chapter/"
+        const val episodeSuffix = "/episode/"
 
-        const val similarCacheMapping = "https://api.similarmanga.com/mapping/mdex2search.csv"
-        const val similarCacheMangas = "https://api.similarmanga.com/manga/"
-        const val similarBaseApi = "https://api.similarmanga.com/similar/"
+        const val similarCacheMapping = "https://api.similaranime.com/mapping/mdex2search.csv"
+        const val similarCacheAnimes = "https://api.similaranime.com/anime/"
+        const val similarBaseApi = "https://api.similaranime.com/similar/"
 
         const val groupSearchUrl = "$baseUrl/groups/0/1/"
         const val reportUrl = "https://api.mangadex.network/report"
 
         const val mdAtHomeTokenLifespan = 10 * 60 * 1000
-        const val mangaLimit = 20
+        const val animeLimit = 20
 
         /**
-         * Get the manga offset pages are 1 based, so subtract 1
+         * Get the anime offset pages are 1 based, so subtract 1
          */
-        fun getMangaListOffset(page: Int): String = (mangaLimit * (page - 1)).toString()
+        fun getAnimeListOffset(page: Int): String = (animeLimit * (page - 1)).toString()
 
         val jsonParser =
             Json {
@@ -72,20 +72,20 @@ class MdUtil {
         const val contentRatingErotica = "erotica"
         const val contentRatingPornographic = "pornographic"
 
-        val validOneShotFinalChapters = listOf("0", "1")
+        val validOneShotFinalEpisodes = listOf("0", "1")
 
         val markdownLinksRegex = "\\[([^]]+)\\]\\(([^)]+)\\)".toRegex()
         val markdownItalicBoldRegex = "\\*+\\s*([^\\*]*)\\s*\\*+".toRegex()
         val markdownItalicRegex = "_+\\s*([^_]*)\\s*_+".toRegex()
 
-        fun buildMangaUrl(mangaUuid: String): String {
-            return "/manga/$mangaUuid"
+        fun buildAnimeUrl(animeUuid: String): String {
+            return "/anime/$animeUuid"
         }
 
-        // Get the ID from the manga url
-        fun getMangaId(url: String): String = url.trimEnd('/').substringAfterLast("/")
+        // Get the ID from the anime url
+        fun getAnimeId(url: String): String = url.trimEnd('/').substringAfterLast("/")
 
-        fun getChapterId(url: String) = url.substringAfterLast("/")
+        fun getEpisodeId(url: String) = url.substringAfterLast("/")
 
         fun cleanDescription(string: String): String {
             return Parser.unescapeEntities(string, false)
@@ -112,27 +112,27 @@ class MdUtil {
             return scanlators.sorted().joinToString(scanlatorSeparator)
         }
 
-        fun getMissingChapterCount(chapters: List<SChapter>, mangaStatus: Int): String? {
-            if (mangaStatus == SManga.COMPLETED) return null
+        fun getMissingEpisodeCount(episodes: List<SEpisode>, animeStatus: Int): String? {
+            if (animeStatus == SAnime.COMPLETED) return null
 
-            val remove0ChaptersFromCount = chapters.distinctBy {
-                /*if (it.chapter_txt.isNotEmpty()) {
-                    it.vol + it.chapter_txt
+            val remove0EpisodesFromCount = episodes.distinctBy {
+                /*if (it.episode_txt.isNotEmpty()) {
+                    it.vol + it.episode_txt
                 } else {*/
                 it.name
                 /*}*/
-            }.sortedByDescending { it.chapter_number }
+            }.sortedByDescending { it.episode_number }
 
-            remove0ChaptersFromCount.firstOrNull()?.let { chapter ->
-                val chpNumber = chapter.chapter_number.floor()
-                val allChapters = (1..chpNumber).toMutableSet()
+            remove0EpisodesFromCount.firstOrNull()?.let { episode ->
+                val chpNumber = episode.episode_number.floor()
+                val allEpisodes = (1..chpNumber).toMutableSet()
 
-                remove0ChaptersFromCount.forEach {
-                    allChapters.remove(it.chapter_number.floor())
+                remove0EpisodesFromCount.forEach {
+                    allEpisodes.remove(it.episode_number.floor())
                 }
 
-                if (allChapters.isEmpty()) return null
-                return allChapters.size.toString()
+                if (allEpisodes.isEmpty()) return null
+                return allEpisodes.size.toString()
             }
             return null
         }
@@ -143,10 +143,10 @@ class MdUtil {
         fun parseDate(dateAsString: String): Long =
             dateFormatter.parse(dateAsString)?.time ?: 0
 
-        fun createMangaEntry(json: MangaDataDto, lang: String): SManga {
-            return SManga(
-                url = buildMangaUrl(json.id),
-                title = getTitleFromManga(json.attributes, lang),
+        fun createAnimeEntry(json: AnimeDataDto, lang: String): SAnime {
+            return SAnime(
+                url = buildAnimeUrl(json.id),
+                title = getTitleFromAnime(json.attributes, lang),
                 thumbnail_url = json.relationships
                     .firstOrNull { relationshipDto -> relationshipDto.type == MdConstants.Types.coverArt }
                     ?.attributes
@@ -157,7 +157,7 @@ class MdUtil {
             )
         }
 
-        fun getTitleFromManga(json: MangaAttributesDto, lang: String): String {
+        fun getTitleFromAnime(json: AnimeAttributesDto, lang: String): String {
             return getFromLangMap(json.title.asMdMap(), lang, json.originalLanguage)
                 ?: getAltTitle(json.altTitles, lang, json.originalLanguage)
                 ?: json.title.asMdMap<String>()[json.originalLanguage]

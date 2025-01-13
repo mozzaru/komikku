@@ -12,17 +12,17 @@ import androidx.compose.ui.platform.LocalHapticFeedback
 import cafe.adriel.voyager.core.model.rememberScreenModel
 import cafe.adriel.voyager.navigator.LocalNavigator
 import cafe.adriel.voyager.navigator.currentOrThrow
+import eu.kanade.core.util.ifSourcesLoaded
 import eu.kanade.presentation.browse.GlobalSearchScreen
 import eu.kanade.presentation.util.Screen
-import eu.kanade.tachiyomi.ui.browse.AddDuplicateMangaDialog
+import eu.kanade.tachiyomi.ui.anime.AnimeScreen
+import eu.kanade.tachiyomi.ui.browse.AddDuplicateAnimeDialog
 import eu.kanade.tachiyomi.ui.browse.AllowDuplicateDialog
 import eu.kanade.tachiyomi.ui.browse.BulkFavoriteScreenModel
-import eu.kanade.tachiyomi.ui.browse.ChangeMangaCategoryDialog
-import eu.kanade.tachiyomi.ui.browse.ChangeMangasCategoryDialog
-import eu.kanade.tachiyomi.ui.browse.RemoveMangaDialog
+import eu.kanade.tachiyomi.ui.browse.ChangeAnimeCategoryDialog
+import eu.kanade.tachiyomi.ui.browse.ChangeAnimesCategoryDialog
+import eu.kanade.tachiyomi.ui.browse.RemoveAnimeDialog
 import eu.kanade.tachiyomi.ui.browse.source.browse.BrowseSourceScreen
-import eu.kanade.tachiyomi.ui.manga.MangaScreen
-import exh.ui.ifSourcesLoaded
 import tachiyomi.presentation.core.screens.LoadingScreen
 
 class GlobalSearchScreen(
@@ -68,9 +68,9 @@ class GlobalSearchScreen(
                 when (val result = state.items.values.singleOrNull()) {
                     SearchItemResult.Loading -> return@LaunchedEffect
                     is SearchItemResult.Success -> {
-                        val manga = result.result.singleOrNull()
-                        if (manga != null) {
-                            navigator.replace(MangaScreen(manga.id, true))
+                        val anime = result.result.singleOrNull()
+                        if (anime != null) {
+                            navigator.replace(AnimeScreen(anime.id, true))
                         } else {
                             // Backoff to result screen
                             showSingleLoadingScreen = false
@@ -85,7 +85,7 @@ class GlobalSearchScreen(
                 navigateUp = navigator::pop,
                 onChangeSearchQuery = screenModel::updateSearchQuery,
                 onSearch = { screenModel.search() },
-                getManga = { screenModel.getManga(it) },
+                getAnime = { screenModel.getAnime(it) },
                 onChangeSearchFilter = screenModel::setSourceFilter,
                 onToggleResults = screenModel::toggleFilterResults,
                 onClickSource = {
@@ -97,16 +97,16 @@ class GlobalSearchScreen(
                         bulkFavoriteScreenModel.toggleSelection(it)
                     } else {
                         // KMK <--
-                        navigator.push(MangaScreen(it.id, true))
+                        navigator.push(AnimeScreen(it.id, true))
                     }
                 },
-                onLongClickItem = { manga ->
+                onLongClickItem = { anime ->
                     // KMK -->
                     if (!bulkFavoriteState.selectionMode) {
-                        bulkFavoriteScreenModel.addRemoveManga(manga, haptic)
+                        bulkFavoriteScreenModel.addRemoveAnime(anime, haptic)
                     } else {
                         // KMK <--
-                        navigator.push(MangaScreen(manga.id, true))
+                        navigator.push(AnimeScreen(anime.id, true))
                     }
                 },
                 // KMK -->
@@ -118,14 +118,14 @@ class GlobalSearchScreen(
 
         // KMK -->
         when (bulkFavoriteState.dialog) {
-            is BulkFavoriteScreenModel.Dialog.AddDuplicateManga ->
-                AddDuplicateMangaDialog(bulkFavoriteScreenModel)
-            is BulkFavoriteScreenModel.Dialog.RemoveManga ->
-                RemoveMangaDialog(bulkFavoriteScreenModel)
-            is BulkFavoriteScreenModel.Dialog.ChangeMangaCategory ->
-                ChangeMangaCategoryDialog(bulkFavoriteScreenModel)
-            is BulkFavoriteScreenModel.Dialog.ChangeMangasCategory ->
-                ChangeMangasCategoryDialog(bulkFavoriteScreenModel)
+            is BulkFavoriteScreenModel.Dialog.AddDuplicateAnime ->
+                AddDuplicateAnimeDialog(bulkFavoriteScreenModel)
+            is BulkFavoriteScreenModel.Dialog.RemoveAnime ->
+                RemoveAnimeDialog(bulkFavoriteScreenModel)
+            is BulkFavoriteScreenModel.Dialog.ChangeAnimeCategory ->
+                ChangeAnimeCategoryDialog(bulkFavoriteScreenModel)
+            is BulkFavoriteScreenModel.Dialog.ChangeAnimesCategory ->
+                ChangeAnimesCategoryDialog(bulkFavoriteScreenModel)
             is BulkFavoriteScreenModel.Dialog.AllowDuplicate ->
                 AllowDuplicateDialog(bulkFavoriteScreenModel)
             else -> {}

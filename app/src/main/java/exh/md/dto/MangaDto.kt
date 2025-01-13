@@ -4,36 +4,36 @@ import kotlinx.serialization.Serializable
 import kotlinx.serialization.json.JsonElement
 
 @Serializable
-data class MangaListDto(
+data class AnimeListDto(
     override val limit: Int,
     override val offset: Int,
     override val total: Int,
-    override val data: List<MangaDataDto>,
-) : ListCallDto<MangaDataDto>
+    override val data: List<AnimeDataDto>,
+) : ListCallDto<AnimeDataDto>
 
 @Serializable
-data class MangaDto(
+data class AnimeDto(
     val result: String,
-    val data: MangaDataDto,
+    val data: AnimeDataDto,
 )
 
 @Serializable
-data class MangaDataDto(
+data class AnimeDataDto(
     val id: String,
     val type: String,
-    val attributes: MangaAttributesDto,
+    val attributes: AnimeAttributesDto,
     val relationships: List<RelationshipDto>,
 )
 
 @Serializable
-data class MangaAttributesDto(
+data class AnimeAttributesDto(
     val title: JsonElement,
     val altTitles: List<Map<String, String>>,
     val description: JsonElement,
     val links: JsonElement?,
     val originalLanguage: String,
     val lastVolume: String?,
-    val lastChapter: String?,
+    val lastEpisode: String?,
     val contentRating: String?,
     val publicationDemographic: String?,
     val status: String?,
@@ -98,7 +98,7 @@ data class ReadingStatusMapDto(
 )
 
 @Serializable
-data class ReadChapterDto(
+data class ReadEpisodeDto(
     val data: List<String>,
 )
 
@@ -129,11 +129,11 @@ data class AggregateDto(
 data class AggregateVolume(
     val volume: String,
     val count: String,
-    val chapters: Map<String, AggregateChapter>,
+    val episodes: Map<String, AggregateEpisode>,
 )
 
 @Serializable
-data class AggregateChapter(
-    val chapter: String,
+data class AggregateEpisode(
+    val episode: String,
     val count: String,
 )

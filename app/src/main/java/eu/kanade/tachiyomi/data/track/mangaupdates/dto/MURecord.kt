@@ -1,4 +1,4 @@
-package eu.kanade.tachiyomi.data.track.mangaupdates.dto
+package eu.kanade.tachiyomi.data.track.animeupdates.dto
 
 import eu.kanade.tachiyomi.data.track.model.TrackSearch
 import eu.kanade.tachiyomi.util.lang.htmlDecode
@@ -19,8 +19,8 @@ data class MURecord(
     val bayesianRating: Double? = null,
     @SerialName("rating_votes")
     val ratingVotes: Int? = null,
-    @SerialName("latest_chapter")
-    val latestChapter: Int? = null,
+    @SerialName("latest_episode")
+    val latestEpisode: Int? = null,
     val authors: List<MUAuthor>? = null,
 )
 
@@ -28,7 +28,7 @@ fun MURecord.toTrackSearch(id: Long): TrackSearch {
     return TrackSearch.create(id).apply {
         remote_id = this@toTrackSearch.seriesId ?: 0L
         title = this@toTrackSearch.title?.htmlDecode() ?: ""
-        total_chapters = 0
+        total_episodes = 0
         cover_url = this@toTrackSearch.image?.url?.original ?: ""
         summary = this@toTrackSearch.description?.htmlDecode() ?: ""
         tracking_url = this@toTrackSearch.url ?: ""

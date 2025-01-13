@@ -11,12 +11,12 @@ import androidx.compose.runtime.State
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.util.fastAny
-import eu.kanade.presentation.browse.RelatedMangaTitle
-import eu.kanade.presentation.browse.RelatedMangasLoadingItem
+import eu.kanade.presentation.browse.RelatedAnimeTitle
+import eu.kanade.presentation.browse.RelatedAnimesLoadingItem
 import eu.kanade.presentation.browse.header
-import eu.kanade.presentation.library.components.CommonMangaItemDefaults
-import eu.kanade.tachiyomi.ui.manga.RelatedManga
-import tachiyomi.domain.manga.model.Manga
+import eu.kanade.presentation.library.components.CommonAnimeItemDefaults
+import eu.kanade.tachiyomi.ui.anime.RelatedAnime
+import tachiyomi.domain.anime.model.Anime
 import tachiyomi.i18n.MR
 import tachiyomi.i18n.kmk.KMR
 import tachiyomi.presentation.core.components.FastScrollLazyVerticalGrid
@@ -25,30 +25,30 @@ import tachiyomi.presentation.core.i18n.stringResource
 import tachiyomi.presentation.core.util.plus
 
 @Composable
-fun RelatedMangasCompactGrid(
-    relatedMangas: List<RelatedManga>,
-    getManga: @Composable (Manga) -> State<Manga>,
+fun RelatedAnimesCompactGrid(
+    relatedAnimes: List<RelatedAnime>,
+    getAnime: @Composable (Anime) -> State<Anime>,
     columns: GridCells,
     contentPadding: PaddingValues,
-    onMangaClick: (Manga) -> Unit,
-    onMangaLongClick: (Manga) -> Unit,
+    onAnimeClick: (Anime) -> Unit,
+    onAnimeLongClick: (Anime) -> Unit,
     onKeywordClick: (String) -> Unit,
     onKeywordLongClick: (String) -> Unit,
-    selection: List<Manga>,
+    selection: List<Anime>,
 ) {
     FastScrollLazyVerticalGrid(
         columns = columns,
         contentPadding = contentPadding + PaddingValues(horizontal = MaterialTheme.padding.small),
         // padding for scrollbar
         topContentPadding = contentPadding.calculateTopPadding(),
-        verticalArrangement = Arrangement.spacedBy(CommonMangaItemDefaults.GridVerticalSpacer),
-        horizontalArrangement = Arrangement.spacedBy(CommonMangaItemDefaults.GridHorizontalSpacer),
+        verticalArrangement = Arrangement.spacedBy(CommonAnimeItemDefaults.GridVerticalSpacer),
+        horizontalArrangement = Arrangement.spacedBy(CommonAnimeItemDefaults.GridHorizontalSpacer),
     ) {
-        relatedMangas.forEach { related ->
-            val isLoading = related is RelatedManga.Loading
+        relatedAnimes.forEach { related ->
+            val isLoading = related is RelatedAnime.Loading
             if (isLoading) {
                 header(key = "${related.hashCode()}#header") {
-                    RelatedMangaTitle(
+                    RelatedAnimeTitle(
                         title = stringResource(MR.strings.loading),
                         subtitle = null,
                         onClick = {},
@@ -56,38 +56,38 @@ fun RelatedMangasCompactGrid(
                         modifier = Modifier.background(MaterialTheme.colorScheme.background),
                     )
                 }
-                header(key = "${related.hashCode()}#content") { RelatedMangasLoadingItem() }
+                header(key = "${related.hashCode()}#content") { RelatedAnimesLoadingItem() }
             } else {
-                val relatedManga = related as RelatedManga.Success
+                val relatedAnime = related as RelatedAnime.Success
                 header(key = "${related.hashCode()}#divider") { HorizontalDivider() }
                 header(key = "${related.hashCode()}#header") {
-                    RelatedMangaTitle(
-                        title = if (relatedManga.keyword.isNotBlank()) {
-                            stringResource(KMR.strings.related_mangas_more)
+                    RelatedAnimeTitle(
+                        title = if (relatedAnime.keyword.isNotBlank()) {
+                            stringResource(KMR.strings.related_animes_more)
                         } else {
-                            stringResource(KMR.strings.related_mangas_website_suggestions)
+                            stringResource(KMR.strings.related_animes_website_suggestions)
                         },
-                        showArrow = relatedManga.keyword.isNotBlank(),
+                        showArrow = relatedAnime.keyword.isNotBlank(),
                         subtitle = null,
                         onClick = {
-                            if (relatedManga.keyword.isNotBlank()) onKeywordClick(relatedManga.keyword)
+                            if (relatedAnime.keyword.isNotBlank()) onKeywordClick(relatedAnime.keyword)
                         },
                         onLongClick = {
-                            if (relatedManga.keyword.isNotBlank()) onKeywordLongClick(relatedManga.keyword)
+                            if (relatedAnime.keyword.isNotBlank()) onKeywordLongClick(relatedAnime.keyword)
                         },
                         modifier = Modifier.background(MaterialTheme.colorScheme.background),
                     )
                 }
                 items(
-                    key = { "related-compact-${relatedManga.mangaList[it].id}" },
-                    count = relatedManga.mangaList.size,
+                    key = { "related-compact-${relatedAnime.animeList[it].id}" },
+                    count = relatedAnime.animeList.size,
                 ) { index ->
-                    val manga by getManga(relatedManga.mangaList[index])
+                    val anime by getAnime(relatedAnime.animeList[index])
                     BrowseSourceCompactGridItem(
-                        manga = manga,
-                        onClick = { onMangaClick(manga) },
-                        onLongClick = { onMangaLongClick(manga) },
-                        isSelected = selection.fastAny { selected -> selected.id == manga.id },
+                        anime = anime,
+                        onClick = { onAnimeClick(anime) },
+                        onLongClick = { onAnimeLongClick(anime) },
+                        isSelected = selection.fastAny { selected -> selected.id == anime.id },
                         metadata = null,
                     )
                 }

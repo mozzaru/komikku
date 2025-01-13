@@ -4,9 +4,9 @@ import android.content.Context
 import android.net.Uri
 import androidx.core.net.toUri
 import eu.kanade.tachiyomi.network.awaitSuccess
+import eu.kanade.tachiyomi.source.model.AnimesPage
 import eu.kanade.tachiyomi.source.model.FilterList
-import eu.kanade.tachiyomi.source.model.MangasPage
-import eu.kanade.tachiyomi.source.model.SManga
+import eu.kanade.tachiyomi.source.model.SAnime
 import eu.kanade.tachiyomi.source.online.HttpSource
 import eu.kanade.tachiyomi.source.online.MetadataSource
 import eu.kanade.tachiyomi.source.online.NamespaceSource
@@ -18,8 +18,8 @@ import exh.metadata.metadata.base.RaisedTag
 import exh.source.DelegatedHttpSource
 import exh.util.dropBlank
 import exh.util.trimAll
-import exh.util.urlImportFetchSearchManga
-import exh.util.urlImportFetchSearchMangaSuspend
+import exh.util.urlImportFetchSearchAnime
+import exh.util.urlImportFetchSearchAnimeSuspend
 import org.jsoup.nodes.Document
 import rx.Observable
 
@@ -40,8 +40,8 @@ class Pururin(delegate: HttpSource, val context: Context) :
     override fun newMetaInstance() = PururinSearchMetadata()
 
     // Support direct URL importing
-    @Deprecated("Use the non-RxJava API instead", replaceWith = ReplaceWith("getSearchManga"))
-    override fun fetchSearchManga(page: Int, query: String, filters: FilterList): Observable<MangasPage> {
+    @Deprecated("Use the non-RxJava API instead", replaceWith = ReplaceWith("getSearchAnime"))
+    override fun fetchSearchAnime(page: Int, query: String, filters: FilterList): Observable<AnimesPage> {
         val trimmedIdQuery = query.trim().removePrefix("id:")
         val newQuery = if ((trimmedIdQuery.toIntOrNull() ?: -1) >= 0) {
             "$baseUrl/gallery/$trimmedIdQuery/-"
@@ -49,27 +49,27 @@ class Pururin(delegate: HttpSource, val context: Context) :
             query
         }
 
-        return urlImportFetchSearchManga(context, newQuery) {
+        return urlImportFetchSearchAnime(context, newQuery) {
             @Suppress("DEPRECATION")
-            super<DelegatedHttpSource>.fetchSearchManga(page, query, filters)
+            super<DelegatedHttpSource>.fetchSearchAnime(page, query, filters)
         }
     }
 
-    override suspend fun getSearchManga(page: Int, query: String, filters: FilterList): MangasPage {
+    override suspend fun getSearchAnime(page: Int, query: String, filters: FilterList): AnimesPage {
         val trimmedIdQuery = query.trim().removePrefix("id:")
         val newQuery = if ((trimmedIdQuery.toIntOrNull() ?: -1) >= 0) {
             "$baseUrl/gallery/$trimmedIdQuery/-"
         } else {
             query
         }
-        return urlImportFetchSearchMangaSuspend(context, newQuery) {
-            super<DelegatedHttpSource>.getSearchManga(page, query, filters)
+        return urlImportFetchSearchAnimeSuspend(context, newQuery) {
+            super<DelegatedHttpSource>.getSearchAnime(page, query, filters)
         }
     }
 
-    override suspend fun getMangaDetails(manga: SManga): SManga {
-        val response = client.newCall(mangaDetailsRequest(manga)).awaitSuccess()
-        return parseToManga(manga, response.asJsoup())
+    override suspend fun getAnimeDetails(anime: SAnime): SAnime {
+        val response = client.newCall(animeDetailsRequest(anime)).awaitSuccess()
+        return parseToAnime(anime, response.asJsoup())
     }
 
     override suspend fun parseIntoMetadata(metadata: PururinSearchMetadata, input: Document) {
@@ -130,7 +130,7 @@ class Pururin(delegate: HttpSource, val context: Context) :
         "www.pururin.io",
     )
 
-    override suspend fun mapUrlToMangaUrl(uri: Uri): String {
+    override suspend fun mapUrlToAnimeUrl(uri: Uri): String {
         return "${PururinSearchMetadata.BASE_URL}/gallery/${uri.pathSegments.getOrNull(1)}/${uri.lastPathSegment}"
     }
 }

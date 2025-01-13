@@ -20,8 +20,8 @@ import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.unit.dp
 import eu.kanade.core.preference.PreferenceMutableState
 import eu.kanade.tachiyomi.ui.library.LibraryItem
+import tachiyomi.domain.library.model.LibraryAnime
 import tachiyomi.domain.library.model.LibraryDisplayMode
-import tachiyomi.domain.library.model.LibraryManga
 import tachiyomi.i18n.MR
 import tachiyomi.presentation.core.screens.EmptyScreen
 import tachiyomi.presentation.core.util.plus
@@ -31,15 +31,15 @@ fun LibraryPager(
     state: PagerState,
     contentPadding: PaddingValues,
     hasActiveFilters: Boolean,
-    selectedManga: List<LibraryManga>,
+    selectedAnime: List<LibraryAnime>,
     searchQuery: String?,
     onGlobalSearchClicked: () -> Unit,
     getDisplayMode: (Int) -> PreferenceMutableState<LibraryDisplayMode>,
     getColumnsForOrientation: (Boolean) -> PreferenceMutableState<Int>,
     getLibraryForPage: (Int) -> List<LibraryItem>,
-    onClickManga: (LibraryManga) -> Unit,
-    onLongClickManga: (LibraryManga) -> Unit,
-    onClickContinueReading: ((LibraryManga) -> Unit)?,
+    onClickAnime: (LibraryAnime) -> Unit,
+    onLongClickAnime: (LibraryAnime) -> Unit,
+    onClickContinueReading: ((LibraryAnime) -> Unit)?,
 ) {
     HorizontalPager(
         modifier = Modifier.fillMaxSize(),
@@ -77,9 +77,9 @@ fun LibraryPager(
                 LibraryList(
                     items = library,
                     contentPadding = contentPadding,
-                    selection = selectedManga,
-                    onClick = onClickManga,
-                    onLongClick = onLongClickManga,
+                    selection = selectedAnime,
+                    onClick = onClickAnime,
+                    onLongClick = onLongClickAnime,
                     onClickContinueReading = onClickContinueReading,
                     searchQuery = searchQuery,
                     onGlobalSearchClicked = onGlobalSearchClicked,
@@ -91,9 +91,9 @@ fun LibraryPager(
                     showTitle = displayMode is LibraryDisplayMode.CompactGrid,
                     columns = columns,
                     contentPadding = contentPadding,
-                    selection = selectedManga,
-                    onClick = onClickManga,
-                    onLongClick = onLongClickManga,
+                    selection = selectedAnime,
+                    onClick = onClickAnime,
+                    onLongClick = onLongClickAnime,
                     onClickContinueReading = onClickContinueReading,
                     searchQuery = searchQuery,
                     onGlobalSearchClicked = onGlobalSearchClicked,
@@ -104,9 +104,9 @@ fun LibraryPager(
                     items = library,
                     columns = columns,
                     contentPadding = contentPadding,
-                    selection = selectedManga,
-                    onClick = onClickManga,
-                    onLongClick = onLongClickManga,
+                    selection = selectedAnime,
+                    onClick = onClickAnime,
+                    onLongClick = onLongClickAnime,
                     onClickContinueReading = onClickContinueReading,
                     searchQuery = searchQuery,
                     onGlobalSearchClicked = onGlobalSearchClicked,
@@ -118,9 +118,9 @@ fun LibraryPager(
                     items = library,
                     columns = columns,
                     contentPadding = contentPadding,
-                    selection = selectedManga,
-                    onClick = onClickManga,
-                    onLongClick = onLongClickManga,
+                    selection = selectedAnime,
+                    onClick = onClickAnime,
+                    onLongClick = onLongClickAnime,
                     onClickContinueReading = onClickContinueReading,
                     searchQuery = searchQuery,
                     onGlobalSearchClicked = onGlobalSearchClicked,
@@ -142,7 +142,7 @@ private fun LibraryPagerEmptyScreen(
     val msg = when {
         !searchQuery.isNullOrEmpty() -> MR.strings.no_results_found
         hasActiveFilters -> MR.strings.error_no_match
-        else -> MR.strings.information_no_manga_category
+        else -> MR.strings.information_no_anime_category
     }
 
     Column(

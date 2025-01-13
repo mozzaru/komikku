@@ -220,26 +220,26 @@ object SettingsReaderScreen : SearchableSettings {
             preferenceItems = persistentListOf(
                 Preference.PreferenceItem.SwitchPreference(
                     pref = readerPreferences.skipRead(),
-                    title = stringResource(MR.strings.pref_skip_read_chapters),
+                    title = stringResource(MR.strings.pref_skip_read_episodes),
                 ),
                 Preference.PreferenceItem.SwitchPreference(
                     pref = readerPreferences.skipFiltered(),
-                    title = stringResource(MR.strings.pref_skip_filtered_chapters),
+                    title = stringResource(MR.strings.pref_skip_filtered_episodes),
                 ),
                 Preference.PreferenceItem.SwitchPreference(
                     pref = readerPreferences.skipDupe(),
-                    title = stringResource(MR.strings.pref_skip_dupe_chapters),
+                    title = stringResource(MR.strings.pref_skip_dupe_episodes),
                 ),
                 // SY -->
                 Preference.PreferenceItem.SwitchPreference(
                     pref = readerPreferences.markReadDupe(),
-                    title = stringResource(SYMR.strings.pref_mark_read_dupe_chapters),
-                    subtitle = stringResource(SYMR.strings.pref_mark_read_dupe_chapters_summary),
+                    title = stringResource(SYMR.strings.pref_mark_read_dupe_episodes),
+                    subtitle = stringResource(SYMR.strings.pref_mark_read_dupe_episodes_summary),
                 ),
                 // SY <--
                 Preference.PreferenceItem.SwitchPreference(
-                    pref = readerPreferences.alwaysShowChapterTransition(),
-                    title = stringResource(MR.strings.pref_always_show_chapter_transition),
+                    pref = readerPreferences.alwaysShowEpisodeTransition(),
+                    title = stringResource(MR.strings.pref_always_show_episode_transition),
                 ),
             ),
         )
@@ -506,9 +506,9 @@ object SettingsReaderScreen : SearchableSettings {
                     title = stringResource(MR.strings.pref_read_with_long_tap),
                 ),
                 Preference.PreferenceItem.SwitchPreference(
-                    pref = readerPreferences.folderPerManga(),
-                    title = stringResource(MR.strings.pref_create_folder_per_manga),
-                    subtitle = stringResource(MR.strings.pref_create_folder_per_manga_summary),
+                    pref = readerPreferences.folderPerAnime(),
+                    title = stringResource(MR.strings.pref_create_folder_per_anime),
+                    subtitle = stringResource(MR.strings.pref_create_folder_per_anime_summary),
                 ),
             ),
         )

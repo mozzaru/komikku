@@ -1,6 +1,6 @@
 CREATE TABLE libraryUpdateError (
     _id INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT,
-    manga_id INTEGER NOT NULL UNIQUE,
+    anime_id INTEGER NOT NULL UNIQUE,
     message_id INTEGER NOT NULL
 );
 
@@ -9,16 +9,16 @@ SELECT *
 FROM libraryUpdateError;
 
 insert:
-INSERT INTO libraryUpdateError(manga_id, message_id) VALUES (:mangaId, :messageId);
+INSERT INTO libraryUpdateError(anime_id, message_id) VALUES (:animeId, :messageId);
 
 upsert:
-INSERT INTO libraryUpdateError(manga_id, message_id)
-VALUES (:mangaId, :messageId)
-ON CONFLICT(manga_id)
+INSERT INTO libraryUpdateError(anime_id, message_id)
+VALUES (:animeId, :messageId)
+ON CONFLICT(anime_id)
 DO UPDATE
 SET
     message_id = :messageId
-WHERE manga_id = :mangaId;
+WHERE anime_id = :animeId;
 
 deleteAllErrors:
 DELETE FROM libraryUpdateError;
@@ -27,15 +27,15 @@ deleteError:
 DELETE FROM libraryUpdateError
 WHERE _id = :_id;
 
-deleteMangaError:
+deleteAnimeError:
 DELETE FROM libraryUpdateError
-WHERE manga_id = :mangaId;
+WHERE anime_id = :animeId;
 
-cleanUnrelevantMangaErrors:
+cleanUnrelevantAnimeErrors:
 DELETE FROM libraryUpdateError
 WHERE NOT EXISTS (
     SELECT 1
-    FROM mangas
-    WHERE libraryUpdateError.manga_id = mangas._id
-    AND mangas.favorite == 1
+    FROM animes
+    WHERE libraryUpdateError.anime_id = animes._id
+    AND animes.favorite == 1
 );

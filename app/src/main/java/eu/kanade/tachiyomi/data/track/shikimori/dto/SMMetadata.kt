@@ -9,7 +9,7 @@ data class SMMetadata(
 
 @Serializable
 data class SMMetadataData(
-    val mangas: List<SMMetadataResult>,
+    val animes: List<SMMetadataResult>,
 )
 
 @Serializable
@@ -17,17 +17,17 @@ data class SMMetadataResult(
     val id: String,
     val name: String,
     val description: String,
-    val poster: SMMangaPoster,
-    val personRoles: List<SMMangaPersonRoles>,
+    val poster: SMAnimePoster,
+    val personRoles: List<SMAnimePersonRoles>,
 )
 
 @Serializable
-data class SMMangaPoster(
+data class SMAnimePoster(
     val originalUrl: String,
 )
 
 @Serializable
-data class SMMangaPersonRoles(
+data class SMAnimePersonRoles(
     val person: SMPerson,
     val rolesEn: List<String>,
 )

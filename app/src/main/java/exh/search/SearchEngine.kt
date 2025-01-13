@@ -27,7 +27,7 @@ class SearchEngine {
             namespace != null -> {
                 var query =
                     """
-                    (SELECT ${"manga_id"} AS $COL_MANGA_ID FROM ${"search_tags"}
+                    (SELECT ${"anime_id"} AS $COL_MANGA_ID FROM ${"search_tags"}
                         WHERE ${"namespace"} IS NOT NULL
                         AND ${"namespace"} LIKE ?
                     """.trimIndent()
@@ -43,13 +43,13 @@ class SearchEngine {
                 // Match title + tags
                 val tagQuery =
                     """
-                    SELECT ${"manga_id"} AS $COL_MANGA_ID FROM ${"search_tags"}
+                    SELECT ${"anime_id"} AS $COL_MANGA_ID FROM ${"search_tags"}
                         WHERE ${componentTagQuery!!.first}
                     """.trimIndent() to componentTagQuery.second
 
                 val titleQuery =
                     """
-                    SELECT ${"manga_id"} AS $COL_MANGA_ID FROM ${"search_titles"}
+                    SELECT ${"anime_id"} AS $COL_MANGA_ID FROM ${"search_titles"}
                         WHERE ${"title"} LIKE ?
                     """.trimIndent() to listOf(component.asLenientTitleQuery())
 
@@ -96,7 +96,7 @@ class SearchEngine {
         val completeParams = mutableListOf<String>()
         var baseQuery =
             """
-            SELECT ${"manga_id"}
+            SELECT ${"anime_id"}
             FROM ${"search_metadata"} meta
             """.trimIndent()
 
@@ -104,7 +104,7 @@ class SearchEngine {
             baseQuery += "\n" + (
                 """
                 INNER JOIN ${pair.first} i$index
-                ON i$index.$COL_MANGA_ID = meta.${"manga_id"}
+                ON i$index.$COL_MANGA_ID = meta.${"anime_id"}
                 """.trimIndent()
                 )
             completeParams += pair.second
@@ -112,7 +112,7 @@ class SearchEngine {
 
         exclude.forEach {
             wheres += """
-            (meta.${"manga_id"} NOT IN ${it.first})
+            (meta.${"anime_id"} NOT IN ${it.first})
             """.trimIndent()
             whereParams += it.second
         }
@@ -121,7 +121,7 @@ class SearchEngine {
             baseQuery += "\nWHERE\n"
             baseQuery += wheres.joinToString("\nAND\n")
         }
-        baseQuery += "\nORDER BY manga_id"
+        baseQuery += "\nORDER BY anime_id"
 
         return baseQuery to completeParams
     }

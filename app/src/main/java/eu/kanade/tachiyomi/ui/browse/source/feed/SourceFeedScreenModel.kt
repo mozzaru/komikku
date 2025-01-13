@@ -9,7 +9,7 @@ import cafe.adriel.voyager.core.model.StateScreenModel
 import cafe.adriel.voyager.core.model.screenModelScope
 import dev.icerock.moko.resources.StringResource
 import eu.kanade.core.preference.asState
-import eu.kanade.domain.manga.model.toDomainManga
+import eu.kanade.domain.anime.model.toDomainAnime
 import eu.kanade.domain.source.interactor.GetExhSavedSearch
 import eu.kanade.domain.ui.UiPreferences
 import eu.kanade.presentation.browse.SourceFeedUI
@@ -39,8 +39,8 @@ import tachiyomi.core.common.util.lang.launchIO
 import tachiyomi.core.common.util.lang.launchNonCancellable
 import tachiyomi.core.common.util.lang.withIOContext
 import tachiyomi.core.common.util.lang.withUIContext
-import tachiyomi.domain.manga.interactor.GetManga
-import tachiyomi.domain.manga.interactor.NetworkToLocalManga
+import tachiyomi.domain.anime.interactor.GetAnime
+import tachiyomi.domain.anime.interactor.NetworkToLocalAnime
 import tachiyomi.domain.source.interactor.CountFeedSavedSearchBySourceId
 import tachiyomi.domain.source.interactor.DeleteFeedSavedSearchById
 import tachiyomi.domain.source.interactor.GetFeedSavedSearchBySourceId
@@ -58,14 +58,14 @@ import uy.kohesive.injekt.Injekt
 import uy.kohesive.injekt.api.get
 import xyz.nulldev.ts.api.http.serializer.FilterSerializer
 import java.util.concurrent.Executors
-import tachiyomi.domain.manga.model.Manga as DomainManga
+import tachiyomi.domain.anime.model.Anime as DomainAnime
 
 open class SourceFeedScreenModel(
     val sourceId: Long,
     uiPreferences: UiPreferences = Injekt.get(),
     private val sourceManager: SourceManager = Injekt.get(),
-    private val getManga: GetManga = Injekt.get(),
-    private val networkToLocalManga: NetworkToLocalManga = Injekt.get(),
+    private val getAnime: GetAnime = Injekt.get(),
+    private val networkToLocalAnime: NetworkToLocalAnime = Injekt.get(),
     private val getFeedSavedSearchBySourceId: GetFeedSavedSearchBySourceId = Injekt.get(),
     private val getSavedSearchBySourceIdFeed: GetSavedSearchBySourceIdFeed = Injekt.get(),
     private val countFeedSavedSearchBySourceId: CountFeedSavedSearchBySourceId = Injekt.get(),
@@ -208,7 +208,7 @@ open class SourceFeedScreenModel(
     }
 
     /**
-     * Initiates get manga per feed.
+     * Initiates get anime per feed.
      */
     private fun getFeed(feedSavedSearch: List<SourceFeedUI>) {
         // KMK -->
@@ -221,22 +221,22 @@ open class SourceFeedScreenModel(
                     val page = try {
                         withContext(coroutineDispatcher) {
                             when (sourceFeed) {
-                                is SourceFeedUI.Browse -> source.getPopularManga(1)
+                                is SourceFeedUI.Browse -> source.getPopularAnime(1)
                                 is SourceFeedUI.Latest -> source.getLatestUpdates(1)
-                                is SourceFeedUI.SourceSavedSearch -> source.getSearchManga(
+                                is SourceFeedUI.SourceSavedSearch -> source.getSearchAnime(
                                     page = 1,
                                     query = sourceFeed.savedSearch.query.orEmpty(),
                                     filters = getFilterList(sourceFeed.savedSearch, source),
                                 )
                             }
-                        }.mangas
+                        }.animes
                     } catch (e: Exception) {
                         emptyList()
                     }
 
                     val titles = withIOContext {
                         page.map {
-                            networkToLocalManga.await(it.toDomainManga(source.id))
+                            networkToLocalAnime.await(it.toDomainAnime(source.id))
                         }
                     }
 
@@ -267,12 +267,12 @@ open class SourceFeedScreenModel(
     }
 
     @Composable
-    fun getManga(initialManga: DomainManga): State<DomainManga> {
-        return produceState(initialValue = initialManga) {
-            getManga.subscribe(initialManga.url, initialManga.source)
-                .collectLatest { manga ->
-                    if (manga == null) return@collectLatest
-                    value = manga
+    fun getAnime(initialAnime: DomainAnime): State<DomainAnime> {
+        return produceState(initialValue = initialAnime) {
+            getAnime.subscribe(initialAnime.url, initialAnime.source)
+                .collectLatest { anime ->
+                    if (anime == null) return@collectLatest
+                    value = anime
                 }
         }
     }
@@ -366,7 +366,7 @@ open class SourceFeedScreenModel(
 
     fun onMangaDexRandom(onRandomFound: (String) -> Unit) {
         screenModelScope.launchIO {
-            val random = source.getMainSource<MangaDex>()?.fetchRandomMangaUrl()
+            val random = source.getMainSource<MangaDex>()?.fetchRandomAnimeUrl()
                 ?: return@launchIO
             onRandomFound(random)
         }

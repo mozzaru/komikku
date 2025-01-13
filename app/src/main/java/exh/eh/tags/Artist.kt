@@ -5401,7 +5401,7 @@ object Artist : TagList {
         "artist:l. fy qiyu",
         "artist:lab rat",
         "artist:labui",
-        "artist:lact mangan",
+        "artist:lact animen",
         "artist:lady astaroth",
         "artist:lady dino",
         "artist:ladydra6on",

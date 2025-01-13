@@ -8,11 +8,11 @@ import eu.kanade.tachiyomi.network.asObservableSuccess
 import eu.kanade.tachiyomi.network.awaitSuccess
 import eu.kanade.tachiyomi.network.newCachelessCallWithProgress
 import eu.kanade.tachiyomi.source.CatalogueSource
+import eu.kanade.tachiyomi.source.model.AnimesPage
 import eu.kanade.tachiyomi.source.model.FilterList
-import eu.kanade.tachiyomi.source.model.MangasPage
 import eu.kanade.tachiyomi.source.model.Page
-import eu.kanade.tachiyomi.source.model.SChapter
-import eu.kanade.tachiyomi.source.model.SManga
+import eu.kanade.tachiyomi.source.model.SAnime
+import eu.kanade.tachiyomi.source.model.SEpisode
 import exh.log.maybeInjectEHLogger
 import exh.pref.DelegateSourcePreferences
 import exh.source.DelegatedHttpSource
@@ -142,48 +142,48 @@ abstract class HttpSource : CatalogueSource {
     override fun toString() = "$name (${lang.uppercase()})"
 
     /**
-     * Get a page with a list of manga.
+     * Get a page with a list of anime.
      * Normally it's not needed to override this method.
      *
      * @since extensions-lib 1.5
      * @param page the page number to retrieve.
      */
-    override suspend fun getPopularManga(page: Int): MangasPage {
+    override suspend fun getPopularAnime(page: Int): AnimesPage {
         @Suppress("DEPRECATION")
-        return fetchPopularManga(page).awaitSingle()
+        return fetchPopularAnime(page).awaitSingle()
     }
 
     /**
-     * Returns an observable containing a page with a list of manga.
+     * Returns an observable containing a page with a list of anime.
      * Normally it's not needed to override this method.
      *
      * @param page the page number to retrieve.
      */
-    @Deprecated("Use the non-RxJava API instead", replaceWith = ReplaceWith("getPopularManga(page)"))
-    open fun fetchPopularManga(page: Int): Observable<MangasPage> {
-        return client.newCall(popularMangaRequest(page))
+    @Deprecated("Use the non-RxJava API instead", replaceWith = ReplaceWith("getPopularAnime(page)"))
+    open fun fetchPopularAnime(page: Int): Observable<AnimesPage> {
+        return client.newCall(popularAnimeRequest(page))
             .asObservableSuccess()
             .map { response ->
-                popularMangaParse(response)
+                popularAnimeParse(response)
             }
     }
 
     /**
-     * Returns the request for the popular manga given the page.
+     * Returns the request for the popular anime given the page.
      *
      * @param page the page number to retrieve.
      */
-    protected abstract fun popularMangaRequest(page: Int): Request
+    protected abstract fun popularAnimeRequest(page: Int): Request
 
     /**
-     * Parses the response from the site and returns a [MangasPage] object.
+     * Parses the response from the site and returns a [AnimesPage] object.
      *
      * @param response the response from the site.
      */
-    protected abstract fun popularMangaParse(response: Response): MangasPage
+    protected abstract fun popularAnimeParse(response: Response): AnimesPage
 
     /**
-     * Get a page with a list of manga.
+     * Get a page with a list of anime.
      * Normally it's not needed to override this method.
      *
      * @since extensions-lib 1.5
@@ -191,28 +191,28 @@ abstract class HttpSource : CatalogueSource {
      * @param query the search query.
      * @param filters the list of filters to apply.
      */
-    override suspend fun getSearchManga(page: Int, query: String, filters: FilterList): MangasPage {
+    override suspend fun getSearchAnime(page: Int, query: String, filters: FilterList): AnimesPage {
         @Suppress("DEPRECATION")
-        return fetchSearchManga(page, query, filters).awaitSingle()
+        return fetchSearchAnime(page, query, filters).awaitSingle()
     }
 
     /**
-     * Returns an observable containing a page with a list of manga.
+     * Returns an observable containing a page with a list of anime.
      * Normally it's not needed to override this method.
      *
      * @param page the page number to retrieve.
      * @param query the search query.
      * @param filters the list of filters to apply.
      */
-    @Deprecated("Use the non-RxJava API instead", replaceWith = ReplaceWith("getSearchManga(page, query, filters)"))
-    open fun fetchSearchManga(
+    @Deprecated("Use the non-RxJava API instead", replaceWith = ReplaceWith("getSearchAnime(page, query, filters)"))
+    open fun fetchSearchAnime(
         page: Int,
         query: String,
         filters: FilterList,
-    ): Observable<MangasPage> {
+    ): Observable<AnimesPage> {
         return Observable.defer {
             try {
-                client.newCall(searchMangaRequest(page, query, filters)).asObservableSuccess()
+                client.newCall(searchAnimeRequest(page, query, filters)).asObservableSuccess()
             } catch (e: NoClassDefFoundError) {
                 // RxJava doesn't handle Errors, which tends to happen during global searches
                 // if an old extension using non-existent classes is still around
@@ -220,50 +220,50 @@ abstract class HttpSource : CatalogueSource {
             }
         }
             .map { response ->
-                searchMangaParse(response)
+                searchAnimeParse(response)
             }
     }
 
     /**
-     * Returns the request for the search manga given the page.
+     * Returns the request for the search anime given the page.
      *
      * @param page the page number to retrieve.
      * @param query the search query.
      * @param filters the list of filters to apply.
      */
-    protected abstract fun searchMangaRequest(
+    protected abstract fun searchAnimeRequest(
         page: Int,
         query: String,
         filters: FilterList,
     ): Request
 
     /**
-     * Parses the response from the site and returns a [MangasPage] object.
+     * Parses the response from the site and returns a [AnimesPage] object.
      *
      * @param response the response from the site.
      */
-    protected abstract fun searchMangaParse(response: Response): MangasPage
+    protected abstract fun searchAnimeParse(response: Response): AnimesPage
 
     /**
-     * Get a page with a list of latest manga updates.
+     * Get a page with a list of latest anime updates.
      * Normally it's not needed to override this method.
      *
      * @since extensions-lib 1.5
      * @param page the page number to retrieve.
      */
-    override suspend fun getLatestUpdates(page: Int): MangasPage {
+    override suspend fun getLatestUpdates(page: Int): AnimesPage {
         @Suppress("DEPRECATION")
         return fetchLatestUpdates(page).awaitSingle()
     }
 
     /**
-     * Returns an observable containing a page with a list of latest manga updates.
+     * Returns an observable containing a page with a list of latest anime updates.
      * Normally it's not needed to override this method.
      *
      * @param page the page number to retrieve.
      */
     @Deprecated("Use the non-RxJava API instead", replaceWith = ReplaceWith("getLatestUpdates(page)"))
-    open fun fetchLatestUpdates(page: Int): Observable<MangasPage> {
+    open fun fetchLatestUpdates(page: Int): Observable<AnimesPage> {
         return client.newCall(latestUpdatesRequest(page))
             .asObservableSuccess()
             .map { response ->
@@ -272,7 +272,7 @@ abstract class HttpSource : CatalogueSource {
     }
 
     /**
-     * Returns the request for latest manga given the page.
+     * Returns the request for latest anime given the page.
      *
      * @param page the page number to retrieve.
      */
@@ -280,182 +280,182 @@ abstract class HttpSource : CatalogueSource {
     abstract fun latestUpdatesRequest(page: Int): Request
 
     /**
-     * Parses the response from the site and returns a [MangasPage] object.
+     * Parses the response from the site and returns a [AnimesPage] object.
      *
      * @param response the response from the site.
      */
     /* SY --> protected <-- SY */
-    abstract fun latestUpdatesParse(response: Response): MangasPage
+    abstract fun latestUpdatesParse(response: Response): AnimesPage
 
     /**
-     * Get the updated details for a manga.
+     * Get the updated details for a anime.
      * Normally it's not needed to override this method.
      *
      * @since extensions-lib 1.4
-     * @param manga the manga to update.
-     * @return the updated manga.
+     * @param anime the anime to update.
+     * @return the updated anime.
      */
-    override suspend fun getMangaDetails(manga: SManga): SManga {
+    override suspend fun getAnimeDetails(anime: SAnime): SAnime {
         @Suppress("DEPRECATION")
-        return fetchMangaDetails(manga).awaitSingle()
+        return fetchAnimeDetails(anime).awaitSingle()
     }
 
     /**
-     * Returns an observable with the updated details for a manga.
+     * Returns an observable with the updated details for a anime.
      * Normally it's not needed to override this method.
      *
-     * @param manga the manga to be updated.
+     * @param anime the anime to be updated.
      */
-    @Deprecated("Use the non-RxJava API instead", replaceWith = ReplaceWith("getMangaDetails(manga)"))
-    open fun fetchMangaDetails(manga: SManga): Observable<SManga> {
-        return client.newCall(mangaDetailsRequest(manga))
+    @Deprecated("Use the non-RxJava API instead", replaceWith = ReplaceWith("getAnimeDetails(anime)"))
+    open fun fetchAnimeDetails(anime: SAnime): Observable<SAnime> {
+        return client.newCall(animeDetailsRequest(anime))
             .asObservableSuccess()
             .map { response ->
-                mangaDetailsParse(response).apply { initialized = true }
+                animeDetailsParse(response).apply { initialized = true }
             }
     }
 
     /**
-     * Returns the request for the details of a manga. Override only if it's needed to change the
+     * Returns the request for the details of a anime. Override only if it's needed to change the
      * url, send different headers or request method like POST.
      * Normally it's not needed to override this method.
      *
-     * @param manga the manga to be updated.
+     * @param anime the anime to be updated.
      */
-    open fun mangaDetailsRequest(manga: SManga): Request {
-        return GET(baseUrl + manga.url, headers)
+    open fun animeDetailsRequest(anime: SAnime): Request {
+        return GET(baseUrl + anime.url, headers)
     }
 
     /**
-     * Parses the response from the site and returns the details of a manga.
+     * Parses the response from the site and returns the details of a anime.
      *
      * @param response the response from the site.
      */
-    protected abstract fun mangaDetailsParse(response: Response): SManga
+    protected abstract fun animeDetailsParse(response: Response): SAnime
 
     // KMK -->
     /**
-     * Whether parsing related mangas in manga page or extension provide custom related mangas request.
+     * Whether parsing related animes in anime page or extension provide custom related animes request.
      *
      * @default true
      * @since komikku/extensions-lib 1.6
      */
-    override val supportsRelatedMangas: Boolean get() = true
+    override val supportsRelatedAnimes: Boolean get() = true
 
     /**
-     * Fetch related mangas for a manga from source/site.
+     * Fetch related animes for a anime from source/site.
      * Normally it's not needed to override this method.
      *
      * @since komikku/extensions-lib 1.6
-     * @param manga the current manga to get related mangas.
-     * @return the related mangas for the current manga.
-     * @throws UnsupportedOperationException if a source doesn't support related mangas.
+     * @param anime the current anime to get related animes.
+     * @return the related animes for the current anime.
+     * @throws UnsupportedOperationException if a source doesn't support related animes.
      */
-    override suspend fun fetchRelatedMangaList(manga: SManga): List<SManga> = coroutineScope {
+    override suspend fun fetchRelatedAnimeList(anime: SAnime): List<SAnime> = coroutineScope {
         async {
-            client.newCall(relatedMangaListRequest(manga))
+            client.newCall(relatedAnimeListRequest(anime))
                 .execute()
                 .let { response ->
-                    relatedMangaListParse(response)
+                    relatedAnimeListParse(response)
                 }
         }.await()
     }
 
     /**
-     * Returns the request for get related manga list. Override only if it's needed to override
+     * Returns the request for get related anime list. Override only if it's needed to override
      * the url, send different headers or request method like POST.
      * Normally it's not needed to override this method.
      *
      * @since komikku/extensions-lib 1.6
-     * @param manga the manga to look for related mangas.
+     * @param anime the anime to look for related animes.
      */
-    protected open fun relatedMangaListRequest(manga: SManga): Request {
-        return mangaDetailsRequest(manga)
+    protected open fun relatedAnimeListRequest(anime: SAnime): Request {
+        return animeDetailsRequest(anime)
     }
 
     /**
-     * Parses the response from the site and returns a list of related mangas.
+     * Parses the response from the site and returns a list of related animes.
      *
      * @since komikku/extensions-lib 1.6
      * @param response the response from the site.
      */
-    protected open fun relatedMangaListParse(response: Response): List<SManga> = popularMangaParse(response).mangas
+    protected open fun relatedAnimeListParse(response: Response): List<SAnime> = popularAnimeParse(response).animes
     // KMK <--
 
     /**
-     * Get all the available chapters for a manga.
+     * Get all the available episodes for a anime.
      * Normally it's not needed to override this method.
      *
-     * @param manga the manga to update.
-     * @return the chapters for the manga.
+     * @param anime the anime to update.
+     * @return the episodes for the anime.
      */
-    override suspend fun getChapterList(manga: SManga): List<SChapter> {
+    override suspend fun getEpisodeList(anime: SAnime): List<SEpisode> {
         @Suppress("DEPRECATION")
-        return fetchChapterList(manga).awaitSingle()
+        return fetchEpisodeList(anime).awaitSingle()
     }
 
     /**
-     * Returns an observable with the updated chapter list for a manga.
+     * Returns an observable with the updated episode list for a anime.
      * Normally it's not needed to override this method.
      *
-     * @param manga the manga to look for chapters.
+     * @param anime the anime to look for episodes.
      */
-    @Deprecated("Use the non-RxJava API instead", replaceWith = ReplaceWith("getChapterList(manga)"))
-    open fun fetchChapterList(manga: SManga): Observable<List<SChapter>> {
-        return client.newCall(chapterListRequest(manga))
+    @Deprecated("Use the non-RxJava API instead", replaceWith = ReplaceWith("getEpisodeList(anime)"))
+    open fun fetchEpisodeList(anime: SAnime): Observable<List<SEpisode>> {
+        return client.newCall(episodeListRequest(anime))
             .asObservableSuccess()
             .map { response ->
-                chapterListParse(response)
+                episodeListParse(response)
             }
     }
 
     /**
-     * Returns the request for updating the chapter list. Override only if it's needed to override
+     * Returns the request for updating the episode list. Override only if it's needed to override
      * the url, send different headers or request method like POST.
      * Normally it's not needed to override this method.
      *
-     * @param manga the manga to look for chapters.
+     * @param anime the anime to look for episodes.
      */
-    protected open fun chapterListRequest(manga: SManga): Request {
-        return GET(baseUrl + manga.url, headers)
+    protected open fun episodeListRequest(anime: SAnime): Request {
+        return GET(baseUrl + anime.url, headers)
     }
 
     /**
-     * Parses the response from the site and returns a list of chapters.
+     * Parses the response from the site and returns a list of episodes.
      *
      * @param response the response from the site.
      */
-    protected abstract fun chapterListParse(response: Response): List<SChapter>
+    protected abstract fun episodeListParse(response: Response): List<SEpisode>
 
     /**
-     * Parses the response from the site and returns a SChapter Object.
+     * Parses the response from the site and returns a SEpisode Object.
      *
      * @param response the response from the site.
      */
-    protected open fun chapterPageParse(response: Response): SChapter = throw UnsupportedOperationException("Not used!")
+    protected open fun episodePageParse(response: Response): SEpisode = throw UnsupportedOperationException("Not used!")
 
     /**
-     * Get the list of pages a chapter has. Pages should be returned
+     * Get the list of pages a episode has. Pages should be returned
      * in the expected order; the index is ignored.
      * Normally it's not needed to override this method.
      *
-     * @param chapter the chapter.
-     * @return the pages for the chapter.
+     * @param episode the episode.
+     * @return the pages for the episode.
      */
-    override suspend fun getPageList(chapter: SChapter): List<Page> {
+    override suspend fun getPageList(episode: SEpisode): List<Page> {
         @Suppress("DEPRECATION")
-        return fetchPageList(chapter).awaitSingle()
+        return fetchPageList(episode).awaitSingle()
     }
 
     /**
-     * Returns an observable with the page list for a chapter.
+     * Returns an observable with the page list for a episode.
      * Normally it's not needed to override this method.
      *
-     * @param chapter the chapter whose page list has to be fetched.
+     * @param episode the episode whose page list has to be fetched.
      */
-    @Deprecated("Use the non-RxJava API instead", replaceWith = ReplaceWith("getPageList(chapter)"))
-    open fun fetchPageList(chapter: SChapter): Observable<List<Page>> {
-        return client.newCall(pageListRequest(chapter))
+    @Deprecated("Use the non-RxJava API instead", replaceWith = ReplaceWith("getPageList(episode)"))
+    open fun fetchPageList(episode: SEpisode): Observable<List<Page>> {
+        return client.newCall(pageListRequest(episode))
             .asObservableSuccess()
             .map { response ->
                 pageListParse(response)
@@ -467,10 +467,10 @@ abstract class HttpSource : CatalogueSource {
      * url, send different headers or request method like POST.
      * Normally it's not needed to override this method.
      *
-     * @param chapter the chapter whose page list has to be fetched.
+     * @param episode the episode whose page list has to be fetched.
      */
-    protected open fun pageListRequest(chapter: SChapter): Request {
-        return GET(baseUrl + chapter.url, headers)
+    protected open fun pageListRequest(episode: SEpisode): Request {
+        return GET(baseUrl + episode.url, headers)
     }
 
     /**
@@ -511,7 +511,7 @@ abstract class HttpSource : CatalogueSource {
      * override the url, send different headers or request method like POST.
      * Normally it's not needed to override this method.
      *
-     * @param page the chapter whose page list has to be fetched
+     * @param page the episode whose page list has to be fetched
      */
     protected open fun imageUrlRequest(page: Page): Request {
         return GET(page.url, headers)
@@ -541,31 +541,31 @@ abstract class HttpSource : CatalogueSource {
      * the url, send different headers or request method like POST.
      * Normally it's not needed to override this method.
      *
-     * @param page the chapter whose page list has to be fetched
+     * @param page the episode whose page list has to be fetched
      */
     protected open fun imageRequest(page: Page): Request {
         return GET(page.imageUrl!!, headers)
     }
 
     /**
-     * Assigns the url of the chapter without the scheme and domain. It saves some redundancy from
+     * Assigns the url of the episode without the scheme and domain. It saves some redundancy from
      * database and the urls could still work after a domain change.
      * Normally it's not needed to override this method.
      *
-     * @param url the full url to the chapter.
+     * @param url the full url to the episode.
      */
-    fun SChapter.setUrlWithoutDomain(url: String) {
+    fun SEpisode.setUrlWithoutDomain(url: String) {
         this.url = getUrlWithoutDomain(url)
     }
 
     /**
-     * Assigns the url of the manga without the scheme and domain. It saves some redundancy from
+     * Assigns the url of the anime without the scheme and domain. It saves some redundancy from
      * database and the urls could still work after a domain change.
      * Normally it's not needed to override this method.
      *
-     * @param url the full url to the manga.
+     * @param url the full url to the anime.
      */
-    fun SManga.setUrlWithoutDomain(url: String) {
+    fun SAnime.setUrlWithoutDomain(url: String) {
         this.url = getUrlWithoutDomain(url)
     }
 
@@ -592,37 +592,37 @@ abstract class HttpSource : CatalogueSource {
     }
 
     /**
-     * Returns the url of the provided manga.
+     * Returns the url of the provided anime.
      * Normally it's not needed to override this method.
      *
      * @since extensions-lib 1.4
-     * @param manga the manga
-     * @return url of the manga
+     * @param anime the anime
+     * @return url of the anime
      */
-    open fun getMangaUrl(manga: SManga): String {
-        return mangaDetailsRequest(manga).url.toString()
+    open fun getAnimeUrl(anime: SAnime): String {
+        return animeDetailsRequest(anime).url.toString()
     }
 
     /**
-     * Returns the url of the provided chapter.
+     * Returns the url of the provided episode.
      * Normally it's not needed to override this method.
      *
      * @since extensions-lib 1.4
-     * @param chapter the chapter
-     * @return url of the chapter
+     * @param episode the episode
+     * @return url of the episode
      */
-    open fun getChapterUrl(chapter: SChapter): String {
-        return pageListRequest(chapter).url.toString()
+    open fun getEpisodeUrl(episode: SEpisode): String {
+        return pageListRequest(episode).url.toString()
     }
 
     /**
-     * Called before inserting a new chapter into database. Use it if you need to override chapter
-     * fields, like the title or the chapter number. Do not change anything to [manga].
+     * Called before inserting a new episode into database. Use it if you need to override episode
+     * fields, like the title or the episode number. Do not change anything to [anime].
      *
-     * @param chapter the chapter to be added.
-     * @param manga the manga of the chapter.
+     * @param episode the episode to be added.
+     * @param anime the anime of the episode.
      */
-    open fun prepareNewChapter(chapter: SChapter, manga: SManga) {}
+    open fun prepareNewEpisode(episode: SEpisode, anime: SAnime) {}
 
     /**
      * Returns the list of filters for the source.

@@ -4,8 +4,8 @@ import kotlinx.serialization.Serializable
 
 @Serializable
 data class SearchMetadata(
-    // Manga ID this gallery is linked to
-    val mangaId: Long,
+    // Anime ID this gallery is linked to
+    val animeId: Long,
 
     // Gallery uploader
     val uploader: String?,

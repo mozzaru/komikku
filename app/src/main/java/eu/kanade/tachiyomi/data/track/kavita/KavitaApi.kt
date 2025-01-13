@@ -89,11 +89,11 @@ class KavitaApi(private val client: OkHttpClient, interceptor: KavitaInterceptor
     }
 
     /*
-     * Returns total chapters in the series.
+     * Returns total episodes in the series.
      * Ignores volumes.
-     * Volumes consisting of 1 file treated as chapter
+     * Volumes consisting of 1 file treated as episode
      */
-    private fun getTotalChapters(url: String): Long {
+    private fun getTotalEpisodes(url: String): Long {
         val requestUrl = getApiVolumesUrl(url)
         try {
             val listVolumeDto = with(json) {
@@ -102,30 +102,30 @@ class KavitaApi(private val client: OkHttpClient, interceptor: KavitaInterceptor
                     .parseAs<List<VolumeDto>>()
             }
             var volumeNumber = 0L
-            var maxChapterNumber = 0L
+            var maxEpisodeNumber = 0L
             for (volume in listVolumeDto) {
-                if (volume.chapters.maxOf { it.number!!.toFloat() } == 0f) {
+                if (volume.episodes.maxOf { it.number!!.toFloat() } == 0f) {
                     volumeNumber++
-                } else if (maxChapterNumber < volume.chapters.maxOf { it.number!!.toFloat() }) {
-                    maxChapterNumber = volume.chapters.maxOf { it.number!!.toFloat().toLong() }
+                } else if (maxEpisodeNumber < volume.episodes.maxOf { it.number!!.toFloat() }) {
+                    maxEpisodeNumber = volume.episodes.maxOf { it.number!!.toFloat().toLong() }
                 }
             }
 
-            return if (maxChapterNumber > volumeNumber) maxChapterNumber else volumeNumber
+            return if (maxEpisodeNumber > volumeNumber) maxEpisodeNumber else volumeNumber
         } catch (e: Exception) {
-            logcat(LogPriority.WARN, e) { "Exception fetching Total Chapters. Request:$requestUrl" }
+            logcat(LogPriority.WARN, e) { "Exception fetching Total Episodes. Request:$requestUrl" }
             throw e
         }
     }
 
-    private fun getLatestChapterRead(url: String): Double {
+    private fun getLatestEpisodeRead(url: String): Double {
         val seriesId = getIdFromUrl(url)
-        val requestUrl = "${getApiFromUrl(url)}/Tachiyomi/latest-chapter?seriesId=$seriesId"
+        val requestUrl = "${getApiFromUrl(url)}/Tachiyomi/latest-episode?seriesId=$seriesId"
         try {
             with(json) {
                 authClient.newCall(GET(requestUrl)).execute().use {
                     if (it.code == 200) {
-                        return it.parseAs<ChapterDto>().number!!.replace(",", ".").toDouble()
+                        return it.parseAs<EpisodeDto>().number!!.replace(",", ".").toDouble()
                     }
                     if (it.code == 204) {
                         return 0.0
@@ -136,7 +136,7 @@ class KavitaApi(private val client: OkHttpClient, interceptor: KavitaInterceptor
             logcat(
                 LogPriority.WARN,
                 e,
-            ) { "Exception getting latest chapter read. Could not get itemRequest: $requestUrl" }
+            ) { "Exception getting latest episode read. Could not get itemRequest: $requestUrl" }
             throw e
         }
         return 0.0
@@ -154,7 +154,7 @@ class KavitaApi(private val client: OkHttpClient, interceptor: KavitaInterceptor
             track.apply {
                 cover_url = seriesDto.thumbnail_url.toString()
                 tracking_url = url
-                total_chapters = getTotalChapters(url)
+                total_episodes = getTotalEpisodes(url)
 
                 title = seriesDto.name
                 status = when (seriesDto.pagesRead) {
@@ -162,7 +162,7 @@ class KavitaApi(private val client: OkHttpClient, interceptor: KavitaInterceptor
                     0 -> Kavita.UNREAD
                     else -> Kavita.READING
                 }
-                last_chapter_read = getLatestChapterRead(url)
+                last_episode_seen = getLatestEpisodeRead(url)
             }
         } catch (e: Exception) {
             logcat(LogPriority.WARN, e) { "Could not get item: $url" }
@@ -173,9 +173,9 @@ class KavitaApi(private val client: OkHttpClient, interceptor: KavitaInterceptor
     suspend fun updateProgress(track: Track): Track {
         val requestUrl = "${getApiFromUrl(
             track.tracking_url,
-        )}/Tachiyomi/mark-chapter-until-as-read?seriesId=${getIdFromUrl(
+        )}/Tachiyomi/mark-episode-until-as-read?seriesId=${getIdFromUrl(
             track.tracking_url,
-        )}&chapterNumber=${track.last_chapter_read}"
+        )}&episodeNumber=${track.last_episode_seen}"
         authClient.newCall(
             POST(requestUrl, body = "{}".toRequestBody("application/json; charset=utf-8".toMediaTypeOrNull())),
         )

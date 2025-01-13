@@ -2,28 +2,28 @@ import kotlin.Int;
 
 CREATE TABLE search_titles (
     _id INTEGER NOT NULL PRIMARY KEY,
-    manga_id INTEGER NOT NULL,
+    anime_id INTEGER NOT NULL,
     title TEXT NOT NULL,
     type INTEGER NOT NULL,
-    FOREIGN KEY(manga_id) REFERENCES mangas (_id)
+    FOREIGN KEY(anime_id) REFERENCES animes (_id)
     ON DELETE CASCADE
 );
 
-CREATE INDEX search_titles_manga_id_index ON search_titles(manga_id);
+CREATE INDEX search_titles_anime_id_index ON search_titles(anime_id);
 CREATE INDEX search_titles_title_index ON search_titles(title);
 
-selectByMangaId:
+selectByAnimeId:
 SELECT * FROM search_titles
-WHERE manga_id = ?;
+WHERE anime_id = ?;
 
-deleteByManga:
-DELETE FROM search_titles WHERE manga_id = ?;
+deleteByAnime:
+DELETE FROM search_titles WHERE anime_id = ?;
 
 insert:
-INSERT INTO search_titles (manga_id, title, type) VALUES (?, ?, ?);
+INSERT INTO search_titles (anime_id, title, type) VALUES (?, ?, ?);
 
 insertItem:
-INSERT INTO search_titles (_id, manga_id, title, type) VALUES ?;
+INSERT INTO search_titles (_id, anime_id, title, type) VALUES ?;
 
 deleteAll:
 DELETE FROM search_titles;

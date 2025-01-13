@@ -4,10 +4,10 @@ import eu.kanade.tachiyomi.network.GET
 import eu.kanade.tachiyomi.network.POST
 import eu.kanade.tachiyomi.network.awaitSuccess
 import eu.kanade.tachiyomi.network.parseAs
-import exh.md.dto.MangaListDto
+import exh.md.dto.AnimeListDto
 import exh.md.dto.RatingDto
 import exh.md.dto.RatingResponseDto
-import exh.md.dto.ReadChapterDto
+import exh.md.dto.ReadEpisodeDto
 import exh.md.dto.ReadingStatusDto
 import exh.md.dto.ReadingStatusMapDto
 import exh.md.dto.ResultDto
@@ -25,7 +25,7 @@ class MangaDexAuthService(
     private val headers: Headers,
 ) {
 
-    suspend fun userFollowList(offset: Int): MangaListDto {
+    suspend fun userFollowList(offset: Int): AnimeListDto {
         return with(MdUtil.jsonParser) {
             client.newCall(
                 GET(
@@ -37,11 +37,11 @@ class MangaDexAuthService(
         }
     }
 
-    suspend fun readingStatusForManga(mangaId: String): ReadingStatusDto {
+    suspend fun readingStatusForAnime(animeId: String): ReadingStatusDto {
         return with(MdUtil.jsonParser) {
             client.newCall(
                 GET(
-                    "${MdApi.manga}/$mangaId/status",
+                    "${MdApi.anime}/$animeId/status",
                     headers,
                     CacheControl.FORCE_NETWORK,
                 ),
@@ -49,11 +49,11 @@ class MangaDexAuthService(
         }
     }
 
-    suspend fun readChaptersForManga(mangaId: String): ReadChapterDto {
+    suspend fun readEpisodesForAnime(animeId: String): ReadEpisodeDto {
         return with(MdUtil.jsonParser) {
             client.newCall(
                 GET(
-                    "${MdApi.manga}/$mangaId/read",
+                    "${MdApi.anime}/$animeId/read",
                     headers,
                     CacheControl.FORCE_NETWORK,
                 ),
@@ -61,14 +61,14 @@ class MangaDexAuthService(
         }
     }
 
-    suspend fun updateReadingStatusForManga(
-        mangaId: String,
+    suspend fun updateReadingStatusForAnime(
+        animeId: String,
         readingStatusDto: ReadingStatusDto,
     ): ResultDto {
         return with(MdUtil.jsonParser) {
             client.newCall(
                 POST(
-                    "${MdApi.manga}/$mangaId/status",
+                    "${MdApi.anime}/$animeId/status",
                     headers,
                     body = MdUtil.encodeToBody(readingStatusDto),
                     cache = CacheControl.FORCE_NETWORK,
@@ -77,11 +77,11 @@ class MangaDexAuthService(
         }
     }
 
-    suspend fun readingStatusAllManga(): ReadingStatusMapDto {
+    suspend fun readingStatusAllAnime(): ReadingStatusMapDto {
         return with(MdUtil.jsonParser) {
             client.newCall(
                 GET(
-                    MdApi.readingStatusForAllManga,
+                    MdApi.readingStatusForAllAnime,
                     headers,
                     cache = CacheControl.FORCE_NETWORK,
                 ),
@@ -93,7 +93,7 @@ class MangaDexAuthService(
         return with(MdUtil.jsonParser) {
             client.newCall(
                 GET(
-                    "${MdApi.readingStatusForAllManga}?status=$status",
+                    "${MdApi.readingStatusForAllAnime}?status=$status",
                     headers,
                     cache = CacheControl.FORCE_NETWORK,
                 ),
@@ -101,11 +101,11 @@ class MangaDexAuthService(
         }
     }
 
-    suspend fun markChapterRead(chapterId: String): ResultDto {
+    suspend fun markEpisodeRead(episodeId: String): ResultDto {
         return with(MdUtil.jsonParser) {
             client.newCall(
                 POST(
-                    "${MdApi.chapter}/$chapterId/read",
+                    "${MdApi.episode}/$episodeId/read",
                     headers,
                     cache = CacheControl.FORCE_NETWORK,
                 ),
@@ -113,11 +113,11 @@ class MangaDexAuthService(
         }
     }
 
-    suspend fun markChapterUnRead(chapterId: String): ResultDto {
+    suspend fun markEpisodeUnRead(episodeId: String): ResultDto {
         return with(MdUtil.jsonParser) {
             client.newCall(
                 Request.Builder()
-                    .url("${MdApi.chapter}/$chapterId/read")
+                    .url("${MdApi.episode}/$episodeId/read")
                     .delete()
                     .headers(headers)
                     .cacheControl(CacheControl.FORCE_NETWORK)
@@ -126,11 +126,11 @@ class MangaDexAuthService(
         }
     }
 
-    suspend fun followManga(mangaId: String): ResultDto {
+    suspend fun followAnime(animeId: String): ResultDto {
         return with(MdUtil.jsonParser) {
             client.newCall(
                 POST(
-                    "${MdApi.manga}/$mangaId/follow",
+                    "${MdApi.anime}/$animeId/follow",
                     headers,
                     cache = CacheControl.FORCE_NETWORK,
                 ),
@@ -138,11 +138,11 @@ class MangaDexAuthService(
         }
     }
 
-    suspend fun unfollowManga(mangaId: String): ResultDto {
+    suspend fun unfollowAnime(animeId: String): ResultDto {
         return with(MdUtil.jsonParser) {
             client.newCall(
                 Request.Builder()
-                    .url("${MdApi.manga}/$mangaId/follow")
+                    .url("${MdApi.anime}/$animeId/follow")
                     .delete()
                     .headers(headers)
                     .cacheControl(CacheControl.FORCE_NETWORK)
@@ -151,11 +151,11 @@ class MangaDexAuthService(
         }
     }
 
-    suspend fun updateMangaRating(mangaId: String, rating: Int): ResultDto {
+    suspend fun updateAnimeRating(animeId: String, rating: Int): ResultDto {
         return with(MdUtil.jsonParser) {
             client.newCall(
                 POST(
-                    "${MdApi.rating}/$mangaId",
+                    "${MdApi.rating}/$animeId",
                     headers,
                     body = MdUtil.encodeToBody(RatingDto(rating)),
                     cache = CacheControl.FORCE_NETWORK,
@@ -164,12 +164,12 @@ class MangaDexAuthService(
         }
     }
 
-    suspend fun deleteMangaRating(mangaId: String): ResultDto {
+    suspend fun deleteAnimeRating(animeId: String): ResultDto {
         return with(MdUtil.jsonParser) {
             client.newCall(
                 Request.Builder()
                     .delete()
-                    .url("${MdApi.rating}/$mangaId")
+                    .url("${MdApi.rating}/$animeId")
                     .headers(headers)
                     .cacheControl(CacheControl.FORCE_NETWORK)
                     .build(),
@@ -177,15 +177,15 @@ class MangaDexAuthService(
         }
     }
 
-    suspend fun mangasRating(vararg mangaIds: String): RatingResponseDto {
+    suspend fun animesRating(vararg animeIds: String): RatingResponseDto {
         return with(MdUtil.jsonParser) {
             client.newCall(
                 GET(
                     MdApi.rating.toHttpUrl()
                         .newBuilder()
                         .apply {
-                            mangaIds.forEach {
-                                addQueryParameter("manga[]", it)
+                            animeIds.forEach {
+                                addQueryParameter("anime[]", it)
                             }
                         }
                         .build(),

@@ -1,11 +1,11 @@
 package eu.kanade.tachiyomi.data.track
 
 import eu.kanade.tachiyomi.data.track.anilist.Anilist
+import eu.kanade.tachiyomi.data.track.animeupdates.AnimeUpdates
 import eu.kanade.tachiyomi.data.track.bangumi.Bangumi
 import eu.kanade.tachiyomi.data.track.kavita.Kavita
 import eu.kanade.tachiyomi.data.track.kitsu.Kitsu
 import eu.kanade.tachiyomi.data.track.komga.Komga
-import eu.kanade.tachiyomi.data.track.mangaupdates.MangaUpdates
 import eu.kanade.tachiyomi.data.track.mdlist.MdList
 import eu.kanade.tachiyomi.data.track.myanimelist.MyAnimeList
 import eu.kanade.tachiyomi.data.track.shikimori.Shikimori
@@ -32,12 +32,12 @@ class TrackerManager {
     val shikimori = Shikimori(4L)
     val bangumi = Bangumi(5L)
     val komga = Komga(6L)
-    val mangaUpdates = MangaUpdates(7L)
+    val animeUpdates = AnimeUpdates(7L)
     val kavita = Kavita(KAVITA)
     val suwayomi = Suwayomi(9L)
 
     val trackers =
-        listOf(mdList, myAnimeList, aniList, kitsu, shikimori, bangumi, komga, mangaUpdates, kavita, suwayomi)
+        listOf(mdList, myAnimeList, aniList, kitsu, shikimori, bangumi, komga, animeUpdates, kavita, suwayomi)
 
     fun loggedInTrackers() = trackers.filter { it.isLoggedIn }
 

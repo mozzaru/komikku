@@ -14,7 +14,7 @@ class MoveCacheToDiskSettingMigration : Migration {
         val context = migrationContext.get<Application>() ?: return@withIOContext false
         val prefs = PreferenceManager.getDefaultSharedPreferences(context)
         val readerPreferences = migrationContext.get<ReaderPreferences>() ?: return@withIOContext false
-        val cacheImagesToDisk = prefs.getBoolean("cache_archive_manga_on_disk", false)
+        val cacheImagesToDisk = prefs.getBoolean("cache_archive_anime_on_disk", false)
         if (cacheImagesToDisk) {
             readerPreferences.archiveReaderMode().set(ReaderPreferences.ArchiveReaderMode.CACHE_TO_DISK)
         }

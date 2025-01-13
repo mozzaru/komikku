@@ -12,11 +12,11 @@ import eu.kanade.presentation.util.Screen
 import eu.kanade.tachiyomi.ui.reader.ReaderActivity
 import exh.pagepreview.components.PagePreviewScreen
 
-class PagePreviewScreen(private val mangaId: Long) : Screen() {
+class PagePreviewScreen(private val animeId: Long) : Screen() {
 
     @Composable
     override fun Content() {
-        val screenModel = rememberScreenModel { PagePreviewScreenModel(mangaId) }
+        val screenModel = rememberScreenModel { PagePreviewScreenModel(animeId) }
         val context = LocalContext.current
         val state by screenModel.state.collectAsState()
         val navigator = LocalNavigator.currentOrThrow
@@ -34,7 +34,7 @@ class PagePreviewScreen(private val mangaId: Long) : Screen() {
     fun openPage(context: Context, state: PagePreviewState, page: Int) {
         if (state !is PagePreviewState.Success) return
         context.run {
-            startActivity(ReaderActivity.newIntent(this, state.manga.id, state.chapter.id, page))
+            startActivity(ReaderActivity.newIntent(this, state.anime.id, state.episode.id, page))
         }
     }
 }

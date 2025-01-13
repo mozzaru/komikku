@@ -6,7 +6,7 @@ import eu.kanade.tachiyomi.network.GET
 import eu.kanade.tachiyomi.network.newCachelessCallWithProgress
 import eu.kanade.tachiyomi.source.Source
 import eu.kanade.tachiyomi.source.model.Page
-import eu.kanade.tachiyomi.source.model.SChapter
+import eu.kanade.tachiyomi.source.model.SEpisode
 import exh.log.xLogD
 import exh.md.dto.AtHomeDto
 import exh.md.service.MangaDexService
@@ -32,40 +32,40 @@ class PageHandler(
     private val mdList: MdList,
 ) {
 
-    suspend fun fetchPageList(chapter: SChapter, usePort443Only: Boolean, dataSaver: Boolean, mangadex: Source): List<Page> {
+    suspend fun fetchPageList(episode: SEpisode, usePort443Only: Boolean, dataSaver: Boolean, mangadex: Source): List<Page> {
         return withIOContext {
-            val chapterResponse = service.viewChapter(MdUtil.getChapterId(chapter.url))
+            val episodeResponse = service.viewEpisode(MdUtil.getEpisodeId(episode.url))
 
-            if (chapterResponse.data.attributes.externalUrl != null && chapterResponse.data.attributes.pages == 0) {
+            if (episodeResponse.data.attributes.externalUrl != null && episodeResponse.data.attributes.pages == 0) {
                 when {
-                    chapter.scanlator.equals("mangaplus", true) -> mangaPlusHandler.fetchPageList(
-                        chapterResponse.data.attributes.externalUrl,
+                    episode.scanlator.equals("animeplus", true) -> mangaPlusHandler.fetchPageList(
+                        episodeResponse.data.attributes.externalUrl,
                         dataSaver = dataSaver,
                     )
-                    /*chapter.scanlator.equals("comikey", true) -> comikeyHandler.fetchPageList(
-                        chapterResponse.data.attributes.externalUrl
+                    /*episode.scanlator.equals("comikey", true) -> comikeyHandler.fetchPageList(
+                        episodeResponse.data.attributes.externalUrl
                     )*/
-                    chapter.scanlator.equals("bilibili comics", true) -> bilibiliHandler.fetchPageList(
-                        chapterResponse.data.attributes.externalUrl,
-                        chapterResponse.data.attributes.chapter.toString(),
+                    episode.scanlator.equals("bilibili comics", true) -> bilibiliHandler.fetchPageList(
+                        episodeResponse.data.attributes.externalUrl,
+                        episodeResponse.data.attributes.episode.toString(),
                     )
-                    chapter.scanlator.equals("azuki manga", true) -> azukiHandler.fetchPageList(
-                        chapterResponse.data.attributes.externalUrl,
+                    episode.scanlator.equals("azuki anime", true) -> azukiHandler.fetchPageList(
+                        episodeResponse.data.attributes.externalUrl,
                     )
-                    chapter.scanlator.equals("mangahot", true) -> mangaHotHandler.fetchPageList(
-                        chapterResponse.data.attributes.externalUrl,
+                    episode.scanlator.equals("animehot", true) -> mangaHotHandler.fetchPageList(
+                        episodeResponse.data.attributes.externalUrl,
                     )
-                    chapter.scanlator.equals("namicomi", true) -> namicomiHandler.fetchPageList(
-                        chapterResponse.data.attributes.externalUrl,
+                    episode.scanlator.equals("namicomi", true) -> namicomiHandler.fetchPageList(
+                        episodeResponse.data.attributes.externalUrl,
                         dataSaver = dataSaver,
                     )
-                    else -> throw Exception("${chapter.scanlator} not supported")
+                    else -> throw Exception("${episode.scanlator} not supported")
                 }
             } else {
                 val atHomeRequestUrl = if (usePort443Only) {
-                    "${MdApi.atHomeServer}/${MdUtil.getChapterId(chapter.url)}?forcePort443=true"
+                    "${MdApi.atHomeServer}/${MdUtil.getEpisodeId(episode.url)}?forcePort443=true"
                 } else {
-                    "${MdApi.atHomeServer}/${MdUtil.getChapterId(chapter.url)}"
+                    "${MdApi.atHomeServer}/${MdUtil.getEpisodeId(episode.url)}"
                 }
 
                 updateExtensionVariable(mangadex, atHomeRequestUrl)
@@ -96,11 +96,11 @@ class PageHandler(
         atHomeDto: AtHomeDto,
         dataSaver: Boolean,
     ): List<Page> {
-        val hash = atHomeDto.chapter.hash
+        val hash = atHomeDto.episode.hash
         val pageArray = if (dataSaver) {
-            atHomeDto.chapter.dataSaver.map { "/data-saver/$hash/$it" }
+            atHomeDto.episode.dataSaver.map { "/data-saver/$hash/$it" }
         } else {
-            atHomeDto.chapter.data.map { "/data/$hash/$it" }
+            atHomeDto.episode.data.map { "/data/$hash/$it" }
         }
         val now = System.currentTimeMillis()
 
@@ -112,7 +112,7 @@ class PageHandler(
     fun getImageCall(page: Page): Call? {
         xLogD(page.imageUrl)
         return when {
-            page.imageUrl?.contains("mangaplus", true) == true -> {
+            page.imageUrl?.contains("animeplus", true) == true -> {
                 mangaPlusHandler.client.newCachelessCallWithProgress(GET(page.imageUrl!!, headers), page)
             }
             page.imageUrl?.contains("comikey", true) == true -> {
@@ -124,7 +124,7 @@ class PageHandler(
             page.imageUrl?.contains("azuki", true) == true -> {
                 azukiHandler.client.newCachelessCallWithProgress(GET(page.imageUrl!!, azukiHandler.headers), page)
             }
-            page.imageUrl?.contains("mangahot", true) == true -> {
+            page.imageUrl?.contains("animehot", true) == true -> {
                 mangaHotHandler.client.newCachelessCallWithProgress(GET(page.imageUrl!!, mangaHotHandler.headers), page)
             }
             page.imageUrl?.contains("namicomi", true) == true -> {

@@ -23,7 +23,7 @@ data class SourceDataClass(
 )
 
 @Serializable
-data class MangaDataClass(
+data class AnimeDataClass(
     val id: Int,
     val sourceId: String,
 
@@ -46,32 +46,32 @@ data class MangaDataClass(
 
     val realUrl: String?,
     val lastFetchedAt: Long?,
-    val chaptersLastFetchedAt: Long?,
+    val episodesLastFetchedAt: Long?,
 
     val freshData: Boolean,
     val unreadCount: Long?,
     val downloadCount: Long?,
-    val chapterCount: Long, // actually is nullable server side, but should be set at this time
-    val lastChapterRead: ChapterDataClass?,
+    val episodeCount: Long, // actually is nullable server side, but should be set at this time
+    val lastEpisodeRead: EpisodeDataClass?,
 
     val age: Long?,
-    val chaptersAge: Long?,
+    val episodesAge: Long?,
 )
 
 @Serializable
-data class ChapterDataClass(
+data class EpisodeDataClass(
     val id: Int,
     val url: String,
     val name: String,
     val uploadDate: Long,
-    val chapterNumber: Double,
+    val episodeNumber: Double,
     val scanlator: String?,
-    val mangaId: Int,
+    val animeId: Int,
 
-    /** chapter is read */
+    /** episode is read */
     val read: Boolean,
 
-    /** chapter is bookmarked */
+    /** episode is bookmarked */
     val bookmarked: Boolean,
 
     /** last read page, zero means not read/no data */
@@ -80,20 +80,20 @@ data class ChapterDataClass(
     /** last read page, zero means not read/no data */
     val lastReadAt: Long,
 
-    /** this chapter's index, starts with 1 */
+    /** this episode's index, starts with 1 */
     val index: Int,
 
-    /** the date we fist saw this chapter*/
+    /** the date we fist saw this episode*/
     val fetchedAt: Long,
 
-    /** is chapter downloaded */
+    /** is episode downloaded */
     val downloaded: Boolean,
 
     /** used to construct pages in the front-end */
     val pageCount: Int,
 
-    /** total chapter count, used to calculate if there's a next and prev chapter */
-    val chapterCount: Int?,
+    /** total episode count, used to calculate if there's a next and prev episode */
+    val episodeCount: Int?,
 
     /** used to store client specific values */
     val meta: Map<String, String>,

@@ -44,7 +44,7 @@ class StatsScreen : Screen() {
                                     } else {
                                         stringResource(SYMR.strings.include_all_read_entries)
                                     },
-                                    onClick = screenModel::toggleReadManga,
+                                    onClick = screenModel::toggleSeenAnime,
                                 ),
                             ),
                         )

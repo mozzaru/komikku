@@ -1,7 +1,7 @@
 package exh.metadata.metadata
 
 import android.content.Context
-import eu.kanade.tachiyomi.source.model.SManga
+import eu.kanade.tachiyomi.source.model.SAnime
 import eu.kanade.tachiyomi.source.model.copy
 import exh.md.utils.MangaDexRelation
 import kotlinx.serialization.Serializable
@@ -39,15 +39,15 @@ class MangaDexSearchMetadata : RaisedSearchMetadata() {
 
     var status: Int? = null
 
-    // var missing_chapters: String? = null
+    // var missing_episodes: String? = null
 
     var followStatus: Int? = null
     var relation: MangaDexRelation? = null
 
-    // var maxChapterNumber: Int? = null
+    // var maxEpisodeNumber: Int? = null
 
-    override fun createMangaInfo(manga: SManga): SManga {
-        val key = mdUuid?.let { "/manga/$it" }
+    override fun createAnimeInfo(anime: SAnime): SAnime {
+        val key = mdUuid?.let { "/anime/$it" }
 
         val title = title
 
@@ -63,15 +63,15 @@ class MangaDexSearchMetadata : RaisedSearchMetadata() {
 
         val description = description
 
-        return manga.copy(
-            url = key ?: manga.url,
-            title = title ?: manga.title,
-            thumbnail_url = cover ?: manga.thumbnail_url,
-            author = author ?: manga.author,
-            artist = artist ?: manga.artist,
-            status = status ?: manga.status,
+        return anime.copy(
+            url = key ?: anime.url,
+            title = title ?: anime.title,
+            thumbnail_url = cover ?: anime.thumbnail_url,
+            author = author ?: anime.author,
+            artist = artist ?: anime.artist,
+            status = status ?: anime.status,
             genre = genres,
-            description = description ?: manga.description,
+            description = description ?: anime.description,
         )
     }
 
@@ -85,16 +85,16 @@ class MangaDexSearchMetadata : RaisedSearchMetadata() {
                 getItem(authors, { it.joinToString() }) { stringResource(SYMR.strings.author) },
                 getItem(artists, { it.joinToString() }) { stringResource(SYMR.strings.artist) },
                 getItem(langFlag) { stringResource(SYMR.strings.language) },
-                getItem(lastChapterNumber) { stringResource(SYMR.strings.last_chapter_number) },
+                getItem(lastChapterNumber) { stringResource(SYMR.strings.last_episode_number) },
                 getItem(rating) { stringResource(SYMR.strings.average_rating) },
                 // getItem(users) { stringResource(SYMR.strings.total_ratings) },
                 getItem(status) { stringResource(MR.strings.status) },
-                // getItem(missing_chapters) { stringResource(SYMR.strings.missing_chapters) },
+                // getItem(missing_chapters) { stringResource(SYMR.strings.missing_episodes) },
                 getItem(followStatus) { stringResource(SYMR.strings.follow_status) },
                 getItem(anilistId) { stringResource(SYMR.strings.anilist_id) },
                 getItem(kitsuId) { stringResource(SYMR.strings.kitsu_id) },
                 getItem(myAnimeListId) { stringResource(SYMR.strings.mal_id) },
-                getItem(mangaUpdatesId) { stringResource(SYMR.strings.manga_updates_id) },
+                getItem(mangaUpdatesId) { stringResource(SYMR.strings.anime_updates_id) },
                 getItem(animePlanetId) { stringResource(SYMR.strings.anime_planet_id) },
             )
         }

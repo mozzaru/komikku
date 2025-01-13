@@ -10,10 +10,10 @@ data class BackupSearchTag(
     @ProtoNumber(2) var name: String,
     @ProtoNumber(3) var type: Int,
 ) {
-    fun getSearchTag(mangaId: Long): SearchTag {
+    fun getSearchTag(animeId: Long): SearchTag {
         return SearchTag(
             id = null,
-            mangaId = mangaId,
+            animeId = animeId,
             namespace = namespace,
             name = name,
             type = type,

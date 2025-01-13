@@ -13,7 +13,7 @@ import okio.Source
 import okio.buffer
 import okio.sink
 import tachiyomi.core.common.util.system.logcat
-import tachiyomi.domain.manga.model.Manga
+import tachiyomi.domain.anime.model.Anime
 import uy.kohesive.injekt.injectLazy
 import java.io.File
 import java.io.IOException
@@ -79,12 +79,12 @@ class PagePreviewCache(private val context: Context) {
     /**
      * Get page list from cache.
      *
-     * @param manga the manga.
+     * @param anime the anime.
      * @return the list of pages.
      */
-    fun getPageListFromCache(manga: Manga, chapterIds: List<Long>, page: Int): PagePreviewPage {
-        // Get the key for the manga.
-        val key = DiskUtil.hashKeyForDisk(getKey(manga, chapterIds, page))
+    fun getPageListFromCache(anime: Anime, episodeIds: List<Long>, page: Int): PagePreviewPage {
+        // Get the key for the anime.
+        val key = DiskUtil.hashKeyForDisk(getKey(anime, episodeIds, page))
 
         // Convert JSON string to list of objects. Throws an exception if snapshot is null
         return diskCache.get(key).use {
@@ -95,10 +95,10 @@ class PagePreviewCache(private val context: Context) {
     /**
      * Add page list to disk cache.
      *
-     * @param manga the manga.
+     * @param anime the anime.
      * @param pages list of pages.
      */
-    fun putPageListToCache(manga: Manga, chapterIds: List<Long>, pages: PagePreviewPage) {
+    fun putPageListToCache(anime: Anime, episodeIds: List<Long>, pages: PagePreviewPage) {
         // Convert list of pages to json string.
         val cachedValue = json.encodeToString(pages)
 
@@ -107,7 +107,7 @@ class PagePreviewCache(private val context: Context) {
 
         try {
             // Get editor from md5 key.
-            val key = DiskUtil.hashKeyForDisk(getKey(manga, chapterIds, pages.page))
+            val key = DiskUtil.hashKeyForDisk(getKey(anime, episodeIds, pages.page))
             editor = diskCache.edit(key) ?: return
 
             // Write page preview urls to cache.
@@ -213,7 +213,7 @@ class PagePreviewCache(private val context: Context) {
         }
     }
 
-    private fun getKey(manga: Manga, chapterIds: List<Long>, page: Int): String {
-        return "${manga.id}_${chapterIds.joinToString(separator = "-")}_$page"
+    private fun getKey(anime: Anime, episodeIds: List<Long>, page: Int): String {
+        return "${anime.id}_${episodeIds.joinToString(separator = "-")}_$page"
     }
 }

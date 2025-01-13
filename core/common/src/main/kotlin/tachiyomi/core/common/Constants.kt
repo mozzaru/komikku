@@ -4,7 +4,7 @@ object Constants {
     const val URL_HELP = "https://mihon.app/docs/guides/troubleshooting/"
     const val URL_HELP_UPCOMING = "https://mihon.app/docs/faq/updates/upcoming"
 
-    const val MANGA_EXTRA = "manga"
+    const val MANGA_EXTRA = "anime"
 
     const val MAIN_ACTIVITY = "eu.kanade.tachiyomi.ui.main.MainActivity"
 

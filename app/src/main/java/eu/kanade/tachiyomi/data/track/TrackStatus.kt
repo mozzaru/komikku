@@ -2,10 +2,10 @@ package eu.kanade.tachiyomi.data.track
 
 import dev.icerock.moko.resources.StringResource
 import eu.kanade.tachiyomi.data.track.anilist.Anilist
+import eu.kanade.tachiyomi.data.track.animeupdates.AnimeUpdates
 import eu.kanade.tachiyomi.data.track.bangumi.Bangumi
 import eu.kanade.tachiyomi.data.track.kitsu.Kitsu
 import eu.kanade.tachiyomi.data.track.komga.Komga
-import eu.kanade.tachiyomi.data.track.mangaupdates.MangaUpdates
 import eu.kanade.tachiyomi.data.track.myanimelist.MyAnimeList
 import eu.kanade.tachiyomi.data.track.shikimori.Shikimori
 import exh.md.utils.FollowStatus
@@ -97,13 +97,13 @@ enum class TrackStatus(val int: Int, val res: StringResource) {
                         else -> null
                     }
                 }
-                trackerManager.mangaUpdates.id -> {
+                trackerManager.animeUpdates.id -> {
                     when (status) {
-                        MangaUpdates.READING_LIST -> READING
-                        MangaUpdates.COMPLETE_LIST -> COMPLETED
-                        MangaUpdates.ON_HOLD_LIST -> PAUSED
-                        MangaUpdates.WISH_LIST -> PLAN_TO_READ
-                        MangaUpdates.UNFINISHED_LIST -> DROPPED
+                        AnimeUpdates.READING_LIST -> READING
+                        AnimeUpdates.COMPLETE_LIST -> COMPLETED
+                        AnimeUpdates.ON_HOLD_LIST -> PAUSED
+                        AnimeUpdates.WISH_LIST -> PLAN_TO_READ
+                        AnimeUpdates.UNFINISHED_LIST -> DROPPED
                         else -> null
                     }
                 }

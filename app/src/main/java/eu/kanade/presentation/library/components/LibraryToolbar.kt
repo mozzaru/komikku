@@ -37,7 +37,7 @@ fun LibraryToolbar(
     onClickFilter: () -> Unit,
     onClickRefresh: () -> Unit,
     onClickGlobalUpdate: () -> Unit,
-    onClickOpenRandomManga: () -> Unit,
+    onClickOpenRandomAnime: () -> Unit,
     onClickSyncNow: () -> Unit,
     // SY -->
     onClickSyncExh: (() -> Unit)?,
@@ -61,7 +61,7 @@ fun LibraryToolbar(
         onClickFilter = onClickFilter,
         onClickRefresh = onClickRefresh,
         onClickGlobalUpdate = onClickGlobalUpdate,
-        onClickOpenRandomManga = onClickOpenRandomManga,
+        onClickOpenRandomAnime = onClickOpenRandomAnime,
         onClickSyncNow = onClickSyncNow,
         // SY -->
         onClickSyncExh = onClickSyncExh,
@@ -80,7 +80,7 @@ private fun LibraryRegularToolbar(
     onClickFilter: () -> Unit,
     onClickRefresh: () -> Unit,
     onClickGlobalUpdate: () -> Unit,
-    onClickOpenRandomManga: () -> Unit,
+    onClickOpenRandomAnime: () -> Unit,
     onClickSyncNow: () -> Unit,
     // SY -->
     onClickSyncExh: (() -> Unit)?,
@@ -98,9 +98,9 @@ private fun LibraryRegularToolbar(
                     modifier = Modifier.weight(1f, false),
                     overflow = TextOverflow.Ellipsis,
                 )
-                if (title.numberOfManga != null) {
+                if (title.numberOfAnime != null) {
                     Pill(
-                        text = "${title.numberOfManga}",
+                        text = "${title.numberOfAnime}",
                         color = MaterialTheme.colorScheme.onBackground.copy(alpha = pillAlpha),
                         fontSize = 14.sp,
                     )
@@ -128,8 +128,8 @@ private fun LibraryRegularToolbar(
                         onClick = onClickRefresh,
                     ),
                     AppBar.OverflowAction(
-                        title = stringResource(MR.strings.action_open_random_manga),
-                        onClick = onClickOpenRandomManga,
+                        title = stringResource(MR.strings.action_open_random_anime),
+                        onClick = onClickOpenRandomAnime,
                     ),
                 ).builder().apply {
                     // SY -->
@@ -190,5 +190,5 @@ private fun LibrarySelectionToolbar(
 @Immutable
 data class LibraryToolbarTitle(
     val text: String,
-    val numberOfManga: Int? = null,
+    val numberOfAnime: Int? = null,
 )

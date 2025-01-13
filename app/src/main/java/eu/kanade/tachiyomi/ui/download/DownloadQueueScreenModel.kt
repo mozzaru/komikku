@@ -9,7 +9,7 @@ import eu.kanade.tachiyomi.data.download.DownloadManager
 import eu.kanade.tachiyomi.data.download.model.Download
 import eu.kanade.tachiyomi.databinding.DownloadListBinding
 import eu.kanade.tachiyomi.source.model.Page
-import eu.kanade.tachiyomi.ui.manga.MangaScreen
+import eu.kanade.tachiyomi.ui.anime.AnimeScreen
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -95,7 +95,7 @@ class DownloadQueueScreenModel(
                         val (selectedSeries, otherSeries) = adapter?.currentItems
                             ?.filterIsInstance<DownloadItem>()
                             ?.map(DownloadItem::download)
-                            ?.partition { item.download.manga.id == it.manga.id }
+                            ?.partition { item.download.anime.id == it.anime.id }
                             ?: Pair(emptyList(), emptyList())
                         if (menuItem.itemId == R.id.move_to_top_series) {
                             reorder(selectedSeries + otherSeries)
@@ -109,7 +109,7 @@ class DownloadQueueScreenModel(
                     R.id.cancel_series -> {
                         val allDownloadsForSeries = adapter?.currentItems
                             ?.filterIsInstance<DownloadItem>()
-                            ?.filter { item.download.manga.id == it.download.manga.id }
+                            ?.filter { item.download.anime.id == it.download.anime.id }
                             ?.map(DownloadItem::download)
                         if (!allDownloadsForSeries.isNullOrEmpty()) {
                             cancel(allDownloadsForSeries)
@@ -117,8 +117,8 @@ class DownloadQueueScreenModel(
                     }
                     // KMK -->
                     R.id.show_manga -> {
-                        val mangaId = item.download.manga.id
-                        showManga(mangaId = mangaId)
+                        val animeId = item.download.anime.id
+                        showAnime(animeId = animeId)
                     }
                     // KMK <--
                 }
@@ -177,8 +177,8 @@ class DownloadQueueScreenModel(
     }
 
     // KMK -->
-    fun showManga(mangaId: Long) {
-        navigator?.push(MangaScreen(mangaId))
+    fun showAnime(animeId: Long) {
+        navigator?.push(AnimeScreen(animeId))
     }
     // KMK <--
 
@@ -281,6 +281,6 @@ class DownloadQueueScreenModel(
      * @return the holder of the download or null if it's not bound.
      */
     private fun getHolder(download: Download): DownloadHolder? {
-        return controllerBinding.root.findViewHolderForItemId(download.chapter.id) as? DownloadHolder
+        return controllerBinding.root.findViewHolderForItemId(download.episode.id) as? DownloadHolder
     }
 }
