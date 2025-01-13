@@ -1,4 +1,4 @@
-package tachiyomi.data.manga
+package tachiyomi.data.anime
 
 import kotlinx.coroutines.flow.Flow
 import logcat.LogPriority

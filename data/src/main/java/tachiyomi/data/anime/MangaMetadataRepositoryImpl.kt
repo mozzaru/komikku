@@ -1,4 +1,4 @@
-package tachiyomi.data.manga
+package tachiyomi.data.anime
 
 import exh.metadata.metadata.base.FlatMetadata
 import exh.metadata.sql.models.SearchMetadata

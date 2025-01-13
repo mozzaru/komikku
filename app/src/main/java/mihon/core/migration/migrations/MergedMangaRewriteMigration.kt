@@ -10,7 +10,7 @@ import mihon.core.migration.Migration
 import mihon.core.migration.MigrationContext
 import tachiyomi.core.common.util.lang.withIOContext
 import tachiyomi.data.DatabaseHandler
-import tachiyomi.data.chapter.ChapterMapper
+import tachiyomi.data.episode.ChapterMapper
 import tachiyomi.domain.anime.interactor.GetManga
 import tachiyomi.domain.anime.interactor.GetMangaBySource
 import tachiyomi.domain.anime.interactor.InsertMergedReference

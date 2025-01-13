@@ -11,7 +11,7 @@ import eu.kanade.tachiyomi.source.Source
 import eu.kanade.tachiyomi.source.model.SChapter
 import eu.kanade.tachiyomi.source.online.HttpSource
 import exh.source.isEhBasedManga
-import tachiyomi.data.chapter.ChapterSanitizer
+import tachiyomi.data.episode.ChapterSanitizer
 import tachiyomi.domain.anime.model.Manga
 import tachiyomi.domain.episode.interactor.GetChaptersByMangaId
 import tachiyomi.domain.episode.interactor.ShouldUpdateDbChapter

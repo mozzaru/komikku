@@ -1,4 +1,4 @@
-package tachiyomi.data.manga
+package tachiyomi.data.anime
 
 import logcat.LogPriority
 import tachiyomi.core.common.util.system.logcat

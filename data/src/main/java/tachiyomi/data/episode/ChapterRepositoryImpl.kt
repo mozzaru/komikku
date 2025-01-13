@@ -1,4 +1,4 @@
-package tachiyomi.data.chapter
+package tachiyomi.data.episode
 
 import kotlinx.coroutines.flow.Flow
 import logcat.LogPriority

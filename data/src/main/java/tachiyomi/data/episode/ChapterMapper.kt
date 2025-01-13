@@ -1,4 +1,4 @@
-package tachiyomi.data.chapter
+package tachiyomi.data.episode
 
 import tachiyomi.domain.episode.model.Chapter
 

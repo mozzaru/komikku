@@ -1,4 +1,4 @@
-package tachiyomi.data.manga
+package tachiyomi.data.anime
 
 import tachiyomi.domain.anime.model.MergedMangaReference
 

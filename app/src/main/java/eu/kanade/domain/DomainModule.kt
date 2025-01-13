@@ -34,10 +34,10 @@ import mihon.domain.extensionrepo.interactor.UpdateExtensionRepo
 import mihon.domain.extensionrepo.repository.ExtensionRepoRepository
 import mihon.domain.extensionrepo.service.ExtensionRepoService
 import mihon.domain.upcoming.interactor.GetUpcomingManga
+import tachiyomi.data.anime.MangaRepositoryImpl
 import tachiyomi.data.category.CategoryRepositoryImpl
-import tachiyomi.data.chapter.ChapterRepositoryImpl
+import tachiyomi.data.episode.ChapterRepositoryImpl
 import tachiyomi.data.history.HistoryRepositoryImpl
-import tachiyomi.data.manga.MangaRepositoryImpl
 import tachiyomi.data.release.ReleaseServiceImpl
 import tachiyomi.data.source.SourceRepositoryImpl
 import tachiyomi.data.source.StubSourceRepositoryImpl

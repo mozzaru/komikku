@@ -11,8 +11,8 @@ import eu.kanade.tachiyomi.data.backup.models.BackupTracking
 import exh.EXHMigrations
 import tachiyomi.data.DatabaseHandler
 import tachiyomi.data.UpdateStrategyColumnAdapter
-import tachiyomi.data.manga.MangaMapper
-import tachiyomi.data.manga.MergedMangaMapper
+import tachiyomi.data.anime.MangaMapper
+import tachiyomi.data.anime.MergedMangaMapper
 import tachiyomi.domain.anime.interactor.FetchInterval
 import tachiyomi.domain.anime.interactor.GetFlatMetadataById
 import tachiyomi.domain.anime.interactor.GetMangaByUrlAndSourceId

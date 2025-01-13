@@ -17,10 +17,10 @@ import eu.kanade.domain.source.interactor.SetSourceCategories
 import eu.kanade.domain.source.interactor.ToggleExcludeFromDataSaver
 import eu.kanade.tachiyomi.source.online.MetadataSource
 import exh.search.SearchEngine
-import tachiyomi.data.manga.CustomMangaRepositoryImpl
-import tachiyomi.data.manga.FavoritesEntryRepositoryImpl
-import tachiyomi.data.manga.MangaMergeRepositoryImpl
-import tachiyomi.data.manga.MangaMetadataRepositoryImpl
+import tachiyomi.data.anime.CustomMangaRepositoryImpl
+import tachiyomi.data.anime.FavoritesEntryRepositoryImpl
+import tachiyomi.data.anime.MangaMergeRepositoryImpl
+import tachiyomi.data.anime.MangaMetadataRepositoryImpl
 import tachiyomi.data.source.FeedSavedSearchRepositoryImpl
 import tachiyomi.data.source.SavedSearchRepositoryImpl
 import tachiyomi.domain.anime.interactor.DeleteByMergeId

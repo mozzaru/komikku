@@ -1,4 +1,4 @@
-package tachiyomi.data.manga
+package tachiyomi.data.anime
 
 import eu.kanade.tachiyomi.source.model.UpdateStrategy
 import tachiyomi.domain.anime.model.Manga
