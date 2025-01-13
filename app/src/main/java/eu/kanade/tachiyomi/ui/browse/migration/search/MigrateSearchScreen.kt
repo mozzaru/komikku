@@ -10,11 +10,11 @@ import cafe.adriel.voyager.navigator.LocalNavigator
 import cafe.adriel.voyager.navigator.currentOrThrow
 import eu.kanade.presentation.browse.MigrateSearchScreen
 import eu.kanade.presentation.util.Screen
+import eu.kanade.tachiyomi.ui.anime.MangaScreen
 import eu.kanade.tachiyomi.ui.browse.AllowDuplicateDialog
 import eu.kanade.tachiyomi.ui.browse.BulkFavoriteScreenModel
 import eu.kanade.tachiyomi.ui.browse.ChangeMangasCategoryDialog
 import eu.kanade.tachiyomi.ui.browse.migration.advanced.process.MigrationListScreen
-import eu.kanade.tachiyomi.ui.manga.MangaScreen
 import tachiyomi.core.common.util.lang.launchIO
 
 class MigrateSearchScreen(private val mangaId: Long, private val validSources: List<Long>) : Screen() {

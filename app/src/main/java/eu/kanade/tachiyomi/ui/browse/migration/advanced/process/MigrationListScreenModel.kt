@@ -4,10 +4,10 @@ import android.content.Context
 import android.widget.Toast
 import cafe.adriel.voyager.core.model.ScreenModel
 import cafe.adriel.voyager.core.model.screenModelScope
-import eu.kanade.domain.chapter.interactor.SyncChaptersWithSource
-import eu.kanade.domain.manga.interactor.UpdateManga
-import eu.kanade.domain.manga.model.hasCustomCover
-import eu.kanade.domain.manga.model.toSManga
+import eu.kanade.domain.anime.interactor.UpdateManga
+import eu.kanade.domain.anime.model.hasCustomCover
+import eu.kanade.domain.anime.model.toSManga
+import eu.kanade.domain.episode.interactor.SyncChaptersWithSource
 import eu.kanade.tachiyomi.data.cache.CoverCache
 import eu.kanade.tachiyomi.data.download.DownloadManager
 import eu.kanade.tachiyomi.source.CatalogueSource

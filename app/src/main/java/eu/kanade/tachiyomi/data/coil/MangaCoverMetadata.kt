@@ -3,7 +3,7 @@ package eu.kanade.tachiyomi.data.coil
 import android.graphics.BitmapFactory
 import androidx.palette.graphics.Palette
 import eu.kanade.tachiyomi.data.cache.CoverCache
-import eu.kanade.tachiyomi.ui.manga.MangaScreenModel
+import eu.kanade.tachiyomi.ui.anime.MangaScreenModel
 import okio.BufferedSource
 import tachiyomi.domain.anime.model.MangaCover
 import tachiyomi.domain.library.service.LibraryPreferences

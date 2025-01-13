@@ -18,11 +18,11 @@ import androidx.work.WorkInfo
 import androidx.work.WorkQuery
 import androidx.work.WorkerParameters
 import androidx.work.workDataOf
-import eu.kanade.domain.chapter.interactor.SetReadStatus
-import eu.kanade.domain.chapter.interactor.SyncChaptersWithSource
-import eu.kanade.domain.manga.interactor.UpdateManga
-import eu.kanade.domain.manga.model.copyFrom
-import eu.kanade.domain.manga.model.toSManga
+import eu.kanade.domain.anime.interactor.UpdateManga
+import eu.kanade.domain.anime.model.copyFrom
+import eu.kanade.domain.anime.model.toSManga
+import eu.kanade.domain.episode.interactor.SetReadStatus
+import eu.kanade.domain.episode.interactor.SyncChaptersWithSource
 import eu.kanade.domain.sync.SyncPreferences
 import eu.kanade.domain.track.model.toDbTrack
 import eu.kanade.domain.track.model.toDomainTrack

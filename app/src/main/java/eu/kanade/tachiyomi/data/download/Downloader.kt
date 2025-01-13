@@ -2,8 +2,8 @@ package eu.kanade.tachiyomi.data.download
 
 import android.content.Context
 import com.hippo.unifile.UniFile
-import eu.kanade.domain.chapter.model.toSChapter
-import eu.kanade.domain.manga.model.getComicInfo
+import eu.kanade.domain.anime.model.getComicInfo
+import eu.kanade.domain.episode.model.toSChapter
 import eu.kanade.domain.source.service.SourcePreferences
 import eu.kanade.tachiyomi.data.cache.ChapterCache
 import eu.kanade.tachiyomi.data.download.model.Download

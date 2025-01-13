@@ -1,6 +1,6 @@
 package exh.favorites
 
-import eu.kanade.domain.manga.model.toDomainManga
+import eu.kanade.domain.anime.model.toDomainManga
 import eu.kanade.tachiyomi.source.online.all.EHentai
 import exh.metadata.metadata.EHentaiSearchMetadata
 import exh.source.EXH_SOURCE_ID

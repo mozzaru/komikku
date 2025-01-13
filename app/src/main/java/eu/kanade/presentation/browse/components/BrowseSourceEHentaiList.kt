@@ -33,10 +33,10 @@ import androidx.paging.compose.LazyPagingItems
 import com.gowtham.ratingbar.RatingBar
 import com.gowtham.ratingbar.RatingBarStyle
 import dev.icerock.moko.resources.StringResource
+import eu.kanade.presentation.anime.components.MangaCover
+import eu.kanade.presentation.anime.components.MangaCoverHide
 import eu.kanade.presentation.library.components.CommonMangaItemDefaults
 import eu.kanade.presentation.library.components.GRID_SELECTED_COVER_ALPHA
-import eu.kanade.presentation.manga.components.MangaCover
-import eu.kanade.presentation.manga.components.MangaCoverHide
 import exh.debug.DebugToggles
 import exh.metadata.MetadataUtil
 import exh.metadata.metadata.EHentaiSearchMetadata

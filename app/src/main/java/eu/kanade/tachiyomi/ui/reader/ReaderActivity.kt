@@ -64,8 +64,8 @@ import com.materialkolor.Contrast
 import com.materialkolor.dynamicColorScheme
 import dev.chrisbanes.insetter.applyInsetter
 import eu.kanade.core.util.ifSourcesLoaded
+import eu.kanade.domain.anime.model.readingMode
 import eu.kanade.domain.base.BasePreferences
-import eu.kanade.domain.manga.model.readingMode
 import eu.kanade.domain.ui.UiPreferences
 import eu.kanade.presentation.reader.ChapterListDialog
 import eu.kanade.presentation.reader.DisplayRefreshHost

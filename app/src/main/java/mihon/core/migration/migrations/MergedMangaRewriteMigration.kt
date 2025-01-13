@@ -1,6 +1,6 @@
 package mihon.core.migration.migrations
 
-import eu.kanade.domain.manga.interactor.UpdateManga
+import eu.kanade.domain.anime.interactor.UpdateManga
 import eu.kanade.tachiyomi.source.Source
 import exh.source.MERGED_SOURCE_ID
 import kotlinx.serialization.SerialName

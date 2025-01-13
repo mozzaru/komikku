@@ -14,10 +14,10 @@ import eu.kanade.presentation.browse.components.MigrationExitDialog
 import eu.kanade.presentation.browse.components.MigrationMangaDialog
 import eu.kanade.presentation.browse.components.MigrationProgressDialog
 import eu.kanade.presentation.util.Screen
+import eu.kanade.tachiyomi.ui.anime.MangaScreen
 import eu.kanade.tachiyomi.ui.browse.migration.advanced.design.MigrationBottomSheetDialog
 import eu.kanade.tachiyomi.ui.browse.migration.advanced.design.PreMigrationScreen
 import eu.kanade.tachiyomi.ui.browse.migration.search.MigrateSearchScreen
-import eu.kanade.tachiyomi.ui.manga.MangaScreen
 import eu.kanade.tachiyomi.util.system.toast
 import exh.util.overEq
 import exh.util.underEq

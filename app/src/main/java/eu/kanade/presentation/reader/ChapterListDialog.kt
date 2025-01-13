@@ -12,8 +12,8 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
+import eu.kanade.presentation.anime.components.MangaChapterListItem
 import eu.kanade.presentation.components.AdaptiveSheet
-import eu.kanade.presentation.manga.components.MangaChapterListItem
 import eu.kanade.tachiyomi.data.download.DownloadManager
 import eu.kanade.tachiyomi.data.download.model.Download
 import eu.kanade.tachiyomi.ui.reader.chapter.ReaderChapterItem

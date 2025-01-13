@@ -16,7 +16,7 @@ import androidx.appcompat.app.AlertDialog
 import androidx.core.content.getSystemService
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import eu.kanade.tachiyomi.databinding.DialogStubTextinputBinding
-import eu.kanade.tachiyomi.ui.manga.EditMangaDialogColors
+import eu.kanade.tachiyomi.ui.anime.EditMangaDialogColors
 
 // KMK -->
 @Suppress("UnusedReceiverParameter")

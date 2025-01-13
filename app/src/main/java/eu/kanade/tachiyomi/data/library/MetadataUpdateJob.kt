@@ -10,9 +10,9 @@ import androidx.work.OneTimeWorkRequestBuilder
 import androidx.work.WorkInfo
 import androidx.work.WorkQuery
 import androidx.work.WorkerParameters
-import eu.kanade.domain.manga.interactor.UpdateManga
-import eu.kanade.domain.manga.model.copyFrom
-import eu.kanade.domain.manga.model.toSManga
+import eu.kanade.domain.anime.interactor.UpdateManga
+import eu.kanade.domain.anime.model.copyFrom
+import eu.kanade.domain.anime.model.toSManga
 import eu.kanade.tachiyomi.data.cache.CoverCache
 import eu.kanade.tachiyomi.data.notification.Notifications
 import eu.kanade.tachiyomi.util.prepUpdateCover

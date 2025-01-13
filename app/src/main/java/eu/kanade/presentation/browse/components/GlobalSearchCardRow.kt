@@ -18,9 +18,9 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.util.fastAny
 import eu.kanade.domain.ui.UiPreferences
+import eu.kanade.presentation.anime.components.RatioSwitchToPanorama
 import eu.kanade.presentation.library.components.CommonMangaItemDefaults
 import eu.kanade.presentation.library.components.MangaComfortableGridItem
-import eu.kanade.presentation.manga.components.RatioSwitchToPanorama
 import tachiyomi.domain.anime.model.Manga
 import tachiyomi.domain.anime.model.MangaCover
 import tachiyomi.domain.anime.model.asMangaCover

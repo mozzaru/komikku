@@ -4,7 +4,7 @@ import android.content.Context
 import android.net.wifi.WifiManager
 import android.os.Build
 import android.os.PowerManager
-import eu.kanade.domain.manga.interactor.UpdateManga
+import eu.kanade.domain.anime.interactor.UpdateManga
 import eu.kanade.tachiyomi.network.POST
 import eu.kanade.tachiyomi.network.await
 import eu.kanade.tachiyomi.source.online.all.EHentai

@@ -38,12 +38,12 @@ import androidx.compose.ui.platform.LocalHapticFeedback
 import androidx.compose.ui.text.font.FontStyle
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
+import eu.kanade.presentation.anime.components.ChapterDownloadAction
+import eu.kanade.presentation.anime.components.ChapterDownloadIndicator
+import eu.kanade.presentation.anime.components.DotSeparatorText
+import eu.kanade.presentation.anime.components.MangaCover
+import eu.kanade.presentation.anime.components.RatioSwitchToPanorama
 import eu.kanade.presentation.components.relativeDateText
-import eu.kanade.presentation.manga.components.ChapterDownloadAction
-import eu.kanade.presentation.manga.components.ChapterDownloadIndicator
-import eu.kanade.presentation.manga.components.DotSeparatorText
-import eu.kanade.presentation.manga.components.MangaCover
-import eu.kanade.presentation.manga.components.RatioSwitchToPanorama
 import eu.kanade.presentation.util.animateItemFastScroll
 import eu.kanade.presentation.util.relativeTimeSpanString
 import eu.kanade.tachiyomi.data.download.model.Download

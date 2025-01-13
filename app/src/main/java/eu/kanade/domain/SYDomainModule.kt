@@ -1,12 +1,12 @@
 package eu.kanade.domain
 
 import android.app.Application
-import eu.kanade.domain.manga.interactor.CreateSortTag
-import eu.kanade.domain.manga.interactor.DeleteSortTag
-import eu.kanade.domain.manga.interactor.GetPagePreviews
-import eu.kanade.domain.manga.interactor.GetSortTag
-import eu.kanade.domain.manga.interactor.ReorderSortTag
-import eu.kanade.domain.manga.interactor.SmartSearchMerge
+import eu.kanade.domain.anime.interactor.CreateSortTag
+import eu.kanade.domain.anime.interactor.DeleteSortTag
+import eu.kanade.domain.anime.interactor.GetPagePreviews
+import eu.kanade.domain.anime.interactor.GetSortTag
+import eu.kanade.domain.anime.interactor.ReorderSortTag
+import eu.kanade.domain.anime.interactor.SmartSearchMerge
 import eu.kanade.domain.source.interactor.CreateSourceCategory
 import eu.kanade.domain.source.interactor.DeleteSourceCategory
 import eu.kanade.domain.source.interactor.GetExhSavedSearch

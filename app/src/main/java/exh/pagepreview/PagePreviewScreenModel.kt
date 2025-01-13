@@ -5,8 +5,8 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import cafe.adriel.voyager.core.model.StateScreenModel
 import cafe.adriel.voyager.core.model.screenModelScope
-import eu.kanade.domain.manga.interactor.GetPagePreviews
-import eu.kanade.domain.manga.model.PagePreview
+import eu.kanade.domain.anime.interactor.GetPagePreviews
+import eu.kanade.domain.anime.model.PagePreview
 import eu.kanade.tachiyomi.source.Source
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.catch

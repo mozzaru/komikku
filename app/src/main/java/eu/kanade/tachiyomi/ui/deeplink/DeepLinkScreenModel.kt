@@ -3,9 +3,9 @@ package eu.kanade.tachiyomi.ui.deeplink
 import androidx.compose.runtime.Immutable
 import cafe.adriel.voyager.core.model.StateScreenModel
 import cafe.adriel.voyager.core.model.screenModelScope
-import eu.kanade.domain.chapter.interactor.SyncChaptersWithSource
-import eu.kanade.domain.manga.model.toDomainManga
-import eu.kanade.domain.manga.model.toSManga
+import eu.kanade.domain.anime.model.toDomainManga
+import eu.kanade.domain.anime.model.toSManga
+import eu.kanade.domain.episode.interactor.SyncChaptersWithSource
 import eu.kanade.tachiyomi.source.Source
 import eu.kanade.tachiyomi.source.model.SChapter
 import eu.kanade.tachiyomi.source.model.SManga

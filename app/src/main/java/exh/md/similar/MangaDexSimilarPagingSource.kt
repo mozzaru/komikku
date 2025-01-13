@@ -1,6 +1,6 @@
 package exh.md.similar
 
-import eu.kanade.domain.manga.model.toSManga
+import eu.kanade.domain.anime.model.toSManga
 import eu.kanade.tachiyomi.source.model.MangasPage
 import eu.kanade.tachiyomi.source.model.MetadataMangasPage
 import eu.kanade.tachiyomi.source.online.all.MangaDex

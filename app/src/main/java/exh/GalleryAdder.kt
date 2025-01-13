@@ -2,9 +2,9 @@ package exh
 
 import android.content.Context
 import androidx.core.net.toUri
-import eu.kanade.domain.chapter.interactor.SyncChaptersWithSource
-import eu.kanade.domain.manga.interactor.UpdateManga
-import eu.kanade.domain.manga.model.toSManga
+import eu.kanade.domain.anime.interactor.UpdateManga
+import eu.kanade.domain.anime.model.toSManga
+import eu.kanade.domain.episode.interactor.SyncChaptersWithSource
 import eu.kanade.domain.source.service.SourcePreferences
 import eu.kanade.tachiyomi.source.online.UrlImportableSource
 import eu.kanade.tachiyomi.source.online.all.EHentai

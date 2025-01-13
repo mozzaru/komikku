@@ -12,7 +12,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.util.fastAny
 import eu.kanade.presentation.browse.RelatedMangaTitle
 import eu.kanade.presentation.browse.RelatedMangasLoadingItem
-import eu.kanade.tachiyomi.ui.manga.RelatedManga
+import eu.kanade.tachiyomi.ui.anime.RelatedManga
 import tachiyomi.domain.anime.model.Manga
 import tachiyomi.i18n.MR
 import tachiyomi.i18n.kmk.KMR

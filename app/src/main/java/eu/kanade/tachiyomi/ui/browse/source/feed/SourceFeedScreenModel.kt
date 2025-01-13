@@ -9,7 +9,7 @@ import cafe.adriel.voyager.core.model.StateScreenModel
 import cafe.adriel.voyager.core.model.screenModelScope
 import dev.icerock.moko.resources.StringResource
 import eu.kanade.core.preference.asState
-import eu.kanade.domain.manga.model.toDomainManga
+import eu.kanade.domain.anime.model.toDomainManga
 import eu.kanade.domain.source.interactor.GetExhSavedSearch
 import eu.kanade.domain.ui.UiPreferences
 import eu.kanade.presentation.browse.SourceFeedUI

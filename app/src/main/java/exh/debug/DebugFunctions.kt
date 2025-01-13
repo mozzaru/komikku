@@ -1,8 +1,8 @@
 package exh.debug
 
 import android.app.Application
-import eu.kanade.domain.manga.interactor.UpdateManga
-import eu.kanade.domain.manga.model.toSManga
+import eu.kanade.domain.anime.interactor.UpdateManga
+import eu.kanade.domain.anime.model.toSManga
 import eu.kanade.tachiyomi.BuildConfig
 import eu.kanade.tachiyomi.data.backup.models.Backup
 import eu.kanade.tachiyomi.data.library.LibraryUpdateJob

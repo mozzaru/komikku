@@ -22,10 +22,10 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.util.fastAll
 import androidx.compose.ui.util.fastAny
+import eu.kanade.presentation.anime.components.ChapterDownloadAction
+import eu.kanade.presentation.anime.components.MangaBottomActionMenu
 import eu.kanade.presentation.components.AppBar
 import eu.kanade.presentation.components.AppBarActions
-import eu.kanade.presentation.manga.components.ChapterDownloadAction
-import eu.kanade.presentation.manga.components.MangaBottomActionMenu
 import eu.kanade.tachiyomi.data.download.model.Download
 import eu.kanade.tachiyomi.ui.updates.UpdatesItem
 import eu.kanade.tachiyomi.ui.updates.UpdatesScreenModel

@@ -34,13 +34,13 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.hapticfeedback.HapticFeedbackType
 import androidx.compose.ui.platform.LocalHapticFeedback
 import androidx.compose.ui.unit.dp
+import eu.kanade.presentation.anime.components.BaseMangaListItem
+import eu.kanade.presentation.anime.components.Button
 import eu.kanade.presentation.components.AppBar
 import eu.kanade.presentation.components.AppBarActions
-import eu.kanade.presentation.manga.components.BaseMangaListItem
-import eu.kanade.presentation.manga.components.Button
 import eu.kanade.presentation.util.animateItemFastScroll
-import eu.kanade.tachiyomi.ui.browse.migration.manga.MigrateMangaItem
-import eu.kanade.tachiyomi.ui.browse.migration.manga.MigrateMangaScreenModel
+import eu.kanade.tachiyomi.ui.browse.migration.anime.MigrateMangaItem
+import eu.kanade.tachiyomi.ui.browse.migration.anime.MigrateMangaScreenModel
 import kotlinx.collections.immutable.persistentListOf
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay

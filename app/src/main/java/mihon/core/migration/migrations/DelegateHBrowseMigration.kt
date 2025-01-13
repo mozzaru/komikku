@@ -1,6 +1,6 @@
 package mihon.core.migration.migrations
 
-import eu.kanade.domain.manga.interactor.UpdateManga
+import eu.kanade.domain.anime.interactor.UpdateManga
 import exh.source.HBROWSE_OLD_ID
 import exh.source.HBROWSE_SOURCE_ID
 import mihon.core.migration.MigrateUtils

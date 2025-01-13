@@ -41,9 +41,9 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import eu.kanade.presentation.manga.components.MangaCover
-import eu.kanade.presentation.manga.components.MangaCoverHide
-import eu.kanade.presentation.manga.components.RatioSwitchToPanorama
+import eu.kanade.presentation.anime.components.MangaCover
+import eu.kanade.presentation.anime.components.MangaCoverHide
+import eu.kanade.presentation.anime.components.RatioSwitchToPanorama
 import exh.debug.DebugToggles
 import tachiyomi.i18n.MR
 import tachiyomi.presentation.core.components.BadgeGroup

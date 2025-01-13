@@ -1,7 +1,7 @@
 package exh.eh
 
 import android.content.Context
-import eu.kanade.domain.manga.interactor.UpdateManga
+import eu.kanade.domain.anime.interactor.UpdateManga
 import exh.metadata.metadata.EHentaiSearchMetadata
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.async
