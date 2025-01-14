@@ -8,7 +8,7 @@ import androidx.work.ExistingWorkPolicy
 import androidx.work.NetworkType
 import androidx.work.OneTimeWorkRequestBuilder
 import androidx.work.WorkerParameters
-import eu.kanade.domain.track.interactor.TrackChapter
+import eu.kanade.domain.track.interactor.TrackEpisode
 import eu.kanade.domain.track.store.DelayedTrackingStore
 import eu.kanade.tachiyomi.util.system.workManager
 import logcat.LogPriority
@@ -28,7 +28,7 @@ class DelayedTrackingUpdateJob(private val context: Context, workerParams: Worke
         }
 
         val getTracks = Injekt.get<GetTracks>()
-        val trackChapter = Injekt.get<TrackChapter>()
+        val trackEpisode = Injekt.get<TrackEpisode>()
 
         val delayedTrackingStore = Injekt.get<DelayedTrackingStore>()
 
@@ -45,7 +45,7 @@ class DelayedTrackingUpdateJob(private val context: Context, workerParams: Worke
                     logcat(LogPriority.DEBUG) {
                         "Updating delayed track item: ${track.mangaId}, last chapter read: ${track.lastChapterRead}"
                     }
-                    trackChapter.await(context, track.mangaId, track.lastChapterRead, setupJobOnFailure = false)
+                    trackEpisode.await(context, track.mangaId, track.lastChapterRead, setupJobOnFailure = false)
                 }
         }
 

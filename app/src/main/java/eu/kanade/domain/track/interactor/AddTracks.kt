@@ -42,7 +42,7 @@ class AddTracks(
 
             insertTrack.await(track)
 
-            // TODO: merge into [SyncChapterProgressWithTrack]?
+            // TODO: merge into [SyncEpisodeProgressWithTrack]?
             // Update chapter progress if newer chapters marked read locally
             if (hasReadChapters) {
                 val latestLocalReadChapterNumber = allChapters

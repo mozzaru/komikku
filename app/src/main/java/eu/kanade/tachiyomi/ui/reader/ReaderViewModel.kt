@@ -15,7 +15,7 @@ import eu.kanade.domain.base.BasePreferences
 import eu.kanade.domain.episode.interactor.SetSeenStatus
 import eu.kanade.domain.episode.model.toDbChapter
 import eu.kanade.domain.sync.SyncPreferences
-import eu.kanade.domain.track.interactor.TrackChapter
+import eu.kanade.domain.track.interactor.TrackEpisode
 import eu.kanade.domain.track.service.TrackPreferences
 import eu.kanade.domain.ui.UiPreferences
 import eu.kanade.tachiyomi.data.database.models.toDomainChapter
@@ -120,7 +120,7 @@ class ReaderViewModel @JvmOverloads constructor(
     private val basePreferences: BasePreferences = Injekt.get(),
     private val downloadPreferences: DownloadPreferences = Injekt.get(),
     private val trackPreferences: TrackPreferences = Injekt.get(),
-    private val trackChapter: TrackChapter = Injekt.get(),
+    private val trackEpisode: TrackEpisode = Injekt.get(),
     private val getManga: GetManga = Injekt.get(),
     private val getChaptersByMangaId: GetChaptersByMangaId = Injekt.get(),
     private val getNextChapters: GetNextChapters = Injekt.get(),
@@ -1292,7 +1292,7 @@ class ReaderViewModel @JvmOverloads constructor(
         val context = Injekt.get<Application>()
 
         viewModelScope.launchNonCancellable {
-            trackChapter.await(context, manga.id, readerChapter.chapter.chapter_number.toDouble())
+            trackEpisode.await(context, manga.id, readerChapter.chapter.chapter_number.toDouble())
         }
     }
 

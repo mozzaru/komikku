@@ -40,7 +40,7 @@ import eu.kanade.domain.episode.interactor.SyncEpisodesWithSource
 import eu.kanade.domain.source.service.SourcePreferences
 import eu.kanade.domain.track.interactor.AddTracks
 import eu.kanade.domain.track.interactor.RefreshTracks
-import eu.kanade.domain.track.interactor.TrackChapter
+import eu.kanade.domain.track.interactor.TrackEpisode
 import eu.kanade.domain.track.model.AutoTrackState
 import eu.kanade.domain.track.model.toDomainTrack
 import eu.kanade.domain.track.service.TrackPreferences
@@ -176,7 +176,7 @@ class MangaScreenModel(
     private val sourcePreferences: SourcePreferences = Injekt.get(),
     // KMK <--
     private val trackerManager: TrackerManager = Injekt.get(),
-    private val trackChapter: TrackChapter = Injekt.get(),
+    private val trackEpisode: TrackEpisode = Injekt.get(),
     private val downloadManager: DownloadManager = Injekt.get(),
     private val downloadCache: DownloadCache = Injekt.get(),
     private val getMangaAndChapters: GetMangaWithChapters = Injekt.get(),
@@ -1354,7 +1354,7 @@ class MangaScreenModel(
 
             if (!shouldPromptTrackingUpdate) return@launchIO
             if (autoTrackState == AutoTrackState.ALWAYS) {
-                trackChapter.await(context, mangaId, maxChapterNumber)
+                trackEpisode.await(context, mangaId, maxChapterNumber)
                 withUIContext {
                     context.toast(context.stringResource(MR.strings.trackers_updated_summary, maxChapterNumber.toInt()))
                 }
@@ -1369,7 +1369,7 @@ class MangaScreenModel(
             )
 
             if (result == SnackbarResult.ActionPerformed) {
-                trackChapter.await(context, mangaId, maxChapterNumber)
+                trackEpisode.await(context, mangaId, maxChapterNumber)
             }
         }
     }

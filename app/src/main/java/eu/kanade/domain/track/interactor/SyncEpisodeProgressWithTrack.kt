@@ -14,7 +14,7 @@ import uy.kohesive.injekt.Injekt
 import uy.kohesive.injekt.api.get
 import kotlin.math.max
 
-class SyncChapterProgressWithTrack(
+class SyncEpisodeProgressWithTrack(
     private val updateChapter: UpdateChapter,
     private val insertTrack: InsertTrack,
     private val getChaptersByMangaId: GetChaptersByMangaId,
