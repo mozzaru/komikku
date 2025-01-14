@@ -71,7 +71,7 @@ import tachiyomi.presentation.core.i18n.stringResource
 import kotlin.time.Duration.Companion.seconds
 
 @Composable
-fun MangaBottomActionMenu(
+fun AnimeBottomActionMenu(
     visible: Boolean,
     modifier: Modifier = Modifier,
     onBookmarkClicked: (() -> Unit)? = null,

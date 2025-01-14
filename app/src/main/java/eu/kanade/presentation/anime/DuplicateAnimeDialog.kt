@@ -34,7 +34,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import eu.kanade.domain.ui.UiPreferences
-import eu.kanade.presentation.anime.components.MangaCover
+import eu.kanade.presentation.anime.components.AnimeCover
 import eu.kanade.presentation.anime.components.RatioSwitchToPanorama
 import eu.kanade.presentation.components.AdaptiveSheet
 import eu.kanade.presentation.components.TabbedDialogPaddings
@@ -49,7 +49,7 @@ import uy.kohesive.injekt.Injekt
 import uy.kohesive.injekt.api.get
 
 @Composable
-fun DuplicateMangaDialog(
+fun DuplicateAnimeDialog(
     onDismissRequest: () -> Unit,
     onConfirm: () -> Unit,
     onOpenManga: () -> Unit,
@@ -98,7 +98,7 @@ fun DuplicateMangaDialog(
                     .fillMaxWidth(),
             ) {
                 if (usePanoramaCover && coverIsWide) {
-                    MangaCover.Panorama(
+                    AnimeCover.Panorama(
                         modifier = Modifier
                             .align(Alignment.Center)
                             .heightIn(max = 150.dp),
@@ -109,7 +109,7 @@ fun DuplicateMangaDialog(
                         },
                     )
                 } else {
-                    MangaCover.Book(
+                    AnimeCover.Book(
                         modifier = Modifier
                             .align(Alignment.Center)
                             .widthIn(max = 150.dp),
@@ -185,7 +185,7 @@ private val TitlePadding = PaddingValues(bottom = 16.dp, top = 8.dp)
 
 // KMK -->
 @Composable
-fun DuplicateMangasDialog(
+fun DuplicateAnimesDialog(
     onDismissRequest: () -> Unit,
     onAllowAllDuplicate: () -> Unit,
     onSkipAllDuplicate: () -> Unit,
@@ -219,7 +219,7 @@ fun DuplicateMangasDialog(
                         .fillMaxWidth(),
                 ) {
                     if (usePanoramaCover && coverIsWide) {
-                        MangaCover.Panorama(
+                        AnimeCover.Panorama(
                             modifier = Modifier
                                 .align(Alignment.Center)
                                 .heightIn(max = 150.dp),
@@ -230,7 +230,7 @@ fun DuplicateMangasDialog(
                             },
                         )
                     } else {
-                        MangaCover.Book(
+                        AnimeCover.Book(
                             modifier = Modifier
                                 .align(Alignment.Center)
                                 .widthIn(max = 150.dp),

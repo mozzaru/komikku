@@ -37,7 +37,7 @@ import cafe.adriel.voyager.core.model.rememberScreenModel
 import cafe.adriel.voyager.navigator.LocalNavigator
 import cafe.adriel.voyager.navigator.currentOrThrow
 import eu.kanade.core.util.ifSourcesLoaded
-import eu.kanade.presentation.anime.DuplicateMangaDialog
+import eu.kanade.presentation.anime.DuplicateAnimeDialog
 import eu.kanade.presentation.browse.BrowseSourceContent
 import eu.kanade.presentation.browse.MissingSourceScreen
 import eu.kanade.presentation.browse.components.BrowseSourceToolbar
@@ -433,7 +433,7 @@ data class BrowseSourceScreen(
                 )
             }
             is BrowseSourceScreenModel.Dialog.AddDuplicateManga -> {
-                DuplicateMangaDialog(
+                DuplicateAnimeDialog(
                     onDismissRequest = onDismissRequest,
                     onConfirm = { screenModel.addFavorite(dialog.manga) },
                     onOpenManga = { navigator.push(MangaScreen(dialog.duplicate.id)) },

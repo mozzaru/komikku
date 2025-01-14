@@ -22,8 +22,8 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.util.fastAll
 import androidx.compose.ui.util.fastAny
-import eu.kanade.presentation.anime.components.ChapterDownloadAction
-import eu.kanade.presentation.anime.components.MangaBottomActionMenu
+import eu.kanade.presentation.anime.components.AnimeBottomActionMenu
+import eu.kanade.presentation.anime.components.EpisodeDownloadAction
 import eu.kanade.presentation.components.AppBar
 import eu.kanade.presentation.components.AppBarActions
 import eu.kanade.tachiyomi.data.download.model.Download
@@ -57,7 +57,7 @@ fun UpdateScreen(
     onInvertSelection: () -> Unit,
     onCalendarClicked: () -> Unit,
     onUpdateLibrary: () -> Boolean,
-    onDownloadChapter: (List<UpdatesItem>, ChapterDownloadAction) -> Unit,
+    onDownloadChapter: (List<UpdatesItem>, EpisodeDownloadAction) -> Unit,
     onMultiBookmarkClicked: (List<UpdatesItem>, bookmark: Boolean) -> Unit,
     onMultiMarkAsReadClicked: (List<UpdatesItem>, read: Boolean) -> Unit,
     onMultiDeleteClicked: (List<UpdatesItem>) -> Unit,
@@ -227,12 +227,12 @@ private fun UpdatesAppBar(
 @Composable
 private fun UpdatesBottomBar(
     selected: List<UpdatesItem>,
-    onDownloadChapter: (List<UpdatesItem>, ChapterDownloadAction) -> Unit,
+    onDownloadChapter: (List<UpdatesItem>, EpisodeDownloadAction) -> Unit,
     onMultiBookmarkClicked: (List<UpdatesItem>, bookmark: Boolean) -> Unit,
     onMultiMarkAsReadClicked: (List<UpdatesItem>, read: Boolean) -> Unit,
     onMultiDeleteClicked: (List<UpdatesItem>) -> Unit,
 ) {
-    MangaBottomActionMenu(
+    AnimeBottomActionMenu(
         visible = selected.isNotEmpty(),
         modifier = Modifier.fillMaxWidth(),
         onBookmarkClicked = {
@@ -248,7 +248,7 @@ private fun UpdatesBottomBar(
             onMultiMarkAsReadClicked(selected, false)
         }.takeIf { selected.fastAny { it.update.read || it.update.lastPageRead > 0L } },
         onDownloadClicked = {
-            onDownloadChapter(selected, ChapterDownloadAction.START)
+            onDownloadChapter(selected, EpisodeDownloadAction.START)
         }.takeIf {
             selected.fastAny { it.downloadStateProvider() != Download.State.DOWNLOADED }
         },

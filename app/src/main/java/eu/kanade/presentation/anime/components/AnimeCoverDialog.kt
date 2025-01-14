@@ -57,7 +57,7 @@ import tachiyomi.presentation.core.i18n.stringResource
 import tachiyomi.presentation.core.util.clickableNoIndication
 
 @Composable
-fun MangaCoverDialog(
+fun AnimeCoverDialog(
     manga: Manga,
     isCustomCover: Boolean,
     snackbarHostState: SnackbarHostState,

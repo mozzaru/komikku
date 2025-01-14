@@ -44,12 +44,12 @@ import dev.chrisbanes.haze.hazeChild
 import eu.kanade.core.util.ifSourcesLoaded
 import eu.kanade.domain.anime.model.hasCustomCover
 import eu.kanade.domain.anime.model.toSManga
-import eu.kanade.presentation.anime.ChapterSettingsDialog
-import eu.kanade.presentation.anime.DuplicateMangaDialog
+import eu.kanade.presentation.anime.AnimeScreen
+import eu.kanade.presentation.anime.DuplicateAnimeDialog
 import eu.kanade.presentation.anime.EditCoverAction
-import eu.kanade.presentation.anime.MangaScreen
-import eu.kanade.presentation.anime.components.DeleteChaptersDialog
-import eu.kanade.presentation.anime.components.MangaCoverDialog
+import eu.kanade.presentation.anime.EpisodeSettingsDialog
+import eu.kanade.presentation.anime.components.AnimeCoverDialog
+import eu.kanade.presentation.anime.components.DeleteEpisodesDialog
 import eu.kanade.presentation.anime.components.ScanlatorFilterDialog
 import eu.kanade.presentation.anime.components.SetIntervalDialog
 import eu.kanade.presentation.category.components.ChangeCategoryDialog
@@ -266,7 +266,7 @@ class MangaScreen(
         val fullCoverBackground = MaterialTheme.colorScheme.surfaceTint.blend(MaterialTheme.colorScheme.surface)
         // KMK <--
 
-        MangaScreen(
+        AnimeScreen(
             state = successState,
             snackbarHostState = screenModel.snackbarHostState,
             nextUpdate = successState.manga.expectedNextUpdate,
@@ -436,7 +436,7 @@ class MangaScreen(
             }
 
             is MangaScreenModel.Dialog.DeleteChapters -> {
-                DeleteChaptersDialog(
+                DeleteEpisodesDialog(
                     onDismissRequest = onDismissRequest,
                     onConfirm = {
                         screenModel.toggleAllSelection(false)
@@ -446,7 +446,7 @@ class MangaScreen(
             }
 
             is MangaScreenModel.Dialog.DuplicateManga -> {
-                DuplicateMangaDialog(
+                DuplicateAnimeDialog(
                     onDismissRequest = onDismissRequest,
                     onConfirm = { screenModel.toggleFavorite(onRemoved = {}, checkDuplicate = false) },
                     onOpenManga = { navigator.push(MangaScreen(dialog.duplicate.id)) },
@@ -461,7 +461,7 @@ class MangaScreen(
                 )
             }
 
-            MangaScreenModel.Dialog.SettingsSheet -> ChapterSettingsDialog(
+            MangaScreenModel.Dialog.SettingsSheet -> EpisodeSettingsDialog(
                 onDismissRequest = onDismissRequest,
                 manga = successState.manga,
                 onDownloadFilterChanged = screenModel::setDownloadedFilter,
@@ -506,7 +506,7 @@ class MangaScreen(
                         },
                     )
                     // KMK <--
-                    MangaCoverDialog(
+                    AnimeCoverDialog(
                         manga = manga!!,
                         snackbarHostState = sm.snackbarHostState,
                         isCustomCover = remember(manga) { manga!!.hasCustomCover() },

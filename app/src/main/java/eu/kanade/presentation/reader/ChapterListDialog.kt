@@ -12,7 +12,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
-import eu.kanade.presentation.anime.components.MangaChapterListItem
+import eu.kanade.presentation.anime.components.AnimeChapterListItem
 import eu.kanade.presentation.components.AdaptiveSheet
 import eu.kanade.tachiyomi.data.download.DownloadManager
 import eu.kanade.tachiyomi.data.download.model.Download
@@ -83,7 +83,7 @@ fun ChapterListDialog(
                     downloaded -> Download.State.DOWNLOADED
                     else -> Download.State.NOT_DOWNLOADED
                 }
-                MangaChapterListItem(
+                AnimeChapterListItem(
                     title = chapterItem.chapter.name,
                     date = chapterItem.chapter.dateUpload
                         .takeIf { it > 0L }

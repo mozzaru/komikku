@@ -19,8 +19,8 @@ import cafe.adriel.voyager.navigator.LocalNavigator
 import cafe.adriel.voyager.navigator.currentOrThrow
 import eu.kanade.domain.anime.interactor.UpdateAnime
 import eu.kanade.domain.track.interactor.AddTracks
-import eu.kanade.presentation.anime.DuplicateMangaDialog
-import eu.kanade.presentation.anime.DuplicateMangasDialog
+import eu.kanade.presentation.anime.DuplicateAnimeDialog
+import eu.kanade.presentation.anime.DuplicateAnimesDialog
 import eu.kanade.presentation.browse.components.RemoveMangaDialog
 import eu.kanade.presentation.category.components.ChangeCategoryDialog
 import eu.kanade.presentation.components.AppBar
@@ -127,7 +127,7 @@ class BulkFavoriteScreenModel(
     /**
      * Called when user click on [BulkSelectionToolbar]'s `Favorite` button.
      * It will then look for any duplicated mangas.
-     * - If there is any, it will show the [DuplicateMangasDialog].
+     * - If there is any, it will show the [DuplicateAnimesDialog].
      * - If not then it will call the [addFavoriteDuplicate].
      */
     fun addFavorite(startIdx: Int = 0) {
@@ -444,7 +444,7 @@ fun AddDuplicateMangaDialog(bulkFavoriteScreenModel: BulkFavoriteScreenModel) {
     val bulkFavoriteState by bulkFavoriteScreenModel.state.collectAsState()
     val dialog = bulkFavoriteState.dialog as BulkFavoriteScreenModel.Dialog.AddDuplicateManga
 
-    DuplicateMangaDialog(
+    DuplicateAnimeDialog(
         onDismissRequest = bulkFavoriteScreenModel::dismissDialog,
         onConfirm = { bulkFavoriteScreenModel.addFavorite(dialog.manga) },
         onOpenManga = { navigator.push(MangaScreen(dialog.duplicate.id)) },
@@ -513,7 +513,7 @@ fun AllowDuplicateDialog(bulkFavoriteScreenModel: BulkFavoriteScreenModel) {
     val bulkFavoriteState by bulkFavoriteScreenModel.state.collectAsState()
     val dialog = bulkFavoriteState.dialog as BulkFavoriteScreenModel.Dialog.AllowDuplicate
 
-    DuplicateMangasDialog(
+    DuplicateAnimesDialog(
         onDismissRequest = bulkFavoriteScreenModel::dismissDialog,
         onAllowAllDuplicate = bulkFavoriteScreenModel::addFavoriteDuplicate,
         onSkipAllDuplicate = {

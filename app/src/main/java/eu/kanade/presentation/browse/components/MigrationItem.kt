@@ -25,7 +25,7 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import eu.kanade.presentation.anime.components.MangaCover
+import eu.kanade.presentation.anime.components.AnimeCover
 import eu.kanade.tachiyomi.ui.browse.migration.advanced.process.MigratingManga
 import tachiyomi.core.common.util.lang.withIOContext
 import tachiyomi.domain.anime.model.Manga
@@ -53,9 +53,9 @@ fun MigrationItem(
         val context = LocalContext.current
         Box(
             Modifier.fillMaxWidth()
-                .aspectRatio(MangaCover.Book.ratio),
+                .aspectRatio(AnimeCover.Book.ratio),
         ) {
-            MangaCover.Book(
+            AnimeCover.Book(
                 modifier = Modifier
                     .fillMaxWidth(),
                 data = manga,

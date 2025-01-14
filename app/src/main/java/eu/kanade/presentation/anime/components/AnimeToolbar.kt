@@ -45,7 +45,7 @@ import uy.kohesive.injekt.Injekt
 import uy.kohesive.injekt.api.get
 
 @Composable
-fun MangaToolbar(
+fun AnimeToolbar(
     title: String,
     titleAlphaProvider: () -> Float,
     hasFilters: Boolean,

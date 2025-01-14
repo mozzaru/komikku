@@ -33,7 +33,7 @@ import tachiyomi.domain.anime.model.Manga
 import tachiyomi.domain.anime.model.asMangaCover
 import tachiyomi.domain.anime.model.MangaCover as DomainMangaCover
 
-enum class MangaCover(val ratio: Float) {
+enum class AnimeCover(val ratio: Float) {
     Square(1f / 1f),
     Book(2f / 3f),
 
@@ -157,7 +157,7 @@ enum class MangaCover(val ratio: Float) {
     }
 }
 
-enum class MangaCoverHide(private val ratio: Float) {
+enum class AnimeCoverHide(private val ratio: Float) {
     Square(1f / 1f),
     Book(2f / 3f),
     ;

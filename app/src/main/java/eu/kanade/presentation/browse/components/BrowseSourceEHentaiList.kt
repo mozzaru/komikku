@@ -33,8 +33,8 @@ import androidx.paging.compose.LazyPagingItems
 import com.gowtham.ratingbar.RatingBar
 import com.gowtham.ratingbar.RatingBarStyle
 import dev.icerock.moko.resources.StringResource
-import eu.kanade.presentation.anime.components.MangaCover
-import eu.kanade.presentation.anime.components.MangaCoverHide
+import eu.kanade.presentation.anime.components.AnimeCover
+import eu.kanade.presentation.anime.components.AnimeCoverHide
 import eu.kanade.presentation.library.components.CommonMangaItemDefaults
 import eu.kanade.presentation.library.components.GRID_SELECTED_COVER_ALPHA
 import exh.debug.DebugToggles
@@ -203,7 +203,7 @@ fun BrowseSourceEHentaiListItem(
         Box {
             // KMK -->
             if (DebugToggles.HIDE_COVER_IMAGE_ONLY_SHOW_COLOR.enabled) {
-                MangaCoverHide.Book(
+                AnimeCoverHide.Book(
                     modifier = Modifier
                         .fillMaxHeight(),
                     bgColor = bgColor ?: (MaterialTheme.colorScheme.surface.takeIf { isSelected }),
@@ -211,7 +211,7 @@ fun BrowseSourceEHentaiListItem(
                 )
             } else {
                 // KMK <--
-                MangaCover.Book(
+                AnimeCover.Book(
                     modifier = Modifier
                         .fillMaxHeight(),
                     // KMK -->

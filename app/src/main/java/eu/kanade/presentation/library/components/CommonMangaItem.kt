@@ -41,8 +41,8 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import eu.kanade.presentation.anime.components.MangaCover
-import eu.kanade.presentation.anime.components.MangaCoverHide
+import eu.kanade.presentation.anime.components.AnimeCover
+import eu.kanade.presentation.anime.components.AnimeCoverHide
 import eu.kanade.presentation.anime.components.RatioSwitchToPanorama
 import exh.debug.DebugToggles
 import tachiyomi.i18n.MR
@@ -102,7 +102,7 @@ fun MangaCompactGridItem(
             cover = {
                 // KMK -->
                 if (DebugToggles.HIDE_COVER_IMAGE_ONLY_SHOW_COLOR.enabled) {
-                    MangaCoverHide.Book(
+                    AnimeCoverHide.Book(
                         modifier = Modifier
                             .fillMaxWidth(),
                         bgColor = bgColor ?: (MaterialTheme.colorScheme.surface.takeIf { isSelected }),
@@ -110,7 +110,7 @@ fun MangaCompactGridItem(
                     )
                 } else {
                     // KMK <--
-                    MangaCover.Book(
+                    AnimeCover.Book(
                         modifier = Modifier
                             // KMK -->
                             // .alpha(if (isSelected) GridSelectedCoverAlpha else coverAlpha)
@@ -238,7 +238,7 @@ fun MangaComfortableGridItem(
                 cover = {
                     // KMK -->
                     if (DebugToggles.HIDE_COVER_IMAGE_ONLY_SHOW_COLOR.enabled) {
-                        MangaCoverHide.Book(
+                        AnimeCoverHide.Book(
                             modifier = Modifier
                                 .fillMaxWidth(),
                             bgColor = bgColor ?: (MaterialTheme.colorScheme.surface.takeIf { isSelected }),
@@ -246,7 +246,7 @@ fun MangaComfortableGridItem(
                         )
                     } else {
                         if (fitToPanoramaCover && usePanoramaCover && coverIsWide) {
-                            MangaCover.Panorama(
+                            AnimeCover.Panorama(
                                 modifier = Modifier
                                     // KMK -->
                                     // .alpha(if (isSelected) GridSelectedCoverAlpha else coverAlpha)
@@ -265,7 +265,7 @@ fun MangaComfortableGridItem(
                             )
                         } else {
                             // KMK <--
-                            MangaCover.Book(
+                            AnimeCover.Book(
                                 modifier = Modifier
                                     // KMK -->
                                     // .alpha(if (isSelected) GridSelectedCoverAlpha else coverAlpha)
@@ -292,9 +292,9 @@ fun MangaComfortableGridItem(
                 },
                 // KMK -->
                 ratio = if (fitToPanoramaCover && usePanoramaCover && coverIsWide) {
-                    MangaCover.Panorama.ratio
+                    AnimeCover.Panorama.ratio
                 } else {
-                    MangaCover.Book.ratio
+                    AnimeCover.Book.ratio
                 },
                 // KMK <--
                 badgesStart = coverBadgeStart,
@@ -331,7 +331,7 @@ private fun MangaGridCover(
     modifier: Modifier = Modifier,
     cover: @Composable BoxScope.() -> Unit = {},
     // KMK -->
-    ratio: Float = MangaCover.Book.ratio,
+    ratio: Float = AnimeCover.Book.ratio,
     // KMK <--
     badgesStart: (@Composable RowScope.() -> Unit)? = null,
     badgesEnd: (@Composable RowScope.() -> Unit)? = null,
@@ -458,7 +458,7 @@ fun MangaListItem(
     ) {
         // KMK -->
         if (DebugToggles.HIDE_COVER_IMAGE_ONLY_SHOW_COLOR.enabled) {
-            MangaCoverHide.Square(
+            AnimeCoverHide.Square(
                 modifier = Modifier
                     .fillMaxHeight(),
                 bgColor = bgColor ?: (MaterialTheme.colorScheme.surface.takeIf { isSelected }),
@@ -466,7 +466,7 @@ fun MangaListItem(
             )
         } else {
             // KMK <--
-            MangaCover.Square(
+            AnimeCover.Square(
                 modifier = Modifier
                     // KMK -->
                     // .alpha(coverAlpha)
@@ -477,7 +477,7 @@ fun MangaListItem(
                 alpha = coverAlpha,
                 bgColor = bgColor ?: (MaterialTheme.colorScheme.surface.takeIf { isSelected }),
                 tint = onBgColor,
-                size = MangaCover.Size.Big,
+                size = AnimeCover.Size.Big,
                 // KMK <--
             )
         }

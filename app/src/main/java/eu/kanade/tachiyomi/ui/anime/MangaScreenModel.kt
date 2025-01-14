@@ -46,7 +46,7 @@ import eu.kanade.domain.track.model.toDomainTrack
 import eu.kanade.domain.track.service.TrackPreferences
 import eu.kanade.domain.ui.UiPreferences
 import eu.kanade.presentation.anime.DownloadAction
-import eu.kanade.presentation.anime.components.ChapterDownloadAction
+import eu.kanade.presentation.anime.components.EpisodeDownloadAction
 import eu.kanade.presentation.util.formattedMessage
 import eu.kanade.tachiyomi.data.coil.getBestColor
 import eu.kanade.tachiyomi.data.download.DownloadCache
@@ -1204,14 +1204,14 @@ class MangaScreenModel(
                 bookmarkChapters(listOf(chapter), !chapter.bookmark)
             }
             LibraryPreferences.ChapterSwipeAction.Download -> {
-                val downloadAction: ChapterDownloadAction = when (chapterItem.downloadState) {
+                val downloadAction: EpisodeDownloadAction = when (chapterItem.downloadState) {
                     Download.State.ERROR,
                     Download.State.NOT_DOWNLOADED,
-                    -> ChapterDownloadAction.START_NOW
+                    -> EpisodeDownloadAction.START_NOW
                     Download.State.QUEUE,
                     Download.State.DOWNLOADING,
-                    -> ChapterDownloadAction.CANCEL
-                    Download.State.DOWNLOADED -> ChapterDownloadAction.DELETE
+                    -> EpisodeDownloadAction.CANCEL
+                    Download.State.DOWNLOADED -> EpisodeDownloadAction.DELETE
                 }
                 runChapterDownloadActions(
                     items = listOf(chapterItem),
@@ -1280,24 +1280,24 @@ class MangaScreenModel(
 
     fun runChapterDownloadActions(
         items: List<ChapterList.Item>,
-        action: ChapterDownloadAction,
+        action: EpisodeDownloadAction,
     ) {
         when (action) {
-            ChapterDownloadAction.START -> {
+            EpisodeDownloadAction.START -> {
                 startDownload(items.map { it.chapter }, false)
                 if (items.any { it.downloadState == Download.State.ERROR }) {
                     downloadManager.startDownloads()
                 }
             }
-            ChapterDownloadAction.START_NOW -> {
+            EpisodeDownloadAction.START_NOW -> {
                 val chapter = items.singleOrNull()?.chapter ?: return
                 startDownload(listOf(chapter), true)
             }
-            ChapterDownloadAction.CANCEL -> {
+            EpisodeDownloadAction.CANCEL -> {
                 val chapterId = items.singleOrNull()?.id ?: return
                 cancelDownload(chapterId)
             }
-            ChapterDownloadAction.DELETE -> {
+            EpisodeDownloadAction.DELETE -> {
                 deleteChapters(items.map { it.chapter })
             }
         }

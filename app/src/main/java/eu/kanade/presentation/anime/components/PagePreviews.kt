@@ -33,7 +33,7 @@ import androidx.compose.ui.unit.dp
 import coil3.compose.SubcomposeAsyncImage
 import coil3.compose.SubcomposeAsyncImageContent
 import eu.kanade.domain.anime.model.PagePreview
-import eu.kanade.presentation.anime.MangaScreenItem
+import eu.kanade.presentation.anime.AnimeScreenItem
 import eu.kanade.tachiyomi.ui.anime.PagePreviewState
 import exh.util.floor
 import kotlinx.collections.immutable.ImmutableList
@@ -138,8 +138,8 @@ fun LazyListScope.PagePreviewItems(
     when {
         pagePreviewState is PagePreviewState.Loading || maxWidth == Dp.Hairline -> {
             item(
-                key = MangaScreenItem.CHAPTER_PREVIEW_LOADING,
-                contentType = MangaScreenItem.CHAPTER_PREVIEW_LOADING,
+                key = AnimeScreenItem.CHAPTER_PREVIEW_LOADING,
+                contentType = AnimeScreenItem.CHAPTER_PREVIEW_LOADING,
             ) {
                 PagePreviewLoading(setMaxWidth = setMaxWidth)
             }
@@ -147,8 +147,8 @@ fun LazyListScope.PagePreviewItems(
         pagePreviewState is PagePreviewState.Success -> {
             val itemPerRowCount = (maxWidth / 120.dp).floor()
             items(
-                key = { "${MangaScreenItem.CHAPTER_PREVIEW_ROW}-${it.hashCode()}" },
-                contentType = { MangaScreenItem.CHAPTER_PREVIEW_ROW },
+                key = { "${AnimeScreenItem.CHAPTER_PREVIEW_ROW}-${it.hashCode()}" },
+                contentType = { AnimeScreenItem.CHAPTER_PREVIEW_ROW },
                 items = pagePreviewState.pagePreviews.take(rowCount * itemPerRowCount).chunked(itemPerRowCount),
             ) {
                 PagePreviewRow(
@@ -157,8 +157,8 @@ fun LazyListScope.PagePreviewItems(
                 )
             }
             item(
-                key = MangaScreenItem.CHAPTER_PREVIEW_MORE,
-                contentType = MangaScreenItem.CHAPTER_PREVIEW_MORE,
+                key = AnimeScreenItem.CHAPTER_PREVIEW_MORE,
+                contentType = AnimeScreenItem.CHAPTER_PREVIEW_MORE,
             ) {
                 PagePreviewMore(onMorePreviewsClicked)
             }

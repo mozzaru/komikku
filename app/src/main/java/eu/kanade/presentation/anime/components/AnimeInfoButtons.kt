@@ -12,7 +12,7 @@ import tachiyomi.presentation.core.components.material.Button
 import tachiyomi.presentation.core.i18n.stringResource
 
 @Composable
-fun MangaInfoButtons(
+fun AnimeInfoButtons(
     showRecommendsButton: Boolean,
     showMergeWithAnotherButton: Boolean,
     onRecommendClicked: () -> Unit,

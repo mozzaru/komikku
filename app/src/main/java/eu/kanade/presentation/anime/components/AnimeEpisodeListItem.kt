@@ -46,7 +46,7 @@ import tachiyomi.presentation.core.i18n.stringResource
 import tachiyomi.presentation.core.util.selectedBackground
 
 @Composable
-fun MangaChapterListItem(
+fun AnimeChapterListItem(
     title: String,
     date: String?,
     readProgress: String?,
@@ -64,7 +64,7 @@ fun MangaChapterListItem(
     chapterSwipeEndAction: LibraryPreferences.ChapterSwipeAction,
     onLongClick: () -> Unit,
     onClick: () -> Unit,
-    onDownloadClick: ((ChapterDownloadAction) -> Unit)?,
+    onDownloadClick: ((EpisodeDownloadAction) -> Unit)?,
     onChapterSwipe: (LibraryPreferences.ChapterSwipeAction) -> Unit,
     modifier: Modifier = Modifier,
 ) {
@@ -189,7 +189,7 @@ fun MangaChapterListItem(
                 }
             }
 
-            ChapterDownloadIndicator(
+            EpisodeDownloadIndicator(
                 enabled = downloadIndicatorEnabled,
                 modifier = Modifier.padding(start = 4.dp),
                 downloadStateProvider = downloadStateProvider,
