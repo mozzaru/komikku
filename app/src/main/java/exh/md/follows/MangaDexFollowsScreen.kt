@@ -22,7 +22,7 @@ import eu.kanade.presentation.browse.components.RemoveAnimeDialog
 import eu.kanade.presentation.category.components.ChangeCategoryDialog
 import eu.kanade.presentation.components.BulkSelectionToolbar
 import eu.kanade.presentation.util.Screen
-import eu.kanade.tachiyomi.ui.anime.MangaScreen
+import eu.kanade.tachiyomi.ui.anime.AnimeScreen
 import eu.kanade.tachiyomi.ui.browse.AllowDuplicateDialog
 import eu.kanade.tachiyomi.ui.browse.BulkFavoriteScreenModel
 import eu.kanade.tachiyomi.ui.browse.ChangeMangasCategoryDialog
@@ -131,7 +131,7 @@ class MangaDexFollowsScreen(private val sourceId: Long) : Screen() {
                             bulkFavoriteScreenModel.toggleSelection(manga)
                         } else {
                             // KMK <--
-                            navigator.push(MangaScreen(manga.id, true))
+                            navigator.push(AnimeScreen(manga.id, true))
                         }
                     }
                 },
@@ -140,7 +140,7 @@ class MangaDexFollowsScreen(private val sourceId: Long) : Screen() {
                     scope.launchIO {
                         val manga = screenModel.networkToLocalManga.getLocal(it)
                         if (bulkFavoriteState.selectionMode) {
-                            navigator.push(MangaScreen(manga.id, true))
+                            navigator.push(AnimeScreen(manga.id, true))
                         } else {
                             // KMK <--
                             val duplicateManga = screenModel.getDuplicateLibraryManga(manga)
@@ -173,7 +173,7 @@ class MangaDexFollowsScreen(private val sourceId: Long) : Screen() {
                 DuplicateAnimeDialog(
                     onDismissRequest = onDismissRequest,
                     onConfirm = { screenModel.addFavorite(dialog.manga) },
-                    onOpenManga = { navigator.push(MangaScreen(dialog.duplicate.id)) },
+                    onOpenManga = { navigator.push(AnimeScreen(dialog.duplicate.id)) },
                     onMigrate = {
                         PreMigrationScreen.navigateToMigration(
                             Injekt.get<UnsortedPreferences>().skipPreMigration().get(),

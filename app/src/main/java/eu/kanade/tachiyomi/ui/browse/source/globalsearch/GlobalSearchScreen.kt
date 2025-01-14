@@ -16,7 +16,7 @@ import cafe.adriel.voyager.navigator.currentOrThrow
 import eu.kanade.core.util.ifSourcesLoaded
 import eu.kanade.presentation.browse.GlobalSearchScreen
 import eu.kanade.presentation.util.Screen
-import eu.kanade.tachiyomi.ui.anime.MangaScreen
+import eu.kanade.tachiyomi.ui.anime.AnimeScreen
 import eu.kanade.tachiyomi.ui.browse.AddDuplicateMangaDialog
 import eu.kanade.tachiyomi.ui.browse.AllowDuplicateDialog
 import eu.kanade.tachiyomi.ui.browse.BulkFavoriteScreenModel
@@ -77,7 +77,7 @@ class GlobalSearchScreen(
                             scope.launchIO {
                                 val localManga = screenModel.networkToLocalManga.getLocal(manga)
                                 // KMK <--
-                                navigator.replace(MangaScreen(localManga.id, true))
+                                navigator.replace(AnimeScreen(localManga.id, true))
                             }
                         } else {
                             // Backoff to result screen
@@ -107,7 +107,7 @@ class GlobalSearchScreen(
                             bulkFavoriteScreenModel.toggleSelection(manga)
                         } else {
                             // KMK <--
-                            navigator.push(MangaScreen(manga.id, true))
+                            navigator.push(AnimeScreen(manga.id, true))
                         }
                     }
                 },
@@ -119,7 +119,7 @@ class GlobalSearchScreen(
                             bulkFavoriteScreenModel.addRemoveManga(manga, haptic)
                         } else {
                             // KMK <--
-                            navigator.push(MangaScreen(manga.id, true))
+                            navigator.push(AnimeScreen(manga.id, true))
                         }
                     }
                 },

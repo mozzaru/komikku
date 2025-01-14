@@ -26,7 +26,7 @@ import eu.kanade.presentation.category.components.ChangeCategoryDialog
 import eu.kanade.presentation.components.AppBar
 import eu.kanade.presentation.components.BulkSelectionToolbar
 import eu.kanade.tachiyomi.data.cache.CoverCache
-import eu.kanade.tachiyomi.ui.anime.MangaScreen
+import eu.kanade.tachiyomi.ui.anime.AnimeScreen
 import eu.kanade.tachiyomi.ui.browse.migration.advanced.design.PreMigrationScreen
 import eu.kanade.tachiyomi.ui.category.CategoryScreen
 import eu.kanade.tachiyomi.util.removeCovers
@@ -447,7 +447,7 @@ fun AddDuplicateMangaDialog(bulkFavoriteScreenModel: BulkFavoriteScreenModel) {
     DuplicateAnimeDialog(
         onDismissRequest = bulkFavoriteScreenModel::dismissDialog,
         onConfirm = { bulkFavoriteScreenModel.addFavorite(dialog.manga) },
-        onOpenManga = { navigator.push(MangaScreen(dialog.duplicate.id)) },
+        onOpenManga = { navigator.push(AnimeScreen(dialog.duplicate.id)) },
         onMigrate = {
             PreMigrationScreen.navigateToMigration(
                 Injekt.get<UnsortedPreferences>().skipPreMigration().get(),
@@ -520,7 +520,7 @@ fun AllowDuplicateDialog(bulkFavoriteScreenModel: BulkFavoriteScreenModel) {
             bulkFavoriteScreenModel.addFavoriteDuplicate(skipAllDuplicates = true)
         },
         onOpenManga = {
-            navigator.push(MangaScreen(dialog.duplicatedManga.second.id))
+            navigator.push(AnimeScreen(dialog.duplicatedManga.second.id))
         },
         onAllowDuplicate = {
             bulkFavoriteScreenModel.addFavorite(startIdx = dialog.duplicatedManga.first + 1)

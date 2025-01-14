@@ -29,7 +29,7 @@ import uy.kohesive.injekt.Injekt
 import uy.kohesive.injekt.api.get
 
 @Composable
-fun RelatedMangasScreen(
+fun RelatedAnimesScreen(
     screenModel: MangaScreenModel,
     bulkFavoriteScreenModel: BulkFavoriteScreenModel,
     navigateUp: () -> Unit,
@@ -95,7 +95,7 @@ fun RelatedMangasScreen(
                     if (bulkFavoriteState.selectionMode) {
                         bulkFavoriteScreenModel.toggleSelection(manga)
                     } else {
-                        navigator.push(MangaScreen(manga.id, true))
+                        navigator.push(AnimeScreen(manga.id, true))
                     }
                 }
             },
@@ -105,7 +105,7 @@ fun RelatedMangasScreen(
                     if (!bulkFavoriteState.selectionMode) {
                         bulkFavoriteScreenModel.addRemoveManga(manga, haptic)
                     } else {
-                        navigator.push(MangaScreen(manga.id, true))
+                        navigator.push(AnimeScreen(manga.id, true))
                     }
                 }
             },

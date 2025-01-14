@@ -31,7 +31,7 @@ import eu.kanade.presentation.components.AppBar
 import eu.kanade.presentation.components.AppBarActions
 import eu.kanade.presentation.components.DownloadDropdownMenu
 import eu.kanade.presentation.components.UpIcon
-import eu.kanade.tachiyomi.ui.anime.MangaScreen
+import eu.kanade.tachiyomi.ui.anime.AnimeScreen
 import eu.kanade.tachiyomi.ui.browse.source.browse.BrowseSourceScreen
 import eu.kanade.tachiyomi.ui.browse.source.feed.SourceFeedScreen
 import eu.kanade.tachiyomi.util.system.isDevFlavor
@@ -105,7 +105,7 @@ fun AnimeToolbar(
                     // KMK -->
                     if (isHomeEnabled && navigator != null) {
                         if (navigator.size >= 2 &&
-                            navigator.items[navigator.size - 2] is MangaScreen ||
+                            navigator.items[navigator.size - 2] is AnimeScreen ||
                             navigator.size >= 5
                         ) {
                             IconButton(onClick = { onHomeClicked() }) {

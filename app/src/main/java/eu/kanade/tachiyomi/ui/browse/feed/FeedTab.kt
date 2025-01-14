@@ -28,7 +28,7 @@ import eu.kanade.presentation.browse.components.FeedSortAlphabeticallyDialog
 import eu.kanade.presentation.browse.components.SourceFeedDeleteDialog
 import eu.kanade.presentation.components.AppBar
 import eu.kanade.presentation.components.TabContent
-import eu.kanade.tachiyomi.ui.anime.MangaScreen
+import eu.kanade.tachiyomi.ui.anime.AnimeScreen
 import eu.kanade.tachiyomi.ui.browse.AddDuplicateMangaDialog
 import eu.kanade.tachiyomi.ui.browse.AllowDuplicateDialog
 import eu.kanade.tachiyomi.ui.browse.BulkFavoriteScreenModel
@@ -186,7 +186,7 @@ fun feedTab(
                                     bulkFavoriteScreenModel.toggleSelection(manga)
                                 } else {
                                     // KMK <--
-                                    navigator.push(MangaScreen(manga.id, true))
+                                    navigator.push(AnimeScreen(manga.id, true))
                                 }
                             }
                         },
@@ -197,7 +197,7 @@ fun feedTab(
                                 if (!bulkFavoriteState.selectionMode) {
                                     bulkFavoriteScreenModel.addRemoveManga(manga, haptic)
                                 } else {
-                                    navigator.push(MangaScreen(manga.id, true))
+                                    navigator.push(AnimeScreen(manga.id, true))
                                 }
                             }
                         },

@@ -22,7 +22,7 @@ import eu.kanade.presentation.components.BulkSelectionToolbar
 import eu.kanade.presentation.components.SearchToolbar
 import eu.kanade.presentation.util.Screen
 import eu.kanade.tachiyomi.source.online.HttpSource
-import eu.kanade.tachiyomi.ui.anime.MangaScreen
+import eu.kanade.tachiyomi.ui.anime.AnimeScreen
 import eu.kanade.tachiyomi.ui.browse.AllowDuplicateDialog
 import eu.kanade.tachiyomi.ui.browse.BulkFavoriteScreenModel
 import eu.kanade.tachiyomi.ui.browse.ChangeMangasCategoryDialog
@@ -185,7 +185,7 @@ data class SourceSearchScreen(
                     scope.launchIO {
                         val manga = screenModel.networkToLocalManga.getLocal(it)
                         // KMK <--
-                        navigator.push(MangaScreen(manga.id, true))
+                        navigator.push(AnimeScreen(manga.id, true))
                     }
                 },
                 // KMK -->

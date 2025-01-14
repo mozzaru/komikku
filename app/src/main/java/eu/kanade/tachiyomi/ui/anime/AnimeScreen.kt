@@ -119,7 +119,7 @@ import tachiyomi.presentation.core.screens.LoadingScreen
 import uy.kohesive.injekt.Injekt
 import uy.kohesive.injekt.api.get
 
-class MangaScreen(
+class AnimeScreen(
     private val mangaId: Long,
     /** If it is opened from Source then it will auto expand the manga description */
     val fromSource: Boolean = false,
@@ -173,7 +173,7 @@ class MangaScreen(
                 label = "manga_related_crossfade",
             ) { showRelatedMangasScreen ->
                 when (showRelatedMangasScreen) {
-                    true -> RelatedMangasScreen(
+                    true -> RelatedAnimesScreen(
                         screenModel = screenModel,
                         successState = successState,
                         bulkFavoriteScreenModel = bulkFavoriteScreenModel,
@@ -253,7 +253,7 @@ class MangaScreen(
                 .take(1)
                 .onEach {
                     navigator.replace(
-                        MangaScreen(it.mangaId),
+                        AnimeScreen(it.mangaId),
                     )
                 }
                 .launchIn(this)
@@ -373,7 +373,7 @@ class MangaScreen(
             onRelatedMangaClick = {
                 scope.launchIO {
                     val manga = screenModel.networkToLocalManga.getLocal(it)
-                    navigator.push(MangaScreen(manga.id, true))
+                    navigator.push(AnimeScreen(manga.id, true))
                 }
             },
             onRelatedMangaLongClick = {
@@ -449,7 +449,7 @@ class MangaScreen(
                 DuplicateAnimeDialog(
                     onDismissRequest = onDismissRequest,
                     onConfirm = { screenModel.toggleFavorite(onRemoved = {}, checkDuplicate = false) },
-                    onOpenManga = { navigator.push(MangaScreen(dialog.duplicate.id)) },
+                    onOpenManga = { navigator.push(AnimeScreen(dialog.duplicate.id)) },
                     onMigrate = {
                         // SY -->
                         migrateManga(navigator, dialog.duplicate, screenModel.manga!!.id)
@@ -488,7 +488,7 @@ class MangaScreen(
             }
 
             MangaScreenModel.Dialog.FullCover -> {
-                val sm = rememberScreenModel { MangaCoverScreenModel(successState.manga.id) }
+                val sm = rememberScreenModel { AnimeCoverScreenModel(successState.manga.id) }
                 val manga by sm.state.collectAsState()
                 if (manga != null) {
                     val getContent = rememberLauncherForActivityResult(ActivityResultContracts.GetContent()) {
@@ -555,7 +555,7 @@ class MangaScreen(
             }
             // SY -->
             is MangaScreenModel.Dialog.EditMangaInfo -> {
-                EditMangaDialog(
+                EditAnimeDialog(
                     manga = dialog.manga,
                     // KMK -->
                     coverRatio = coverRatio,
@@ -815,11 +815,11 @@ class MangaScreen(
                 navigator.popUntil { it is SourcesScreen }
                 navigator.pop()
                 // KMK -->
-                if (navigator.lastItem !is MangaScreen) {
-                    navigator push MangaScreen(mergedManga.id)
+                if (navigator.lastItem !is AnimeScreen) {
+                    navigator push AnimeScreen(mergedManga.id)
                 } else {
                     // KMK <--
-                    navigator replace MangaScreen(mergedManga.id)
+                    navigator replace AnimeScreen(mergedManga.id)
                 }
                 context.toast(SYMR.strings.entry_merged)
             } catch (e: Exception) {

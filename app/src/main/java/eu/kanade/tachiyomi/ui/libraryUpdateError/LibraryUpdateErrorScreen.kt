@@ -8,7 +8,7 @@ import cafe.adriel.voyager.navigator.LocalNavigator
 import cafe.adriel.voyager.navigator.currentOrThrow
 import eu.kanade.presentation.libraryUpdateError.LibraryUpdateErrorScreen
 import eu.kanade.presentation.util.Screen
-import eu.kanade.tachiyomi.ui.anime.MangaScreen
+import eu.kanade.tachiyomi.ui.anime.AnimeScreen
 import eu.kanade.tachiyomi.ui.browse.migration.advanced.design.PreMigrationScreen
 import tachiyomi.domain.UnsortedPreferences
 import uy.kohesive.injekt.Injekt
@@ -31,7 +31,7 @@ class LibraryUpdateErrorScreen : Screen() {
                     listOf(item.error.mangaId),
                 )
             },
-            onClickCover = { item -> navigator.push(MangaScreen(item.error.mangaId)) },
+            onClickCover = { item -> navigator.push(AnimeScreen(item.error.mangaId)) },
             onMultiMigrateClicked = {
                 PreMigrationScreen.navigateToMigration(
                     Injekt.get<UnsortedPreferences>().skipPreMigration().get(),

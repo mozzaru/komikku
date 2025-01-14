@@ -9,7 +9,7 @@ import eu.kanade.tachiyomi.data.download.DownloadManager
 import eu.kanade.tachiyomi.data.download.model.Download
 import eu.kanade.tachiyomi.databinding.DownloadListBinding
 import eu.kanade.tachiyomi.source.model.Page
-import eu.kanade.tachiyomi.ui.anime.MangaScreen
+import eu.kanade.tachiyomi.ui.anime.AnimeScreen
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -178,7 +178,7 @@ class DownloadQueueScreenModel(
 
     // KMK -->
     fun showManga(mangaId: Long) {
-        navigator?.push(MangaScreen(mangaId))
+        navigator?.push(AnimeScreen(mangaId))
     }
     // KMK <--
 

@@ -21,7 +21,7 @@ import cafe.adriel.voyager.navigator.LocalNavigator
 import cafe.adriel.voyager.navigator.currentOrThrow
 import eu.kanade.presentation.components.AppBar
 import eu.kanade.presentation.util.Screen
-import eu.kanade.tachiyomi.ui.anime.MangaScreen
+import eu.kanade.tachiyomi.ui.anime.AnimeScreen
 import eu.kanade.tachiyomi.ui.browse.source.SourcesScreen
 import eu.kanade.tachiyomi.ui.browse.source.browse.BrowseSourceScreen
 import eu.kanade.tachiyomi.util.system.toast
@@ -49,7 +49,7 @@ class SmartSearchScreen(
             if (results != null) {
                 if (results is SmartSearchScreenModel.SearchResults.Found) {
                     navigator.replace(
-                        MangaScreen(
+                        AnimeScreen(
                             results.manga.id,
                             // KMK -->
                             // Finding the entry to be merged to, so we don't want to expand description

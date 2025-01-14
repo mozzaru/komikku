@@ -81,7 +81,7 @@ import uy.kohesive.injekt.Injekt
 import uy.kohesive.injekt.api.get
 
 @Composable
-fun EditMangaDialog(
+fun EditAnimeDialog(
     manga: Manga,
     // KMK -->
     coverRatio: MutableFloatState,
@@ -106,7 +106,7 @@ fun EditMangaDialog(
     val trackerManager = remember { Injekt.get<TrackerManager>() }
     val tracks = remember { mutableStateOf(emptyList<Pair<Track, Tracker>>()) }
     // KMK -->
-    val colors = EditMangaDialogColors(
+    val colors = EditAnimeDialogColors(
         textColor = MaterialTheme.colorScheme.onSurfaceVariant.toArgb(),
         textHighlightColor = MaterialTheme.colorScheme.inversePrimary.toArgb(),
         iconColor = MaterialTheme.colorScheme.primary.toArgb(),
@@ -243,7 +243,7 @@ private fun TrackerSelectDialog(
 }
 
 // KMK -->
-data class EditMangaDialogColors(
+data class EditAnimeDialogColors(
     @ColorInt val textColor: Int,
     @ColorInt val textHighlightColor: Int,
     @ColorInt val iconColor: Int,
@@ -266,7 +266,7 @@ private fun onViewCreated(
     tracks: MutableState<List<Pair<Track, Tracker>>>,
     showTrackerSelectionDialogue: MutableState<Boolean>,
     // KMK -->
-    colors: EditMangaDialogColors,
+    colors: EditAnimeDialogColors,
     coverRatio: MutableFloatState,
     // KMK <--
 ) {
@@ -481,7 +481,7 @@ private fun resetTags(
     binding: EditMangaDialogBinding,
     scope: CoroutineScope,
     // KMK -->
-    colors: EditMangaDialogColors,
+    colors: EditAnimeDialogColors,
     // KMK <--
 ) {
     if (manga.genre.isNullOrEmpty() || manga.isLocal()) {
@@ -518,7 +518,7 @@ private fun resetInfo(
     binding: EditMangaDialogBinding,
     scope: CoroutineScope,
     // KMK -->
-    colors: EditMangaDialogColors,
+    colors: EditAnimeDialogColors,
     // KMK <--
 ) {
     binding.title.text?.clear()
@@ -533,7 +533,7 @@ private fun ChipGroup.setChips(
     items: List<String>,
     scope: CoroutineScope,
     // KMK -->
-    colors: EditMangaDialogColors,
+    colors: EditAnimeDialogColors,
     // KMK <--
 ) {
     removeAllViews()
@@ -629,7 +629,7 @@ private class SpinnerAdapter(
     context: Context,
     @LayoutRes val resource: Int,
     objects: List<String>,
-    val colors: EditMangaDialogColors,
+    val colors: EditAnimeDialogColors,
 ) : ArrayAdapter<String>(context, resource, objects) {
     private val mInflater = LayoutInflater.from(context)
 

@@ -50,7 +50,7 @@ import eu.kanade.presentation.util.AssistContentScreen
 import eu.kanade.presentation.util.Screen
 import eu.kanade.tachiyomi.source.CatalogueSource
 import eu.kanade.tachiyomi.source.online.HttpSource
-import eu.kanade.tachiyomi.ui.anime.MangaScreen
+import eu.kanade.tachiyomi.ui.anime.AnimeScreen
 import eu.kanade.tachiyomi.ui.browse.AllowDuplicateDialog
 import eu.kanade.tachiyomi.ui.browse.BulkFavoriteScreenModel
 import eu.kanade.tachiyomi.ui.browse.ChangeMangasCategoryDialog
@@ -342,7 +342,7 @@ data class BrowseSourceScreen(
                         } else {
                             // KMK <--
                             navigator.push(
-                                MangaScreen(
+                                AnimeScreen(
                                     manga.id,
                                     // KMK -->
                                     // Finding the entry to be merged to, so we don't want to expand description
@@ -360,7 +360,7 @@ data class BrowseSourceScreen(
                     scope.launchIO {
                         val manga = screenModel.networkToLocalManga.getLocal(it)
                         if (bulkFavoriteState.selectionMode) {
-                            navigator.push(MangaScreen(manga.id, true))
+                            navigator.push(AnimeScreen(manga.id, true))
                         } else {
                             // KMK <--
                             val duplicateManga = screenModel.getDuplicateLibraryManga(manga)
@@ -436,7 +436,7 @@ data class BrowseSourceScreen(
                 DuplicateAnimeDialog(
                     onDismissRequest = onDismissRequest,
                     onConfirm = { screenModel.addFavorite(dialog.manga) },
-                    onOpenManga = { navigator.push(MangaScreen(dialog.duplicate.id)) },
+                    onOpenManga = { navigator.push(AnimeScreen(dialog.duplicate.id)) },
                     onMigrate = {
                         // SY -->
                         PreMigrationScreen.navigateToMigration(

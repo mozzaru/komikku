@@ -14,7 +14,7 @@ import eu.kanade.presentation.browse.components.MigrationAnimeDialog
 import eu.kanade.presentation.browse.components.MigrationExitDialog
 import eu.kanade.presentation.browse.components.MigrationProgressDialog
 import eu.kanade.presentation.util.Screen
-import eu.kanade.tachiyomi.ui.anime.MangaScreen
+import eu.kanade.tachiyomi.ui.anime.AnimeScreen
 import eu.kanade.tachiyomi.ui.browse.migration.advanced.design.MigrationBottomSheetDialog
 import eu.kanade.tachiyomi.ui.browse.migration.advanced.design.PreMigrationScreen
 import eu.kanade.tachiyomi.ui.browse.migration.search.MigrateSearchScreen
@@ -69,15 +69,15 @@ class MigrationListScreen(private val config: MigrationProcedureConfig) : Screen
 
         LaunchedEffect(screenModel) {
             screenModel.navigateOut.collect {
-                if (items.orEmpty().size == 1 && navigator.items.any { it is MangaScreen }) {
+                if (items.orEmpty().size == 1 && navigator.items.any { it is AnimeScreen }) {
                     val mangaId = (items.orEmpty().firstOrNull()?.searchResult?.value as? MigratingManga.SearchResult.Result)?.id
                     withUIContext {
                         if (mangaId != null) {
                             val newStack = navigator.items.filter {
-                                it !is MangaScreen &&
+                                it !is AnimeScreen &&
                                     it !is MigrationListScreen &&
                                     it !is PreMigrationScreen
-                            } + MangaScreen(mangaId)
+                            } + AnimeScreen(mangaId)
                             navigator replaceAll newStack.first()
                             navigator.push(newStack.drop(1))
 
@@ -103,7 +103,7 @@ class MigrationListScreen(private val config: MigrationProcedureConfig) : Screen
             getChapterInfo = screenModel::getChapterInfo,
             getSourceName = screenModel::getSourceName,
             onMigrationItemClick = {
-                navigator.push(MangaScreen(it.id, true))
+                navigator.push(AnimeScreen(it.id, true))
             },
             openMigrationDialog = screenModel::openMigrateDialog,
             skipManga = { screenModel.removeManga(it) },

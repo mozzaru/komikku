@@ -43,7 +43,7 @@ import eu.kanade.presentation.util.Tab
 import eu.kanade.tachiyomi.R
 import eu.kanade.tachiyomi.data.library.LibraryUpdateJob
 import eu.kanade.tachiyomi.data.sync.SyncDataJob
-import eu.kanade.tachiyomi.ui.anime.MangaScreen
+import eu.kanade.tachiyomi.ui.anime.AnimeScreen
 import eu.kanade.tachiyomi.ui.browse.migration.advanced.design.PreMigrationScreen
 import eu.kanade.tachiyomi.ui.browse.source.SourcesScreen
 import eu.kanade.tachiyomi.ui.browse.source.globalsearch.GlobalSearchScreen
@@ -159,7 +159,7 @@ data object LibraryTab : Tab {
                         scope.launch {
                             val randomItem = screenModel.getRandomLibraryItemForCurrentCategory()
                             if (randomItem != null) {
-                                navigator.push(MangaScreen(randomItem.libraryManga.manga.id))
+                                navigator.push(AnimeScreen(randomItem.libraryManga.manga.id))
                             } else {
                                 snackbarHostState.showSnackbar(
                                     context.stringResource(MR.strings.information_no_entries_found),
@@ -241,7 +241,7 @@ data object LibraryTab : Tab {
                                             deleteChapters = false,
                                         )
                                     }
-                                    navigator.push(MangaScreen(mergedMangaId))
+                                    navigator.push(AnimeScreen(mergedMangaId))
                                 } else {
                                     snackbarHostState.showSnackbar(context.stringResource(SYMR.strings.merged_references_invalid))
                                 }
@@ -282,7 +282,7 @@ data object LibraryTab : Tab {
                         hasActiveFilters = state.hasActiveFilters,
                         showPageTabs = state.showCategoryTabs || !state.searchQuery.isNullOrEmpty(),
                         onChangeCurrentPage = { screenModel.activeCategoryIndex = it },
-                        onMangaClicked = { navigator.push(MangaScreen(it)) },
+                        onMangaClicked = { navigator.push(AnimeScreen(it)) },
                         onContinueReadingClicked = { it: LibraryManga ->
                             scope.launchIO {
                                 val chapter = screenModel.getNextUnreadChapter(it.manga)
@@ -381,7 +381,7 @@ data object LibraryTab : Tab {
         SyncFavoritesProgressDialog(
             status = screenModel.favoritesSync.status.collectAsState().value,
             setStatusIdle = { screenModel.favoritesSync.status.value = FavoritesSyncStatus.Idle },
-            openManga = { navigator.push(MangaScreen(it)) },
+            openManga = { navigator.push(AnimeScreen(it)) },
         )
         // SY <--
 

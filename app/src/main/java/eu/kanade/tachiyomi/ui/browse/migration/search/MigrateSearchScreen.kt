@@ -10,7 +10,7 @@ import cafe.adriel.voyager.navigator.LocalNavigator
 import cafe.adriel.voyager.navigator.currentOrThrow
 import eu.kanade.presentation.browse.MigrateSearchScreen
 import eu.kanade.presentation.util.Screen
-import eu.kanade.tachiyomi.ui.anime.MangaScreen
+import eu.kanade.tachiyomi.ui.anime.AnimeScreen
 import eu.kanade.tachiyomi.ui.browse.AllowDuplicateDialog
 import eu.kanade.tachiyomi.ui.browse.BulkFavoriteScreenModel
 import eu.kanade.tachiyomi.ui.browse.ChangeMangasCategoryDialog
@@ -77,7 +77,7 @@ class MigrateSearchScreen(private val mangaId: Long, private val validSources: L
                 scope.launchIO {
                     val manga = screenModel.networkToLocalManga.getLocal(it)
                     // KMK <--
-                    navigator.push(MangaScreen(manga.id, true))
+                    navigator.push(AnimeScreen(manga.id, true))
                 }
             },
             // KMK -->

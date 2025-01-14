@@ -11,7 +11,7 @@ import cafe.adriel.voyager.navigator.LocalNavigator
 import cafe.adriel.voyager.navigator.currentOrThrow
 import eu.kanade.presentation.components.AppBar
 import eu.kanade.presentation.util.Screen
-import eu.kanade.tachiyomi.ui.anime.MangaScreen
+import eu.kanade.tachiyomi.ui.anime.AnimeScreen
 import eu.kanade.tachiyomi.ui.browse.source.globalsearch.GlobalSearchScreen
 import eu.kanade.tachiyomi.ui.reader.ReaderActivity
 import tachiyomi.i18n.MR
@@ -52,7 +52,7 @@ class DeepLinkScreen(
                     val resultState = state as DeepLinkScreenModel.State.Result
                     if (resultState.chapterId == null) {
                         navigator.replace(
-                            MangaScreen(
+                            AnimeScreen(
                                 resultState.manga.id,
                                 true,
                             ),
