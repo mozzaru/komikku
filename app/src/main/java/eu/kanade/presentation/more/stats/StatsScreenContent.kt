@@ -44,7 +44,7 @@ fun StatsScreenContent(
             TitlesStats(state.titles)
         }
         item {
-            ChapterStats(state.chapters)
+            EpisodeStats(state.chapters)
         }
         item {
             TrackerStats(state.trackers)
@@ -109,7 +109,7 @@ private fun LazyItemScope.TitlesStats(
 }
 
 @Composable
-private fun LazyItemScope.ChapterStats(
+private fun LazyItemScope.EpisodeStats(
     data: StatsData.Chapters,
 ) {
     SectionCard(MR.strings.chapters) {
