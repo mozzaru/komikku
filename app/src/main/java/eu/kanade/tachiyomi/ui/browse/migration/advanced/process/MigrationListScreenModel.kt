@@ -4,7 +4,7 @@ import android.content.Context
 import android.widget.Toast
 import cafe.adriel.voyager.core.model.ScreenModel
 import cafe.adriel.voyager.core.model.screenModelScope
-import eu.kanade.domain.anime.interactor.UpdateManga
+import eu.kanade.domain.anime.interactor.UpdateAnime
 import eu.kanade.domain.anime.model.hasCustomCover
 import eu.kanade.domain.anime.model.toSManga
 import eu.kanade.domain.episode.interactor.SyncChaptersWithSource
@@ -71,7 +71,7 @@ class MigrationListScreenModel(
     private val coverCache: CoverCache = Injekt.get(),
     private val getManga: GetManga = Injekt.get(),
     private val networkToLocalManga: NetworkToLocalManga = Injekt.get(),
-    private val updateManga: UpdateManga = Injekt.get(),
+    private val updateAnime: UpdateAnime = Injekt.get(),
     private val syncChaptersWithSource: SyncChaptersWithSource = Injekt.get(),
     private val updateChapter: UpdateChapter = Injekt.get(),
     private val getChaptersByMangaId: GetChaptersByMangaId = Injekt.get(),
@@ -307,7 +307,7 @@ class MigrationListScreenModel(
                 if (result != null && result.thumbnailUrl == null) {
                     try {
                         val newManga = sourceManager.getOrStub(result.source).getMangaDetails(result.toSManga())
-                        updateManga.awaitUpdateFromSource(result, newManga, true)
+                        updateAnime.awaitUpdateFromSource(result, newManga, true)
                     } catch (e: CancellationException) {
                         // Ignore cancellations
                         throw e
@@ -452,7 +452,7 @@ class MigrationListScreenModel(
             )
         }
 
-        updateManga.awaitAll(listOfNotNull(mangaUpdate, prevMangaUpdate))
+        updateAnime.awaitAll(listOfNotNull(mangaUpdate, prevMangaUpdate))
     }
 
     /** Set a manga picked from manual search to be used as migration target */
@@ -477,7 +477,7 @@ class MigrationListScreenModel(
             if (result != null) {
                 try {
                     val newManga = sourceManager.getOrStub(result.source).getMangaDetails(result.toSManga())
-                    updateManga.awaitUpdateFromSource(result, newManga, true)
+                    updateAnime.awaitUpdateFromSource(result, newManga, true)
                 } catch (e: CancellationException) {
                     // Ignore cancellations
                     throw e

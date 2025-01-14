@@ -1,6 +1,6 @@
 package mihon.core.migration.migrations
 
-import eu.kanade.domain.anime.interactor.UpdateManga
+import eu.kanade.domain.anime.interactor.UpdateAnime
 import eu.kanade.tachiyomi.source.Source
 import exh.source.MERGED_SOURCE_ID
 import kotlinx.serialization.SerialName
@@ -29,7 +29,7 @@ class MergedMangaRewriteMigration : Migration {
         val handler = migrationContext.get<DatabaseHandler>() ?: return@withIOContext false
         val getMangaBySource = migrationContext.get<GetMangaBySource>() ?: return@withIOContext false
         val getManga = migrationContext.get<GetManga>() ?: return@withIOContext false
-        val updateManga = migrationContext.get<UpdateManga>() ?: return@withIOContext false
+        val updateAnime = migrationContext.get<UpdateAnime>() ?: return@withIOContext false
         val insertMergedReference = migrationContext.get<InsertMergedReference>() ?: return@withIOContext false
         val sourceManager = migrationContext.get<SourceManager>() ?: return@withIOContext false
         val deleteChapters = migrationContext.get<DeleteChapters>() ?: return@withIOContext false
@@ -80,7 +80,7 @@ class MergedMangaRewriteMigration : Migration {
                     }
                 }
 
-                updateManga.awaitAll(mangaToUpdate)
+                updateAnime.awaitAll(mangaToUpdate)
                 insertMergedReference.awaitAll(mergedMangaReferences)
 
                 val loadedMangaList = mangaConfigs

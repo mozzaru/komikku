@@ -15,7 +15,7 @@ import cafe.adriel.voyager.core.model.StateScreenModel
 import cafe.adriel.voyager.core.model.screenModelScope
 import dev.icerock.moko.resources.StringResource
 import eu.kanade.core.preference.asState
-import eu.kanade.domain.anime.interactor.UpdateManga
+import eu.kanade.domain.anime.interactor.UpdateAnime
 import eu.kanade.domain.anime.model.toDomainManga
 import eu.kanade.domain.base.BasePreferences
 import eu.kanade.domain.source.interactor.GetExhSavedSearch
@@ -103,7 +103,7 @@ open class BrowseSourceScreenModel(
     private val setMangaDefaultChapterFlags: SetMangaDefaultChapterFlags = Injekt.get(),
     private val getManga: GetManga = Injekt.get(),
     val networkToLocalManga: NetworkToLocalManga = Injekt.get(),
-    private val updateManga: UpdateManga = Injekt.get(),
+    private val updateAnime: UpdateAnime = Injekt.get(),
     private val addTracks: AddTracks = Injekt.get(),
 
     // SY -->
@@ -389,7 +389,7 @@ open class BrowseSourceScreenModel(
                 addTracks.bindEnhancedTrackers(manga, source)
             }
 
-            updateManga.await(new.toMangaUpdate())
+            updateAnime.await(new.toMangaUpdate())
         }
     }
 

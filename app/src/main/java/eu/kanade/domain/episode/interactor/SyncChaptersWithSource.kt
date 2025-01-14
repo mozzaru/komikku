@@ -1,7 +1,7 @@
 package eu.kanade.domain.episode.interactor
 
 import eu.kanade.domain.anime.interactor.GetExcludedScanlators
-import eu.kanade.domain.anime.interactor.UpdateManga
+import eu.kanade.domain.anime.interactor.UpdateAnime
 import eu.kanade.domain.anime.model.toSManga
 import eu.kanade.domain.episode.model.copyFromSChapter
 import eu.kanade.domain.episode.model.toSChapter
@@ -31,7 +31,7 @@ class SyncChaptersWithSource(
     private val downloadProvider: DownloadProvider,
     private val chapterRepository: ChapterRepository,
     private val shouldUpdateDbChapter: ShouldUpdateDbChapter,
-    private val updateManga: UpdateManga,
+    private val updateAnime: UpdateAnime,
     private val updateChapter: UpdateChapter,
     private val getChaptersByMangaId: GetChaptersByMangaId,
     private val getExcludedScanlators: GetExcludedScanlators,
@@ -144,7 +144,7 @@ class SyncChaptersWithSource(
         // Return if there's nothing to add, delete, or update to avoid unnecessary db transactions.
         if (newChapters.isEmpty() && removedChapters.isEmpty() && updatedChapters.isEmpty()) {
             if (manualFetch || manga.fetchInterval == 0 || manga.nextUpdate < fetchWindow.first) {
-                updateManga.awaitUpdateFetchInterval(
+                updateAnime.awaitUpdateFetchInterval(
                     manga,
                     now,
                     fetchWindow,
@@ -222,11 +222,11 @@ class SyncChaptersWithSource(
             val chapterUpdates = updatedChapters.map { it.toChapterUpdate() }
             updateChapter.awaitAll(chapterUpdates)
         }
-        updateManga.awaitUpdateFetchInterval(manga, now, fetchWindow)
+        updateAnime.awaitUpdateFetchInterval(manga, now, fetchWindow)
 
         // Set this manga as updated since chapters were changed
         // Note that last_update actually represents last time the chapter list changed at all
-        updateManga.awaitUpdateLastUpdate(manga.id)
+        updateAnime.awaitUpdateLastUpdate(manga.id)
 
         val reAddedUrls = reAdded.map { it.url }.toHashSet()
 

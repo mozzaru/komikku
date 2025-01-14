@@ -1,7 +1,7 @@
 package exh.debug
 
 import android.app.Application
-import eu.kanade.domain.anime.interactor.UpdateManga
+import eu.kanade.domain.anime.interactor.UpdateAnime
 import eu.kanade.domain.anime.model.toSManga
 import eu.kanade.tachiyomi.BuildConfig
 import eu.kanade.tachiyomi.data.backup.models.Backup
@@ -42,7 +42,7 @@ object DebugFunctions {
     private val app: Application by injectLazy()
     private val handler: DatabaseHandler by injectLazy()
     private val sourceManager: SourceManager by injectLazy()
-    private val updateManga: UpdateManga by injectLazy()
+    private val updateAnime: UpdateAnime by injectLazy()
     private val getFavorites: GetFavorites by injectLazy()
     private val getFlatMetadataById: GetFlatMetadataById by injectLazy()
     private val insertFlatMetadata: InsertFlatMetadata by injectLazy()
@@ -99,7 +99,7 @@ object DebugFunctions {
                     else -> return@forEach
                 }?.getMangaDetails(manga.toSManga()) ?: return@forEach
 
-                updateManga.awaitUpdateFromSource(manga, networkManga, true)
+                updateAnime.awaitUpdateFromSource(manga, networkManga, true)
             }
         }
     }

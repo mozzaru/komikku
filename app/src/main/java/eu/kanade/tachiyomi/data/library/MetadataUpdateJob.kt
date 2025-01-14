@@ -10,7 +10,7 @@ import androidx.work.OneTimeWorkRequestBuilder
 import androidx.work.WorkInfo
 import androidx.work.WorkQuery
 import androidx.work.WorkerParameters
-import eu.kanade.domain.anime.interactor.UpdateManga
+import eu.kanade.domain.anime.interactor.UpdateAnime
 import eu.kanade.domain.anime.model.copyFrom
 import eu.kanade.domain.anime.model.toSManga
 import eu.kanade.tachiyomi.data.cache.CoverCache
@@ -45,7 +45,7 @@ class MetadataUpdateJob(private val context: Context, workerParams: WorkerParame
     private val sourceManager: SourceManager = Injekt.get()
     private val coverCache: CoverCache = Injekt.get()
     private val getLibraryManga: GetLibraryManga = Injekt.get()
-    private val updateManga: UpdateManga = Injekt.get()
+    private val updateAnime: UpdateAnime = Injekt.get()
 
     private val notifier = LibraryUpdateNotifier(context)
 
@@ -121,7 +121,7 @@ class MetadataUpdateJob(private val context: Context, workerParams: WorkerParame
                                         val updatedManga = manga.prepUpdateCover(coverCache, networkManga, true)
                                             .copyFrom(networkManga)
                                         try {
-                                            updateManga.await(updatedManga.toMangaUpdate())
+                                            updateAnime.await(updatedManga.toMangaUpdate())
                                         } catch (e: Exception) {
                                             logcat(LogPriority.ERROR) { "Manga doesn't exist anymore" }
                                         }

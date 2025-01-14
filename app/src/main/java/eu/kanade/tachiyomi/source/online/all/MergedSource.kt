@@ -1,6 +1,6 @@
 package eu.kanade.tachiyomi.source.online.all
 
-import eu.kanade.domain.anime.interactor.UpdateManga
+import eu.kanade.domain.anime.interactor.UpdateAnime
 import eu.kanade.domain.anime.model.toSManga
 import eu.kanade.domain.episode.interactor.SyncChaptersWithSource
 import eu.kanade.tachiyomi.data.download.DownloadManager
@@ -35,7 +35,7 @@ class MergedSource : HttpSource() {
     private val getMergedReferencesById: GetMergedReferencesById by injectLazy()
     private val syncChaptersWithSource: SyncChaptersWithSource by injectLazy()
     private val networkToLocalManga: NetworkToLocalManga by injectLazy()
-    private val updateManga: UpdateManga by injectLazy()
+    private val updateAnime: UpdateAnime by injectLazy()
     private val sourceManager: SourceManager by injectLazy()
     private val downloadManager: DownloadManager by injectLazy()
     private val filterChaptersForDownload: FilterChaptersForDownload by injectLazy()
@@ -172,7 +172,7 @@ class MergedSource : HttpSource() {
                     url = mangaUrl,
                 ),
             )
-            updateManga.awaitUpdateFromSource(newManga, source.getMangaDetails(newManga.toSManga()), false)
+            updateAnime.awaitUpdateFromSource(newManga, source.getMangaDetails(newManga.toSManga()), false)
             manga = getManga.await(newManga.id)!!
         }
         return LoadedMangaSource(source, manga, this)

@@ -19,7 +19,7 @@ import eu.kanade.core.preference.asState
 import eu.kanade.core.util.fastFilterNot
 import eu.kanade.core.util.fastPartition
 import eu.kanade.domain.anime.interactor.SmartSearchMerge
-import eu.kanade.domain.anime.interactor.UpdateManga
+import eu.kanade.domain.anime.interactor.UpdateAnime
 import eu.kanade.domain.base.BasePreferences
 import eu.kanade.domain.episode.interactor.SetReadStatus
 import eu.kanade.domain.source.service.SourcePreferences
@@ -135,7 +135,7 @@ class LibraryScreenModel(
     private val getNextChapters: GetNextChapters = Injekt.get(),
     private val getChaptersByMangaId: GetChaptersByMangaId = Injekt.get(),
     private val setReadStatus: SetReadStatus = Injekt.get(),
-    private val updateManga: UpdateManga = Injekt.get(),
+    private val updateAnime: UpdateAnime = Injekt.get(),
     private val setMangaCategories: SetMangaCategories = Injekt.get(),
     private val preferences: BasePreferences = Injekt.get(),
     private val libraryPreferences: LibraryPreferences = Injekt.get(),
@@ -879,7 +879,7 @@ class LibraryScreenModel(
                         id = it.id,
                     )
                 }
-                updateManga.awaitAll(toDelete)
+                updateAnime.awaitAll(toDelete)
             }
 
             if (deleteChapters) {

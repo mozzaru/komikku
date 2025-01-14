@@ -8,7 +8,7 @@ import androidx.compose.runtime.Immutable
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import eu.kanade.domain.anime.interactor.SetMangaViewerFlags
+import eu.kanade.domain.anime.interactor.SetAnimeViewerFlags
 import eu.kanade.domain.anime.model.readerOrientation
 import eu.kanade.domain.anime.model.readingMode
 import eu.kanade.domain.base.BasePreferences
@@ -126,7 +126,7 @@ class ReaderViewModel @JvmOverloads constructor(
     private val getNextChapters: GetNextChapters = Injekt.get(),
     private val upsertHistory: UpsertHistory = Injekt.get(),
     private val updateChapter: UpdateChapter = Injekt.get(),
-    private val setMangaViewerFlags: SetMangaViewerFlags = Injekt.get(),
+    private val setAnimeViewerFlags: SetAnimeViewerFlags = Injekt.get(),
     private val syncPreferences: SyncPreferences = Injekt.get(),
     // SY -->
     private val uiPreferences: UiPreferences = Injekt.get(),
@@ -886,7 +886,7 @@ class ReaderViewModel @JvmOverloads constructor(
     fun setMangaReadingMode(readingMode: ReadingMode) {
         val manga = manga ?: return
         runBlocking(Dispatchers.IO) {
-            setMangaViewerFlags.awaitSetReadingMode(manga.id, readingMode.flagValue.toLong())
+            setAnimeViewerFlags.awaitSetReadingMode(manga.id, readingMode.flagValue.toLong())
             val currChapters = state.value.viewerChapters
             if (currChapters != null) {
                 // Save current page
@@ -922,7 +922,7 @@ class ReaderViewModel @JvmOverloads constructor(
     fun setMangaOrientationType(orientation: ReaderOrientation) {
         val manga = manga ?: return
         viewModelScope.launchIO {
-            setMangaViewerFlags.awaitSetOrientation(manga.id, orientation.flagValue.toLong())
+            setAnimeViewerFlags.awaitSetOrientation(manga.id, orientation.flagValue.toLong())
             val currChapters = state.value.viewerChapters
             if (currChapters != null) {
                 // Save current page

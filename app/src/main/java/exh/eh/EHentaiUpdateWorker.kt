@@ -16,7 +16,7 @@ import androidx.work.PeriodicWorkRequestBuilder
 import androidx.work.WorkerParameters
 import com.elvishew.xlog.Logger
 import com.elvishew.xlog.XLog
-import eu.kanade.domain.anime.interactor.UpdateManga
+import eu.kanade.domain.anime.interactor.UpdateAnime
 import eu.kanade.domain.anime.model.toSManga
 import eu.kanade.domain.episode.interactor.SyncChaptersWithSource
 import eu.kanade.tachiyomi.data.library.LibraryUpdateNotifier
@@ -60,7 +60,7 @@ class EHentaiUpdateWorker(private val context: Context, workerParams: WorkerPara
     private val sourceManager: SourceManager by injectLazy()
     private val updateHelper: EHentaiUpdateHelper by injectLazy()
     private val logger: Logger by lazy { xLog() }
-    private val updateManga: UpdateManga by injectLazy()
+    private val updateAnime: UpdateAnime by injectLazy()
     private val syncChaptersWithSource: SyncChaptersWithSource by injectLazy()
     private val getChaptersByMangaId: GetChaptersByMangaId by injectLazy()
     private val getFlatMetadataById: GetFlatMetadataById by injectLazy()
@@ -244,7 +244,7 @@ class EHentaiUpdateWorker(private val context: Context, workerParams: WorkerPara
 
         try {
             val updatedManga = source.getMangaDetails(manga.toSManga())
-            updateManga.awaitUpdateFromSource(manga, updatedManga, false)
+            updateAnime.awaitUpdateFromSource(manga, updatedManga, false)
 
             val newChapters = source.getChapterList(manga.toSManga())
 

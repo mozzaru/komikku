@@ -28,7 +28,7 @@ import eu.kanade.domain.anime.interactor.GetExcludedScanlators
 import eu.kanade.domain.anime.interactor.GetPagePreviews
 import eu.kanade.domain.anime.interactor.SetExcludedScanlators
 import eu.kanade.domain.anime.interactor.SmartSearchMerge
-import eu.kanade.domain.anime.interactor.UpdateManga
+import eu.kanade.domain.anime.interactor.UpdateAnime
 import eu.kanade.domain.anime.model.PagePreview
 import eu.kanade.domain.anime.model.chaptersFiltered
 import eu.kanade.domain.anime.model.downloadedFilter
@@ -205,7 +205,7 @@ class MangaScreenModel(
     private val setMangaDefaultChapterFlags: SetMangaDefaultChapterFlags = Injekt.get(),
     private val setReadStatus: SetReadStatus = Injekt.get(),
     private val updateChapter: UpdateChapter = Injekt.get(),
-    private val updateManga: UpdateManga = Injekt.get(),
+    private val updateAnime: UpdateAnime = Injekt.get(),
     private val syncChaptersWithSource: SyncChaptersWithSource = Injekt.get(),
     private val getCategories: GetCategories = Injekt.get(),
     private val getTracks: GetTracks = Injekt.get(),
@@ -605,7 +605,7 @@ class MangaScreenModel(
         try {
             withIOContext {
                 val networkManga = state.source.getMangaDetails(state.manga.toSManga())
-                updateManga.awaitUpdateFromSource(state.manga, networkManga, manualFetch)
+                updateAnime.awaitUpdateFromSource(state.manga, networkManga, manualFetch)
             }
         } catch (e: Throwable) {
             // Ignore early hints "errors" that aren't handled by OkHttp
@@ -657,7 +657,7 @@ class MangaScreenModel(
             )
             (sourceManager.get(LocalSource.ID) as LocalSource).updateMangaInfo(manga.toSManga())
             screenModelScope.launchNonCancellable {
-                updateManga.await(
+                updateAnime.await(
                     MangaUpdate(
                         manga.id,
                         title = newTitle,
@@ -773,10 +773,10 @@ class MangaScreenModel(
 
             if (isFavorited) {
                 // Remove from library
-                if (updateManga.awaitUpdateFavorite(manga.id, false)) {
+                if (updateAnime.awaitUpdateFavorite(manga.id, false)) {
                     // Remove covers and update last modified in db
                     if (manga.removeCovers() != manga) {
-                        updateManga.awaitUpdateCoverLastModified(manga.id)
+                        updateAnime.awaitUpdateCoverLastModified(manga.id)
                     }
                     withUIContext { onRemoved() }
                 }
@@ -799,14 +799,14 @@ class MangaScreenModel(
                 when {
                     // Default category set
                     defaultCategory != null -> {
-                        val result = updateManga.awaitUpdateFavorite(manga.id, true)
+                        val result = updateAnime.awaitUpdateFavorite(manga.id, true)
                         if (!result) return@launchIO
                         moveMangaToCategory(defaultCategory)
                     }
 
                     // Automatic 'Default' or no categories
                     defaultCategoryId == 0L || categories.isEmpty() -> {
-                        val result = updateManga.awaitUpdateFavorite(manga.id, true)
+                        val result = updateAnime.awaitUpdateFavorite(manga.id, true)
                         if (!result) return@launchIO
                         moveMangaToCategory(null)
                     }
@@ -847,7 +847,7 @@ class MangaScreenModel(
     fun setFetchInterval(manga: Manga, interval: Int) {
         screenModelScope.launchIO {
             if (
-                updateManga.awaitUpdateFetchInterval(
+                updateAnime.awaitUpdateFetchInterval(
                     // Custom intervals are negative
                     manga.copy(fetchInterval = -interval),
                 )
@@ -907,7 +907,7 @@ class MangaScreenModel(
         if (manga.favorite) return
 
         screenModelScope.launchIO {
-            updateManga.awaitUpdateFavorite(manga.id, true)
+            updateAnime.awaitUpdateFavorite(manga.id, true)
         }
     }
 

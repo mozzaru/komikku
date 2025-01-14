@@ -2,8 +2,8 @@ package eu.kanade.domain
 
 import eu.kanade.domain.anime.interactor.GetExcludedScanlators
 import eu.kanade.domain.anime.interactor.SetExcludedScanlators
-import eu.kanade.domain.anime.interactor.SetMangaViewerFlags
-import eu.kanade.domain.anime.interactor.UpdateManga
+import eu.kanade.domain.anime.interactor.SetAnimeViewerFlags
+import eu.kanade.domain.anime.interactor.UpdateAnime
 import eu.kanade.domain.download.interactor.DeleteDownload
 import eu.kanade.domain.episode.interactor.GetAvailableScanlators
 import eu.kanade.domain.episode.interactor.SetReadStatus
@@ -128,9 +128,9 @@ class DomainModule : InjektModule {
         addFactory { SetMangaChapterFlags(get()) }
         addFactory { FetchInterval(get()) }
         addFactory { SetMangaDefaultChapterFlags(get(), get(), get()) }
-        addFactory { SetMangaViewerFlags(get()) }
+        addFactory { SetAnimeViewerFlags(get()) }
         addFactory { NetworkToLocalManga(get()) }
-        addFactory { UpdateManga(get(), get()) }
+        addFactory { UpdateAnime(get(), get()) }
         addFactory { SetMangaCategories(get()) }
         addFactory { GetExcludedScanlators(get()) }
         addFactory { SetExcludedScanlators(get()) }

@@ -18,7 +18,7 @@ import androidx.work.WorkInfo
 import androidx.work.WorkQuery
 import androidx.work.WorkerParameters
 import androidx.work.workDataOf
-import eu.kanade.domain.anime.interactor.UpdateManga
+import eu.kanade.domain.anime.interactor.UpdateAnime
 import eu.kanade.domain.anime.model.copyFrom
 import eu.kanade.domain.anime.model.toSManga
 import eu.kanade.domain.episode.interactor.SetReadStatus
@@ -116,7 +116,7 @@ class LibraryUpdateJob(private val context: Context, workerParams: WorkerParamet
     private val coverCache: CoverCache = Injekt.get()
     private val getLibraryManga: GetLibraryManga = Injekt.get()
     private val getManga: GetManga = Injekt.get()
-    private val updateManga: UpdateManga = Injekt.get()
+    private val updateAnime: UpdateAnime = Injekt.get()
     private val syncChaptersWithSource: SyncChaptersWithSource = Injekt.get()
     private val fetchInterval: FetchInterval = Injekt.get()
     private val filterChaptersForDownload: FilterChaptersForDownload = Injekt.get()
@@ -359,7 +359,7 @@ class LibraryUpdateJob(private val context: Context, workerParams: WorkerParamet
     /**
      * Method that updates manga in [mangaToUpdate]. It's called in a background thread, so it's safe
      * to do heavy operations or network calls here.
-     * For each manga it calls [updateManga] and updates the notification showing the current
+     * For each manga it calls [updateAnime] and updates the notification showing the current
      * progress.
      *
      * @return an observable delivering the progress of each update.
@@ -541,7 +541,7 @@ class LibraryUpdateJob(private val context: Context, workerParams: WorkerParamet
         // Update manga metadata if needed
         if (libraryPreferences.autoUpdateMetadata().get()) {
             val networkManga = source.getMangaDetails(manga.toSManga())
-            updateManga.awaitUpdateFromSource(manga, networkManga, manualFetch = false, coverCache)
+            updateAnime.awaitUpdateFromSource(manga, networkManga, manualFetch = false, coverCache)
         }
 
         if (source is MergedSource) {
@@ -587,7 +587,7 @@ class LibraryUpdateJob(private val context: Context, workerParams: WorkerParamet
                                         )
                                             .copyFrom(networkManga)
                                         try {
-                                            updateManga.await(updatedManga.toMangaUpdate())
+                                            updateAnime.await(updatedManga.toMangaUpdate())
                                         } catch (e: Exception) {
                                             logcat(LogPriority.ERROR) { "Manga doesn't exist anymore" }
                                         }
@@ -644,10 +644,10 @@ class LibraryUpdateJob(private val context: Context, workerParams: WorkerParamet
                         ),
                     )
                 } else if (!dbManga.favorite) {
-                    updateManga.awaitUpdateFavorite(dbManga.id, true)
+                    updateAnime.awaitUpdateFavorite(dbManga.id, true)
                 }
 
-                updateManga.awaitUpdateFromSource(dbManga, networkManga, true)
+                updateAnime.awaitUpdateFromSource(dbManga, networkManga, true)
                 metadata.mangaId = dbManga.id
                 insertFlatMetadata.await(metadata)
             }

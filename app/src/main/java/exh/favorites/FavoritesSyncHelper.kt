@@ -4,7 +4,7 @@ import android.content.Context
 import android.net.wifi.WifiManager
 import android.os.Build
 import android.os.PowerManager
-import eu.kanade.domain.anime.interactor.UpdateManga
+import eu.kanade.domain.anime.interactor.UpdateAnime
 import eu.kanade.tachiyomi.network.POST
 import eu.kanade.tachiyomi.network.await
 import eu.kanade.tachiyomi.source.online.all.EHentai
@@ -53,7 +53,7 @@ class FavoritesSyncHelper(val context: Context) {
     private val getLibraryManga: GetLibraryManga by injectLazy()
     private val getCategories: GetCategories by injectLazy()
     private val getManga: GetManga by injectLazy()
-    private val updateManga: UpdateManga by injectLazy()
+    private val updateAnime: UpdateAnime by injectLazy()
     private val setMangaCategories: SetMangaCategories by injectLazy()
     private val createCategoryWithName: CreateCategoryWithName by injectLazy()
     private val updateCategory: UpdateCategory by injectLazy()
@@ -355,7 +355,7 @@ class FavoritesSyncHelper(val context: Context) {
                 val manga = getManga.await(url, it)
 
                 if (manga?.favorite == true) {
-                    updateManga.awaitUpdateFavorite(manga.id, false)
+                    updateAnime.awaitUpdateFavorite(manga.id, false)
                     removedManga += manga
                 }
             }

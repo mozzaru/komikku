@@ -2,7 +2,7 @@ package exh
 
 import android.content.Context
 import androidx.core.net.toUri
-import eu.kanade.domain.anime.interactor.UpdateManga
+import eu.kanade.domain.anime.interactor.UpdateAnime
 import eu.kanade.domain.anime.model.toSManga
 import eu.kanade.domain.episode.interactor.SyncChaptersWithSource
 import eu.kanade.domain.source.service.SourcePreferences
@@ -23,7 +23,7 @@ import uy.kohesive.injekt.api.get
 
 class GalleryAdder(
     private val getManga: GetManga = Injekt.get(),
-    private val updateManga: UpdateManga = Injekt.get(),
+    private val updateAnime: UpdateAnime = Injekt.get(),
     private val networkToLocalManga: NetworkToLocalManga = Injekt.get(),
     private val getChapter: GetChapter = Injekt.get(),
     private val syncChaptersWithSource: SyncChaptersWithSource = Injekt.get(),
@@ -145,11 +145,11 @@ class GalleryAdder(
 
             // Fetch and copy details
             val newManga = retry(retry) { source.getMangaDetails(manga.toSManga()) }
-            updateManga.awaitUpdateFromSource(manga, newManga, false)
+            updateAnime.awaitUpdateFromSource(manga, newManga, false)
             manga = getManga.await(manga.id)!!
 
             if (fav) {
-                updateManga.awaitUpdateFavorite(manga.id, true)
+                updateAnime.awaitUpdateFavorite(manga.id, true)
                 manga = manga.copy(favorite = true)
             }
 

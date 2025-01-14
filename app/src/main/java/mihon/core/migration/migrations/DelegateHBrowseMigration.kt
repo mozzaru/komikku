@@ -1,6 +1,6 @@
 package mihon.core.migration.migrations
 
-import eu.kanade.domain.anime.interactor.UpdateManga
+import eu.kanade.domain.anime.interactor.UpdateAnime
 import exh.source.HBROWSE_OLD_ID
 import exh.source.HBROWSE_SOURCE_ID
 import mihon.core.migration.MigrateUtils
@@ -15,7 +15,7 @@ class DelegateHBrowseMigration : Migration {
 
     override suspend fun invoke(migrationContext: MigrationContext): Boolean = withIOContext {
         val getMangaBySource = migrationContext.get<GetMangaBySource>() ?: return@withIOContext false
-        val updateManga = migrationContext.get<UpdateManga>() ?: return@withIOContext false
+        val updateAnime = migrationContext.get<UpdateAnime>() ?: return@withIOContext false
         MigrateUtils.updateSourceId(migrationContext, HBROWSE_SOURCE_ID, HBROWSE_OLD_ID)
 
         // Migrate BHrowse URLs
@@ -23,7 +23,7 @@ class DelegateHBrowseMigration : Migration {
         val mangaUpdates = hBrowseManga.map {
             MangaUpdate(it.id, url = it.url + "/c00001/")
         }
-        updateManga.awaitAll(mangaUpdates)
+        updateAnime.awaitAll(mangaUpdates)
         return@withIOContext true
     }
 }

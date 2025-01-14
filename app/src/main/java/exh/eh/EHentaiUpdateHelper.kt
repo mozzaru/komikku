@@ -1,7 +1,7 @@
 package exh.eh
 
 import android.content.Context
-import eu.kanade.domain.anime.interactor.UpdateManga
+import eu.kanade.domain.anime.interactor.UpdateAnime
 import exh.metadata.metadata.EHentaiSearchMetadata
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.async
@@ -37,7 +37,7 @@ class EHentaiUpdateHelper(context: Context) {
     private val getChapterByUrl: GetChapterByUrl by injectLazy()
     private val getChaptersByMangaId: GetChaptersByMangaId by injectLazy()
     private val getManga: GetManga by injectLazy()
-    private val updateManga: UpdateManga by injectLazy()
+    private val updateAnime: UpdateAnime by injectLazy()
     private val setMangaCategories: SetMangaCategories by injectLazy()
     private val getCategories: GetCategories by injectLazy()
     private val chapterRepository: ChapterRepository by injectLazy()
@@ -113,7 +113,7 @@ class EHentaiUpdateHelper(context: Context) {
             val rootsToMutate = toDiscard + newAccepted
 
             // Apply changes to all manga
-            updateManga.awaitAll(mangaUpdates)
+            updateAnime.awaitAll(mangaUpdates)
             // Insert new chapters for accepted manga
             chapterRepository.updateAll(chapterUpdates)
             chapterRepository.addAll(newChapters)
