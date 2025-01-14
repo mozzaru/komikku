@@ -26,7 +26,7 @@ import java.lang.Long.max
 import java.time.ZonedDateTime
 import java.util.TreeSet
 
-class SyncChaptersWithSource(
+class SyncEpisodesWithSource(
     private val downloadManager: DownloadManager,
     private val downloadProvider: DownloadProvider,
     private val chapterRepository: ChapterRepository,

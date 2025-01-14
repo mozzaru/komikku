@@ -12,7 +12,7 @@ import eu.kanade.domain.anime.interactor.SetAnimeViewerFlags
 import eu.kanade.domain.anime.model.readerOrientation
 import eu.kanade.domain.anime.model.readingMode
 import eu.kanade.domain.base.BasePreferences
-import eu.kanade.domain.episode.interactor.SetReadStatus
+import eu.kanade.domain.episode.interactor.SetSeenStatus
 import eu.kanade.domain.episode.model.toDbChapter
 import eu.kanade.domain.sync.SyncPreferences
 import eu.kanade.domain.track.interactor.TrackChapter
@@ -134,7 +134,7 @@ class ReaderViewModel @JvmOverloads constructor(
     private val getMergedMangaById: GetMergedMangaById = Injekt.get(),
     private val getMergedReferencesById: GetMergedReferencesById = Injekt.get(),
     private val getMergedChaptersByMangaId: GetMergedChaptersByMangaId = Injekt.get(),
-    private val setReadStatus: SetReadStatus = Injekt.get(),
+    private val setSeenStatus: SetSeenStatus = Injekt.get(),
     // SY <--
 ) : ViewModel() {
 
@@ -709,7 +709,7 @@ class ReaderViewModel @JvmOverloads constructor(
                         }
                         .ifEmpty { null }
                         ?.also {
-                            setReadStatus.await(
+                            setSeenStatus.await(
                                 true,
                                 *it.toTypedArray(),
                                 // KMK -->

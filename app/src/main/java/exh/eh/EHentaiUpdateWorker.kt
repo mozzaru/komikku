@@ -18,7 +18,7 @@ import com.elvishew.xlog.Logger
 import com.elvishew.xlog.XLog
 import eu.kanade.domain.anime.interactor.UpdateAnime
 import eu.kanade.domain.anime.model.toSManga
-import eu.kanade.domain.episode.interactor.SyncChaptersWithSource
+import eu.kanade.domain.episode.interactor.SyncEpisodesWithSource
 import eu.kanade.tachiyomi.data.library.LibraryUpdateNotifier
 import eu.kanade.tachiyomi.data.notification.Notifications
 import eu.kanade.tachiyomi.source.online.all.EHentai
@@ -61,7 +61,7 @@ class EHentaiUpdateWorker(private val context: Context, workerParams: WorkerPara
     private val updateHelper: EHentaiUpdateHelper by injectLazy()
     private val logger: Logger by lazy { xLog() }
     private val updateAnime: UpdateAnime by injectLazy()
-    private val syncChaptersWithSource: SyncChaptersWithSource by injectLazy()
+    private val syncEpisodesWithSource: SyncEpisodesWithSource by injectLazy()
     private val getChaptersByMangaId: GetChaptersByMangaId by injectLazy()
     private val getFlatMetadataById: GetFlatMetadataById by injectLazy()
     private val insertFlatMetadata: InsertFlatMetadata by injectLazy()
@@ -248,7 +248,7 @@ class EHentaiUpdateWorker(private val context: Context, workerParams: WorkerPara
 
             val newChapters = source.getChapterList(manga.toSManga())
 
-            val new = syncChaptersWithSource.await(newChapters, manga, source)
+            val new = syncEpisodesWithSource.await(newChapters, manga, source)
             return new to getChaptersByMangaId.await(manga.id)
         } catch (t: Throwable) {
             if (t is EHentai.GalleryNotFoundException) {

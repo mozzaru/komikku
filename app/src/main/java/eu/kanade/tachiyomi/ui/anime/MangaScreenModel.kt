@@ -35,8 +35,8 @@ import eu.kanade.domain.anime.model.downloadedFilter
 import eu.kanade.domain.anime.model.toDomainManga
 import eu.kanade.domain.anime.model.toSManga
 import eu.kanade.domain.episode.interactor.GetAvailableScanlators
-import eu.kanade.domain.episode.interactor.SetReadStatus
-import eu.kanade.domain.episode.interactor.SyncChaptersWithSource
+import eu.kanade.domain.episode.interactor.SetSeenStatus
+import eu.kanade.domain.episode.interactor.SyncEpisodesWithSource
 import eu.kanade.domain.source.service.SourcePreferences
 import eu.kanade.domain.track.interactor.AddTracks
 import eu.kanade.domain.track.interactor.RefreshTracks
@@ -203,10 +203,10 @@ class MangaScreenModel(
     private val setExcludedScanlators: SetExcludedScanlators = Injekt.get(),
     private val setMangaChapterFlags: SetMangaChapterFlags = Injekt.get(),
     private val setMangaDefaultChapterFlags: SetMangaDefaultChapterFlags = Injekt.get(),
-    private val setReadStatus: SetReadStatus = Injekt.get(),
+    private val setSeenStatus: SetSeenStatus = Injekt.get(),
     private val updateChapter: UpdateChapter = Injekt.get(),
     private val updateAnime: UpdateAnime = Injekt.get(),
-    private val syncChaptersWithSource: SyncChaptersWithSource = Injekt.get(),
+    private val syncEpisodesWithSource: SyncEpisodesWithSource = Injekt.get(),
     private val getCategories: GetCategories = Injekt.get(),
     private val getTracks: GetTracks = Injekt.get(),
     private val addTracks: AddTracks = Injekt.get(),
@@ -1081,7 +1081,7 @@ class MangaScreenModel(
                     // SY <--
                     val chapters = state.source.getChapterList(state.manga.toSManga())
 
-                    val newChapters = syncChaptersWithSource.await(
+                    val newChapters = syncEpisodesWithSource.await(
                         chapters,
                         state.manga,
                         state.source,
@@ -1339,7 +1339,7 @@ class MangaScreenModel(
         toggleAllSelection(false)
         if (chapters.isEmpty()) return
         screenModelScope.launchIO {
-            setReadStatus.await(
+            setSeenStatus.await(
                 read = read,
                 chapters = chapters.toTypedArray(),
             )

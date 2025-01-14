@@ -21,8 +21,8 @@ import androidx.work.workDataOf
 import eu.kanade.domain.anime.interactor.UpdateAnime
 import eu.kanade.domain.anime.model.copyFrom
 import eu.kanade.domain.anime.model.toSManga
-import eu.kanade.domain.episode.interactor.SetReadStatus
-import eu.kanade.domain.episode.interactor.SyncChaptersWithSource
+import eu.kanade.domain.episode.interactor.SetSeenStatus
+import eu.kanade.domain.episode.interactor.SyncEpisodesWithSource
 import eu.kanade.domain.sync.SyncPreferences
 import eu.kanade.domain.track.model.toDbTrack
 import eu.kanade.domain.track.model.toDomainTrack
@@ -117,7 +117,7 @@ class LibraryUpdateJob(private val context: Context, workerParams: WorkerParamet
     private val getLibraryManga: GetLibraryManga = Injekt.get()
     private val getManga: GetManga = Injekt.get()
     private val updateAnime: UpdateAnime = Injekt.get()
-    private val syncChaptersWithSource: SyncChaptersWithSource = Injekt.get()
+    private val syncEpisodesWithSource: SyncEpisodesWithSource = Injekt.get()
     private val fetchInterval: FetchInterval = Injekt.get()
     private val filterChaptersForDownload: FilterChaptersForDownload = Injekt.get()
 
@@ -131,7 +131,7 @@ class LibraryUpdateJob(private val context: Context, workerParams: WorkerParamet
     private val trackerManager: TrackerManager = Injekt.get()
     private val mdList = trackerManager.mdList
     private val getChaptersByMangaId: GetChaptersByMangaId = Injekt.get()
-    private val setReadStatus: SetReadStatus = Injekt.get()
+    private val setSeenStatus: SetSeenStatus = Injekt.get()
     // SY <--
 
     private val notifier = LibraryUpdateNotifier(context)
@@ -438,7 +438,7 @@ class LibraryUpdateJob(private val context: Context, workerParams: WorkerParamet
                                                     }
 
                                                     if (newReadChapters.isNotEmpty()) {
-                                                        setReadStatus.await(
+                                                        setSeenStatus.await(
                                                             true,
                                                             *newReadChapters.toTypedArray(),
                                                             // KMK -->
@@ -554,7 +554,7 @@ class LibraryUpdateJob(private val context: Context, workerParams: WorkerParamet
         // to get latest data so it doesn't get overwritten later on
         val dbManga = getManga.await(manga.id)?.takeIf { it.favorite } ?: return emptyList()
 
-        return syncChaptersWithSource.await(chapters, dbManga, source, false, fetchWindow)
+        return syncEpisodesWithSource.await(chapters, dbManga, source, false, fetchWindow)
     }
 
     private suspend fun updateCovers() {

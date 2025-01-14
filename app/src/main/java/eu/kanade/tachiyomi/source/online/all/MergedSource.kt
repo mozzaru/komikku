@@ -2,7 +2,7 @@ package eu.kanade.tachiyomi.source.online.all
 
 import eu.kanade.domain.anime.interactor.UpdateAnime
 import eu.kanade.domain.anime.model.toSManga
-import eu.kanade.domain.episode.interactor.SyncChaptersWithSource
+import eu.kanade.domain.episode.interactor.SyncEpisodesWithSource
 import eu.kanade.tachiyomi.data.download.DownloadManager
 import eu.kanade.tachiyomi.source.Source
 import eu.kanade.tachiyomi.source.model.FilterList
@@ -33,7 +33,7 @@ import uy.kohesive.injekt.injectLazy
 class MergedSource : HttpSource() {
     private val getManga: GetManga by injectLazy()
     private val getMergedReferencesById: GetMergedReferencesById by injectLazy()
-    private val syncChaptersWithSource: SyncChaptersWithSource by injectLazy()
+    private val syncEpisodesWithSource: SyncEpisodesWithSource by injectLazy()
     private val networkToLocalManga: NetworkToLocalManga by injectLazy()
     private val updateAnime: UpdateAnime by injectLazy()
     private val sourceManager: SourceManager by injectLazy()
@@ -131,7 +131,7 @@ class MergedSource : HttpSource() {
                                     if (loadedManga != null && reference.getChapterUpdates) {
                                         val chapterList = source.getChapterList(loadedManga.toSManga())
                                         val results =
-                                            syncChaptersWithSource.await(chapterList, loadedManga, source)
+                                            syncEpisodesWithSource.await(chapterList, loadedManga, source)
 
                                         if (downloadChapters && reference.downloadChapters) {
                                             val chaptersToDownload = filterChaptersForDownload.await(manga, results)

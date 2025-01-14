@@ -4,7 +4,7 @@ import android.content.Context
 import androidx.core.net.toUri
 import eu.kanade.domain.anime.interactor.UpdateAnime
 import eu.kanade.domain.anime.model.toSManga
-import eu.kanade.domain.episode.interactor.SyncChaptersWithSource
+import eu.kanade.domain.episode.interactor.SyncEpisodesWithSource
 import eu.kanade.domain.source.service.SourcePreferences
 import eu.kanade.tachiyomi.source.online.UrlImportableSource
 import eu.kanade.tachiyomi.source.online.all.EHentai
@@ -26,7 +26,7 @@ class GalleryAdder(
     private val updateAnime: UpdateAnime = Injekt.get(),
     private val networkToLocalManga: NetworkToLocalManga = Injekt.get(),
     private val getChapter: GetChapter = Injekt.get(),
-    private val syncChaptersWithSource: SyncChaptersWithSource = Injekt.get(),
+    private val syncEpisodesWithSource: SyncEpisodesWithSource = Injekt.get(),
     private val sourceManager: SourceManager = Injekt.get(),
 ) {
 
@@ -164,7 +164,7 @@ class GalleryAdder(
                 }
 
                 if (chapterList.isNotEmpty()) {
-                    syncChaptersWithSource.await(chapterList, manga, source)
+                    syncEpisodesWithSource.await(chapterList, manga, source)
                 }
             } catch (e: Exception) {
                 logger.w(context.stringResource(SYMR.strings.gallery_adder_chapter_fetch_error, manga.title), e)

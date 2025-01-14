@@ -18,7 +18,7 @@ import tachiyomi.domain.episode.model.Chapter
 import tachiyomi.domain.episode.model.ChapterUpdate
 import tachiyomi.domain.episode.repository.ChapterRepository
 
-class SetReadStatus(
+class SetSeenStatus(
     private val downloadPreferences: DownloadPreferences,
     private val deleteDownload: DeleteDownload,
     private val mangaRepository: MangaRepository,

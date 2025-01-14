@@ -21,7 +21,7 @@ import eu.kanade.core.util.fastPartition
 import eu.kanade.domain.anime.interactor.SmartSearchMerge
 import eu.kanade.domain.anime.interactor.UpdateAnime
 import eu.kanade.domain.base.BasePreferences
-import eu.kanade.domain.episode.interactor.SetReadStatus
+import eu.kanade.domain.episode.interactor.SetSeenStatus
 import eu.kanade.domain.source.service.SourcePreferences
 import eu.kanade.domain.sync.SyncPreferences
 import eu.kanade.presentation.anime.DownloadAction
@@ -134,7 +134,7 @@ class LibraryScreenModel(
     private val getTracksPerManga: GetTracksPerManga = Injekt.get(),
     private val getNextChapters: GetNextChapters = Injekt.get(),
     private val getChaptersByMangaId: GetChaptersByMangaId = Injekt.get(),
-    private val setReadStatus: SetReadStatus = Injekt.get(),
+    private val setSeenStatus: SetSeenStatus = Injekt.get(),
     private val updateAnime: UpdateAnime = Injekt.get(),
     private val setMangaCategories: SetMangaCategories = Injekt.get(),
     private val preferences: BasePreferences = Injekt.get(),
@@ -851,7 +851,7 @@ class LibraryScreenModel(
         val mangas = state.value.selection.toList()
         screenModelScope.launchNonCancellable {
             mangas.forEach { manga ->
-                setReadStatus.await(
+                setSeenStatus.await(
                     manga = manga.manga,
                     read = read,
                 )

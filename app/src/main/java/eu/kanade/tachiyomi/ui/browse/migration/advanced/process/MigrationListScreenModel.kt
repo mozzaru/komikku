@@ -7,7 +7,7 @@ import cafe.adriel.voyager.core.model.screenModelScope
 import eu.kanade.domain.anime.interactor.UpdateAnime
 import eu.kanade.domain.anime.model.hasCustomCover
 import eu.kanade.domain.anime.model.toSManga
-import eu.kanade.domain.episode.interactor.SyncChaptersWithSource
+import eu.kanade.domain.episode.interactor.SyncEpisodesWithSource
 import eu.kanade.tachiyomi.data.cache.CoverCache
 import eu.kanade.tachiyomi.data.download.DownloadManager
 import eu.kanade.tachiyomi.source.CatalogueSource
@@ -72,7 +72,7 @@ class MigrationListScreenModel(
     private val getManga: GetManga = Injekt.get(),
     private val networkToLocalManga: NetworkToLocalManga = Injekt.get(),
     private val updateAnime: UpdateAnime = Injekt.get(),
-    private val syncChaptersWithSource: SyncChaptersWithSource = Injekt.get(),
+    private val syncEpisodesWithSource: SyncEpisodesWithSource = Injekt.get(),
     private val updateChapter: UpdateChapter = Injekt.get(),
     private val getChaptersByMangaId: GetChaptersByMangaId = Injekt.get(),
     private val getMergedReferencesById: GetMergedReferencesById = Injekt.get(),
@@ -202,7 +202,7 @@ class MigrationListScreenModel(
                                             source.getChapterList(localManga.toSManga())
                                         }
                                         try {
-                                            syncChaptersWithSource.await(chapters, localManga, source)
+                                            syncEpisodesWithSource.await(chapters, localManga, source)
                                         } catch (_: Exception) {
                                         }
                                         manga.progress.value = validSources.size to validSources.size
@@ -238,7 +238,7 @@ class MigrationListScreenModel(
                                                 }
 
                                                 try {
-                                                    syncChaptersWithSource.await(chapters, localManga, source)
+                                                    syncEpisodesWithSource.await(chapters, localManga, source)
                                                 } catch (e: Exception) {
                                                     return@async2 null
                                                 }
@@ -278,7 +278,7 @@ class MigrationListScreenModel(
                                             this@MigrationListScreenModel.logcat(LogPriority.ERROR, e)
                                             emptyList()
                                         }
-                                        syncChaptersWithSource.await(chapters, localManga, source)
+                                        syncEpisodesWithSource.await(chapters, localManga, source)
                                         localManga
                                     } else {
                                         null
@@ -467,7 +467,7 @@ class MigrationListScreenModel(
                 try {
                     val source = sourceManager.get(manga.source)!!
                     val chapters = source.getChapterList(localManga.toSManga())
-                    syncChaptersWithSource.await(chapters, localManga, source)
+                    syncEpisodesWithSource.await(chapters, localManga, source)
                 } catch (e: Exception) {
                     return@async null
                 }
