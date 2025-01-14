@@ -8,9 +8,9 @@ import tachiyomi.domain.anime.model.Manga
 import tachiyomi.domain.episode.model.Chapter
 
 /**
- * Gets next unread chapter with filters and sorting applied
+ * Gets next unseen episode with filters and sorting applied
  */
-fun List<Chapter>.getNextUnread(
+fun List<Chapter>.getNextUnseen(
     manga: Manga,
     downloadManager: DownloadManager /* SY --> */,
     mergedManga: Map<Long, Manga>, /* SY <-- */
@@ -34,9 +34,9 @@ fun List<Chapter>.getNextUnread(
 }
 
 /**
- * Gets next unread chapter with filters and sorting applied
+ * Gets next unseen episode with filters and sorting applied
  */
-fun List<EpisodeList.Item>.getNextUnread(manga: Manga): Chapter? {
+fun List<EpisodeList.Item>.getNextUnseen(manga: Manga): Chapter? {
     return applyFilters(manga).let { chapters ->
         // SY -->
         if (manga.isEhBasedManga()) {
