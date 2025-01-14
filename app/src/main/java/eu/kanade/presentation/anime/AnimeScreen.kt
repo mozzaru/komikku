@@ -84,7 +84,7 @@ import eu.kanade.presentation.anime.components.RelatedAnimesRow
 import eu.kanade.presentation.anime.components.SearchMetadataChips
 import eu.kanade.presentation.browse.RelatedAnimeTitle
 import eu.kanade.presentation.components.relativeDateText
-import eu.kanade.presentation.util.formatChapterNumber
+import eu.kanade.presentation.util.formatEpisodeNumber
 import eu.kanade.tachiyomi.data.download.model.Download
 import eu.kanade.tachiyomi.source.Source
 import eu.kanade.tachiyomi.source.getNameForMangaInfo
@@ -1302,7 +1302,7 @@ private fun LazyListScope.sharedEpisodeItems(
                     title = if (manga.displayMode == Manga.CHAPTER_DISPLAY_NUMBER) {
                         stringResource(
                             MR.strings.display_mode_chapter,
-                            formatChapterNumber(item.chapter.chapterNumber),
+                            formatEpisodeNumber(item.chapter.chapterNumber),
                         )
                     } else {
                         item.chapter.name
