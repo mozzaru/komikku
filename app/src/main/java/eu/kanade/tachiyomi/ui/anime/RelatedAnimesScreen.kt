@@ -30,12 +30,12 @@ import uy.kohesive.injekt.api.get
 
 @Composable
 fun RelatedAnimesScreen(
-    screenModel: MangaScreenModel,
+    screenModel: AnimeScreenModel,
     bulkFavoriteScreenModel: BulkFavoriteScreenModel,
     navigateUp: () -> Unit,
     navigator: Navigator,
     scope: CoroutineScope,
-    successState: MangaScreenModel.State.Success,
+    successState: AnimeScreenModel.State.Success,
 ) {
     val sourcePreferences: SourcePreferences = Injekt.get()
     var displayMode by sourcePreferences.sourceDisplayMode().asState(scope)

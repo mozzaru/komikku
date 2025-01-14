@@ -96,8 +96,8 @@ import eu.kanade.tachiyomi.source.online.english.EightMuses
 import eu.kanade.tachiyomi.source.online.english.HBrowse
 import eu.kanade.tachiyomi.source.online.english.Pururin
 import eu.kanade.tachiyomi.source.online.english.Tsumino
+import eu.kanade.tachiyomi.ui.anime.AnimeScreenModel
 import eu.kanade.tachiyomi.ui.anime.EpisodeList
-import eu.kanade.tachiyomi.ui.anime.MangaScreenModel
 import eu.kanade.tachiyomi.ui.anime.MergedMangaData
 import eu.kanade.tachiyomi.ui.anime.PagePreviewState
 import eu.kanade.tachiyomi.util.system.copyToClipboard
@@ -139,7 +139,7 @@ import kotlin.math.roundToInt
 
 @Composable
 fun AnimeScreen(
-    state: MangaScreenModel.State.Success,
+    state: AnimeScreenModel.State.Success,
     snackbarHostState: SnackbarHostState,
     nextUpdate: Instant?,
     isTabletUi: Boolean,
@@ -337,7 +337,7 @@ fun AnimeScreen(
 
 @Composable
 private fun AnimeScreenSmallImpl(
-    state: MangaScreenModel.State.Success,
+    state: AnimeScreenModel.State.Success,
     snackbarHostState: SnackbarHostState,
     nextUpdate: Instant?,
     chapterSwipeStartAction: LibraryPreferences.ChapterSwipeAction,
@@ -792,7 +792,7 @@ private fun AnimeScreenSmallImpl(
 
 @Composable
 private fun AnimeScreenLargeImpl(
-    state: MangaScreenModel.State.Success,
+    state: AnimeScreenModel.State.Success,
     snackbarHostState: SnackbarHostState,
     nextUpdate: Instant?,
     chapterSwipeStartAction: LibraryPreferences.ChapterSwipeAction,
@@ -1385,7 +1385,7 @@ private fun onEpisodeItemClick(
 
 // SY -->
 typealias MetadataDescriptionComposable = @Composable (
-    state: MangaScreenModel.State.Success,
+    state: AnimeScreenModel.State.Success,
     openMetadataViewer: () -> Unit,
     search: (String) -> Unit,
 ) -> Unit

@@ -159,7 +159,7 @@ import uy.kohesive.injekt.injectLazy
 import kotlin.math.floor
 import androidx.compose.runtime.State as RuntimeState
 
-class MangaScreenModel(
+class AnimeScreenModel(
     private val context: Context,
     private val lifecycle: Lifecycle,
     private val mangaId: Long,
@@ -214,7 +214,7 @@ class MangaScreenModel(
     private val mangaRepository: MangaRepository = Injekt.get(),
     private val filterChaptersForDownload: FilterChaptersForDownload = Injekt.get(),
     val snackbarHostState: SnackbarHostState = SnackbarHostState(),
-) : StateScreenModel<MangaScreenModel.State>(State.Loading) {
+) : StateScreenModel<AnimeScreenModel.State>(State.Loading) {
 
     private val successState: State.Success?
         get() = state.value as? State.Success

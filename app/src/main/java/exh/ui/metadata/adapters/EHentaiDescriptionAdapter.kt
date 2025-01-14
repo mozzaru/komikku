@@ -13,7 +13,7 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.viewinterop.AndroidView
 import eu.kanade.tachiyomi.R
 import eu.kanade.tachiyomi.databinding.DescriptionAdapterEhBinding
-import eu.kanade.tachiyomi.ui.anime.MangaScreenModel.State
+import eu.kanade.tachiyomi.ui.anime.AnimeScreenModel.State
 import eu.kanade.tachiyomi.util.system.copyToClipboard
 import exh.metadata.MetadataUtil
 import exh.metadata.metadata.EHentaiSearchMetadata
