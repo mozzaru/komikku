@@ -14,7 +14,7 @@ import androidx.compose.ui.util.fastAny
 import eu.kanade.presentation.browse.RelatedAnimeTitle
 import eu.kanade.presentation.browse.RelatedAnimesLoadingItem
 import eu.kanade.presentation.browse.header
-import eu.kanade.presentation.library.components.CommonMangaItemDefaults
+import eu.kanade.presentation.library.components.CommonAnimeItemDefaults
 import eu.kanade.tachiyomi.ui.anime.RelatedManga
 import tachiyomi.domain.anime.model.Manga
 import tachiyomi.i18n.MR
@@ -41,8 +41,8 @@ fun RelatedAnimesCompactGrid(
         contentPadding = contentPadding + PaddingValues(horizontal = MaterialTheme.padding.small),
         // padding for scrollbar
         topContentPadding = contentPadding.calculateTopPadding(),
-        verticalArrangement = Arrangement.spacedBy(CommonMangaItemDefaults.GridVerticalSpacer),
-        horizontalArrangement = Arrangement.spacedBy(CommonMangaItemDefaults.GridHorizontalSpacer),
+        verticalArrangement = Arrangement.spacedBy(CommonAnimeItemDefaults.GridVerticalSpacer),
+        horizontalArrangement = Arrangement.spacedBy(CommonAnimeItemDefaults.GridHorizontalSpacer),
     ) {
         relatedMangas.forEach { related ->
             val isLoading = related is RelatedManga.Loading

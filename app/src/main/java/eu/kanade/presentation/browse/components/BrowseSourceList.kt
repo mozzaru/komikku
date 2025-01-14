@@ -12,8 +12,8 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.util.fastAny
 import androidx.paging.LoadState
 import androidx.paging.compose.LazyPagingItems
-import eu.kanade.presentation.library.components.CommonMangaItemDefaults
-import eu.kanade.presentation.library.components.MangaListItem
+import eu.kanade.presentation.library.components.AnimeListItem
+import eu.kanade.presentation.library.components.CommonAnimeItemDefaults
 import eu.kanade.tachiyomi.R
 import exh.metadata.metadata.MangaDexSearchMetadata
 import exh.metadata.metadata.RaisedSearchMetadata
@@ -83,7 +83,7 @@ internal fun BrowseSourceListItem(
     isSelected: Boolean = false,
     // KMK <--
 ) {
-    MangaListItem(
+    AnimeListItem(
         title = manga.title,
         coverData = MangaCover(
             animeId = manga.id,
@@ -95,7 +95,7 @@ internal fun BrowseSourceListItem(
         // KMK -->
         isSelected = isSelected,
         // KMK <--
-        coverAlpha = if (manga.favorite) CommonMangaItemDefaults.BrowseFavoriteCoverAlpha else 1f,
+        coverAlpha = if (manga.favorite) CommonAnimeItemDefaults.BrowseFavoriteCoverAlpha else 1f,
         badge = {
             InLibraryBadge(enabled = manga.favorite)
             // SY -->

@@ -35,7 +35,7 @@ import com.gowtham.ratingbar.RatingBarStyle
 import dev.icerock.moko.resources.StringResource
 import eu.kanade.presentation.anime.components.AnimeCover
 import eu.kanade.presentation.anime.components.AnimeCoverHide
-import eu.kanade.presentation.library.components.CommonMangaItemDefaults
+import eu.kanade.presentation.library.components.CommonAnimeItemDefaults
 import eu.kanade.presentation.library.components.GRID_SELECTED_COVER_ALPHA
 import exh.debug.DebugToggles
 import exh.metadata.MetadataUtil
@@ -121,7 +121,7 @@ fun BrowseSourceEHentaiListItem(
     val coverData = manga.asMangaCover()
     val bgColor = coverData.dominantCoverColors?.first?.let { Color(it) }.takeIf { libraryColored }
     val onBgColor = coverData.dominantCoverColors?.second.takeIf { libraryColored }
-    val coverAlpha = if (manga.favorite) CommonMangaItemDefaults.BrowseFavoriteCoverAlpha else 1f
+    val coverAlpha = if (manga.favorite) CommonAnimeItemDefaults.BrowseFavoriteCoverAlpha else 1f
     // KMK <--
 
     val context = LocalContext.current

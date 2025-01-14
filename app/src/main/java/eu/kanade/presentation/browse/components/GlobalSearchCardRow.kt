@@ -19,8 +19,8 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.util.fastAny
 import eu.kanade.domain.ui.UiPreferences
 import eu.kanade.presentation.anime.components.RatioSwitchToPanorama
-import eu.kanade.presentation.library.components.CommonMangaItemDefaults
-import eu.kanade.presentation.library.components.MangaComfortableGridItem
+import eu.kanade.presentation.library.components.AnimeComfortableGridItem
+import eu.kanade.presentation.library.components.CommonAnimeItemDefaults
 import tachiyomi.domain.anime.model.Manga
 import tachiyomi.domain.anime.model.MangaCover
 import tachiyomi.domain.anime.model.asMangaCover
@@ -89,7 +89,7 @@ internal fun AnimeItem(
             // KMK <--
         ),
     ) {
-        MangaComfortableGridItem(
+        AnimeComfortableGridItem(
             title = title,
             titleMaxLines = 3,
             coverData = cover,
@@ -102,7 +102,7 @@ internal fun AnimeItem(
             usePanoramaCover = panoramaCover,
             fitToPanoramaCover = true,
             // KMK <--
-            coverAlpha = if (isFavorite) CommonMangaItemDefaults.BrowseFavoriteCoverAlpha else 1f,
+            coverAlpha = if (isFavorite) CommonAnimeItemDefaults.BrowseFavoriteCoverAlpha else 1f,
             onClick = onClick,
             onLongClick = onLongClick,
         )

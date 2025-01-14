@@ -51,7 +51,7 @@ import tachiyomi.presentation.core.i18n.stringResource
 import tachiyomi.presentation.core.util.selectedBackground
 import tachiyomi.domain.anime.model.MangaCover as MangaCoverModel
 
-object CommonMangaItemDefaults {
+object CommonAnimeItemDefaults {
     val GridHorizontalSpacer = 4.dp
     val GridVerticalSpacer = 4.dp
 
@@ -59,14 +59,14 @@ object CommonMangaItemDefaults {
     const val BrowseFavoriteCoverAlpha = 0.34f
 }
 
-private val ContinueReadingButtonSizeSmall = 28.dp
-private val ContinueReadingButtonSizeLarge = 32.dp
+private val ContinueWatchingButtonSizeSmall = 28.dp
+private val ContinueWatchingButtonSizeLarge = 32.dp
 
-private val ContinueReadingButtonIconSizeSmall = 16.dp
-private val ContinueReadingButtonIconSizeLarge = 20.dp
+private val ContinueWatchingButtonIconSizeSmall = 16.dp
+private val ContinueWatchingButtonIconSizeLarge = 20.dp
 
-private val ContinueReadingButtonGridPadding = 6.dp
-private val ContinueReadingButtonListSpacing = 8.dp
+private val ContinueWatchingButtonGridPadding = 6.dp
+private val ContinueWatchingButtonListSpacing = 8.dp
 
 internal const val GRID_SELECTED_COVER_ALPHA = 0.76f
 
@@ -75,7 +75,7 @@ internal const val GRID_SELECTED_COVER_ALPHA = 0.76f
  * Accepts null [title] for a cover-only view.
  */
 @Composable
-fun MangaCompactGridItem(
+fun AnimeCompactGridItem(
     coverData: MangaCoverModel,
     onClick: () -> Unit,
     onLongClick: () -> Unit,
@@ -98,7 +98,7 @@ fun MangaCompactGridItem(
         onClick = onClick,
         onLongClick = onLongClick,
     ) {
-        MangaGridCover(
+        AnimeGridCover(
             cover = {
                 // KMK -->
                 if (DebugToggles.HIDE_COVER_IMAGE_ONLY_SHOW_COLOR.enabled) {
@@ -134,12 +134,12 @@ fun MangaCompactGridItem(
                         onClickContinueReading = onClickContinueReading,
                     )
                 } else if (onClickContinueReading != null) {
-                    ContinueReadingButton(
-                        size = ContinueReadingButtonSizeLarge,
-                        iconSize = ContinueReadingButtonIconSizeLarge,
+                    ContinueWatchingButton(
+                        size = ContinueWatchingButtonSizeLarge,
+                        iconSize = ContinueWatchingButtonIconSizeLarge,
                         onClick = onClickContinueReading,
                         modifier = Modifier
-                            .padding(ContinueReadingButtonGridPadding)
+                            .padding(ContinueWatchingButtonGridPadding)
                             .align(Alignment.BottomEnd),
                     )
                 }
@@ -149,7 +149,7 @@ fun MangaCompactGridItem(
 }
 
 /**
- * Title overlay for [MangaCompactGridItem]
+ * Title overlay for [AnimeCompactGridItem]
  */
 @Composable
 private fun BoxScope.CoverTextOverlay(
@@ -188,13 +188,13 @@ private fun BoxScope.CoverTextOverlay(
             minLines = 1,
         )
         if (onClickContinueReading != null) {
-            ContinueReadingButton(
-                size = ContinueReadingButtonSizeSmall,
-                iconSize = ContinueReadingButtonIconSizeSmall,
+            ContinueWatchingButton(
+                size = ContinueWatchingButtonSizeSmall,
+                iconSize = ContinueWatchingButtonIconSizeSmall,
                 onClick = onClickContinueReading,
                 modifier = Modifier.padding(
-                    end = ContinueReadingButtonGridPadding,
-                    bottom = ContinueReadingButtonGridPadding,
+                    end = ContinueWatchingButtonGridPadding,
+                    bottom = ContinueWatchingButtonGridPadding,
                 ),
             )
         }
@@ -205,7 +205,7 @@ private fun BoxScope.CoverTextOverlay(
  * Layout of grid list item with title below the cover.
  */
 @Composable
-fun MangaComfortableGridItem(
+fun AnimeComfortableGridItem(
     coverData: MangaCoverModel,
     title: String,
     onClick: () -> Unit,
@@ -234,7 +234,7 @@ fun MangaComfortableGridItem(
         onLongClick = onLongClick,
     ) {
         Column {
-            MangaGridCover(
+            AnimeGridCover(
                 cover = {
                     // KMK -->
                     if (DebugToggles.HIDE_COVER_IMAGE_ONLY_SHOW_COLOR.enabled) {
@@ -301,12 +301,12 @@ fun MangaComfortableGridItem(
                 badgesEnd = coverBadgeEnd,
                 content = {
                     if (onClickContinueReading != null) {
-                        ContinueReadingButton(
-                            size = ContinueReadingButtonSizeLarge,
-                            iconSize = ContinueReadingButtonIconSizeLarge,
+                        ContinueWatchingButton(
+                            size = ContinueWatchingButtonSizeLarge,
+                            iconSize = ContinueWatchingButtonIconSizeLarge,
                             onClick = onClickContinueReading,
                             modifier = Modifier
-                                .padding(ContinueReadingButtonGridPadding)
+                                .padding(ContinueWatchingButtonGridPadding)
                                 .align(Alignment.BottomEnd),
                         )
                     }
@@ -327,7 +327,7 @@ fun MangaComfortableGridItem(
  * Common cover layout to add contents to be drawn on top of the cover.
  */
 @Composable
-private fun MangaGridCover(
+private fun AnimeGridCover(
     modifier: Modifier = Modifier,
     cover: @Composable BoxScope.() -> Unit = {},
     // KMK -->
@@ -428,7 +428,7 @@ private fun Modifier.selectedOutline(
  * Layout of list item.
  */
 @Composable
-fun MangaListItem(
+fun AnimeListItem(
     coverData: MangaCoverModel,
     title: String,
     onClick: () -> Unit,
@@ -492,18 +492,18 @@ fun MangaListItem(
         )
         BadgeGroup(content = badge)
         if (onClickContinueReading != null) {
-            ContinueReadingButton(
-                size = ContinueReadingButtonSizeSmall,
-                iconSize = ContinueReadingButtonIconSizeSmall,
+            ContinueWatchingButton(
+                size = ContinueWatchingButtonSizeSmall,
+                iconSize = ContinueWatchingButtonIconSizeSmall,
                 onClick = onClickContinueReading,
-                modifier = Modifier.padding(start = ContinueReadingButtonListSpacing),
+                modifier = Modifier.padding(start = ContinueWatchingButtonListSpacing),
             )
         }
     }
 }
 
 @Composable
-private fun ContinueReadingButton(
+private fun ContinueWatchingButton(
     size: Dp,
     iconSize: Dp,
     onClick: () -> Unit,
