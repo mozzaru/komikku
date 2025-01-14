@@ -24,7 +24,7 @@ import androidx.compose.ui.unit.dp
 import eu.kanade.presentation.anime.components.AnimeCover
 import eu.kanade.presentation.util.rememberResourceBitmapPainter
 import eu.kanade.tachiyomi.R
-import eu.kanade.tachiyomi.ui.browse.migration.advanced.process.MigratingManga
+import eu.kanade.tachiyomi.ui.browse.migration.advanced.process.MigratingAnime
 import tachiyomi.core.common.util.lang.withIOContext
 import tachiyomi.domain.anime.model.Manga
 import tachiyomi.i18n.sy.SYMR
@@ -33,16 +33,16 @@ import tachiyomi.presentation.core.i18n.stringResource
 @Composable
 fun MigrationItemResult(
     modifier: Modifier,
-    migrationItem: MigratingManga,
-    result: MigratingManga.SearchResult,
-    getManga: suspend (MigratingManga.SearchResult.Result) -> Manga?,
-    getChapterInfo: suspend (MigratingManga.SearchResult.Result) -> MigratingManga.ChapterInfo,
+    migrationItem: MigratingAnime,
+    result: MigratingAnime.SearchResult,
+    getManga: suspend (MigratingAnime.SearchResult.Result) -> Manga?,
+    getEpisodeInfo: suspend (MigratingAnime.SearchResult.Result) -> MigratingAnime.EpisodeInfo,
     getSourceName: (Manga) -> String,
     onMigrationItemClick: (Manga) -> Unit,
 ) {
     Box(modifier.height(IntrinsicSize.Min)) {
         when (result) {
-            MigratingManga.SearchResult.Searching -> Box(
+            MigratingAnime.SearchResult.Searching -> Box(
                 modifier = Modifier
                     .widthIn(max = 150.dp)
                     .fillMaxSize()
@@ -51,7 +51,7 @@ fun MigrationItemResult(
             ) {
                 CircularProgressIndicator()
             }
-            MigratingManga.SearchResult.NotFound -> Column(
+            MigratingAnime.SearchResult.NotFound -> Column(
                 Modifier
                     .widthIn(max = 150.dp)
                     .fillMaxSize()
@@ -72,8 +72,8 @@ fun MigrationItemResult(
                     style = MaterialTheme.typography.titleSmall,
                 )
             }
-            is MigratingManga.SearchResult.Result -> {
-                val item by produceState<Triple<Manga, MigratingManga.ChapterInfo, String>?>(
+            is MigratingAnime.SearchResult.Result -> {
+                val item by produceState<Triple<Manga, MigratingAnime.EpisodeInfo, String>?>(
                     initialValue = null,
                     migrationItem,
                     result,
@@ -82,7 +82,7 @@ fun MigrationItemResult(
                         val manga = getManga(result) ?: return@withIOContext null
                         Triple(
                             manga,
-                            getChapterInfo(result),
+                            getEpisodeInfo(result),
                             getSourceName(manga),
                         )
                     }
@@ -93,7 +93,7 @@ fun MigrationItemResult(
                         modifier = Modifier.fillMaxSize(),
                         manga = manga,
                         sourcesString = source,
-                        chapterInfo = chapterInfo,
+                        episodeInfo = chapterInfo,
                         onClick = {
                             onMigrationItemClick(manga)
                         },

@@ -13,9 +13,9 @@ import tachiyomi.i18n.sy.SYMR
 import java.text.DecimalFormat
 import kotlin.coroutines.CoroutineContext
 
-class MigratingManga(
+class MigratingAnime(
     val manga: Manga,
-    val chapterInfo: ChapterInfo,
+    val episodeInfo: EpisodeInfo,
     val sourcesString: String,
     parentContext: CoroutineContext,
 ) {
@@ -36,7 +36,7 @@ class MigratingManga(
         data class Result(val id: Long) : SearchResult()
     }
 
-    data class ChapterInfo(
+    data class EpisodeInfo(
         val latestChapter: Double?,
         val chapterCount: Int,
     ) {

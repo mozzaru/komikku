@@ -15,7 +15,7 @@ import eu.kanade.tachiyomi.source.getNameForMangaInfo
 import eu.kanade.tachiyomi.source.online.all.EHentai
 import eu.kanade.tachiyomi.ui.browse.migration.MigrationFlags
 import eu.kanade.tachiyomi.ui.browse.migration.advanced.design.MigrationType
-import eu.kanade.tachiyomi.ui.browse.migration.advanced.process.MigratingManga.SearchResult
+import eu.kanade.tachiyomi.ui.browse.migration.advanced.process.MigratingAnime.SearchResult
 import eu.kanade.tachiyomi.util.system.toast
 import exh.eh.EHentaiThrottleManager
 import exh.smartsearch.SmartSearchEngine
@@ -88,7 +88,7 @@ class MigrationListScreenModel(
     private val smartSearchEngine = SmartSearchEngine(config.extraSearchParams)
     private val throttleManager = EHentaiThrottleManager()
 
-    val migratingItems = MutableStateFlow<ImmutableList<MigratingManga>?>(null)
+    val migratingItems = MutableStateFlow<ImmutableList<MigratingAnime>?>(null)
     val migrationDone = MutableStateFlow(false)
     val finishedCount = MutableStateFlow(0)
 
@@ -120,9 +120,9 @@ class MigrationListScreenModel(
                     .map {
                         async {
                             val manga = getManga.await(it) ?: return@async null
-                            MigratingManga(
+                            MigratingAnime(
                                 manga = manga,
-                                chapterInfo = getChapterInfo(it),
+                                episodeInfo = getChapterInfo(it),
                                 sourcesString = sourceManager.getOrStub(manga.source).getNameForMangaInfo(
                                     if (manga.source == MERGED_SOURCE_ID) {
                                         getMergedReferencesById.await(manga.id)
@@ -148,7 +148,7 @@ class MigrationListScreenModel(
     suspend fun getManga(id: Long) = getManga.await(id)
     suspend fun getChapterInfo(result: SearchResult.Result) = getChapterInfo(result.id)
     private suspend fun getChapterInfo(id: Long) = getChaptersByMangaId.await(id).let { chapters ->
-        MigratingManga.ChapterInfo(
+        MigratingAnime.EpisodeInfo(
             latestChapter = chapters.maxOfOrNull { it.chapterNumber },
             chapterCount = chapters.size,
         )
@@ -160,7 +160,7 @@ class MigrationListScreenModel(
         sourceManager.get(value) as? CatalogueSource
     }
 
-    private suspend fun runMigrations(mangas: List<MigratingManga>) {
+    private suspend fun runMigrations(mangas: List<MigratingAnime>) {
         throttleManager.resetThrottle()
         // KMK: finishedCount.value = mangas.size
 
@@ -326,7 +326,7 @@ class MigrationListScreenModel(
                 }
                 if (result != null &&
                     showOnlyUpdates &&
-                    (getChapterInfo(result.id).latestChapter ?: 0.0) <= (manga.chapterInfo.latestChapter ?: 0.0)
+                    (getChapterInfo(result.id).latestChapter ?: 0.0) <= (manga.episodeInfo.latestChapter ?: 0.0)
                 ) {
                     removeManga(manga)
                 }
@@ -596,7 +596,7 @@ class MigrationListScreenModel(
         }
     }
 
-    private fun removeManga(item: MigratingManga) {
+    private fun removeManga(item: MigratingAnime) {
         when (val migration = config.migration) {
             is MigrationType.MangaList -> {
                 val ids = migration.mangaIds.toMutableList()
@@ -622,7 +622,7 @@ class MigrationListScreenModel(
     fun openMigrateDialog(
         copy: Boolean,
     ) {
-        dialog.value = Dialog.MigrateMangaDialog(
+        dialog.value = Dialog.MigrateAnimeDialog(
             copy,
             migratingItems.value.orEmpty().size,
             mangasSkipped(),
@@ -643,7 +643,7 @@ class MigrationListScreenModel(
     // KMK <--
 
     sealed class Dialog {
-        data class MigrateMangaDialog(val copy: Boolean, val mangaSet: Int, val mangaSkipped: Int) : Dialog()
+        data class MigrateAnimeDialog(val copy: Boolean, val mangaSet: Int, val mangaSkipped: Int) : Dialog()
         data object MigrationExitDialog : Dialog()
 
         // KMK -->

@@ -21,7 +21,7 @@ import tachiyomi.presentation.core.screens.LoadingScreen
 import uy.kohesive.injekt.Injekt
 import uy.kohesive.injekt.api.get
 
-data class MigrateMangaScreen(
+data class MigrateAnimeScreen(
     private val sourceId: Long,
 ) : Screen() {
 
@@ -29,7 +29,7 @@ data class MigrateMangaScreen(
     override fun Content() {
         val context = LocalContext.current
         val navigator = LocalNavigator.currentOrThrow
-        val screenModel = rememberScreenModel { MigrateMangaScreenModel(sourceId) }
+        val screenModel = rememberScreenModel { MigrateAnimeScreenModel(sourceId) }
 
         val state by screenModel.state.collectAsState()
 
@@ -78,7 +78,7 @@ data class MigrateMangaScreen(
         LaunchedEffect(Unit) {
             screenModel.events.collectLatest { event ->
                 when (event) {
-                    MigrationMangaEvent.FailedFetchingFavorites -> {
+                    MigrationAnimeEvent.FailedFetchingFavorites -> {
                         context.toast(MR.strings.internal_error)
                     }
                 }

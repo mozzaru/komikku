@@ -26,7 +26,7 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import eu.kanade.presentation.anime.components.AnimeCover
-import eu.kanade.tachiyomi.ui.browse.migration.advanced.process.MigratingManga
+import eu.kanade.tachiyomi.ui.browse.migration.advanced.process.MigratingAnime
 import tachiyomi.core.common.util.lang.withIOContext
 import tachiyomi.domain.anime.model.Manga
 import tachiyomi.i18n.MR
@@ -39,7 +39,7 @@ fun MigrationItem(
     modifier: Modifier,
     manga: Manga,
     sourcesString: String,
-    chapterInfo: MigratingManga.ChapterInfo,
+    episodeInfo: MigratingAnime.EpisodeInfo,
     onClick: () -> Unit,
 ) {
     Column(
@@ -91,7 +91,7 @@ fun MigrationItem(
                 ),
             )
             BadgeGroup(modifier = Modifier.padding(4.dp)) {
-                Badge(text = "${chapterInfo.chapterCount}")
+                Badge(text = "${episodeInfo.chapterCount}")
             }
         }
         Text(
@@ -104,7 +104,7 @@ fun MigrationItem(
 
         val formattedLatestChapter by produceState(initialValue = "") {
             value = withIOContext {
-                chapterInfo.getFormattedLatestChapter(context)
+                episodeInfo.getFormattedLatestChapter(context)
             }
         }
         Text(

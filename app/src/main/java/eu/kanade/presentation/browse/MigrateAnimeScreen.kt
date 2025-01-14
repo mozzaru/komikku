@@ -39,8 +39,8 @@ import eu.kanade.presentation.anime.components.Button
 import eu.kanade.presentation.components.AppBar
 import eu.kanade.presentation.components.AppBarActions
 import eu.kanade.presentation.util.animateItemFastScroll
-import eu.kanade.tachiyomi.ui.browse.migration.anime.MigrateMangaItem
-import eu.kanade.tachiyomi.ui.browse.migration.anime.MigrateMangaScreenModel
+import eu.kanade.tachiyomi.ui.browse.migration.anime.MigrateAnimeItem
+import eu.kanade.tachiyomi.ui.browse.migration.anime.MigrateAnimeScreenModel
 import kotlinx.collections.immutable.persistentListOf
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
@@ -59,14 +59,14 @@ import kotlin.time.Duration.Companion.seconds
 fun MigrateAnimeScreen(
     navigateUp: () -> Unit,
     title: String,
-    state: MigrateMangaScreenModel.State,
-    onClickItem: (MigrateMangaItem) -> Unit,
+    state: MigrateAnimeScreenModel.State,
+    onClickItem: (MigrateAnimeItem) -> Unit,
     onClickCover: (Manga) -> Unit,
     // KMK -->
     onMultiMigrateClicked: (() -> Unit),
     onSelectAll: (Boolean) -> Unit,
     onInvertSelection: () -> Unit,
-    onMangaSelected: (MigrateMangaItem, Boolean, Boolean, Boolean) -> Unit,
+    onMangaSelected: (MigrateAnimeItem, Boolean, Boolean, Boolean) -> Unit,
 ) {
     BackHandler(enabled = state.selectionMode, onBack = { onSelectAll(false) })
 
@@ -144,11 +144,11 @@ fun MigrateAnimeScreen(
 @Composable
 private fun MigrateAnimeContent(
     contentPadding: PaddingValues,
-    state: MigrateMangaScreenModel.State,
-    onClickItem: (MigrateMangaItem) -> Unit,
+    state: MigrateAnimeScreenModel.State,
+    onClickItem: (MigrateAnimeItem) -> Unit,
     onClickCover: (Manga) -> Unit,
     // KMK -->
-    onMangaSelected: (MigrateMangaItem, Boolean, Boolean, Boolean) -> Unit,
+    onMangaSelected: (MigrateAnimeItem, Boolean, Boolean, Boolean) -> Unit,
     listState: LazyListState,
 ) {
     FastScrollLazyColumn(
@@ -256,7 +256,7 @@ private fun MigrateAnimeAppBar(
 @Composable
 private fun MigrateAnimeBottomBar(
     modifier: Modifier = Modifier,
-    selected: List<MigrateMangaItem>,
+    selected: List<MigrateAnimeItem>,
     onMultiMigrateClicked: (() -> Unit),
     enableScrollToTop: Boolean,
     enableScrollToBottom: Boolean,

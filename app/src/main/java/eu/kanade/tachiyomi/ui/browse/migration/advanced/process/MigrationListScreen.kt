@@ -70,7 +70,7 @@ class MigrationListScreen(private val config: MigrationProcedureConfig) : Screen
         LaunchedEffect(screenModel) {
             screenModel.navigateOut.collect {
                 if (items.orEmpty().size == 1 && navigator.items.any { it is AnimeScreen }) {
-                    val mangaId = (items.orEmpty().firstOrNull()?.searchResult?.value as? MigratingManga.SearchResult.Result)?.id
+                    val mangaId = (items.orEmpty().firstOrNull()?.searchResult?.value as? MigratingAnime.SearchResult.Result)?.id
                     withUIContext {
                         if (mangaId != null) {
                             val newStack = navigator.items.filter {
@@ -100,7 +100,7 @@ class MigrationListScreen(private val config: MigrationProcedureConfig) : Screen
             migrationDone = migrationDone,
             finishedCount = finishedCount,
             getManga = screenModel::getManga,
-            getChapterInfo = screenModel::getChapterInfo,
+            getEpisodeInfo = screenModel::getChapterInfo,
             getSourceName = screenModel::getSourceName,
             onMigrationItemClick = {
                 navigator.push(AnimeScreen(it.id, true))
@@ -132,7 +132,7 @@ class MigrationListScreen(private val config: MigrationProcedureConfig) : Screen
             @Suppress("NAME_SHADOWING")
             val dialog = dialog
         ) {
-            is MigrationListScreenModel.Dialog.MigrateMangaDialog -> {
+            is MigrationListScreenModel.Dialog.MigrateAnimeDialog -> {
                 MigrationAnimeDialog(
                     onDismissRequest = onDismissRequest,
                     copy = dialog.copy,
