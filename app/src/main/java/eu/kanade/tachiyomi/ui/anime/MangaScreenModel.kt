@@ -62,9 +62,9 @@ import eu.kanade.tachiyomi.source.getNameForMangaInfo
 import eu.kanade.tachiyomi.source.model.SManga
 import eu.kanade.tachiyomi.source.online.MetadataSource
 import eu.kanade.tachiyomi.source.online.all.MergedSource
-import eu.kanade.tachiyomi.ui.anime.RelatedManga.Companion.isLoading
-import eu.kanade.tachiyomi.ui.anime.RelatedManga.Companion.removeDuplicates
-import eu.kanade.tachiyomi.ui.anime.RelatedManga.Companion.sorted
+import eu.kanade.tachiyomi.ui.anime.RelatedAnime.Companion.isLoading
+import eu.kanade.tachiyomi.ui.anime.RelatedAnime.Companion.removeDuplicates
+import eu.kanade.tachiyomi.ui.anime.RelatedAnime.Companion.sorted
 import eu.kanade.tachiyomi.ui.reader.setting.ReaderPreferences
 import eu.kanade.tachiyomi.util.episode.getNextUnread
 import eu.kanade.tachiyomi.util.removeCovers
@@ -1149,7 +1149,7 @@ class MangaScreenModel(
             if (state.source !is StubSource && relatedMangasEnabled) {
                 state.source.getRelatedMangaList(state.manga.toSManga(), { e -> exceptionHandler(e) }) { pair, _ ->
                     /* Push found related mangas into collection */
-                    val relatedManga = RelatedManga.Success.fromPair(pair) { mangaList ->
+                    val relatedAnime = RelatedAnime.Success.fromPair(pair) { mangaList ->
                         mangaList.map {
                             // KMK -->
                             it.toDomainManga(state.source.id)
@@ -1159,11 +1159,11 @@ class MangaScreenModel(
 
                     updateSuccessState { successState ->
                         val relatedMangaCollection =
-                            successState.relatedMangaCollection
+                            successState.relatedAnimeCollection
                                 ?.toMutableStateList()
-                                ?.apply { add(relatedManga) }
-                                ?: listOf(relatedManga)
-                        successState.copy(relatedMangaCollection = relatedMangaCollection)
+                                ?.apply { add(relatedAnime) }
+                                ?: listOf(relatedAnime)
+                        successState.copy(relatedAnimeCollection = relatedMangaCollection)
                     }
                 }
             }
@@ -1827,16 +1827,16 @@ class MangaScreenModel(
             /**
              * a list of <keyword, related mangas>
              */
-            val relatedMangaCollection: List<RelatedManga>? = null,
+            val relatedAnimeCollection: List<RelatedAnime>? = null,
             val seedColor: Color? = manga.asMangaCover().vibrantCoverColor?.let { Color(it) },
             // KMK <--
         ) : State {
             // KMK -->
             /**
              * a value of null will be treated as still loading, so if all searching were failed and won't update
-             * 'relatedMangaCollection` then we should return empty list
+             * 'relatedAnimeCollection` then we should return empty list
              */
-            val relatedMangasSorted = relatedMangaCollection
+            val relatedMangasSorted = relatedAnimeCollection
                 ?.sorted(manga)
                 ?.removeDuplicates(manga)
                 ?.filter { it.isVisible() }
@@ -1950,13 +1950,13 @@ sealed interface PagePreviewState {
 // SY <--
 
 // KMK -->
-sealed interface RelatedManga {
-    data object Loading : RelatedManga
+sealed interface RelatedAnime {
+    data object Loading : RelatedAnime
 
     data class Success(
         val keyword: String,
         val mangaList: List<Manga>,
-    ) : RelatedManga {
+    ) : RelatedAnime {
         val isEmpty: Boolean
             get() = mangaList.isEmpty()
 
@@ -1973,7 +1973,7 @@ sealed interface RelatedManga {
     }
 
     companion object {
-        internal fun List<RelatedManga>.sorted(manga: Manga): List<RelatedManga> {
+        internal fun List<RelatedAnime>.sorted(manga: Manga): List<RelatedAnime> {
             val success = filterIsInstance<Success>()
             val loading = filterIsInstance<Loading>()
             val title = manga.title.lowercase()
@@ -1987,7 +1987,7 @@ sealed interface RelatedManga {
                 loading
         }
 
-        internal fun List<RelatedManga>.removeDuplicates(manga: Manga): List<RelatedManga> {
+        internal fun List<RelatedAnime>.removeDuplicates(manga: Manga): List<RelatedAnime> {
             val mangaHashes = HashSet<Int>().apply { add(manga.url.hashCode()) }
 
             return map { relatedManga ->
@@ -2010,7 +2010,7 @@ sealed interface RelatedManga {
             }
         }
 
-        internal fun List<RelatedManga>.isLoading(isRelatedMangaFetched: Boolean?): List<RelatedManga> {
+        internal fun List<RelatedAnime>.isLoading(isRelatedMangaFetched: Boolean?): List<RelatedAnime> {
             return if (isRelatedMangaFetched == false) this + listOf(Loading) else this
         }
     }

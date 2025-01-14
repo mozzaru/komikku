@@ -15,7 +15,7 @@ import eu.kanade.presentation.browse.RelatedAnimeTitle
 import eu.kanade.presentation.browse.RelatedAnimesLoadingItem
 import eu.kanade.presentation.browse.header
 import eu.kanade.presentation.library.components.CommonAnimeItemDefaults
-import eu.kanade.tachiyomi.ui.anime.RelatedManga
+import eu.kanade.tachiyomi.ui.anime.RelatedAnime
 import tachiyomi.domain.anime.model.Manga
 import tachiyomi.i18n.MR
 import tachiyomi.i18n.kmk.KMR
@@ -26,7 +26,7 @@ import tachiyomi.presentation.core.util.plus
 
 @Composable
 fun RelatedAnimesCompactGrid(
-    relatedMangas: List<RelatedManga>,
+    relatedAnimes: List<RelatedAnime>,
     getManga: @Composable (Manga) -> State<Manga>,
     columns: GridCells,
     contentPadding: PaddingValues,
@@ -44,8 +44,8 @@ fun RelatedAnimesCompactGrid(
         verticalArrangement = Arrangement.spacedBy(CommonAnimeItemDefaults.GridVerticalSpacer),
         horizontalArrangement = Arrangement.spacedBy(CommonAnimeItemDefaults.GridHorizontalSpacer),
     ) {
-        relatedMangas.forEach { related ->
-            val isLoading = related is RelatedManga.Loading
+        relatedAnimes.forEach { related ->
+            val isLoading = related is RelatedAnime.Loading
             if (isLoading) {
                 header(key = "${related.hashCode()}#header") {
                     RelatedAnimeTitle(
@@ -58,31 +58,31 @@ fun RelatedAnimesCompactGrid(
                 }
                 header(key = "${related.hashCode()}#content") { RelatedAnimesLoadingItem() }
             } else {
-                val relatedManga = related as RelatedManga.Success
+                val relatedAnime = related as RelatedAnime.Success
                 header(key = "${related.hashCode()}#divider") { HorizontalDivider() }
                 header(key = "${related.hashCode()}#header") {
                     RelatedAnimeTitle(
-                        title = if (relatedManga.keyword.isNotBlank()) {
+                        title = if (relatedAnime.keyword.isNotBlank()) {
                             stringResource(KMR.strings.related_mangas_more)
                         } else {
                             stringResource(KMR.strings.related_mangas_website_suggestions)
                         },
-                        showArrow = relatedManga.keyword.isNotBlank(),
+                        showArrow = relatedAnime.keyword.isNotBlank(),
                         subtitle = null,
                         onClick = {
-                            if (relatedManga.keyword.isNotBlank()) onKeywordClick(relatedManga.keyword)
+                            if (relatedAnime.keyword.isNotBlank()) onKeywordClick(relatedAnime.keyword)
                         },
                         onLongClick = {
-                            if (relatedManga.keyword.isNotBlank()) onKeywordLongClick(relatedManga.keyword)
+                            if (relatedAnime.keyword.isNotBlank()) onKeywordLongClick(relatedAnime.keyword)
                         },
                         modifier = Modifier.background(MaterialTheme.colorScheme.background),
                     )
                 }
                 items(
-                    key = { "related-compact-${relatedManga.mangaList[it].url.hashCode()}" },
-                    count = relatedManga.mangaList.size,
+                    key = { "related-compact-${relatedAnime.mangaList[it].url.hashCode()}" },
+                    count = relatedAnime.mangaList.size,
                 ) { index ->
-                    val manga by getManga(relatedManga.mangaList[index])
+                    val manga by getManga(relatedAnime.mangaList[index])
                     BrowseSourceCompactGridItem(
                         manga = manga,
                         onClick = { onMangaClick(manga) },

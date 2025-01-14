@@ -703,7 +703,7 @@ private fun AnimeScreenSmallImpl(
                                                 .padding(horizontal = MaterialTheme.padding.medium),
                                         )
                                         RelatedAnimesRow(
-                                            relatedMangas = state.relatedMangasSorted,
+                                            relatedAnimes = state.relatedMangasSorted,
                                             getMangaState = getMangaState,
                                             onMangaClick = onRelatedMangaClick,
                                             onMangaLongClick = onRelatedMangaLongClick,
@@ -1161,7 +1161,7 @@ private fun AnimeScreenLargeImpl(
                                                         .padding(horizontal = MaterialTheme.padding.medium),
                                                 )
                                                 RelatedAnimesRow(
-                                                    relatedMangas = state.relatedMangasSorted,
+                                                    relatedAnimes = state.relatedMangasSorted,
                                                     getMangaState = getMangaState,
                                                     onMangaClick = onRelatedMangaClick,
                                                     onMangaLongClick = onRelatedMangaLongClick,
