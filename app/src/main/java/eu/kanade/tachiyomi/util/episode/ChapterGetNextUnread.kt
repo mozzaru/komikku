@@ -2,7 +2,7 @@ package eu.kanade.tachiyomi.util.episode
 
 import eu.kanade.domain.episode.model.applyFilters
 import eu.kanade.tachiyomi.data.download.DownloadManager
-import eu.kanade.tachiyomi.ui.anime.ChapterList
+import eu.kanade.tachiyomi.ui.anime.EpisodeList
 import exh.source.isEhBasedManga
 import tachiyomi.domain.anime.model.Manga
 import tachiyomi.domain.episode.model.Chapter
@@ -36,7 +36,7 @@ fun List<Chapter>.getNextUnread(
 /**
  * Gets next unread chapter with filters and sorting applied
  */
-fun List<ChapterList.Item>.getNextUnread(manga: Manga): Chapter? {
+fun List<EpisodeList.Item>.getNextUnread(manga: Manga): Chapter? {
     return applyFilters(manga).let { chapters ->
         // SY -->
         if (manga.isEhBasedManga()) {

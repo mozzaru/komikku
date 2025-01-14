@@ -233,10 +233,10 @@ class MangaScreenModel(
     private val isFavorited: Boolean
         get() = manga?.favorite ?: false
 
-    private val allChapters: List<ChapterList.Item>?
+    private val allChapters: List<EpisodeList.Item>?
         get() = successState?.chapters
 
-    private val filteredChapters: List<ChapterList.Item>?
+    private val filteredChapters: List<EpisodeList.Item>?
         get() = successState?.processedChapters
 
     val chapterSwipeStartAction = libraryPreferences.swipeToEndAction().get()
@@ -1003,7 +1003,7 @@ class MangaScreenModel(
         // SY -->
         mergedData: MergedMangaData?,
         // SY <--
-    ): List<ChapterList.Item> {
+    ): List<EpisodeList.Item> {
         val isLocal = manga.isLocal()
         // SY -->
         val isExhManga = manga.isEhBasedManga()
@@ -1038,7 +1038,7 @@ class MangaScreenModel(
                 else -> Download.State.NOT_DOWNLOADED
             }
 
-            ChapterList.Item(
+            EpisodeList.Item(
                 chapter = chapter,
                 downloadState = downloadState,
                 downloadProgress = activeDownload?.progress ?: 0,
@@ -1182,7 +1182,7 @@ class MangaScreenModel(
     /**
      * @throws IllegalStateException if the swipe action is [LibraryPreferences.ChapterSwipeAction.Disabled]
      */
-    fun chapterSwipe(chapterItem: ChapterList.Item, swipeAction: LibraryPreferences.ChapterSwipeAction) {
+    fun chapterSwipe(chapterItem: EpisodeList.Item, swipeAction: LibraryPreferences.ChapterSwipeAction) {
         screenModelScope.launch {
             executeChapterSwipeAction(chapterItem, swipeAction)
         }
@@ -1192,7 +1192,7 @@ class MangaScreenModel(
      * @throws IllegalStateException if the swipe action is [LibraryPreferences.ChapterSwipeAction.Disabled]
      */
     private fun executeChapterSwipeAction(
-        chapterItem: ChapterList.Item,
+        chapterItem: EpisodeList.Item,
         swipeAction: LibraryPreferences.ChapterSwipeAction,
     ) {
         val chapter = chapterItem.chapter
@@ -1279,7 +1279,7 @@ class MangaScreenModel(
     }
 
     fun runChapterDownloadActions(
-        items: List<ChapterList.Item>,
+        items: List<EpisodeList.Item>,
         action: EpisodeDownloadAction,
     ) {
         when (action) {
@@ -1539,7 +1539,7 @@ class MangaScreenModel(
     }
 
     fun toggleSelection(
-        item: ChapterList.Item,
+        item: EpisodeList.Item,
         selected: Boolean,
         userSelected: Boolean = false,
         fromLongPress: Boolean = false,
@@ -1797,7 +1797,7 @@ class MangaScreenModel(
             val manga: Manga,
             val source: Source,
             val isFromSource: Boolean,
-            val chapters: List<ChapterList.Item>,
+            val chapters: List<EpisodeList.Item>,
             val availableScanlators: ImmutableSet<String>,
             val excludedScanlators: ImmutableSet<String>,
             val trackingCount: Int = 0,
@@ -1856,7 +1856,7 @@ class MangaScreenModel(
                 chapters.fastAny { it.selected }
             }
 
-            val chapterListItems by lazy {
+            val episodeListItems by lazy {
                 processedChapters.insertSeparators { before, after ->
                     val (lowerChapter, higherChapter) = if (manga.sortDescending()) {
                         after to before
@@ -1875,7 +1875,7 @@ class MangaScreenModel(
                     }
                         .takeIf { it > 0 }
                         ?.let { missingCount ->
-                            ChapterList.MissingCount(
+                            EpisodeList.MissingCount(
                                 id = "${lowerChapter?.id}-${higherChapter.id}",
                                 count = missingCount,
                             )
@@ -1893,7 +1893,7 @@ class MangaScreenModel(
              * Applies the view filters to the list of chapters obtained from the database.
              * @return an observable of the list of chapters filtered and sorted.
              */
-            private fun List<ChapterList.Item>.applyFilters(manga: Manga): Sequence<ChapterList.Item> {
+            private fun List<EpisodeList.Item>.applyFilters(manga: Manga): Sequence<EpisodeList.Item> {
                 val isLocalManga = manga.isLocal()
                 val unreadFilter = manga.unreadFilter
                 val downloadedFilter = manga.downloadedFilter
@@ -1917,12 +1917,12 @@ data class MergedMangaData(
 // SY <--
 
 @Immutable
-sealed class ChapterList {
+sealed class EpisodeList {
     @Immutable
     data class MissingCount(
         val id: String,
         val count: Int,
-    ) : ChapterList()
+    ) : EpisodeList()
 
     @Immutable
     data class Item(
@@ -1934,7 +1934,7 @@ sealed class ChapterList {
         val sourceName: String?,
         val showScanlator: Boolean,
         // SY <--
-    ) : ChapterList() {
+    ) : EpisodeList() {
         val id = chapter.id
         val isDownloaded = downloadState == Download.State.DOWNLOADED
     }
