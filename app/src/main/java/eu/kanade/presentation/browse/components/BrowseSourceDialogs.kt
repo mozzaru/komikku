@@ -22,7 +22,7 @@ import tachiyomi.i18n.sy.SYMR
 import tachiyomi.presentation.core.i18n.stringResource
 
 @Composable
-fun RemoveMangaDialog(
+fun RemoveAnimeDialog(
     onDismissRequest: () -> Unit,
     onConfirm: () -> Unit,
     mangaToRemove: Manga,

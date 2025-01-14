@@ -11,8 +11,8 @@ import androidx.compose.runtime.State
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.util.fastAny
-import eu.kanade.presentation.browse.RelatedMangaTitle
-import eu.kanade.presentation.browse.RelatedMangasLoadingItem
+import eu.kanade.presentation.browse.RelatedAnimeTitle
+import eu.kanade.presentation.browse.RelatedAnimesLoadingItem
 import eu.kanade.presentation.browse.header
 import eu.kanade.presentation.library.components.CommonMangaItemDefaults
 import eu.kanade.tachiyomi.ui.anime.RelatedManga
@@ -25,7 +25,7 @@ import tachiyomi.presentation.core.i18n.stringResource
 import tachiyomi.presentation.core.util.plus
 
 @Composable
-fun RelatedMangasComfortableGrid(
+fun RelatedAnimesComfortableGrid(
     relatedMangas: List<RelatedManga>,
     getManga: @Composable (Manga) -> State<Manga>,
     columns: GridCells,
@@ -49,7 +49,7 @@ fun RelatedMangasComfortableGrid(
             val isLoading = related is RelatedManga.Loading
             if (isLoading) {
                 header(key = "${related.hashCode()}#header") {
-                    RelatedMangaTitle(
+                    RelatedAnimeTitle(
                         title = stringResource(MR.strings.loading),
                         subtitle = null,
                         onClick = {},
@@ -57,12 +57,12 @@ fun RelatedMangasComfortableGrid(
                         modifier = Modifier.background(MaterialTheme.colorScheme.background),
                     )
                 }
-                header(key = "${related.hashCode()}#content") { RelatedMangasLoadingItem() }
+                header(key = "${related.hashCode()}#content") { RelatedAnimesLoadingItem() }
             } else {
                 val relatedManga = related as RelatedManga.Success
                 header(key = "${related.hashCode()}#divider") { HorizontalDivider() }
                 header(key = "${related.hashCode()}#header") {
-                    RelatedMangaTitle(
+                    RelatedAnimeTitle(
                         title = if (relatedManga.keyword.isNotBlank()) {
                             stringResource(KMR.strings.related_mangas_more)
                         } else {

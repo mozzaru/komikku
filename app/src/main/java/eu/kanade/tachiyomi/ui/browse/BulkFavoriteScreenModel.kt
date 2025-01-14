@@ -21,7 +21,7 @@ import eu.kanade.domain.anime.interactor.UpdateAnime
 import eu.kanade.domain.track.interactor.AddTracks
 import eu.kanade.presentation.anime.DuplicateAnimeDialog
 import eu.kanade.presentation.anime.DuplicateAnimesDialog
-import eu.kanade.presentation.browse.components.RemoveMangaDialog
+import eu.kanade.presentation.browse.components.RemoveAnimeDialog
 import eu.kanade.presentation.category.components.ChangeCategoryDialog
 import eu.kanade.presentation.components.AppBar
 import eu.kanade.presentation.components.BulkSelectionToolbar
@@ -465,7 +465,7 @@ fun RemoveMangaDialog(bulkFavoriteScreenModel: BulkFavoriteScreenModel) {
     val bulkFavoriteState by bulkFavoriteScreenModel.state.collectAsState()
     val dialog = bulkFavoriteState.dialog as BulkFavoriteScreenModel.Dialog.RemoveManga
 
-    RemoveMangaDialog(
+    RemoveAnimeDialog(
         onDismissRequest = bulkFavoriteScreenModel::dismissDialog,
         onConfirm = {
             bulkFavoriteScreenModel.changeMangaFavorite(dialog.manga)

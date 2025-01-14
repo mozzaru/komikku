@@ -26,9 +26,9 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.capitalize
 import androidx.compose.ui.text.intl.Locale
 import androidx.compose.ui.unit.dp
-import eu.kanade.presentation.browse.components.RelatedMangasComfortableGrid
-import eu.kanade.presentation.browse.components.RelatedMangasCompactGrid
-import eu.kanade.presentation.browse.components.RelatedMangasList
+import eu.kanade.presentation.browse.components.RelatedAnimesComfortableGrid
+import eu.kanade.presentation.browse.components.RelatedAnimesCompactGrid
+import eu.kanade.presentation.browse.components.RelatedAnimesList
 import eu.kanade.tachiyomi.ui.anime.RelatedManga
 import tachiyomi.domain.anime.model.Manga
 import tachiyomi.domain.library.model.LibraryDisplayMode
@@ -39,7 +39,7 @@ import tachiyomi.presentation.core.screens.EmptyScreen
 import tachiyomi.presentation.core.screens.LoadingScreen
 
 @Composable
-fun RelatedMangasContent(
+fun RelatedAnimesContent(
     relatedMangas: List<RelatedManga>?,
     getMangaState: @Composable (Manga) -> State<Manga>,
     columns: GridCells,
@@ -68,7 +68,7 @@ fun RelatedMangasContent(
 
     when (displayMode) {
         LibraryDisplayMode.ComfortableGrid -> {
-            RelatedMangasComfortableGrid(
+            RelatedAnimesComfortableGrid(
                 relatedMangas = relatedMangas,
                 getManga = getMangaState,
                 columns = columns,
@@ -81,7 +81,7 @@ fun RelatedMangasContent(
             )
         }
         LibraryDisplayMode.ComfortableGridPanorama -> {
-            RelatedMangasComfortableGrid(
+            RelatedAnimesComfortableGrid(
                 relatedMangas = relatedMangas,
                 getManga = getMangaState,
                 columns = columns,
@@ -95,7 +95,7 @@ fun RelatedMangasContent(
             )
         }
         LibraryDisplayMode.CompactGrid, LibraryDisplayMode.CoverOnlyGrid -> {
-            RelatedMangasCompactGrid(
+            RelatedAnimesCompactGrid(
                 relatedMangas = relatedMangas,
                 getManga = getMangaState,
                 columns = columns,
@@ -108,7 +108,7 @@ fun RelatedMangasContent(
             )
         }
         LibraryDisplayMode.List -> {
-            RelatedMangasList(
+            RelatedAnimesList(
                 relatedMangas = relatedMangas,
                 getManga = getMangaState,
                 contentPadding = contentPadding,
@@ -123,7 +123,7 @@ fun RelatedMangasContent(
 }
 
 @Composable
-fun RelatedMangaTitle(
+fun RelatedAnimeTitle(
     title: String,
     subtitle: String?,
     onClick: () -> Unit,
@@ -173,7 +173,7 @@ fun LazyGridScope.header(
 }
 
 @Composable
-fun RelatedMangasLoadingItem() {
+fun RelatedAnimesLoadingItem() {
     Row(
         modifier = Modifier
             .fillMaxWidth()

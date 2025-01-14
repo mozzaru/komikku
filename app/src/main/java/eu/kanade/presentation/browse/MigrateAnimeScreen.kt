@@ -56,7 +56,7 @@ import tachiyomi.presentation.core.screens.EmptyScreen
 import kotlin.time.Duration.Companion.seconds
 
 @Composable
-fun MigrateMangaScreen(
+fun MigrateAnimeScreen(
     navigateUp: () -> Unit,
     title: String,
     state: MigrateMangaScreenModel.State,
@@ -89,7 +89,7 @@ fun MigrateMangaScreen(
     Scaffold(
         topBar = { scrollBehavior ->
             // KMK -->
-            MigrateMangaAppBar(
+            MigrateAnimeAppBar(
                 title = title,
                 itemCnt = state.titles.size,
                 navigateUp = navigateUp,
@@ -101,7 +101,7 @@ fun MigrateMangaScreen(
             )
         },
         bottomBar = {
-            MigrateMangaBottomBar(
+            MigrateAnimeBottomBar(
                 selected = state.selected,
                 onMultiMigrateClicked = onMultiMigrateClicked,
                 enableScrollToTop = enableScrollToTop,
@@ -128,7 +128,7 @@ fun MigrateMangaScreen(
             return@Scaffold
         }
 
-        MigrateMangaContent(
+        MigrateAnimeContent(
             contentPadding = contentPadding,
             state = state,
             onClickItem = onClickItem,
@@ -142,7 +142,7 @@ fun MigrateMangaScreen(
 }
 
 @Composable
-private fun MigrateMangaContent(
+private fun MigrateAnimeContent(
     contentPadding: PaddingValues,
     state: MigrateMangaScreenModel.State,
     onClickItem: (MigrateMangaItem) -> Unit,
@@ -157,7 +157,7 @@ private fun MigrateMangaContent(
     ) {
         // KMK <--
         items(items = state.titles) {
-            MigrateMangaItem(
+            MigrateAnimeItem(
                 manga = it.manga,
                 onClickItem = {
                     // KMK -->
@@ -181,7 +181,7 @@ private fun MigrateMangaContent(
 }
 
 @Composable
-private fun MigrateMangaItem(
+private fun MigrateAnimeItem(
     manga: Manga,
     onClickItem: () -> Unit,
     onClickCover: (() -> Unit)?,
@@ -205,7 +205,7 @@ private fun MigrateMangaItem(
 
 // KMK -->
 @Composable
-private fun MigrateMangaAppBar(
+private fun MigrateAnimeAppBar(
     title: String,
     itemCnt: Int,
     navigateUp: () -> Unit,
@@ -254,7 +254,7 @@ private fun MigrateMangaAppBar(
 }
 
 @Composable
-private fun MigrateMangaBottomBar(
+private fun MigrateAnimeBottomBar(
     modifier: Modifier = Modifier,
     selected: List<MigrateMangaItem>,
     onMultiMigrateClicked: (() -> Unit),

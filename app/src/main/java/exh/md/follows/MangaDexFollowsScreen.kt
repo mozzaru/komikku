@@ -18,7 +18,7 @@ import eu.kanade.core.util.ifSourcesLoaded
 import eu.kanade.presentation.anime.DuplicateAnimeDialog
 import eu.kanade.presentation.browse.BrowseSourceContent
 import eu.kanade.presentation.browse.components.BrowseSourceSimpleToolbar
-import eu.kanade.presentation.browse.components.RemoveMangaDialog
+import eu.kanade.presentation.browse.components.RemoveAnimeDialog
 import eu.kanade.presentation.category.components.ChangeCategoryDialog
 import eu.kanade.presentation.components.BulkSelectionToolbar
 import eu.kanade.presentation.util.Screen
@@ -188,7 +188,7 @@ class MangaDexFollowsScreen(private val sourceId: Long) : Screen() {
                 )
             }
             is BrowseSourceScreenModel.Dialog.RemoveManga -> {
-                RemoveMangaDialog(
+                RemoveAnimeDialog(
                     onDismissRequest = onDismissRequest,
                     onConfirm = {
                         screenModel.changeMangaFavorite(dialog.manga)

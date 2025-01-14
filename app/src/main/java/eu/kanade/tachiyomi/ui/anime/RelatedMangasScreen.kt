@@ -15,7 +15,7 @@ import androidx.compose.ui.unit.dp
 import cafe.adriel.voyager.navigator.Navigator
 import eu.kanade.core.preference.asState
 import eu.kanade.domain.source.service.SourcePreferences
-import eu.kanade.presentation.browse.RelatedMangasContent
+import eu.kanade.presentation.browse.RelatedAnimesContent
 import eu.kanade.presentation.browse.components.BrowseSourceSimpleToolbar
 import eu.kanade.presentation.components.BulkSelectionToolbar
 import eu.kanade.tachiyomi.ui.browse.BulkFavoriteScreenModel
@@ -83,7 +83,7 @@ fun RelatedMangasScreen(
         },
         snackbarHost = { SnackbarHost(hostState = snackbarHostState) },
     ) { paddingValues ->
-        RelatedMangasContent(
+        RelatedAnimesContent(
             relatedMangas = successState.relatedMangasSorted,
             getMangaState = { manga -> screenModel.getManga(initialManga = manga) },
             columns = getColumnsPreference(LocalConfiguration.current.orientation),

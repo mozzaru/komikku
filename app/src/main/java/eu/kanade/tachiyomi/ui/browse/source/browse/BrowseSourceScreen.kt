@@ -41,7 +41,7 @@ import eu.kanade.presentation.anime.DuplicateAnimeDialog
 import eu.kanade.presentation.browse.BrowseSourceContent
 import eu.kanade.presentation.browse.MissingSourceScreen
 import eu.kanade.presentation.browse.components.BrowseSourceToolbar
-import eu.kanade.presentation.browse.components.RemoveMangaDialog
+import eu.kanade.presentation.browse.components.RemoveAnimeDialog
 import eu.kanade.presentation.browse.components.SavedSearchCreateDialog
 import eu.kanade.presentation.browse.components.SavedSearchDeleteDialog
 import eu.kanade.presentation.category.components.ChangeCategoryDialog
@@ -453,7 +453,7 @@ data class BrowseSourceScreen(
                 )
             }
             is BrowseSourceScreenModel.Dialog.RemoveManga -> {
-                RemoveMangaDialog(
+                RemoveAnimeDialog(
                     onDismissRequest = onDismissRequest,
                     onConfirm = {
                         screenModel.changeMangaFavorite(dialog.manga)

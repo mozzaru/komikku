@@ -17,9 +17,9 @@ import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
+import eu.kanade.presentation.browse.components.AnimeItem
 import eu.kanade.presentation.browse.components.EmptyResultItem
 import eu.kanade.presentation.browse.components.GlobalSearchLoadingResultItem
-import eu.kanade.presentation.browse.components.MangaItem
 import eu.kanade.tachiyomi.ui.anime.RelatedManga
 import tachiyomi.domain.anime.model.Manga
 import tachiyomi.domain.anime.model.asMangaCover
@@ -68,7 +68,7 @@ fun RelatedAnimeCardRow(
     ) {
         items(mangas, key = { "related-row-${it.url.hashCode()}" }) {
             val manga by getManga(it)
-            MangaItem(
+            AnimeItem(
                 title = manga.title,
                 cover = manga.asMangaCover(),
                 isFavorite = manga.favorite,

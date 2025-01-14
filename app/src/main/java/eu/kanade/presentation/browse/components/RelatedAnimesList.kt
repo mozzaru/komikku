@@ -1,9 +1,8 @@
 package eu.kanade.presentation.browse.components
 
 import androidx.compose.foundation.background
-import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.PaddingValues
-import androidx.compose.foundation.lazy.grid.GridCells
+import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
@@ -11,24 +10,21 @@ import androidx.compose.runtime.State
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.util.fastAny
-import eu.kanade.presentation.browse.RelatedMangaTitle
-import eu.kanade.presentation.browse.RelatedMangasLoadingItem
-import eu.kanade.presentation.browse.header
-import eu.kanade.presentation.library.components.CommonMangaItemDefaults
+import eu.kanade.presentation.browse.RelatedAnimeTitle
+import eu.kanade.presentation.browse.RelatedAnimesLoadingItem
 import eu.kanade.tachiyomi.ui.anime.RelatedManga
 import tachiyomi.domain.anime.model.Manga
 import tachiyomi.i18n.MR
 import tachiyomi.i18n.kmk.KMR
-import tachiyomi.presentation.core.components.FastScrollLazyVerticalGrid
+import tachiyomi.presentation.core.components.FastScrollLazyColumn
+import tachiyomi.presentation.core.components.Scroller.STICKY_HEADER_KEY_PREFIX
 import tachiyomi.presentation.core.components.material.padding
 import tachiyomi.presentation.core.i18n.stringResource
-import tachiyomi.presentation.core.util.plus
 
 @Composable
-fun RelatedMangasCompactGrid(
+fun RelatedAnimesList(
     relatedMangas: List<RelatedManga>,
     getManga: @Composable (Manga) -> State<Manga>,
-    columns: GridCells,
     contentPadding: PaddingValues,
     onMangaClick: (Manga) -> Unit,
     onMangaLongClick: (Manga) -> Unit,
@@ -36,32 +32,34 @@ fun RelatedMangasCompactGrid(
     onKeywordLongClick: (String) -> Unit,
     selection: List<Manga>,
 ) {
-    FastScrollLazyVerticalGrid(
-        columns = columns,
-        contentPadding = contentPadding + PaddingValues(horizontal = MaterialTheme.padding.small),
-        // padding for scrollbar
-        topContentPadding = contentPadding.calculateTopPadding(),
-        verticalArrangement = Arrangement.spacedBy(CommonMangaItemDefaults.GridVerticalSpacer),
-        horizontalArrangement = Arrangement.spacedBy(CommonMangaItemDefaults.GridHorizontalSpacer),
+    FastScrollLazyColumn(
+        // Using modifier instead of contentPadding so we can use stickyHeader
+        modifier = Modifier.padding(contentPadding),
     ) {
         relatedMangas.forEach { related ->
             val isLoading = related is RelatedManga.Loading
             if (isLoading) {
-                header(key = "${related.hashCode()}#header") {
-                    RelatedMangaTitle(
+                item(key = "${related.hashCode()}#divider") { HorizontalDivider() }
+                stickyHeader(key = "$STICKY_HEADER_KEY_PREFIX${related.hashCode()}#header") {
+                    RelatedAnimeTitle(
                         title = stringResource(MR.strings.loading),
                         subtitle = null,
                         onClick = {},
                         onLongClick = null,
-                        modifier = Modifier.background(MaterialTheme.colorScheme.background),
+                        modifier = Modifier
+                            .padding(
+                                start = MaterialTheme.padding.small,
+                                end = MaterialTheme.padding.medium,
+                            )
+                            .background(MaterialTheme.colorScheme.background),
                     )
                 }
-                header(key = "${related.hashCode()}#content") { RelatedMangasLoadingItem() }
+                item(key = "${related.hashCode()}#content") { RelatedAnimesLoadingItem() }
             } else {
                 val relatedManga = related as RelatedManga.Success
-                header(key = "${related.hashCode()}#divider") { HorizontalDivider() }
-                header(key = "${related.hashCode()}#header") {
-                    RelatedMangaTitle(
+                item(key = "${related.hashCode()}#divider") { HorizontalDivider() }
+                stickyHeader(key = "$STICKY_HEADER_KEY_PREFIX${related.hashCode()}#header") {
+                    RelatedAnimeTitle(
                         title = if (relatedManga.keyword.isNotBlank()) {
                             stringResource(KMR.strings.related_mangas_more)
                         } else {
@@ -75,15 +73,20 @@ fun RelatedMangasCompactGrid(
                         onLongClick = {
                             if (relatedManga.keyword.isNotBlank()) onKeywordLongClick(relatedManga.keyword)
                         },
-                        modifier = Modifier.background(MaterialTheme.colorScheme.background),
+                        modifier = Modifier
+                            .padding(
+                                start = MaterialTheme.padding.small,
+                                end = MaterialTheme.padding.medium,
+                            )
+                            .background(MaterialTheme.colorScheme.background),
                     )
                 }
                 items(
-                    key = { "related-compact-${relatedManga.mangaList[it].url.hashCode()}" },
+                    key = { "related-list-${relatedManga.mangaList[it].url.hashCode()}" },
                     count = relatedManga.mangaList.size,
                 ) { index ->
                     val manga by getManga(relatedManga.mangaList[index])
-                    BrowseSourceCompactGridItem(
+                    BrowseSourceListItem(
                         manga = manga,
                         onClick = { onMangaClick(manga) },
                         onLongClick = { onMangaLongClick(manga) },

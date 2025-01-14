@@ -10,8 +10,8 @@ import cafe.adriel.voyager.core.model.rememberScreenModel
 import cafe.adriel.voyager.navigator.LocalNavigator
 import cafe.adriel.voyager.navigator.currentOrThrow
 import eu.kanade.presentation.browse.MigrationListScreen
+import eu.kanade.presentation.browse.components.MigrationAnimeDialog
 import eu.kanade.presentation.browse.components.MigrationExitDialog
-import eu.kanade.presentation.browse.components.MigrationMangaDialog
 import eu.kanade.presentation.browse.components.MigrationProgressDialog
 import eu.kanade.presentation.util.Screen
 import eu.kanade.tachiyomi.ui.anime.MangaScreen
@@ -133,7 +133,7 @@ class MigrationListScreen(private val config: MigrationProcedureConfig) : Screen
             val dialog = dialog
         ) {
             is MigrationListScreenModel.Dialog.MigrateMangaDialog -> {
-                MigrationMangaDialog(
+                MigrationAnimeDialog(
                     onDismissRequest = onDismissRequest,
                     copy = dialog.copy,
                     mangaSet = dialog.mangaSet,

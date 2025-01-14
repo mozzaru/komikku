@@ -8,7 +8,7 @@ import androidx.compose.ui.platform.LocalContext
 import cafe.adriel.voyager.core.model.rememberScreenModel
 import cafe.adriel.voyager.navigator.LocalNavigator
 import cafe.adriel.voyager.navigator.currentOrThrow
-import eu.kanade.presentation.browse.MigrateMangaScreen
+import eu.kanade.presentation.browse.MigrateAnimeScreen
 import eu.kanade.presentation.util.Screen
 import eu.kanade.tachiyomi.ui.anime.MangaScreen
 import eu.kanade.tachiyomi.ui.browse.migration.advanced.design.PreMigrationScreen
@@ -38,7 +38,7 @@ data class MigrateMangaScreen(
             return
         }
 
-        MigrateMangaScreen(
+        MigrateAnimeScreen(
             navigateUp = navigator::pop,
             title = state.source?.name ?: "???",
             state = state,

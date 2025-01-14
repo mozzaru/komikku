@@ -82,7 +82,7 @@ import eu.kanade.presentation.anime.components.PagePreviewItems
 import eu.kanade.presentation.anime.components.PagePreviews
 import eu.kanade.presentation.anime.components.RelatedAnimesRow
 import eu.kanade.presentation.anime.components.SearchMetadataChips
-import eu.kanade.presentation.browse.RelatedMangaTitle
+import eu.kanade.presentation.browse.RelatedAnimeTitle
 import eu.kanade.presentation.components.relativeDateText
 import eu.kanade.presentation.util.formatChapterNumber
 import eu.kanade.tachiyomi.data.download.model.Download
@@ -694,7 +694,7 @@ private fun AnimeScreenSmallImpl(
                                     contentType = AnimeScreenItem.RELATED_MANGAS,
                                 ) {
                                     Column {
-                                        RelatedMangaTitle(
+                                        RelatedAnimeTitle(
                                             title = stringResource(KMR.strings.pref_source_related_mangas),
                                             subtitle = null,
                                             onClick = onRelatedMangasScreenClick,
@@ -1151,7 +1151,7 @@ private fun AnimeScreenLargeImpl(
                                             contentType = AnimeScreenItem.RELATED_MANGAS,
                                         ) {
                                             Column {
-                                                RelatedMangaTitle(
+                                                RelatedAnimeTitle(
                                                     title = stringResource(KMR.strings.pref_source_related_mangas)
                                                         .uppercase(),
                                                     subtitle = null,
