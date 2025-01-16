@@ -14,7 +14,7 @@ data class ALSearchItem(
     val chapters: Long?,
     val averageScore: Int?,
 ) {
-    fun toALManga(): ALManga = ALManga(
+    fun toALManga(): ALAnime = ALAnime(
         remoteId = id,
         title = title.userPreferred,
         imageUrl = coverImage.large,

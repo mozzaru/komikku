@@ -6,11 +6,11 @@ import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 
 @Serializable
-data class SMManga(
+data class SMAnime(
     val id: Long,
     val name: String,
     val chapters: Long,
-    val image: SUMangaCover,
+    val image: SUAnimeCover,
     val score: Double,
     val url: String,
     val status: String,
@@ -20,14 +20,14 @@ data class SMManga(
 ) {
     fun toTrack(trackId: Long): TrackSearch {
         return TrackSearch.create(trackId).apply {
-            remote_id = this@SMManga.id
+            remote_id = this@SMAnime.id
             title = name
             total_chapters = chapters
             cover_url = ShikimoriApi.BASE_URL + image.preview
             summary = ""
-            score = this@SMManga.score
+            score = this@SMAnime.score
             tracking_url = ShikimoriApi.BASE_URL + url
-            publishing_status = this@SMManga.status
+            publishing_status = this@SMAnime.status
             publishing_type = kind
             start_date = airedOn ?: ""
         }
@@ -35,6 +35,6 @@ data class SMManga(
 }
 
 @Serializable
-data class SUMangaCover(
+data class SUAnimeCover(
     val preview: String,
 )

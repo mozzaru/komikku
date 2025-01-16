@@ -4,18 +4,18 @@ import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 
 @Serializable
-data class ALMangaMetadata(
-    val data: ALMangaMetadataData,
+data class ALAnimeMetadata(
+    val data: ALAnimeMetadataData,
 )
 
 @Serializable
-data class ALMangaMetadataData(
+data class ALAnimeMetadataData(
     @SerialName("Media")
-    val media: ALMangaMetadataMedia,
+    val media: ALAnimeMetadataMedia,
 )
 
 @Serializable
-data class ALMangaMetadataMedia(
+data class ALAnimeMetadataMedia(
     val id: Long,
     val title: ALItemTitle,
     val coverImage: ItemCover,

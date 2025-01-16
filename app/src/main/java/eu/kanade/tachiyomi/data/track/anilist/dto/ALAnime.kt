@@ -9,7 +9,7 @@ import eu.kanade.tachiyomi.util.lang.htmlDecode
 import java.text.SimpleDateFormat
 import java.util.Locale
 
-data class ALManga(
+data class ALAnime(
     val remoteId: Long,
     val title: String,
     val imageUrl: String,
@@ -22,7 +22,7 @@ data class ALManga(
 ) {
     fun toTrack() = TrackSearch.create(TrackerManager.ANILIST).apply {
         remote_id = remoteId
-        title = this@ALManga.title
+        title = this@ALAnime.title
         total_chapters = totalChapters
         cover_url = imageUrl
         summary = description?.htmlDecode() ?: ""
@@ -41,14 +41,14 @@ data class ALManga(
     }
 }
 
-data class ALUserManga(
+data class ALUserAnime(
     val libraryId: Long,
     val listStatus: String,
     val scoreRaw: Int,
     val chaptersRead: Int,
     val startDateFuzzy: Long,
     val completedDateFuzzy: Long,
-    val manga: ALManga,
+    val manga: ALAnime,
 ) {
     fun toTrack() = Track.create(TrackerManager.ANILIST).apply {
         remote_id = manga.remoteId

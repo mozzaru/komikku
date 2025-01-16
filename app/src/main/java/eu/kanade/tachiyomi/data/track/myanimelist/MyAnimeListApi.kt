@@ -5,10 +5,10 @@ import androidx.core.net.toUri
 import eu.kanade.tachiyomi.data.database.models.Track
 import eu.kanade.tachiyomi.data.track.model.TrackMangaMetadata
 import eu.kanade.tachiyomi.data.track.model.TrackSearch
+import eu.kanade.tachiyomi.data.track.myanimelist.dto.MALAnime
+import eu.kanade.tachiyomi.data.track.myanimelist.dto.MALAnimeMetadata
 import eu.kanade.tachiyomi.data.track.myanimelist.dto.MALListItem
 import eu.kanade.tachiyomi.data.track.myanimelist.dto.MALListItemStatus
-import eu.kanade.tachiyomi.data.track.myanimelist.dto.MALManga
-import eu.kanade.tachiyomi.data.track.myanimelist.dto.MALMangaMetadata
 import eu.kanade.tachiyomi.data.track.myanimelist.dto.MALOAuth
 import eu.kanade.tachiyomi.data.track.myanimelist.dto.MALSearchResult
 import eu.kanade.tachiyomi.data.track.myanimelist.dto.MALUser
@@ -105,7 +105,7 @@ class MyAnimeListApi(
             with(json) {
                 authClient.newCall(GET(url.toString()))
                     .awaitSuccess()
-                    .parseAs<MALManga>()
+                    .parseAs<MALAnime>()
                     .let {
                         TrackSearch.create(trackId).apply {
                             remote_id = it.id
@@ -207,7 +207,7 @@ class MyAnimeListApi(
             with(json) {
                 authClient.newCall(GET(url.toString()))
                     .awaitSuccess()
-                    .parseAs<MALMangaMetadata>()
+                    .parseAs<MALAnimeMetadata>()
                     .let {
                         TrackMangaMetadata(
                             remoteId = it.id,

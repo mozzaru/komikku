@@ -4,17 +4,17 @@ import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 
 @Serializable
-data class ALAddMangaResult(
-    val data: ALAddMangaData,
+data class ALAddAnimeResult(
+    val data: ALAddAnimeData,
 )
 
 @Serializable
-data class ALAddMangaData(
+data class ALAddAnimeData(
     @SerialName("SaveMediaListEntry")
-    val entry: ALAddMangaEntry,
+    val entry: ALAddAnimeEntry,
 )
 
 @Serializable
-data class ALAddMangaEntry(
+data class ALAddAnimeEntry(
     val id: Long,
 )

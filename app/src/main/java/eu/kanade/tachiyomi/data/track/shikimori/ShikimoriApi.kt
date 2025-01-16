@@ -5,8 +5,8 @@ import androidx.core.net.toUri
 import eu.kanade.tachiyomi.data.database.models.Track
 import eu.kanade.tachiyomi.data.track.model.TrackMangaMetadata
 import eu.kanade.tachiyomi.data.track.model.TrackSearch
-import eu.kanade.tachiyomi.data.track.shikimori.dto.SMAddMangaResponse
-import eu.kanade.tachiyomi.data.track.shikimori.dto.SMManga
+import eu.kanade.tachiyomi.data.track.shikimori.dto.SMAddAnimeResponse
+import eu.kanade.tachiyomi.data.track.shikimori.dto.SMAnime
 import eu.kanade.tachiyomi.data.track.shikimori.dto.SMMetadata
 import eu.kanade.tachiyomi.data.track.shikimori.dto.SMOAuth
 import eu.kanade.tachiyomi.data.track.shikimori.dto.SMUser
@@ -57,7 +57,7 @@ class ShikimoriApi(
                         body = payload.toString().toRequestBody(jsonMime),
                     ),
                 ).awaitSuccess()
-                    .parseAs<SMAddMangaResponse>()
+                    .parseAs<SMAddAnimeResponse>()
                     .let {
                         // save id of the entry for possible future delete request
                         track.library_id = it.id
@@ -87,7 +87,7 @@ class ShikimoriApi(
             with(json) {
                 authClient.newCall(GET(url.toString()))
                     .awaitSuccess()
-                    .parseAs<List<SMManga>>()
+                    .parseAs<List<SMAnime>>()
                     .map { it.toTrack(trackId) }
             }
         }
@@ -101,7 +101,7 @@ class ShikimoriApi(
             val manga = with(json) {
                 authClient.newCall(GET(urlMangas.toString()))
                     .awaitSuccess()
-                    .parseAs<SMManga>()
+                    .parseAs<SMAnime>()
             }
 
             val url = "$API_URL/v2/user_rates".toUri().buildUpon()

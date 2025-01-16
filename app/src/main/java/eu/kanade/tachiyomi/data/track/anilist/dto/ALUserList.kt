@@ -29,8 +29,8 @@ data class ALUserListItem(
     val completedAt: ALFuzzyDate,
     val media: ALSearchItem,
 ) {
-    fun toALUserManga(): ALUserManga {
-        return ALUserManga(
+    fun toALUserManga(): ALUserAnime {
+        return ALUserAnime(
             libraryId = this@ALUserListItem.id,
             listStatus = status,
             scoreRaw = scoreRaw,

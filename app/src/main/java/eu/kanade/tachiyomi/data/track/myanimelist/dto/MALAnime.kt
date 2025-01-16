@@ -4,7 +4,7 @@ import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 
 @Serializable
-data class MALManga(
+data class MALAnime(
     val id: Long,
     val title: String,
     val synopsis: String = "",
@@ -12,7 +12,7 @@ data class MALManga(
     val numChapters: Long,
     val mean: Double = -1.0,
     @SerialName("main_picture")
-    val covers: MALMangaCovers?,
+    val covers: MALAnimeCovers?,
     val status: String,
     @SerialName("media_type")
     val mediaType: String,
@@ -21,18 +21,18 @@ data class MALManga(
 )
 
 @Serializable
-data class MALMangaCovers(
+data class MALAnimeCovers(
     val large: String?,
     val medium: String,
 )
 
 @Serializable
-data class MALMangaMetadata(
+data class MALAnimeMetadata(
     val id: Long,
     val title: String,
     val synopsis: String?,
     @SerialName("main_picture")
-    val covers: MALMangaCovers,
+    val covers: MALAnimeCovers,
     val authors: List<MALAuthor>,
 )
 

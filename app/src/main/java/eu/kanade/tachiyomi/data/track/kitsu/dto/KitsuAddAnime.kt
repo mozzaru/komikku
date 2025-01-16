@@ -3,11 +3,11 @@ package eu.kanade.tachiyomi.data.track.kitsu.dto
 import kotlinx.serialization.Serializable
 
 @Serializable
-data class KitsuAddMangaResult(
-    val data: KitsuAddMangaItem,
+data class KitsuAddAnimeResult(
+    val data: KitsuAddAnimeItem,
 )
 
 @Serializable
-data class KitsuAddMangaItem(
+data class KitsuAddAnimeItem(
     val id: Long,
 )

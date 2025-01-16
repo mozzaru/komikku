@@ -2,11 +2,11 @@ package eu.kanade.tachiyomi.data.track.kitsu
 
 import androidx.core.net.toUri
 import eu.kanade.tachiyomi.data.database.models.Track
-import eu.kanade.tachiyomi.data.track.kitsu.dto.KitsuAddMangaResult
+import eu.kanade.tachiyomi.data.track.kitsu.dto.KitsuAddAnimeResult
 import eu.kanade.tachiyomi.data.track.kitsu.dto.KitsuAlgoliaSearchResult
+import eu.kanade.tachiyomi.data.track.kitsu.dto.KitsuAnimeMetadata
 import eu.kanade.tachiyomi.data.track.kitsu.dto.KitsuCurrentUserResult
 import eu.kanade.tachiyomi.data.track.kitsu.dto.KitsuListSearchResult
-import eu.kanade.tachiyomi.data.track.kitsu.dto.KitsuMangaMetadata
 import eu.kanade.tachiyomi.data.track.kitsu.dto.KitsuOAuth
 import eu.kanade.tachiyomi.data.track.kitsu.dto.KitsuSearchResult
 import eu.kanade.tachiyomi.data.track.model.TrackMangaMetadata
@@ -76,7 +76,7 @@ class KitsuApi(private val client: OkHttpClient, interceptor: KitsuInterceptor) 
                     ),
                 )
                     .awaitSuccess()
-                    .parseAs<KitsuAddMangaResult>()
+                    .parseAs<KitsuAddAnimeResult>()
                     .let {
                         track.remote_id = it.data.id
                         track
@@ -287,7 +287,7 @@ class KitsuApi(private val client: OkHttpClient, interceptor: KitsuInterceptor) 
                     ),
                 )
                     .awaitSuccess()
-                    .parseAs<KitsuMangaMetadata>()
+                    .parseAs<KitsuAnimeMetadata>()
                     .let {
                         val manga = it.data.findLibraryEntryById.media
                         TrackMangaMetadata(
