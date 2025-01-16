@@ -370,9 +370,9 @@ class AnimeRestorer(
 
         if (mangaCategoriesToUpdate.isNotEmpty()) {
             handler.await(true) {
-                mangas_categoriesQueries.deleteMangaCategoryByMangaId(manga.id)
+                animes_categoriesQueries.deleteAnimeCategoryByAnimeId(manga.id)
                 mangaCategoriesToUpdate.forEach { (mangaId, categoryId) ->
-                    mangas_categoriesQueries.insert(mangaId, categoryId)
+                    animes_categoriesQueries.insert(mangaId, categoryId)
                 }
             }
         }

@@ -98,9 +98,9 @@ class AnimeRepositoryImpl(
 
     override suspend fun setMangaCategories(mangaId: Long, categoryIds: List<Long>) {
         handler.await(inTransaction = true) {
-            mangas_categoriesQueries.deleteMangaCategoryByMangaId(mangaId)
+            animes_categoriesQueries.deleteAnimeCategoryByAnimeId(mangaId)
             categoryIds.map { categoryId ->
-                mangas_categoriesQueries.insert(mangaId, categoryId)
+                animes_categoriesQueries.insert(mangaId, categoryId)
             }
         }
     }

@@ -1,4 +1,4 @@
-CREATE TABLE mangas_categories(
+CREATE TABLE animes_categories(
     _id INTEGER NOT NULL PRIMARY KEY,
     manga_id INTEGER NOT NULL,
     category_id INTEGER NOT NULL,
@@ -8,7 +8,7 @@ CREATE TABLE mangas_categories(
     ON DELETE CASCADE
 );
 
-CREATE TRIGGER insert_manga_category_update_version AFTER INSERT ON mangas_categories
+CREATE TRIGGER insert_manga_category_update_version AFTER INSERT ON animes_categories
 BEGIN
     UPDATE mangas
     SET version = version + 1
@@ -16,9 +16,9 @@ BEGIN
 END;
 
 insert:
-INSERT INTO mangas_categories(manga_id, category_id)
+INSERT INTO animes_categories(manga_id, category_id)
 VALUES (:mangaId, :categoryId);
 
-deleteMangaCategoryByMangaId:
-DELETE FROM mangas_categories
+deleteAnimeCategoryByAnimeId:
+DELETE FROM animes_categories
 WHERE manga_id = :mangaId;
