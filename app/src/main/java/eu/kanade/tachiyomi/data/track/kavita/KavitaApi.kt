@@ -89,7 +89,7 @@ class KavitaApi(private val client: OkHttpClient, interceptor: KavitaInterceptor
     }
 
     /*
-     * Returns total chapters in the series.
+     * Returns total episodes in the series.
      * Ignores volumes.
      * Volumes consisting of 1 file treated as episode
      */

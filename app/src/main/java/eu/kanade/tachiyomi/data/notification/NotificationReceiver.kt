@@ -27,7 +27,7 @@ import tachiyomi.domain.anime.model.Manga
 import tachiyomi.domain.download.service.DownloadPreferences
 import tachiyomi.domain.episode.interactor.GetEpisode
 import tachiyomi.domain.episode.interactor.UpdateEpisode
-import tachiyomi.domain.episode.model.Chapter
+import tachiyomi.domain.episode.model.Episode
 import tachiyomi.domain.episode.model.toEpisodeUpdate
 import tachiyomi.domain.source.service.SourceManager
 import tachiyomi.i18n.MR
@@ -89,7 +89,7 @@ class NotificationReceiver : BroadcastReceiver() {
                     intent.getLongExtra(EXTRA_CHAPTER_ID, -1),
                 )
             }
-            // Mark updated manga chapters as read
+            // Mark updated manga episodes as read
             ACTION_MARK_AS_READ -> {
                 val notificationId = intent.getIntExtra(EXTRA_NOTIFICATION_ID, -1)
                 if (notificationId > -1) {
@@ -101,7 +101,7 @@ class NotificationReceiver : BroadcastReceiver() {
                     markAsRead(urls, mangaId)
                 }
             }
-            // Download manga chapters
+            // Download manga episodes
             ACTION_DOWNLOAD_CHAPTER -> {
                 val notificationId = intent.getIntExtra(EXTRA_NOTIFICATION_ID, -1)
                 if (notificationId > -1) {
@@ -202,7 +202,7 @@ class NotificationReceiver : BroadcastReceiver() {
     }
 
     /**
-     * Method called when user wants to mark manga chapters as read
+     * Method called when user wants to mark manga episodes as read
      *
      * @param chapterUrls URLs of episode to mark as read
      * @param mangaId id of manga
@@ -231,7 +231,7 @@ class NotificationReceiver : BroadcastReceiver() {
     }
 
     /**
-     * Method called when user wants to download chapters
+     * Method called when user wants to download episodes
      *
      * @param chapterUrls URLs of episode to download
      * @param mangaId id of manga
@@ -415,10 +415,10 @@ class NotificationReceiver : BroadcastReceiver() {
          *
          * @param context context of application
          * @param manga manga of episode
-         * @param chapter episode that needs to be opened
+         * @param episode episode that needs to be opened
          */
-        internal fun openChapterPendingActivity(context: Context, manga: Manga, chapter: Chapter): PendingIntent {
-            val newIntent = ReaderActivity.newIntent(context, manga.id, chapter.id)
+        internal fun openChapterPendingActivity(context: Context, manga: Manga, episode: Episode): PendingIntent {
+            val newIntent = ReaderActivity.newIntent(context, manga.id, episode.id)
             return PendingIntent.getActivity(
                 context,
                 manga.id.hashCode(),
@@ -457,12 +457,12 @@ class NotificationReceiver : BroadcastReceiver() {
         internal fun markAsReadPendingBroadcast(
             context: Context,
             manga: Manga,
-            chapters: Array<Chapter>,
+            episodes: Array<Episode>,
             groupId: Int,
         ): PendingIntent {
             val newIntent = Intent(context, NotificationReceiver::class.java).apply {
                 action = ACTION_MARK_AS_READ
-                putExtra(EXTRA_CHAPTER_URL, chapters.map { it.url }.toTypedArray())
+                putExtra(EXTRA_CHAPTER_URL, episodes.map { it.url }.toTypedArray())
                 putExtra(EXTRA_MANGA_ID, manga.id)
                 putExtra(EXTRA_NOTIFICATION_ID, manga.id.hashCode())
                 putExtra(EXTRA_GROUP_ID, groupId)
@@ -476,7 +476,7 @@ class NotificationReceiver : BroadcastReceiver() {
         }
 
         /**
-         * Returns [PendingIntent] that downloads chapters
+         * Returns [PendingIntent] that downloads episodes
          *
          * @param context context of application
          * @param manga manga of episode
@@ -484,12 +484,12 @@ class NotificationReceiver : BroadcastReceiver() {
         internal fun downloadChaptersPendingBroadcast(
             context: Context,
             manga: Manga,
-            chapters: Array<Chapter>,
+            episodes: Array<Episode>,
             groupId: Int,
         ): PendingIntent {
             val newIntent = Intent(context, NotificationReceiver::class.java).apply {
                 action = ACTION_DOWNLOAD_CHAPTER
-                putExtra(EXTRA_CHAPTER_URL, chapters.map { it.url }.toTypedArray())
+                putExtra(EXTRA_CHAPTER_URL, episodes.map { it.url }.toTypedArray())
                 putExtra(EXTRA_MANGA_ID, manga.id)
                 putExtra(EXTRA_NOTIFICATION_ID, manga.id.hashCode())
                 putExtra(EXTRA_GROUP_ID, groupId)

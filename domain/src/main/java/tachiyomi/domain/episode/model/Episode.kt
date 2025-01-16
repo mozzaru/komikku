@@ -1,6 +1,6 @@
 package tachiyomi.domain.episode.model
 
-data class Chapter(
+data class Episode(
     val id: Long,
     val mangaId: Long,
     val read: Boolean,
@@ -19,7 +19,7 @@ data class Chapter(
     val isRecognizedNumber: Boolean
         get() = chapterNumber >= 0f
 
-    fun copyFrom(other: Chapter): Chapter {
+    fun copyFrom(other: Episode): Episode {
         return copy(
             name = other.name,
             url = other.url,
@@ -30,7 +30,7 @@ data class Chapter(
     }
 
     companion object {
-        fun create() = Chapter(
+        fun create() = Episode(
             id = -1,
             mangaId = -1,
             read = false,

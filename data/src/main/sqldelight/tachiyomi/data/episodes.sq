@@ -39,7 +39,7 @@ WHEN new.is_syncing = 0 AND (
     new.last_page_read != old.last_page_read
 )
 BEGIN
-    -- Update the chapter version
+    -- Update the episode version
     UPDATE episodes SET version = version + 1
     WHERE _id = new._id;
 

@@ -2,14 +2,14 @@ package tachiyomi.domain.episode.interactor
 
 import logcat.LogPriority
 import tachiyomi.core.common.util.system.logcat
-import tachiyomi.domain.episode.model.Chapter
+import tachiyomi.domain.episode.model.Episode
 import tachiyomi.domain.episode.repository.EpisodeRepository
 
 class GetEpisode(
     private val episodeRepository: EpisodeRepository,
 ) {
 
-    suspend fun await(id: Long): Chapter? {
+    suspend fun await(id: Long): Episode? {
         return try {
             episodeRepository.getChapterById(id)
         } catch (e: Exception) {
@@ -18,7 +18,7 @@ class GetEpisode(
         }
     }
 
-    suspend fun await(url: String, mangaId: Long): Chapter? {
+    suspend fun await(url: String, mangaId: Long): Episode? {
         return try {
             episodeRepository.getChapterByUrlAndMangaId(url, mangaId)
         } catch (e: Exception) {

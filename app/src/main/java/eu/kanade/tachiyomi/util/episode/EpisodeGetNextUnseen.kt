@@ -5,16 +5,16 @@ import eu.kanade.tachiyomi.data.download.DownloadManager
 import eu.kanade.tachiyomi.ui.anime.EpisodeList
 import exh.source.isEhBasedManga
 import tachiyomi.domain.anime.model.Manga
-import tachiyomi.domain.episode.model.Chapter
+import tachiyomi.domain.episode.model.Episode
 
 /**
  * Gets next unseen episode with filters and sorting applied
  */
-fun List<Chapter>.getNextUnseen(
+fun List<Episode>.getNextUnseen(
     manga: Manga,
     downloadManager: DownloadManager /* SY --> */,
     mergedManga: Map<Long, Manga>, /* SY <-- */
-): Chapter? {
+): Episode? {
     return applyFilters(manga, downloadManager/* SY --> */, mergedManga/* SY <-- */).let { chapters ->
         // SY -->
         if (manga.isEhBasedManga()) {
@@ -36,21 +36,21 @@ fun List<Chapter>.getNextUnseen(
 /**
  * Gets next unseen episode with filters and sorting applied
  */
-fun List<EpisodeList.Item>.getNextUnseen(manga: Manga): Chapter? {
+fun List<EpisodeList.Item>.getNextUnseen(manga: Manga): Episode? {
     return applyFilters(manga).let { chapters ->
         // SY -->
         if (manga.isEhBasedManga()) {
             return@let if (manga.sortDescending()) {
-                chapters.firstOrNull()?.takeUnless { it.chapter.read }
+                chapters.firstOrNull()?.takeUnless { it.episode.read }
             } else {
-                chapters.lastOrNull()?.takeUnless { it.chapter.read }
+                chapters.lastOrNull()?.takeUnless { it.episode.read }
             }
         }
         // SY <--
         if (manga.sortDescending()) {
-            chapters.findLast { !it.chapter.read }
+            chapters.findLast { !it.episode.read }
         } else {
-            chapters.find { !it.chapter.read }
+            chapters.find { !it.episode.read }
         }
-    }?.chapter
+    }?.episode
 }

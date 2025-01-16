@@ -4,7 +4,7 @@ import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.combine
 import tachiyomi.domain.anime.model.Manga
 import tachiyomi.domain.anime.repository.AnimeRepository
-import tachiyomi.domain.episode.model.Chapter
+import tachiyomi.domain.episode.model.Episode
 import tachiyomi.domain.episode.repository.EpisodeRepository
 
 class GetAnimeWithEpisodes(
@@ -12,7 +12,7 @@ class GetAnimeWithEpisodes(
     private val episodeRepository: EpisodeRepository,
 ) {
 
-    suspend fun subscribe(id: Long, applyScanlatorFilter: Boolean = false): Flow<Pair<Manga, List<Chapter>>> {
+    suspend fun subscribe(id: Long, applyScanlatorFilter: Boolean = false): Flow<Pair<Manga, List<Episode>>> {
         return combine(
             animeRepository.getMangaByIdAsFlow(id),
             episodeRepository.getChapterByMangaIdAsFlow(id, applyScanlatorFilter),
@@ -25,7 +25,7 @@ class GetAnimeWithEpisodes(
         return animeRepository.getMangaById(id)
     }
 
-    suspend fun awaitChapters(id: Long, applyScanlatorFilter: Boolean = false): List<Chapter> {
+    suspend fun awaitChapters(id: Long, applyScanlatorFilter: Boolean = false): List<Episode> {
         return episodeRepository.getChapterByMangaId(id, applyScanlatorFilter)
     }
 }

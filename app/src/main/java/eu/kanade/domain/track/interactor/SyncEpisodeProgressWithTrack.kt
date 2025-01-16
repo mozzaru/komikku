@@ -32,7 +32,7 @@ class SyncEpisodeProgressWithTrack(
         // }
         // <-- KKM
 
-        // Current chapters in database, sort by source's order because database's order is a mess
+        // Current episodes in database, sort by source's order because database's order is a mess
         val dbChapters = getEpisodesByAnimeId.await(mangaId)
             // KMK -->
             .sortedByDescending { it.sourceOrder }
@@ -47,7 +47,7 @@ class SyncEpisodeProgressWithTrack(
         var checkingChapter = 0.0
 
         /**
-         * Chapters to update to follow tracker: only continuous incremental chapters
+         * Chapters to update to follow tracker: only continuous incremental episodes
          * any abnormal episode number will stop it from updating read status further.
          * Some mangas has name such as Volume 2 Episode 1 which will corrupt the order
          * if we sort by chapterNumber.
@@ -76,7 +76,7 @@ class SyncEpisodeProgressWithTrack(
                 insertTrack.await(updatedTrack)
             }
             // KMK -->
-            // Always update local chapters following Tracker even past chapters
+            // Always update local episodes following Tracker even past episodes
             if (episodeUpdates.isNotEmpty() &&
                 trackPreferences.autoSyncProgressFromTrackers().get() &&
                 !tracker.hasNotStartedReading(remoteTrack.status)

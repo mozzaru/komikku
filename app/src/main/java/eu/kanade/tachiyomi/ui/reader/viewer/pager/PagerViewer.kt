@@ -70,13 +70,13 @@ abstract class PagerViewer(
     var currentPage: ReaderItem? = null
 
     /**
-     * Viewer chapters to set when the pager enters idle mode. Otherwise, if the view was settling
+     * Viewer episodes to set when the pager enters idle mode. Otherwise, if the view was settling
      * or dragging, there'd be a noticeable and annoying jump.
      */
     private var awaitingIdleViewerChapters: ViewerChapters? = null
 
     /**
-     * Whether the view pager is currently in idle mode. It sets the awaiting chapters if setting
+     * Whether the view pager is currently in idle mode. It sets the awaiting episodes if setting
      * this field to true.
      */
     private var isIdle = true
@@ -281,14 +281,14 @@ abstract class PagerViewer(
             logcat { "Request preload destination episode because we're on the transition" }
             activity.requestPreloadChapter(toChapter)
         } else if (transition is ChapterTransition.Next) {
-            // No more chapters, show menu because the user is probably going to close the reader
+            // No more episodes, show menu because the user is probably going to close the reader
             activity.showMenu()
         }
     }
 
     /**
      * Tells this viewer to set the given [chapters] as active. If the pager is currently idle,
-     * it sets the chapters immediately, otherwise they are saved and set when it becomes idle.
+     * it sets the episodes immediately, otherwise they are saved and set when it becomes idle.
      */
     override fun setChapters(chapters: ViewerChapters) {
         if (isIdle) {

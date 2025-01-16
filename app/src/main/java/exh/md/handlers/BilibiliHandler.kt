@@ -41,7 +41,7 @@ class BilibiliHandler(currentClient: OkHttpClient) {
 
     suspend fun fetchPageList(externalUrl: String, chapterNumber: String): List<Page> {
         // Sometimes the urls direct it to the manga page instead, so we try to find the correct episode
-        // Though these seem to be older chapters, so maybe remove this later
+        // Though these seem to be older episodes, so maybe remove this later
         val chapterUrl = if (externalUrl.contains("mc\\d*/\\d*".toRegex())) {
             getChapterUrl(externalUrl)
         } else {

@@ -146,7 +146,7 @@ abstract class SyncService(
                     // Compare versions to decide which manga to keep
                     if (local.version >= remote.version) {
                         logcat(LogPriority.DEBUG, logTag) {
-                            "Keeping local version of ${local.title} with merged chapters."
+                            "Keeping local version of ${local.title} with merged episodes."
                         }
                         updateCategories(
                             local.copy(chapters = mergeChapters(local.chapters, remote.chapters)),
@@ -154,7 +154,7 @@ abstract class SyncService(
                         )
                     } else {
                         logcat(LogPriority.DEBUG, logTag) {
-                            "Keeping remote version of ${remote.title} with merged chapters."
+                            "Keeping remote version of ${remote.title} with merged episodes."
                         }
                         updateCategories(
                             remote.copy(chapters = mergeChapters(local.chapters, remote.chapters)),
@@ -187,12 +187,12 @@ abstract class SyncService(
      * @return A list of BackupEpisode objects, each representing the most recent version of the episode from either local or remote sources.
      *
      * - This function is used in scenarios where local and remote episode lists need to be synchronized.
-     * - It iterates over the union of the URLs from both local and remote chapters.
-     * - For each URL, it compares the corresponding local and remote chapters based on the lastModifiedAt value.
+     * - It iterates over the union of the URLs from both local and remote episodes.
+     * - For each URL, it compares the corresponding local and remote episodes based on the lastModifiedAt value.
      * - If only one source (local or remote) has the episode for a URL, that episode is used.
      * - If both sources have the episode, the one with the more recent lastModifiedAt value is chosen.
      * - If lastModifiedAt is null or missing, the episode is considered the oldest for safety, ensuring that any episode with a valid timestamp is preferred.
-     * - The resulting list contains the most recent chapters from the combined set of local and remote chapters.
+     * - The resulting list contains the most recent episodes from the combined set of local and remote episodes.
      */
     private fun mergeChapters(
         localChapters: List<BackupEpisode>,
@@ -208,7 +208,7 @@ abstract class SyncService(
         val remoteChapterMap = remoteChapters.associateBy { chapterCompositeKey(it) }
 
         logcat(LogPriority.DEBUG, logTag) {
-            "Starting episode merge. Local chapters: ${localChapters.size}, Remote chapters: ${remoteChapters.size}"
+            "Starting episode merge. Local episodes: ${localChapters.size}, Remote episodes: ${remoteChapters.size}"
         }
 
         // Merge both episode maps based on version numbers
@@ -258,7 +258,7 @@ abstract class SyncService(
             }
         }
 
-        logcat(LogPriority.DEBUG, logTag) { "Episode merge completed. Total merged chapters: ${mergedChapters.size}" }
+        logcat(LogPriority.DEBUG, logTag) { "Episode merge completed. Total merged episodes: ${mergedChapters.size}" }
 
         return mergedChapters
     }

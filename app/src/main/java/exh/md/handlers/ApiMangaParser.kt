@@ -170,8 +170,8 @@ class ApiMangaParser(
     }
 
     /* private fun filterChapterForChecking(serializer: ApiMangaSerializer): List<ChapterSerializer> {
-         serializer.data.chapters ?: return emptyList()
-         return serializer.data.chapters.asSequence()
+         serializer.data.episodes ?: return emptyList()
+         return serializer.data.episodes.asSequence()
              .filter { langs.contains(it.language) }
              .filter {
                  it.episode?.let { chapterNumber ->

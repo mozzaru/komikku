@@ -3,7 +3,7 @@ package tachiyomi.domain.anime.interactor
 import tachiyomi.domain.anime.model.AnimeUpdate
 import tachiyomi.domain.anime.model.Manga
 import tachiyomi.domain.episode.interactor.GetEpisodesByAnimeId
-import tachiyomi.domain.episode.model.Chapter
+import tachiyomi.domain.episode.model.Episode
 import java.time.Instant
 import java.time.ZoneId
 import java.time.ZonedDateTime
@@ -20,7 +20,7 @@ class FetchInterval(
         window: Pair<Long, Long>,
     ): AnimeUpdate {
         val interval = manga.fetchInterval.takeIf { it < 0 } ?: calculateInterval(
-            chapters = getEpisodesByAnimeId.await(manga.id, applyScanlatorFilter = true),
+            episodes = getEpisodesByAnimeId.await(manga.id, applyScanlatorFilter = true),
             zone = dateTime.zone,
         )
         val currentWindow = if (window.first == 0L && window.second == 0L) {
@@ -40,10 +40,10 @@ class FetchInterval(
         return Pair(lowerBound.toEpochSecond() * 1000, upperBound.toEpochSecond() * 1000 - 1)
     }
 
-    internal fun calculateInterval(chapters: List<Chapter>, zone: ZoneId): Int {
-        val chapterWindow = if (chapters.size <= 8) 3 else 10
+    internal fun calculateInterval(episodes: List<Episode>, zone: ZoneId): Int {
+        val chapterWindow = if (episodes.size <= 8) 3 else 10
 
-        val uploadDates = chapters.asSequence()
+        val uploadDates = episodes.asSequence()
             .filter { it.dateUpload > 0L }
             .sortedByDescending { it.dateUpload }
             .map {
@@ -55,7 +55,7 @@ class FetchInterval(
             .take(chapterWindow)
             .toList()
 
-        val fetchDates = chapters.asSequence()
+        val fetchDates = episodes.asSequence()
             .sortedByDescending { it.dateFetch }
             .map {
                 ZonedDateTime.ofInstant(Instant.ofEpochMilli(it.dateFetch), zone)

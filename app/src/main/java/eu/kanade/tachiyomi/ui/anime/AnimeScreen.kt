@@ -109,7 +109,7 @@ import tachiyomi.core.common.util.lang.withNonCancellableContext
 import tachiyomi.core.common.util.system.logcat
 import tachiyomi.domain.UnsortedPreferences
 import tachiyomi.domain.anime.model.Manga
-import tachiyomi.domain.episode.model.Chapter
+import tachiyomi.domain.episode.model.Episode
 import tachiyomi.domain.source.interactor.GetRemoteAnime
 import tachiyomi.domain.source.model.StubSource
 import tachiyomi.domain.source.service.SourceManager
@@ -350,7 +350,7 @@ class AnimeScreen(
                 mergeWithAnother(navigator, context, successState.manga, screenModel::smartSearchMerge)
             },
             onOpenPagePreview = { page ->
-                openPagePreview(context, successState.chapters.minByOrNull { it.chapter.sourceOrder }?.chapter, page)
+                openPagePreview(context, successState.chapters.minByOrNull { it.episode.sourceOrder }?.episode, page)
             },
             onMorePreviewsClicked = { openMorePagePreviews(navigator, successState.manga) },
             // SY <--
@@ -440,7 +440,7 @@ class AnimeScreen(
                     onDismissRequest = onDismissRequest,
                     onConfirm = {
                         screenModel.toggleAllSelection(false)
-                        screenModel.deleteChapters(dialog.chapters)
+                        screenModel.deleteChapters(dialog.episodes)
                     },
                 )
             }
@@ -586,12 +586,12 @@ class AnimeScreen(
         }
     }
 
-    private fun continueReading(context: Context, unreadChapter: Chapter?) {
-        if (unreadChapter != null) openChapter(context, unreadChapter)
+    private fun continueReading(context: Context, unreadEpisode: Episode?) {
+        if (unreadEpisode != null) openChapter(context, unreadEpisode)
     }
 
-    private fun openChapter(context: Context, chapter: Chapter) {
-        context.startActivity(ReaderActivity.newIntent(context, chapter.mangaId, chapter.id))
+    private fun openChapter(context: Context, episode: Episode) {
+        context.startActivity(ReaderActivity.newIntent(context, episode.mangaId, episode.id))
     }
 
     @Suppress("LocalVariableName")
@@ -783,9 +783,9 @@ class AnimeScreen(
         navigator.push(PagePreviewScreen(manga.id))
     }
 
-    private fun openPagePreview(context: Context, chapter: Chapter?, page: Int) {
-        chapter ?: return
-        context.startActivity(ReaderActivity.newIntent(context, chapter.mangaId, chapter.id, page))
+    private fun openPagePreview(context: Context, episode: Episode?, page: Int) {
+        episode ?: return
+        context.startActivity(ReaderActivity.newIntent(context, episode.mangaId, episode.id, page))
     }
     // SY <--
 

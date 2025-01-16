@@ -24,7 +24,7 @@ data class ReaderChapter(val episode: Episode) {
 
     private var references = 0
 
-    constructor(chapter: tachiyomi.domain.episode.model.Chapter) : this(chapter.toDbChapter())
+    constructor(episode: tachiyomi.domain.episode.model.Episode) : this(episode.toDbChapter())
 
     fun ref() {
         references++

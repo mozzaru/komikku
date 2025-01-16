@@ -15,7 +15,7 @@ import tachiyomi.domain.category.interactor.GetCategories
 import tachiyomi.domain.category.interactor.SetAnimeCategories
 import tachiyomi.domain.episode.interactor.GetEpisodeByUrl
 import tachiyomi.domain.episode.interactor.GetEpisodesByAnimeId
-import tachiyomi.domain.episode.model.Chapter
+import tachiyomi.domain.episode.model.Episode
 import tachiyomi.domain.episode.model.EpisodeUpdate
 import tachiyomi.domain.episode.repository.EpisodeRepository
 import tachiyomi.domain.history.interactor.GetHistoryByAnimeId
@@ -26,7 +26,7 @@ import tachiyomi.domain.history.model.HistoryUpdate
 import uy.kohesive.injekt.injectLazy
 import java.io.File
 
-data class ChapterChain(val manga: Manga, val chapters: List<Chapter>, val history: List<History>)
+data class ChapterChain(val manga: Manga, val episodes: List<Episode>, val history: List<History>)
 
 class EHentaiUpdateHelper(context: Context) {
     val parentLookupTable =
@@ -47,16 +47,16 @@ class EHentaiUpdateHelper(context: Context) {
     private val insertFavoriteEntryAlternative: InsertFavoriteEntryAlternative by injectLazy()
 
     /**
-     * @param chapters Cannot be an empty list!
+     * @param episodes Cannot be an empty list!
      *
      * @return Triple<Accepted, Discarded, HasNew>
      */
     suspend fun findAcceptedRootAndDiscardOthers(
         sourceId: Long,
-        chapters: List<Chapter>,
-    ): Triple<ChapterChain, List<ChapterChain>, List<Chapter>> {
+        episodes: List<Episode>,
+    ): Triple<ChapterChain, List<ChapterChain>, List<Episode>> {
         // Find other chains
-        val chains = chapters
+        val chains = episodes
             .flatMap { chapter ->
                 getEpisodeByUrl.await(chapter.url).map { it.mangaId }
             }
@@ -87,11 +87,11 @@ class EHentaiUpdateHelper(context: Context) {
         val toDiscard = chains.filter { it.manga.favorite && it.manga.id != accepted.manga.id }
         val mangaUpdates = mutableListOf<AnimeUpdate>()
 
-        val chainsAsChapters = chains.flatMap { it.chapters }
+        val chainsAsChapters = chains.flatMap { it.episodes }
         val chainsAsHistory = chains.flatMap { it.history }
 
         return if (toDiscard.isNotEmpty()) {
-            // Copy chain chapters to curChapters
+            // Copy chain episodes to curChapters
             val (chapterUpdates, newChapters, new) = getChapterList(accepted, toDiscard, chainsAsChapters)
 
             toDiscard.forEach {
@@ -114,7 +114,7 @@ class EHentaiUpdateHelper(context: Context) {
 
             // Apply changes to all manga
             updateAnime.awaitAll(mangaUpdates)
-            // Insert new chapters for accepted manga
+            // Insert new episodes for accepted manga
             episodeRepository.updateAll(chapterUpdates)
             episodeRepository.addAll(newChapters)
 
@@ -155,8 +155,8 @@ class EHentaiUpdateHelper(context: Context) {
             val (newChapters, new) = getChapterList(accepted, notNeeded, chainsAsChapters)
             val newAccepted = ChapterChain(accepted.manga, newChapters)
 
-            // Insert new chapters for accepted manga
-            db.insertChapters(newAccepted.chapters).await()*/
+            // Insert new episodes for accepted manga
+            db.insertChapters(newAccepted.episodes).await()*/
 
             Triple(accepted, emptyList(), emptyList())
         }
@@ -180,12 +180,12 @@ class EHentaiUpdateHelper(context: Context) {
     }
 
     private fun getHistory(
-        currentChapters: List<Chapter>,
-        chainsAsChapters: List<Chapter>,
+        currentEpisodes: List<Episode>,
+        chainsAsEpisodes: List<Episode>,
         chainsAsHistory: List<History>,
     ): Pair<List<HistoryUpdate>, List<Long>> {
-        val history = chainsAsHistory.groupBy { history -> chainsAsChapters.find { it.id == history.chapterId }?.url }
-        val newHistory = currentChapters.mapNotNull { chapter ->
+        val history = chainsAsHistory.groupBy { history -> chainsAsEpisodes.find { it.id == history.chapterId }?.url }
+        val newHistory = currentEpisodes.mapNotNull { chapter ->
             val newHistory = history[chapter.url]
                 ?.maxByOrNull {
                     it.readAt?.time ?: 0
@@ -197,7 +197,7 @@ class EHentaiUpdateHelper(context: Context) {
                 null
             }
         }
-        val currentChapterIds = currentChapters.map { it.id }
+        val currentChapterIds = currentEpisodes.map { it.id }
         val historyToDelete = chainsAsHistory.filterNot { it.chapterId in currentChapterIds }
             .map { it.id }
         return newHistory to historyToDelete
@@ -206,15 +206,15 @@ class EHentaiUpdateHelper(context: Context) {
     private fun getChapterList(
         accepted: ChapterChain,
         toDiscard: List<ChapterChain>,
-        chainsAsChapters: List<Chapter>,
-    ): Triple<List<EpisodeUpdate>, List<Chapter>, Boolean> {
+        chainsAsEpisodes: List<Episode>,
+    ): Triple<List<EpisodeUpdate>, List<Episode>, Boolean> {
         var new = false
         return toDiscard
             .flatMap { chain ->
-                chain.chapters
+                chain.episodes
             }
-            .fold(accepted.chapters) { curChapters, chapter ->
-                val newLastPageRead = chainsAsChapters.maxOfOrNull { it.lastPageRead }
+            .fold(accepted.episodes) { curChapters, chapter ->
+                val newLastPageRead = chainsAsEpisodes.maxOfOrNull { it.lastPageRead }
 
                 if (curChapters.any { it.url == chapter.url }) {
                     curChapters.map {
@@ -236,7 +236,7 @@ class EHentaiUpdateHelper(context: Context) {
                     }
                 } else {
                     new = true
-                    curChapters + Chapter(
+                    curChapters + Episode(
                         id = -1,
                         mangaId = accepted.manga.id,
                         url = chapter.url,
@@ -261,13 +261,13 @@ class EHentaiUpdateHelper(context: Context) {
             .sortedBy { it.dateUpload }
             .let { chapters ->
                 val updates = mutableListOf<EpisodeUpdate>()
-                val newChapters = mutableListOf<Chapter>()
+                val newEpisodes = mutableListOf<Episode>()
                 chapters.mapIndexed { index, chapter ->
                     val name = "v${index + 1}: " + chapter.name.substringAfter(" ")
                     val chapterNumber = index + 1.0
                     val sourceOrder = chapters.lastIndex - index.toLong()
                     when (chapter.id) {
-                        -1L -> newChapters.add(
+                        -1L -> newEpisodes.add(
                             chapter.copy(
                                 name = name,
                                 chapterNumber = chapterNumber,
@@ -284,7 +284,7 @@ class EHentaiUpdateHelper(context: Context) {
                         )
                     }
                 }
-                Triple(updates.toList(), newChapters.toList(), new)
+                Triple(updates.toList(), newEpisodes.toList(), new)
             }
     }
 }

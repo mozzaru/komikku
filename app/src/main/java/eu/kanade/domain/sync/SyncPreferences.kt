@@ -49,7 +49,7 @@ class SyncPreferences(
         return SyncSettings(
             libraryEntries = preferenceStore.getBoolean("library_entries", true).get(),
             categories = preferenceStore.getBoolean("categories", true).get(),
-            chapters = preferenceStore.getBoolean("chapters", true).get(),
+            chapters = preferenceStore.getBoolean("episodes", true).get(),
             tracking = preferenceStore.getBoolean("tracking", true).get(),
             history = preferenceStore.getBoolean("history", true).get(),
             appSettings = preferenceStore.getBoolean("appSettings", true).get(),
@@ -68,7 +68,7 @@ class SyncPreferences(
     fun setSyncSettings(syncSettings: SyncSettings) {
         preferenceStore.getBoolean("library_entries", true).set(syncSettings.libraryEntries)
         preferenceStore.getBoolean("categories", true).set(syncSettings.categories)
-        preferenceStore.getBoolean("chapters", true).set(syncSettings.chapters)
+        preferenceStore.getBoolean("episodes", true).set(syncSettings.chapters)
         preferenceStore.getBoolean("tracking", true).set(syncSettings.tracking)
         preferenceStore.getBoolean("history", true).set(syncSettings.history)
         preferenceStore.getBoolean("appSettings", true).set(syncSettings.appSettings)

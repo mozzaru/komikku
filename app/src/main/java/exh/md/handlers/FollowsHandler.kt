@@ -89,8 +89,8 @@ class FollowsHandler(
             val mangaID = getMangaId(track.tracking_url)
             val formBody = FormBody.Builder()
                 .add("volume", "0")
-                .add("chapter", track.last_chapter_read.toString())
-            XLog.d("chapter to update %s", track.last_chapter_read.toString())
+                .add("episode", track.last_chapter_read.toString())
+            XLog.d("episode to update %s", track.last_chapter_read.toString())
             val result = runCatching {
                 client.newCall(
                     POST(

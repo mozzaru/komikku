@@ -15,7 +15,7 @@ import tachiyomi.domain.anime.interactor.GetAnime
 import tachiyomi.domain.anime.interactor.NetworkToLocalAnime
 import tachiyomi.domain.anime.model.Manga
 import tachiyomi.domain.episode.interactor.GetEpisode
-import tachiyomi.domain.episode.model.Chapter
+import tachiyomi.domain.episode.model.Episode
 import tachiyomi.domain.source.service.SourceManager
 import tachiyomi.i18n.sy.SYMR
 import uy.kohesive.injekt.Injekt
@@ -153,7 +153,7 @@ class GalleryAdder(
                 manga = manga.copy(favorite = true)
             }
 
-            // Fetch and copy chapters
+            // Fetch and copy episodes
             try {
                 val chapterList = retry(retry) {
                     if (source is EHentai) {
@@ -228,7 +228,7 @@ sealed class GalleryAddEvent {
         override val galleryUrl: String,
         val manga: Manga,
         val context: Context,
-        val chapter: Chapter? = null,
+        val episode: Episode? = null,
     ) : GalleryAddEvent() {
         override val galleryTitle = manga.title
         override val logMessage = context.stringResource(SYMR.strings.batch_add_success_log_message, galleryTitle)

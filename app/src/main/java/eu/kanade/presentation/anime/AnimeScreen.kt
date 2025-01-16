@@ -114,7 +114,7 @@ import exh.ui.metadata.adapters.PururinDescription
 import exh.ui.metadata.adapters.TsuminoDescription
 import tachiyomi.domain.anime.model.AnimeCover
 import tachiyomi.domain.anime.model.Manga
-import tachiyomi.domain.episode.model.Chapter
+import tachiyomi.domain.episode.model.Episode
 import tachiyomi.domain.episode.service.missingEpisodesCount
 import tachiyomi.domain.library.service.LibraryPreferences
 import tachiyomi.domain.source.model.StubSource
@@ -146,7 +146,7 @@ fun AnimeScreen(
     chapterSwipeStartAction: LibraryPreferences.ChapterSwipeAction,
     chapterSwipeEndAction: LibraryPreferences.ChapterSwipeAction,
     onBackClicked: () -> Unit,
-    onChapterClicked: (Chapter) -> Unit,
+    onChapterClicked: (Episode) -> Unit,
     onDownloadChapter: ((List<EpisodeList.Item>, EpisodeDownloadAction) -> Unit)?,
     onAddToLibraryClicked: () -> Unit,
     onWebViewClicked: (() -> Unit)?,
@@ -183,10 +183,10 @@ fun AnimeScreen(
     // SY <--
 
     // For bottom action menu
-    onMultiBookmarkClicked: (List<Chapter>, bookmarked: Boolean) -> Unit,
-    onMultiMarkAsReadClicked: (List<Chapter>, markAsRead: Boolean) -> Unit,
-    onMarkPreviousAsReadClicked: (Chapter) -> Unit,
-    onMultiDeleteClicked: (List<Chapter>) -> Unit,
+    onMultiBookmarkClicked: (List<Episode>, bookmarked: Boolean) -> Unit,
+    onMultiMarkAsReadClicked: (List<Episode>, markAsRead: Boolean) -> Unit,
+    onMarkPreviousAsReadClicked: (Episode) -> Unit,
+    onMultiDeleteClicked: (List<Episode>) -> Unit,
 
     // For episode swipe
     onChapterSwipe: (EpisodeList.Item, LibraryPreferences.ChapterSwipeAction) -> Unit,
@@ -343,7 +343,7 @@ private fun AnimeScreenSmallImpl(
     chapterSwipeStartAction: LibraryPreferences.ChapterSwipeAction,
     chapterSwipeEndAction: LibraryPreferences.ChapterSwipeAction,
     onBackClicked: () -> Unit,
-    onChapterClicked: (Chapter) -> Unit,
+    onChapterClicked: (Episode) -> Unit,
     onDownloadChapter: ((List<EpisodeList.Item>, EpisodeDownloadAction) -> Unit)?,
     onAddToLibraryClicked: () -> Unit,
     onWebViewClicked: (() -> Unit)?,
@@ -381,10 +381,10 @@ private fun AnimeScreenSmallImpl(
     // SY <--
 
     // For bottom action menu
-    onMultiBookmarkClicked: (List<Chapter>, bookmarked: Boolean) -> Unit,
-    onMultiMarkAsReadClicked: (List<Chapter>, markAsRead: Boolean) -> Unit,
-    onMarkPreviousAsReadClicked: (Chapter) -> Unit,
-    onMultiDeleteClicked: (List<Chapter>) -> Unit,
+    onMultiBookmarkClicked: (List<Episode>, bookmarked: Boolean) -> Unit,
+    onMultiMarkAsReadClicked: (List<Episode>, markAsRead: Boolean) -> Unit,
+    onMarkPreviousAsReadClicked: (Episode) -> Unit,
+    onMultiDeleteClicked: (List<Episode>) -> Unit,
 
     // For episode swipe
     onChapterSwipe: (EpisodeList.Item, LibraryPreferences.ChapterSwipeAction) -> Unit,
@@ -514,7 +514,7 @@ private fun AnimeScreenSmallImpl(
         snackbarHost = { SnackbarHost(hostState = snackbarHostState) },
         floatingActionButton = {
             val isFABVisible = remember(chapters) {
-                chapters.fastAny { !it.chapter.read } && !isAnySelected
+                chapters.fastAny { !it.episode.read } && !isAnySelected
             }
             AnimatedVisibility(
                 visible = isFABVisible,
@@ -547,7 +547,7 @@ private fun AnimeScreenSmallImpl(
                 ExtendedFloatingActionButton(
                     text = {
                         val isReading = remember(state.chapters) {
-                            state.chapters.fastAny { it.chapter.read }
+                            state.chapters.fastAny { it.episode.read }
                         }
                         Text(
                             text = stringResource(if (isReading) MR.strings.action_resume else MR.strings.action_start),
@@ -759,7 +759,7 @@ private fun AnimeScreenSmallImpl(
                         contentType = AnimeScreenItem.CHAPTER_HEADER,
                     ) {
                         val missingChapterCount = remember(chapters) {
-                            chapters.map { it.chapter.chapterNumber }.missingEpisodesCount()
+                            chapters.map { it.episode.chapterNumber }.missingEpisodesCount()
                         }
                         EpisodeHeader(
                             enabled = !isAnySelected,
@@ -798,7 +798,7 @@ private fun AnimeScreenLargeImpl(
     chapterSwipeStartAction: LibraryPreferences.ChapterSwipeAction,
     chapterSwipeEndAction: LibraryPreferences.ChapterSwipeAction,
     onBackClicked: () -> Unit,
-    onChapterClicked: (Chapter) -> Unit,
+    onChapterClicked: (Episode) -> Unit,
     onDownloadChapter: ((List<EpisodeList.Item>, EpisodeDownloadAction) -> Unit)?,
     onAddToLibraryClicked: () -> Unit,
     onWebViewClicked: (() -> Unit)?,
@@ -836,10 +836,10 @@ private fun AnimeScreenLargeImpl(
     // SY <--
 
     // For bottom action menu
-    onMultiBookmarkClicked: (List<Chapter>, bookmarked: Boolean) -> Unit,
-    onMultiMarkAsReadClicked: (List<Chapter>, markAsRead: Boolean) -> Unit,
-    onMarkPreviousAsReadClicked: (Chapter) -> Unit,
-    onMultiDeleteClicked: (List<Chapter>) -> Unit,
+    onMultiBookmarkClicked: (List<Episode>, bookmarked: Boolean) -> Unit,
+    onMultiMarkAsReadClicked: (List<Episode>, markAsRead: Boolean) -> Unit,
+    onMarkPreviousAsReadClicked: (Episode) -> Unit,
+    onMultiDeleteClicked: (List<Episode>) -> Unit,
 
     // For swipe actions
     onChapterSwipe: (EpisodeList.Item, LibraryPreferences.ChapterSwipeAction) -> Unit,
@@ -965,7 +965,7 @@ private fun AnimeScreenLargeImpl(
         snackbarHost = { SnackbarHost(hostState = snackbarHostState) },
         floatingActionButton = {
             val isFABVisible = remember(chapters) {
-                chapters.fastAny { !it.chapter.read } && !isAnySelected
+                chapters.fastAny { !it.episode.read } && !isAnySelected
             }
             AnimatedVisibility(
                 visible = isFABVisible,
@@ -998,7 +998,7 @@ private fun AnimeScreenLargeImpl(
                 ExtendedFloatingActionButton(
                     text = {
                         val isReading = remember(state.chapters) {
-                            state.chapters.fastAny { it.chapter.read }
+                            state.chapters.fastAny { it.episode.read }
                         }
                         Text(
                             text = stringResource(
@@ -1189,7 +1189,7 @@ private fun AnimeScreenLargeImpl(
                                 contentType = AnimeScreenItem.CHAPTER_HEADER,
                             ) {
                                 val missingChapterCount = remember(chapters) {
-                                    chapters.map { it.chapter.chapterNumber }.missingEpisodesCount()
+                                    chapters.map { it.episode.chapterNumber }.missingEpisodesCount()
                                 }
                                 EpisodeHeader(
                                     enabled = !isAnySelected,
@@ -1225,11 +1225,11 @@ private fun AnimeScreenLargeImpl(
 @Composable
 private fun SharedAnimeBottomActionMenu(
     selected: List<EpisodeList.Item>,
-    onMultiBookmarkClicked: (List<Chapter>, bookmarked: Boolean) -> Unit,
-    onMultiMarkAsReadClicked: (List<Chapter>, markAsRead: Boolean) -> Unit,
-    onMarkPreviousAsReadClicked: (Chapter) -> Unit,
+    onMultiBookmarkClicked: (List<Episode>, bookmarked: Boolean) -> Unit,
+    onMultiMarkAsReadClicked: (List<Episode>, markAsRead: Boolean) -> Unit,
+    onMarkPreviousAsReadClicked: (Episode) -> Unit,
     onDownloadChapter: ((List<EpisodeList.Item>, EpisodeDownloadAction) -> Unit)?,
-    onMultiDeleteClicked: (List<Chapter>) -> Unit,
+    onMultiDeleteClicked: (List<Episode>) -> Unit,
     fillFraction: Float,
     modifier: Modifier = Modifier,
 ) {
@@ -1237,19 +1237,19 @@ private fun SharedAnimeBottomActionMenu(
         visible = selected.isNotEmpty(),
         modifier = modifier.fillMaxWidth(fillFraction),
         onBookmarkClicked = {
-            onMultiBookmarkClicked.invoke(selected.fastMap { it.chapter }, true)
-        }.takeIf { selected.fastAny { !it.chapter.bookmark } },
+            onMultiBookmarkClicked.invoke(selected.fastMap { it.episode }, true)
+        }.takeIf { selected.fastAny { !it.episode.bookmark } },
         onRemoveBookmarkClicked = {
-            onMultiBookmarkClicked.invoke(selected.fastMap { it.chapter }, false)
-        }.takeIf { selected.fastAll { it.chapter.bookmark } },
+            onMultiBookmarkClicked.invoke(selected.fastMap { it.episode }, false)
+        }.takeIf { selected.fastAll { it.episode.bookmark } },
         onMarkAsReadClicked = {
-            onMultiMarkAsReadClicked(selected.fastMap { it.chapter }, true)
-        }.takeIf { selected.fastAny { !it.chapter.read } },
+            onMultiMarkAsReadClicked(selected.fastMap { it.episode }, true)
+        }.takeIf { selected.fastAny { !it.episode.read } },
         onMarkAsUnreadClicked = {
-            onMultiMarkAsReadClicked(selected.fastMap { it.chapter }, false)
-        }.takeIf { selected.fastAny { it.chapter.read || it.chapter.lastPageRead > 0L } },
+            onMultiMarkAsReadClicked(selected.fastMap { it.episode }, false)
+        }.takeIf { selected.fastAny { it.episode.read || it.episode.lastPageRead > 0L } },
         onMarkPreviousAsReadClicked = {
-            onMarkPreviousAsReadClicked(selected[0].chapter)
+            onMarkPreviousAsReadClicked(selected[0].episode)
         }.takeIf { selected.size == 1 },
         onDownloadClicked = {
             onDownloadChapter!!(selected.toList(), EpisodeDownloadAction.START)
@@ -1257,7 +1257,7 @@ private fun SharedAnimeBottomActionMenu(
             onDownloadChapter != null && selected.fastAny { it.downloadState != Download.State.DOWNLOADED }
         },
         onDeleteClicked = {
-            onMultiDeleteClicked(selected.fastMap { it.chapter })
+            onMultiDeleteClicked(selected.fastMap { it.episode })
         }.takeIf {
             selected.fastAny { it.downloadState == Download.State.DOWNLOADED }
         },
@@ -1274,7 +1274,7 @@ private fun LazyListScope.sharedEpisodeItems(
     // SY -->
     alwaysShowReadingProgress: Boolean,
     // SY <--
-    onChapterClicked: (Chapter) -> Unit,
+    onChapterClicked: (Episode) -> Unit,
     onDownloadChapter: ((List<EpisodeList.Item>, EpisodeDownloadAction) -> Unit)?,
     onChapterSelected: (EpisodeList.Item, Boolean, Boolean, Boolean) -> Unit,
     onChapterSwipe: (EpisodeList.Item, LibraryPreferences.ChapterSwipeAction) -> Unit,
@@ -1302,12 +1302,12 @@ private fun LazyListScope.sharedEpisodeItems(
                     title = if (manga.displayMode == Manga.CHAPTER_DISPLAY_NUMBER) {
                         stringResource(
                             MR.strings.display_mode_chapter,
-                            formatEpisodeNumber(item.chapter.chapterNumber),
+                            formatEpisodeNumber(item.episode.chapterNumber),
                         )
                     } else {
-                        item.chapter.name
+                        item.episode.name
                     },
-                    date = item.chapter.dateUpload
+                    date = item.episode.dateUpload
                         .takeIf { it > 0L }
                         ?.let {
                             // SY -->
@@ -1315,13 +1315,13 @@ private fun LazyListScope.sharedEpisodeItems(
                                 MetadataUtil.EX_DATE_FORMAT
                                     .format(ZonedDateTime.ofInstant(Instant.ofEpochMilli(it), ZoneId.systemDefault()))
                             } else {
-                                relativeDateText(item.chapter.dateUpload)
+                                relativeDateText(item.episode.dateUpload)
                             }
                             // SY <--
                         },
-                    readProgress = item.chapter.lastPageRead
+                    readProgress = item.episode.lastPageRead
                         .takeIf {
-                            /* SY --> */(!item.chapter.read || alwaysShowReadingProgress)/* SY <-- */ && it > 0L
+                            /* SY --> */(!item.episode.read || alwaysShowReadingProgress)/* SY <-- */ && it > 0L
                         }
                         ?.let {
                             stringResource(
@@ -1329,17 +1329,17 @@ private fun LazyListScope.sharedEpisodeItems(
                                 it + 1,
                             )
                         },
-                    scanlator = item.chapter.scanlator.takeIf {
+                    scanlator = item.episode.scanlator.takeIf {
                         !it.isNullOrBlank() /* SY --> */ && item.showScanlator /* SY <-- */
                     },
                     // SY -->
                     sourceName = item.sourceName,
                     // SY <--
-                    read = item.chapter.read,
-                    bookmark = item.chapter.bookmark,
+                    read = item.episode.read,
+                    bookmark = item.episode.bookmark,
                     selected = item.selected,
                     downloadIndicatorEnabled =
-                    !isAnyChapterSelected && !(mergedData?.manga?.get(item.chapter.mangaId) ?: manga).isLocal(),
+                    !isAnyChapterSelected && !(mergedData?.manga?.get(item.episode.mangaId) ?: manga).isLocal(),
                     downloadStateProvider = { item.downloadState },
                     downloadProgressProvider = { item.downloadProgress },
                     chapterSwipeStartAction = chapterSwipeStartAction,
@@ -1374,12 +1374,12 @@ private fun onEpisodeItemClick(
     chapterItem: EpisodeList.Item,
     isAnyChapterSelected: Boolean,
     onToggleSelection: (Boolean) -> Unit,
-    onChapterClicked: (Chapter) -> Unit,
+    onChapterClicked: (Episode) -> Unit,
 ) {
     when {
         chapterItem.selected -> onToggleSelection(false)
         isAnyChapterSelected -> onToggleSelection(true)
-        else -> onChapterClicked(chapterItem.chapter)
+        else -> onChapterClicked(chapterItem.episode)
     }
 }
 

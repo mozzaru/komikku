@@ -75,7 +75,7 @@ import tachiyomi.domain.anime.model.Manga
 import tachiyomi.domain.anime.model.toMangaUpdate
 import tachiyomi.domain.category.model.Category
 import tachiyomi.domain.episode.interactor.GetEpisodesByAnimeId
-import tachiyomi.domain.episode.model.Chapter
+import tachiyomi.domain.episode.model.Episode
 import tachiyomi.domain.episode.model.NoEpisodesException
 import tachiyomi.domain.library.model.GroupLibraryMode
 import tachiyomi.domain.library.model.LibraryAnime
@@ -368,7 +368,7 @@ class LibraryUpdateJob(private val context: Context, workerParams: WorkerParamet
         val semaphore = Semaphore(5)
         val progressCount = AtomicInteger(0)
         val currentlyUpdatingManga = CopyOnWriteArrayList<Manga>()
-        val newUpdates = CopyOnWriteArrayList<Pair<Manga, Array<Chapter>>>()
+        val newUpdates = CopyOnWriteArrayList<Pair<Manga, Array<Episode>>>()
         val failedUpdates = CopyOnWriteArrayList<Pair<Manga, String?>>()
         val hasDownloads = AtomicBoolean(false)
         // SY -->
@@ -464,7 +464,7 @@ class LibraryUpdateJob(private val context: Context, workerParams: WorkerParamet
 
                                             libraryPreferences.newUpdatesCount().getAndSet { it + newChapters.size }
 
-                                            // Convert to the manga that contains new chapters
+                                            // Convert to the manga that contains new episodes
                                             newUpdates.add(manga to newChapters.toTypedArray())
                                         }
                                         clearErrorFromDB(mangaId = manga.id)
@@ -507,14 +507,14 @@ class LibraryUpdateJob(private val context: Context, workerParams: WorkerParamet
         }
     }
 
-    private fun downloadChapters(manga: Manga, chapters: List<Chapter>) {
+    private fun downloadChapters(manga: Manga, episodes: List<Episode>) {
         // We don't want to start downloading while the library is updating, because websites
         // may don't like it and they could ban the user.
         // SY -->
         if (manga.source == MERGED_SOURCE_ID) {
             val downloadingManga = runBlocking { getMergedAnimeForDownloading.await(manga.id) }
                 .associateBy { it.id }
-            chapters.groupBy { it.mangaId }
+            episodes.groupBy { it.mangaId }
                 .forEach {
                     downloadManager.downloadChapters(
                         downloadingManga[it.key] ?: return@forEach,
@@ -526,16 +526,16 @@ class LibraryUpdateJob(private val context: Context, workerParams: WorkerParamet
             return
         }
         // SY <--
-        downloadManager.downloadChapters(manga, chapters, false)
+        downloadManager.downloadChapters(manga, episodes, false)
     }
 
     /**
-     * Updates the chapters for the given manga and adds them to the database.
+     * Updates the episodes for the given manga and adds them to the database.
      *
      * @param manga the manga to update.
-     * @return a pair of the inserted and removed chapters.
+     * @return a pair of the inserted and removed episodes.
      */
-    private suspend fun updateManga(manga: Manga, fetchWindow: Pair<Long, Long>): List<Chapter> {
+    private suspend fun updateManga(manga: Manga, fetchWindow: Pair<Long, Long>): List<Episode> {
         val source = sourceManager.getOrStub(manga.source)
 
         // Update manga metadata if needed
@@ -757,7 +757,7 @@ class LibraryUpdateJob(private val context: Context, workerParams: WorkerParamet
      * Defines what should be updated within a service execution.
      */
     enum class Target {
-        CHAPTERS, // Manga chapters
+        CHAPTERS, // Manga episodes
         COVERS, // Manga covers
 
         // SY -->

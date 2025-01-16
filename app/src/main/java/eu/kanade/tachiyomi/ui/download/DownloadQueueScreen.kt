@@ -145,7 +145,7 @@ object DownloadQueueScreen : Screen() {
                                             text = { Text(text = stringResource(MR.strings.action_newest)) },
                                             onClick = {
                                                 screenModel.reorderQueue(
-                                                    { it.download.chapter.dateUpload },
+                                                    { it.download.episode.dateUpload },
                                                     true,
                                                 )
                                                 closeMenu()
@@ -155,7 +155,7 @@ object DownloadQueueScreen : Screen() {
                                             text = { Text(text = stringResource(MR.strings.action_oldest)) },
                                             onClick = {
                                                 screenModel.reorderQueue(
-                                                    { it.download.chapter.dateUpload },
+                                                    { it.download.episode.dateUpload },
                                                     false,
                                                 )
                                                 closeMenu()
@@ -170,7 +170,7 @@ object DownloadQueueScreen : Screen() {
                                             text = { Text(text = stringResource(MR.strings.action_asc)) },
                                             onClick = {
                                                 screenModel.reorderQueue(
-                                                    { it.download.chapter.chapterNumber },
+                                                    { it.download.episode.chapterNumber },
                                                     false,
                                                 )
                                                 closeMenu()
@@ -180,7 +180,7 @@ object DownloadQueueScreen : Screen() {
                                             text = { Text(text = stringResource(MR.strings.action_desc)) },
                                             onClick = {
                                                 screenModel.reorderQueue(
-                                                    { it.download.chapter.chapterNumber },
+                                                    { it.download.episode.chapterNumber },
                                                     true,
                                                 )
                                                 closeMenu()

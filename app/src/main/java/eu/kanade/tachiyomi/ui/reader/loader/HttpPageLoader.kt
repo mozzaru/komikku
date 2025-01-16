@@ -30,7 +30,7 @@ import java.util.concurrent.atomic.AtomicInteger
 import kotlin.math.min
 
 /**
- * Loader used to load chapters from an online source.
+ * Loader used to load episodes from an online source.
  */
 @OptIn(DelicateCoroutinesApi::class)
 internal class HttpPageLoader(
@@ -165,7 +165,7 @@ internal class HttpPageLoader(
         scope.cancel()
         queue.clear()
 
-        // Cache current page list progress for online chapters to allow a faster reopen
+        // Cache current page list progress for online episodes to allow a faster reopen
         chapter.pages?.let { pages ->
             launchIO {
                 try {

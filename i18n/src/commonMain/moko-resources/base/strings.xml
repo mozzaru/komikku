@@ -713,7 +713,7 @@
     <string name="snack_add_to_library">Add to library?</string>
     <string name="description_placeholder">No description</string>
 
-    <!-- Manga chapters -->
+    <!-- Manga episodes -->
     <string name="display_mode_chapter">Chapter %1$s</string>
     <string name="manga_display_interval_title">Estimate every</string>
     <string name="manga_display_modified_interval_title">Set to update every</string>

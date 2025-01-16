@@ -92,7 +92,7 @@ import tachiyomi.domain.download.service.DownloadPreferences
 import tachiyomi.domain.episode.interactor.GetEpisodesByAnimeId
 import tachiyomi.domain.episode.interactor.GetMergedEpisodesByAnimeId
 import tachiyomi.domain.episode.interactor.UpdateEpisode
-import tachiyomi.domain.episode.model.Chapter
+import tachiyomi.domain.episode.model.Episode
 import tachiyomi.domain.episode.model.EpisodeUpdate
 import tachiyomi.domain.episode.service.getEpisodeSort
 import tachiyomi.domain.history.interactor.GetNextEpisodes
@@ -196,11 +196,11 @@ class ReaderViewModel @JvmOverloads constructor(
                 getEpisodesByAnimeId.await(manga.id, applyScanlatorFilter = true) to null
             }
         }
-        fun isChapterDownloaded(chapter: Chapter): Boolean {
-            val chapterManga = mangaMap?.get(chapter.mangaId) ?: manga
+        fun isChapterDownloaded(episode: Episode): Boolean {
+            val chapterManga = mangaMap?.get(episode.mangaId) ?: manga
             return downloadManager.isChapterDownloaded(
-                chapterName = chapter.name,
-                chapterScanlator = chapter.scanlator,
+                chapterName = episode.name,
+                chapterScanlator = episode.scanlator,
                 mangaTitle = chapterManga.ogTitle,
                 sourceId = chapterManga.source,
             )
@@ -317,7 +317,7 @@ class ReaderViewModel @JvmOverloads constructor(
 
     /**
      * Called when the user pressed the back button and is going to leave the reader. Used to
-     * trigger deletion of the downloaded chapters.
+     * trigger deletion of the downloaded episodes.
      */
     fun onActivityFinish() {
         deletePendingChapters()
@@ -423,7 +423,7 @@ class ReaderViewModel @JvmOverloads constructor(
 
         return episodeList.map {
             ReaderChapterItem(
-                chapter = it.episode.toDomainChapter()!!,
+                episode = it.episode.toDomainChapter()!!,
                 manga = manga!!,
                 isCurrent = it.episode.id == currentChapter?.episode?.id,
                 dateFormat = UiPreferences.dateFormat(uiPreferences.dateFormat().get()),
@@ -433,7 +433,7 @@ class ReaderViewModel @JvmOverloads constructor(
     // SY <--
 
     /**
-     * Loads the given [chapter] with this [loader] and updates the currently active chapters.
+     * Loads the given [chapter] with this [loader] and updates the currently active episodes.
      * Callers must handle errors.
      */
     private suspend fun loadChapter(
@@ -492,9 +492,9 @@ class ReaderViewModel @JvmOverloads constructor(
         }
     }
 
-    fun loadNewChapterFromDialog(chapter: Chapter) {
+    fun loadNewChapterFromDialog(episode: Episode) {
         viewModelScope.launchIO {
-            val newChapter = episodeList.firstOrNull { it.episode.id == chapter.id } ?: return@launchIO
+            val newChapter = episodeList.firstOrNull { it.episode.id == episode.id } ?: return@launchIO
             loadAdjacent(newChapter)
         }
     }
@@ -570,7 +570,7 @@ class ReaderViewModel @JvmOverloads constructor(
     }
 
     /**
-     * Called every time a page changes on the reader. Used to mark the flag of chapters being
+     * Called every time a page changes on the reader. Used to mark the flag of episodes being
      * read, update tracking services, enqueue downloaded episode deletion, and updating the active episode if this
      * [page]'s episode is different from the currently active.
      */
@@ -1317,7 +1317,7 @@ class ReaderViewModel @JvmOverloads constructor(
     }
 
     /**
-     * Deletes all the pending chapters. This operation will run in a background thread and errors
+     * Deletes all the pending episodes. This operation will run in a background thread and errors
      * are ignored.
      */
     private fun deletePendingChapters() {

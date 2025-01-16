@@ -22,7 +22,7 @@ import tachiyomi.domain.anime.model.CustomAnimeInfo
 import tachiyomi.domain.anime.model.Manga
 import tachiyomi.domain.category.interactor.GetCategories
 import tachiyomi.domain.episode.interactor.GetEpisodesByAnimeId
-import tachiyomi.domain.episode.model.Chapter
+import tachiyomi.domain.episode.model.Episode
 import tachiyomi.domain.track.interactor.GetTracks
 import tachiyomi.domain.track.interactor.InsertTrack
 import tachiyomi.domain.track.model.Track
@@ -198,32 +198,32 @@ class AnimeRestorer(
         updateExistingChapters(existingChapters)
     }
 
-    private fun updateChapterBasedOnSyncState(chapter: Chapter, dbChapter: Chapter): Chapter {
+    private fun updateChapterBasedOnSyncState(episode: Episode, dbEpisode: Episode): Episode {
         return if (isSync) {
-            chapter.copy(
-                id = dbChapter.id,
-                bookmark = chapter.bookmark || dbChapter.bookmark,
-                read = chapter.read,
-                lastPageRead = chapter.lastPageRead,
-                sourceOrder = chapter.sourceOrder,
+            episode.copy(
+                id = dbEpisode.id,
+                bookmark = episode.bookmark || dbEpisode.bookmark,
+                read = episode.read,
+                lastPageRead = episode.lastPageRead,
+                sourceOrder = episode.sourceOrder,
             )
         } else {
-            chapter.copyFrom(dbChapter).let {
+            episode.copyFrom(dbEpisode).let {
                 when {
-                    dbChapter.read && !it.read -> it.copy(read = true, lastPageRead = dbChapter.lastPageRead)
-                    it.lastPageRead == 0L && dbChapter.lastPageRead != 0L -> it.copy(
-                        lastPageRead = dbChapter.lastPageRead,
+                    dbEpisode.read && !it.read -> it.copy(read = true, lastPageRead = dbEpisode.lastPageRead)
+                    it.lastPageRead == 0L && dbEpisode.lastPageRead != 0L -> it.copy(
+                        lastPageRead = dbEpisode.lastPageRead,
                     )
                     else -> it
                 }
             }
                 // KMK -->
-                .copy(id = dbChapter.id)
+                .copy(id = dbEpisode.id)
             // KMK <--
         }
     }
 
-    private fun Chapter.forComparison() =
+    private fun Episode.forComparison() =
         this.copy(
             id = 0L,
             mangaId = 0L,
@@ -236,9 +236,9 @@ class AnimeRestorer(
             version = 0L,
         )
 
-    private suspend fun insertNewChapters(chapters: List<Chapter>) {
+    private suspend fun insertNewChapters(episodes: List<Episode>) {
         handler.await(true) {
-            chapters.forEach { chapter ->
+            episodes.forEach { chapter ->
                 episodesQueries.insert(
                     chapter.mangaId,
                     chapter.url,
@@ -257,9 +257,9 @@ class AnimeRestorer(
         }
     }
 
-    private suspend fun updateExistingChapters(chapters: List<Chapter>) {
+    private suspend fun updateExistingChapters(episodes: List<Episode>) {
         handler.await(true) {
-            chapters.forEach { chapter ->
+            episodes.forEach { chapter ->
                 episodesQueries.update(
                     mangaId = null,
                     url = null,

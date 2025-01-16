@@ -5,19 +5,19 @@ import eu.kanade.tachiyomi.data.download.DownloadManager
 import eu.kanade.tachiyomi.ui.anime.EpisodeList
 import tachiyomi.domain.anime.model.Manga
 import tachiyomi.domain.anime.model.applyFilter
-import tachiyomi.domain.episode.model.Chapter
+import tachiyomi.domain.episode.model.Episode
 import tachiyomi.domain.episode.service.getEpisodeSort
 import tachiyomi.source.local.isLocal
 
 /**
- * Applies the view filters to the list of chapters obtained from the database.
- * @return an observable of the list of chapters filtered and sorted.
+ * Applies the view filters to the list of episodes obtained from the database.
+ * @return an observable of the list of episodes filtered and sorted.
  */
-fun List<Chapter>.applyFilters(
+fun List<Episode>.applyFilters(
     manga: Manga,
     downloadManager: DownloadManager, /* SY --> */
     mergedManga: Map<Long, Manga>, /* SY <-- */
-): List<Chapter> {
+): List<Episode> {
     val isLocalManga = manga.isLocal()
     val unreadFilter = manga.unreadFilter
     val downloadedFilter = manga.downloadedFilter
@@ -44,8 +44,8 @@ fun List<Chapter>.applyFilters(
 }
 
 /**
- * Applies the view filters to the list of chapters obtained from the database.
- * @return an observable of the list of chapters filtered and sorted.
+ * Applies the view filters to the list of episodes obtained from the database.
+ * @return an observable of the list of episodes filtered and sorted.
  */
 fun List<EpisodeList.Item>.applyFilters(manga: Manga): Sequence<EpisodeList.Item> {
     val isLocalManga = manga.isLocal()

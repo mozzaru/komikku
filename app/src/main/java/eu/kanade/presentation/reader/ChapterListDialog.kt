@@ -24,7 +24,7 @@ import exh.source.isEhBasedManga
 import kotlinx.collections.immutable.ImmutableList
 import kotlinx.coroutines.flow.filter
 import kotlinx.coroutines.flow.map
-import tachiyomi.domain.episode.model.Chapter
+import tachiyomi.domain.episode.model.Episode
 import tachiyomi.domain.library.service.LibraryPreferences
 import tachiyomi.source.local.isLocal
 import uy.kohesive.injekt.Injekt
@@ -39,8 +39,8 @@ fun ChapterListDialog(
     onDismissRequest: () -> Unit,
     screenModel: ReaderSettingsScreenModel,
     chapters: ImmutableList<ReaderChapterItem>,
-    onClickChapter: (Chapter) -> Unit,
-    onBookmark: (Chapter) -> Unit,
+    onClickChapter: (Episode) -> Unit,
+    onBookmark: (Episode) -> Unit,
     dateRelativeTime: Boolean,
 ) {
     val manga by screenModel.mangaFlow.collectAsState()
@@ -59,12 +59,12 @@ fun ChapterListDialog(
         ) {
             items(
                 items = chapters,
-                key = { "episode-list-${it.chapter.id}" },
+                key = { "episode-list-${it.episode.id}" },
             ) { chapterItem ->
-                val activeDownload = downloadQueueState.find { it.chapter.id == chapterItem.chapter.id }
+                val activeDownload = downloadQueueState.find { it.episode.id == chapterItem.episode.id }
                 val progress = activeDownload?.let {
                     downloadManager.progressFlow()
-                        .filter { it.chapter.id == chapterItem.chapter.id }
+                        .filter { it.episode.id == chapterItem.episode.id }
                         .map { it.progress }
                         .collectAsState(0).value
                 } ?: 0
@@ -72,8 +72,8 @@ fun ChapterListDialog(
                     true
                 } else {
                     downloadManager.isChapterDownloaded(
-                        chapterItem.chapter.name,
-                        chapterItem.chapter.scanlator,
+                        chapterItem.episode.name,
+                        chapterItem.episode.scanlator,
                         chapterItem.manga.ogTitle,
                         chapterItem.manga.source,
                     )
@@ -84,8 +84,8 @@ fun ChapterListDialog(
                     else -> Download.State.NOT_DOWNLOADED
                 }
                 AnimeChapterListItem(
-                    title = chapterItem.chapter.name,
-                    date = chapterItem.chapter.dateUpload
+                    title = chapterItem.episode.name,
+                    date = chapterItem.episode.dateUpload
                         .takeIf { it > 0L }
                         ?.let {
                             // SY -->
@@ -101,10 +101,10 @@ fun ChapterListDialog(
                             // SY <--
                         },
                     readProgress = null,
-                    scanlator = chapterItem.chapter.scanlator,
+                    scanlator = chapterItem.episode.scanlator,
                     sourceName = null,
-                    read = chapterItem.chapter.read,
-                    bookmark = chapterItem.chapter.bookmark,
+                    read = chapterItem.episode.read,
+                    bookmark = chapterItem.episode.bookmark,
                     selected = false,
                     downloadIndicatorEnabled = false,
                     downloadStateProvider = { downloadState },
@@ -112,10 +112,10 @@ fun ChapterListDialog(
                     chapterSwipeStartAction = LibraryPreferences.ChapterSwipeAction.ToggleBookmark,
                     chapterSwipeEndAction = LibraryPreferences.ChapterSwipeAction.ToggleBookmark,
                     onLongClick = { /*TODO*/ },
-                    onClick = { onClickChapter(chapterItem.chapter) },
+                    onClick = { onClickChapter(chapterItem.episode) },
                     onDownloadClick = null,
                     onChapterSwipe = {
-                        onBookmark(chapterItem.chapter)
+                        onBookmark(chapterItem.episode)
                     },
                 )
             }

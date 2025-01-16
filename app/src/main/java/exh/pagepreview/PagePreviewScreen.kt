@@ -34,7 +34,7 @@ class PagePreviewScreen(private val mangaId: Long) : Screen() {
     fun openPage(context: Context, state: PagePreviewState, page: Int) {
         if (state !is PagePreviewState.Success) return
         context.run {
-            startActivity(ReaderActivity.newIntent(this, state.manga.id, state.chapter.id, page))
+            startActivity(ReaderActivity.newIntent(this, state.manga.id, state.episode.id, page))
         }
     }
 }

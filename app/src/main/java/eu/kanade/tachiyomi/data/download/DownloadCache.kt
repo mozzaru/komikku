@@ -47,7 +47,7 @@ import tachiyomi.core.common.util.lang.launchNonCancellable
 import tachiyomi.core.common.util.system.logcat
 import tachiyomi.domain.anime.model.Manga
 import tachiyomi.domain.download.service.DownloadPreferences
-import tachiyomi.domain.episode.model.Chapter
+import tachiyomi.domain.episode.model.Episode
 import tachiyomi.domain.source.service.SourceManager
 import tachiyomi.domain.storage.service.StorageManager
 import uy.kohesive.injekt.Injekt
@@ -169,7 +169,7 @@ class DownloadCache(
     }
 
     /**
-     * Returns the amount of downloaded chapters.
+     * Returns the amount of downloaded episodes.
      */
     fun getTotalDownloadCount(): Int {
         renewCache()
@@ -182,7 +182,7 @@ class DownloadCache(
     }
 
     /**
-     * Returns the amount of downloaded chapters for a manga.
+     * Returns the amount of downloaded episodes for a manga.
      * This method is quick, but might count other junk files
      * It's still maybe useful while developing the clean-up features
      *
@@ -239,10 +239,10 @@ class DownloadCache(
     /**
      * Removes a episode that has been deleted from this cache.
      *
-     * @param chapter the episode to remove.
+     * @param episode the episode to remove.
      * @param manga the manga of the episode.
      */
-    suspend fun removeChapter(chapter: Chapter, manga: Manga) {
+    suspend fun removeChapter(episode: Episode, manga: Manga) {
         rootDownloadsDirMutex.withLock {
             val sourceDir = rootDownloadsDir.sourceDirs[manga.source] ?: return
             val mangaDir = sourceDir.mangaDirs[
@@ -250,7 +250,7 @@ class DownloadCache(
                     /* SY --> */ manga.ogTitle, /* SY <-- */
                 ),
             ] ?: return
-            provider.getValidChapterDirNames(chapter.name, chapter.scanlator).forEach {
+            provider.getValidChapterDirNames(episode.name, episode.scanlator).forEach {
                 if (it in mangaDir.chapterDirs) {
                     mangaDir.chapterDirs -= it
                 }
@@ -276,12 +276,12 @@ class DownloadCache(
     // SY <--
 
     /**
-     * Removes a list of chapters that have been deleted from this cache.
+     * Removes a list of episodes that have been deleted from this cache.
      *
-     * @param chapters the list of episode to remove.
+     * @param episodes the list of episode to remove.
      * @param manga the manga of the episode.
      */
-    suspend fun removeChapters(chapters: List<Chapter>, manga: Manga) {
+    suspend fun removeChapters(episodes: List<Episode>, manga: Manga) {
         rootDownloadsDirMutex.withLock {
             val sourceDir = rootDownloadsDir.sourceDirs[manga.source] ?: return
             val mangaDir = sourceDir.mangaDirs[
@@ -289,7 +289,7 @@ class DownloadCache(
                     /* SY --> */ manga.ogTitle, /* SY <-- */
                 ),
             ] ?: return
-            chapters.forEach { chapter ->
+            episodes.forEach { chapter ->
                 provider.getValidChapterDirNames(chapter.name, chapter.scanlator).forEach {
                     if (it in mangaDir.chapterDirs) {
                         mangaDir.chapterDirs -= it

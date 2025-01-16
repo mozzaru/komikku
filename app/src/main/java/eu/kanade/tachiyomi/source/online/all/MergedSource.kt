@@ -26,7 +26,7 @@ import tachiyomi.domain.anime.interactor.GetMergedReferencesById
 import tachiyomi.domain.anime.interactor.NetworkToLocalAnime
 import tachiyomi.domain.anime.model.Manga
 import tachiyomi.domain.anime.model.MergedAnimeReference
-import tachiyomi.domain.episode.model.Chapter
+import tachiyomi.domain.episode.model.Episode
 import tachiyomi.domain.source.service.SourceManager
 import uy.kohesive.injekt.injectLazy
 
@@ -110,10 +110,10 @@ class MergedSource : HttpSource() {
         fetchChaptersAndSync(manga, downloadChapters)
     }
 
-    suspend fun fetchChaptersAndSync(manga: Manga, downloadChapters: Boolean = true): List<Chapter> {
+    suspend fun fetchChaptersAndSync(manga: Manga, downloadChapters: Boolean = true): List<Episode> {
         val mangaReferences = getMergedReferencesById.await(manga.id)
         require(mangaReferences.isNotEmpty()) {
-            "Manga references are empty, chapters unavailable, merge is likely corrupted"
+            "Manga references are empty, episodes unavailable, merge is likely corrupted"
         }
 
         val semaphore = Semaphore(5)

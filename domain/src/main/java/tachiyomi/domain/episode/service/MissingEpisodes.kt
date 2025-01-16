@@ -1,6 +1,6 @@
 package tachiyomi.domain.episode.service
 
-import tachiyomi.domain.episode.model.Chapter
+import tachiyomi.domain.episode.model.Episode
 import kotlin.math.floor
 
 fun List<Double>.missingEpisodesCount(): Int {
@@ -37,10 +37,10 @@ fun List<Double>.missingEpisodesCount(): Int {
     return missingChaptersCount
 }
 
-fun calculateEpisodeGap(higherChapter: Chapter?, lowerChapter: Chapter?): Int {
-    if (higherChapter == null || lowerChapter == null) return 0
-    if (!higherChapter.isRecognizedNumber || !lowerChapter.isRecognizedNumber) return 0
-    return calculateEpisodeGap(higherChapter.chapterNumber, lowerChapter.chapterNumber)
+fun calculateEpisodeGap(higherEpisode: Episode?, lowerEpisode: Episode?): Int {
+    if (higherEpisode == null || lowerEpisode == null) return 0
+    if (!higherEpisode.isRecognizedNumber || !lowerEpisode.isRecognizedNumber) return 0
+    return calculateEpisodeGap(higherEpisode.chapterNumber, lowerEpisode.chapterNumber)
 }
 
 fun calculateEpisodeGap(higherChapterNumber: Double, lowerChapterNumber: Double): Int {

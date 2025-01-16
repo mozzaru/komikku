@@ -17,7 +17,7 @@ import tachiyomi.core.common.util.lang.launchIO
 import tachiyomi.domain.anime.interactor.GetAnime
 import tachiyomi.domain.anime.model.Manga
 import tachiyomi.domain.episode.interactor.GetEpisodesByAnimeId
-import tachiyomi.domain.episode.model.Chapter
+import tachiyomi.domain.episode.model.Episode
 import tachiyomi.domain.source.service.SourceManager
 import uy.kohesive.injekt.Injekt
 import uy.kohesive.injekt.api.get
@@ -40,7 +40,7 @@ class PagePreviewScreenModel(
             val chapter = getEpisodesByAnimeId.await(mangaId).minByOrNull { it.sourceOrder }
             if (chapter == null) {
                 mutableState.update {
-                    PagePreviewState.Error(Exception("No chapters found"))
+                    PagePreviewState.Error(Exception("No episodes found"))
                 }
                 return@launchIO
             }
@@ -100,7 +100,7 @@ sealed class PagePreviewState {
         val hasNextPage: Boolean,
         val pageCount: Int?,
         val manga: Manga,
-        val chapter: Chapter,
+        val episode: Episode,
         val source: Source,
     ) : PagePreviewState()
 

@@ -15,7 +15,7 @@ import tachiyomi.domain.anime.model.Manga
 import uy.kohesive.injekt.injectLazy
 
 /**
- * Loader used to load a episode from the downloaded chapters.
+ * Loader used to load a episode from the downloaded episodes.
  */
 internal class DownloadPageLoader(
     private val chapter: ReaderChapter,

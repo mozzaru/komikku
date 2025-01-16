@@ -5,7 +5,7 @@ import exh.source.isEhBasedManga
 import tachiyomi.domain.anime.interactor.GetAnime
 import tachiyomi.domain.episode.interactor.GetEpisodesByAnimeId
 import tachiyomi.domain.episode.interactor.GetMergedEpisodesByAnimeId
-import tachiyomi.domain.episode.model.Chapter
+import tachiyomi.domain.episode.model.Episode
 import tachiyomi.domain.episode.service.getEpisodeSort
 import tachiyomi.domain.history.repository.HistoryRepository
 import kotlin.math.max
@@ -19,12 +19,12 @@ class GetNextEpisodes(
     private val historyRepository: HistoryRepository,
 ) {
 
-    suspend fun await(onlyUnread: Boolean = true): List<Chapter> {
+    suspend fun await(onlyUnread: Boolean = true): List<Episode> {
         val history = historyRepository.getLastHistory() ?: return emptyList()
         return await(history.mangaId, history.chapterId, onlyUnread)
     }
 
-    suspend fun await(mangaId: Long, onlyUnread: Boolean = true): List<Chapter> {
+    suspend fun await(mangaId: Long, onlyUnread: Boolean = true): List<Episode> {
         val manga = getAnime.await(mangaId) ?: return emptyList()
 
         // SY -->
@@ -64,7 +64,7 @@ class GetNextEpisodes(
         mangaId: Long,
         fromChapterId: Long,
         onlyUnread: Boolean = true,
-    ): List<Chapter> {
+    ): List<Episode> {
         val chapters = await(mangaId, onlyUnread)
         val currChapterIndex = chapters.indexOfFirst { it.id == fromChapterId }
         val nextChapters = chapters.subList(max(0, currChapterIndex), chapters.size)

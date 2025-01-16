@@ -14,7 +14,7 @@ import tachiyomi.domain.anime.model.Manga
 import tachiyomi.domain.anime.repository.AnimeRepository
 import tachiyomi.domain.download.service.DownloadPreferences
 import tachiyomi.domain.episode.interactor.GetMergedEpisodesByAnimeId
-import tachiyomi.domain.episode.model.Chapter
+import tachiyomi.domain.episode.model.Episode
 import tachiyomi.domain.episode.model.EpisodeUpdate
 import tachiyomi.domain.episode.repository.EpisodeRepository
 
@@ -28,21 +28,21 @@ class SetSeenStatus(
     // SY <--
 ) {
 
-    private val mapper = { chapter: Chapter, read: Boolean ->
+    private val mapper = { episode: Episode, read: Boolean ->
         EpisodeUpdate(
             read = read,
             lastPageRead = if (!read) 0 else null,
-            id = chapter.id,
+            id = episode.id,
         )
     }
 
     /**
-     * Mark chapters as read/unread, also delete downloaded chapters if 'After manually marked as read' is set.
+     * Mark episodes as read/unread, also delete downloaded episodes if 'After manually marked as read' is set.
      *
      * Called from:
      *  - [LibraryScreenModel]: Manually select mangas & mark as read
-     *  - [AnimeScreenModel.markChaptersRead]: Manually select chapters & mark as read or swipe episode as read
-     *  - [UpdatesScreenModel.markUpdatesRead]: Manually select chapters & mark as read
+     *  - [AnimeScreenModel.markChaptersRead]: Manually select episodes & mark as read or swipe episode as read
+     *  - [UpdatesScreenModel.markUpdatesRead]: Manually select episodes & mark as read
      *  - [LibraryUpdateJob.updateChapterList]: when a manga is updated and has new episode but already read,
      *  it will mark that new **duplicated** episode as read & delete downloading/downloaded -> should be treat as
      *  automatically ~ no auto delete
@@ -51,12 +51,12 @@ class SetSeenStatus(
      */
     suspend fun await(
         read: Boolean,
-        vararg chapters: Chapter,
+        vararg episodes: Episode,
         // KMK -->
         manually: Boolean = true,
         // KMK <--
     ): Result = withNonCancellableContext {
-        val chaptersToUpdate = chapters.filter {
+        val chaptersToUpdate = episodes.filter {
             when (read) {
                 true -> !it.read
                 false -> it.read || it.lastPageRead > 0
@@ -90,7 +90,7 @@ class SetSeenStatus(
                 .forEach { (mangaId, chapters) ->
                     deleteDownload.awaitAll(
                         manga = animeRepository.getMangaById(mangaId),
-                        chapters = chapters.toTypedArray(),
+                        episodes = chapters.toTypedArray(),
                     )
                 }
         }
@@ -101,7 +101,7 @@ class SetSeenStatus(
     suspend fun await(mangaId: Long, read: Boolean): Result = withNonCancellableContext {
         await(
             read = read,
-            chapters = episodeRepository
+            episodes = episodeRepository
                 .getChapterByMangaId(mangaId)
                 .toTypedArray(),
         )
@@ -111,7 +111,7 @@ class SetSeenStatus(
     private suspend fun awaitMerged(mangaId: Long, read: Boolean) = withNonCancellableContext f@{
         return@f await(
             read = read,
-            chapters = getMergedEpisodesByAnimeId
+            episodes = getMergedEpisodesByAnimeId
                 .await(mangaId, dedupe = false)
                 .toTypedArray(),
         )

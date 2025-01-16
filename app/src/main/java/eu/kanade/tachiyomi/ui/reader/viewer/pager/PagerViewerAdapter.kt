@@ -70,7 +70,7 @@ class PagerViewerAdapter(
     fun setChapters(chapters: ViewerChapters, forceTransition: Boolean) {
         val newItems = mutableListOf<ReaderItem>()
 
-        // Forces episode transition if there is missing chapters
+        // Forces episode transition if there is missing episodes
         val prevHasMissingChapters = calculateChapterGap(chapters.currChapter, chapters.prevChapter) > 0
         val nextHasMissingChapters = calculateChapterGap(chapters.nextChapter, chapters.currChapter) > 0
 

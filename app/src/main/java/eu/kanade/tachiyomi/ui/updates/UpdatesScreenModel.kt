@@ -82,7 +82,7 @@ class UpdatesScreenModel(
 
     init {
         screenModelScope.launchIO {
-            // Set date limit for recent chapters
+            // Set date limit for recent episodes
             val limit = ZonedDateTime.now().minusMonths(3).toInstant()
 
             combine(
@@ -147,14 +147,14 @@ class UpdatesScreenModel(
     }
 
     /**
-     * Update status of chapters.
+     * Update status of episodes.
      *
      * @param download download object containing progress.
      */
     private fun updateDownloadState(download: Download) {
         mutableState.update { state ->
             val newItems = state.items.mutate { list ->
-                val modifiedIndex = list.indexOfFirst { it.update.episodeId == download.chapter.id }
+                val modifiedIndex = list.indexOfFirst { it.update.episodeId == download.episode.id }
                 if (modifiedIndex < 0) return@mutate
 
                 val item = list[modifiedIndex]
@@ -206,13 +206,13 @@ class UpdatesScreenModel(
     /**
      * Mark the selected updates list as read/unread.
      * @param updates the list of selected updates.
-     * @param read whether to mark chapters as read or unread.
+     * @param read whether to mark episodes as read or unread.
      */
     fun markUpdatesRead(updates: List<UpdatesItem>, read: Boolean) {
         screenModelScope.launchIO {
             setSeenStatus.await(
                 read = read,
-                chapters = updates
+                episodes = updates
                     .mapNotNull { getEpisode.await(it.update.episodeId) }
                     .toTypedArray(),
             )
@@ -221,8 +221,8 @@ class UpdatesScreenModel(
     }
 
     /**
-     * Bookmarks the given list of chapters.
-     * @param updates the list of chapters to bookmark.
+     * Bookmarks the given list of episodes.
+     * @param updates the list of episodes to bookmark.
      */
     fun bookmarkUpdates(updates: List<UpdatesItem>, bookmark: Boolean) {
         screenModelScope.launchIO {
@@ -235,8 +235,8 @@ class UpdatesScreenModel(
     }
 
     /**
-     * Downloads the given list of chapters with the manager.
-     * @param updatesItem the list of chapters to download.
+     * Downloads the given list of episodes with the manager.
+     * @param updatesItem the list of episodes to download.
      */
     private fun downloadChapters(updatesItem: List<UpdatesItem>) {
         screenModelScope.launchNonCancellable {
@@ -253,9 +253,9 @@ class UpdatesScreenModel(
     }
 
     /**
-     * Delete selected chapters
+     * Delete selected episodes
      *
-     * @param updatesItem list of chapters
+     * @param updatesItem list of episodes
      */
     fun deleteChapters(updatesItem: List<UpdatesItem>) {
         screenModelScope.launchNonCancellable {

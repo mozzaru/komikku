@@ -9,7 +9,7 @@ import tachiyomi.core.common.i18n.stringResource
 import tachiyomi.core.common.storage.displayablePath
 import tachiyomi.core.common.util.system.logcat
 import tachiyomi.domain.anime.model.Manga
-import tachiyomi.domain.episode.model.Chapter
+import tachiyomi.domain.episode.model.Episode
 import tachiyomi.domain.storage.service.StorageManager
 import tachiyomi.i18n.MR
 import uy.kohesive.injekt.Injekt
@@ -88,15 +88,15 @@ class DownloadProvider(
     }
 
     /**
-     * Returns a list of downloaded directories for the chapters that exist.
+     * Returns a list of downloaded directories for the episodes that exist.
      *
-     * @param chapters the chapters to query.
+     * @param episodes the episodes to query.
      * @param manga the manga of the episode.
      * @param source the source of the episode.
      */
-    fun findChapterDirs(chapters: List<Chapter>, manga: Manga, source: Source): Pair<UniFile?, List<UniFile>> {
+    fun findChapterDirs(episodes: List<Episode>, manga: Manga, source: Source): Pair<UniFile?, List<UniFile>> {
         val mangaDir = findMangaDir(/* SY --> */ manga.ogTitle /* SY <-- */, source) ?: return null to emptyList()
-        return mangaDir to chapters.mapNotNull { chapter ->
+        return mangaDir to episodes.mapNotNull { chapter ->
             getValidChapterDirNames(chapter.name, chapter.scanlator).asSequence()
                 .mapNotNull { mangaDir.findFile(it) }
                 .firstOrNull()
@@ -107,18 +107,18 @@ class DownloadProvider(
     /**
      * Returns a list of all files in manga directory
      *
-     * @param chapters the chapters to query.
+     * @param episodes the episodes to query.
      * @param manga the manga of the episode.
      * @param source the source of the episode.
      */
     fun findUnmatchedChapterDirs(
-        chapters: List<Chapter>,
+        episodes: List<Episode>,
         manga: Manga,
         source: Source,
     ): List<UniFile> {
         val mangaDir = findMangaDir(/* SY --> */ manga.ogTitle /* SY <-- */, source) ?: return emptyList()
         return mangaDir.listFiles().orEmpty().asList().filter {
-            chapters.find { chp ->
+            episodes.find { chp ->
                 getValidChapterDirNames(chp.name, chp.scanlator).any { dir ->
                     mangaDir.findFile(dir) != null
                 }
@@ -173,9 +173,9 @@ class DownloadProvider(
         }
     }
 
-    fun isChapterDirNameChanged(oldChapter: Chapter, newChapter: Chapter): Boolean {
-        return oldChapter.name != newChapter.name ||
-            oldChapter.scanlator?.takeIf { it.isNotBlank() } != newChapter.scanlator?.takeIf { it.isNotBlank() }
+    fun isChapterDirNameChanged(oldEpisode: Episode, newEpisode: Episode): Boolean {
+        return oldEpisode.name != newEpisode.name ||
+            oldEpisode.scanlator?.takeIf { it.isNotBlank() } != newEpisode.scanlator?.takeIf { it.isNotBlank() }
     }
 
     /**
@@ -190,7 +190,7 @@ class DownloadProvider(
             // Folder of images
             add(chapterDirName)
 
-            // Archived chapters
+            // Archived episodes
             add("$chapterDirName.cbz")
         }
     }

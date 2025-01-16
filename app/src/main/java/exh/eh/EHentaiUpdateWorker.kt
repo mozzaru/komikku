@@ -42,7 +42,7 @@ import tachiyomi.domain.anime.interactor.GetFlatMetadataById
 import tachiyomi.domain.anime.interactor.InsertFlatMetadata
 import tachiyomi.domain.anime.model.Manga
 import tachiyomi.domain.episode.interactor.GetEpisodesByAnimeId
-import tachiyomi.domain.episode.model.Chapter
+import tachiyomi.domain.episode.model.Episode
 import tachiyomi.domain.library.service.LibraryPreferences
 import tachiyomi.domain.library.service.LibraryPreferences.Companion.DEVICE_CHARGING
 import tachiyomi.domain.library.service.LibraryPreferences.Companion.DEVICE_ONLY_ON_WIFI
@@ -139,7 +139,7 @@ class EHentaiUpdateWorker(private val context: Context, workerParams: WorkerPara
 
         var failuresThisIteration = 0
         var updatedThisIteration = 0
-        val updatedManga = mutableListOf<Pair<Manga, Array<Chapter>>>()
+        val updatedManga = mutableListOf<Pair<Manga, Array<Episode>>>()
         val modifiedThisIteration = mutableSetOf<Long>()
 
         try {
@@ -193,7 +193,7 @@ class EHentaiUpdateWorker(private val context: Context, workerParams: WorkerPara
 
                 if (chapters.isEmpty()) {
                     logger.e(
-                        "No chapters found for gallery (manga.id: %s, meta.gId: %s, meta.gToken: %s, failures-so-far: %s)!",
+                        "No episodes found for gallery (manga.id: %s, meta.gId: %s, meta.gToken: %s, failures-so-far: %s)!",
                         manga.id,
                         meta.gId,
                         meta.gToken,
@@ -238,7 +238,7 @@ class EHentaiUpdateWorker(private val context: Context, workerParams: WorkerPara
     }
 
     // New, current
-    private suspend fun updateEntryAndGetChapters(manga: Manga): Pair<List<Chapter>, List<Chapter>> {
+    private suspend fun updateEntryAndGetChapters(manga: Manga): Pair<List<Episode>, List<Episode>> {
         val source = sourceManager.get(manga.source) as? EHentai
             ?: throw GalleryNotUpdatedException(false, IllegalStateException("Missing EH-based source (${manga.source})!"))
 
@@ -329,7 +329,7 @@ class EHentaiUpdateWorker(private val context: Context, workerParams: WorkerPara
     }
 }
 
-data class UpdateEntry(val manga: Manga, val meta: EHentaiSearchMetadata, val rootChapter: Chapter?)
+data class UpdateEntry(val manga: Manga, val meta: EHentaiSearchMetadata, val rootEpisode: Episode?)
 
 object EHentaiUpdateWorkerConstants {
     const val UPDATES_PER_ITERATION = 50

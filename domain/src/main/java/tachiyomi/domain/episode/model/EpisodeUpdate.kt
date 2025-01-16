@@ -16,7 +16,7 @@ data class EpisodeUpdate(
     val version: Long? = null,
 )
 
-fun Chapter.toEpisodeUpdate(): EpisodeUpdate {
+fun Episode.toEpisodeUpdate(): EpisodeUpdate {
     return EpisodeUpdate(
         id,
         mangaId,

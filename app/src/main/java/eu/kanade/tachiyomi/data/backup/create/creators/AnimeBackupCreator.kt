@@ -71,7 +71,7 @@ class AnimeBackupCreator(
         }
 
         if (options.chapters) {
-            // Backup all the chapters
+            // Backup all the episodes
             handler.awaitList {
                 episodesQueries.getEpisodesByMangaId(
                     mangaId = manga.id,

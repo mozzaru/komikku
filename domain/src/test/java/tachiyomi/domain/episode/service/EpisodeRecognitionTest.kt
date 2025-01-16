@@ -168,7 +168,7 @@ class EpisodeRecognitionTest {
     fun `Number after manga title with chapter in chapter title case`() {
         val mangaTitle = "Tokyo ESP"
 
-        assertChapter(mangaTitle, "Tokyo ESP 027: Part 002: Chapter 001", 027.0)
+        assertChapter(mangaTitle, "Tokyo ESP 027: Part 002: Episode 001", 027.0)
     }
 
     /**
@@ -253,7 +253,7 @@ class EpisodeRecognitionTest {
 
     @Test
     fun `Chapters in format sx - chapter xx`() {
-        assertChapter("The Gamer", "S3 - Chapter 20", 20.0)
+        assertChapter("The Gamer", "S3 - Episode 20", 20.0)
     }
 
     @Test

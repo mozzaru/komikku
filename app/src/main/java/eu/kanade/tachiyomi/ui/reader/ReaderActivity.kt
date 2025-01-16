@@ -156,7 +156,7 @@ class ReaderActivity : BaseActivity() {
         fun newIntent(context: Context, mangaId: Long?, chapterId: Long?/* SY --> */, page: Int? = null/* SY <-- */): Intent {
             return Intent(context, ReaderActivity::class.java).apply {
                 putExtra("manga", mangaId)
-                putExtra("chapter", chapterId)
+                putExtra("episode", chapterId)
                 // SY -->
                 putExtra("page", page)
                 // SY <--
@@ -225,7 +225,7 @@ class ReaderActivity : BaseActivity() {
 
         if (viewModel.needsInit()) {
             val manga = intent.extras?.getLong("manga", -1) ?: -1L
-            val chapter = intent.extras?.getLong("chapter", -1) ?: -1L
+            val chapter = intent.extras?.getLong("episode", -1) ?: -1L
             // SY -->
             val page = intent.extras?.getInt("page", -1).takeUnless { it == -1 }
             // SY <--
@@ -681,8 +681,8 @@ class ReaderActivity : BaseActivity() {
                         onBookmark = { chapter ->
                             viewModel.toggleBookmark(chapter.id, !chapter.bookmark)
                             chapters = chapters.map {
-                                if (it.chapter.id == chapter.id) {
-                                    it.copy(chapter = chapter.copy(bookmark = !chapter.bookmark))
+                                if (it.episode.id == chapter.id) {
+                                    it.copy(episode = chapter.copy(bookmark = !chapter.bookmark))
                                 } else {
                                     it
                                 }
