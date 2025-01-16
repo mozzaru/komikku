@@ -2,7 +2,7 @@ package tachiyomi.data.episode
 
 import tachiyomi.domain.episode.model.Chapter
 
-object ChapterMapper {
+object EpisodeMapper {
     fun mapChapter(
         id: Long,
         mangaId: Long,

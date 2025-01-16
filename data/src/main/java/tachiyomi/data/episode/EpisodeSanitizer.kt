@@ -1,6 +1,6 @@
 package tachiyomi.data.episode
 
-object ChapterSanitizer {
+object EpisodeSanitizer {
 
     fun String.sanitize(title: String): String {
         return trim()

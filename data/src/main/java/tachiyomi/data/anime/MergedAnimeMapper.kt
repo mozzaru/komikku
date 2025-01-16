@@ -2,7 +2,7 @@ package tachiyomi.data.anime
 
 import tachiyomi.domain.anime.model.MergedAnimeReference
 
-object MergedMangaMapper {
+object MergedAnimeMapper {
     fun map(
         id: Long,
         isInfoManga: Boolean,

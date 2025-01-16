@@ -20,11 +20,11 @@ class AnimeRepositoryImpl(
 ) : AnimeRepository {
 
     override suspend fun getMangaById(id: Long): Manga {
-        return handler.awaitOne { mangasQueries.getMangaById(id, MangaMapper::mapManga) }
+        return handler.awaitOne { mangasQueries.getMangaById(id, AnimeMapper::mapAnime) }
     }
 
     override suspend fun getMangaByIdAsFlow(id: Long): Flow<Manga> {
-        return handler.subscribeToOne { mangasQueries.getMangaById(id, MangaMapper::mapManga) }
+        return handler.subscribeToOne { mangasQueries.getMangaById(id, AnimeMapper::mapAnime) }
     }
 
     override suspend fun getMangaByUrlAndSourceId(url: String, sourceId: Long): Manga? {
@@ -32,7 +32,7 @@ class AnimeRepositoryImpl(
             mangasQueries.getMangaByUrlAndSource(
                 url,
                 sourceId,
-                MangaMapper::mapManga,
+                AnimeMapper::mapAnime,
             )
         }
     }
@@ -42,47 +42,47 @@ class AnimeRepositoryImpl(
             mangasQueries.getMangaByUrlAndSource(
                 url,
                 sourceId,
-                MangaMapper::mapManga,
+                AnimeMapper::mapAnime,
             )
         }
     }
 
     override suspend fun getFavorites(): List<Manga> {
-        return handler.awaitList { mangasQueries.getFavorites(MangaMapper::mapManga) }
+        return handler.awaitList { mangasQueries.getFavorites(AnimeMapper::mapAnime) }
     }
 
     override suspend fun getReadMangaNotInLibrary(): List<Manga> {
-        return handler.awaitList { mangasQueries.getReadMangaNotInLibrary(MangaMapper::mapManga) }
+        return handler.awaitList { mangasQueries.getReadMangaNotInLibrary(AnimeMapper::mapAnime) }
     }
 
     override suspend fun getLibraryManga(): List<LibraryAnime> {
         return handler.awaitListExecutable {
             (handler as AndroidDatabaseHandler).getLibraryQuery()
-        }.map(MangaMapper::mapLibraryView)
-        // return handler.awaitList { libraryViewQueries.library(MangaMapper::mapLibraryManga) }
+        }.map(AnimeMapper::mapLibraryView)
+        // return handler.awaitList { libraryViewQueries.library(AnimeMapper::mapLibraryAnime) }
     }
 
     override fun getLibraryMangaAsFlow(): Flow<List<LibraryAnime>> {
-        return handler.subscribeToList { libraryViewQueries.library(MangaMapper::mapLibraryManga) }
+        return handler.subscribeToList { libraryViewQueries.library(AnimeMapper::mapLibraryAnime) }
             // SY -->
             .map { getLibraryManga() }
         // SY <--
     }
 
     override fun getFavoritesBySourceId(sourceId: Long): Flow<List<Manga>> {
-        return handler.subscribeToList { mangasQueries.getFavoriteBySourceId(sourceId, MangaMapper::mapManga) }
+        return handler.subscribeToList { mangasQueries.getFavoriteBySourceId(sourceId, AnimeMapper::mapAnime) }
     }
 
     override suspend fun getDuplicateLibraryManga(id: Long, title: String): List<Manga> {
         return handler.awaitList {
-            mangasQueries.getDuplicateLibraryManga(title, id, MangaMapper::mapManga)
+            mangasQueries.getDuplicateLibraryManga(title, id, AnimeMapper::mapAnime)
         }
     }
 
     override suspend fun getUpcomingManga(statuses: Set<Long>): Flow<List<Manga>> {
         val epochMillis = LocalDate.now().atStartOfDay(ZoneId.systemDefault()).toEpochSecond() * 1000
         return handler.subscribeToList {
-            mangasQueries.getUpcomingManga(epochMillis, statuses, MangaMapper::mapManga)
+            mangasQueries.getUpcomingManga(epochMillis, statuses, AnimeMapper::mapAnime)
         }
     }
 
@@ -191,11 +191,11 @@ class AnimeRepositoryImpl(
 
     // SY -->
     override suspend fun getMangaBySourceId(sourceId: Long): List<Manga> {
-        return handler.awaitList { mangasQueries.getBySource(sourceId, MangaMapper::mapManga) }
+        return handler.awaitList { mangasQueries.getBySource(sourceId, AnimeMapper::mapAnime) }
     }
 
     override suspend fun getAll(): List<Manga> {
-        return handler.awaitList { mangasQueries.getAll(MangaMapper::mapManga) }
+        return handler.awaitList { mangasQueries.getAll(AnimeMapper::mapAnime) }
     }
 
     override suspend fun deleteManga(mangaId: Long) {
@@ -205,7 +205,7 @@ class AnimeRepositoryImpl(
     override suspend fun getReadMangaNotInLibraryView(): List<LibraryAnime> {
         return handler.awaitListExecutable {
             (handler as AndroidDatabaseHandler).getLibraryQuery("M.favorite = 0 AND C.readCount != 0")
-        }.map(MangaMapper::mapLibraryView)
+        }.map(AnimeMapper::mapLibraryView)
     }
     // SY <--
 }

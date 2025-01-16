@@ -10,7 +10,7 @@ import mihon.core.migration.Migration
 import mihon.core.migration.MigrationContext
 import tachiyomi.core.common.util.lang.withIOContext
 import tachiyomi.data.DatabaseHandler
-import tachiyomi.data.episode.ChapterMapper
+import tachiyomi.data.episode.EpisodeMapper
 import tachiyomi.domain.anime.interactor.GetAnime
 import tachiyomi.domain.anime.interactor.GetAnimeBySource
 import tachiyomi.domain.anime.interactor.InsertMergedReference
@@ -92,7 +92,7 @@ class MergedMangaRewriteMigration : Migration {
                     handler.awaitList {
                         ehQueries.getChaptersByMangaIds(
                             mergedMangas.map { it.id },
-                            ChapterMapper::mapChapter,
+                            EpisodeMapper::mapChapter,
                         )
                     }
 
@@ -100,7 +100,7 @@ class MergedMangaRewriteMigration : Migration {
                     handler.awaitList {
                         ehQueries.getChaptersByMangaIds(
                             loadedMangaList.map { it.manga.id },
-                            ChapterMapper::mapChapter,
+                            EpisodeMapper::mapChapter,
                         )
                     }
 

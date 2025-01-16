@@ -82,7 +82,7 @@ class EpisodeRepositoryImpl(
 
     override suspend fun getChapterByMangaId(mangaId: Long, applyScanlatorFilter: Boolean): List<Chapter> {
         return handler.awaitList {
-            chaptersQueries.getChaptersByMangaId(mangaId, applyScanlatorFilter.toLong(), ChapterMapper::mapChapter)
+            chaptersQueries.getChaptersByMangaId(mangaId, applyScanlatorFilter.toLong(), EpisodeMapper::mapChapter)
         }
     }
 
@@ -102,18 +102,18 @@ class EpisodeRepositoryImpl(
         return handler.awaitList {
             chaptersQueries.getBookmarkedChaptersByMangaId(
                 mangaId,
-                ChapterMapper::mapChapter,
+                EpisodeMapper::mapChapter,
             )
         }
     }
 
     override suspend fun getChapterById(id: Long): Chapter? {
-        return handler.awaitOneOrNull { chaptersQueries.getChapterById(id, ChapterMapper::mapChapter) }
+        return handler.awaitOneOrNull { chaptersQueries.getChapterById(id, EpisodeMapper::mapChapter) }
     }
 
     override suspend fun getChapterByMangaIdAsFlow(mangaId: Long, applyScanlatorFilter: Boolean): Flow<List<Chapter>> {
         return handler.subscribeToList {
-            chaptersQueries.getChaptersByMangaId(mangaId, applyScanlatorFilter.toLong(), ChapterMapper::mapChapter)
+            chaptersQueries.getChaptersByMangaId(mangaId, applyScanlatorFilter.toLong(), EpisodeMapper::mapChapter)
         }
     }
 
@@ -122,14 +122,14 @@ class EpisodeRepositoryImpl(
             chaptersQueries.getChapterByUrlAndMangaId(
                 url,
                 mangaId,
-                ChapterMapper::mapChapter,
+                EpisodeMapper::mapChapter,
             )
         }
     }
 
     // SY -->
     override suspend fun getChapterByUrl(url: String): List<Chapter> {
-        return handler.awaitList { chaptersQueries.getChapterByUrl(url, ChapterMapper::mapChapter) }
+        return handler.awaitList { chaptersQueries.getChapterByUrl(url, EpisodeMapper::mapChapter) }
     }
 
     override suspend fun getMergedChapterByMangaId(mangaId: Long, applyScanlatorFilter: Boolean): List<Chapter> {
@@ -137,7 +137,7 @@ class EpisodeRepositoryImpl(
             chaptersQueries.getMergedChaptersByMangaId(
                 mangaId,
                 applyScanlatorFilter.toLong(),
-                ChapterMapper::mapChapter,
+                EpisodeMapper::mapChapter,
             )
         }
     }
@@ -150,7 +150,7 @@ class EpisodeRepositoryImpl(
             chaptersQueries.getMergedChaptersByMangaId(
                 mangaId,
                 applyScanlatorFilter.toLong(),
-                ChapterMapper::mapChapter,
+                EpisodeMapper::mapChapter,
             )
         }
     }

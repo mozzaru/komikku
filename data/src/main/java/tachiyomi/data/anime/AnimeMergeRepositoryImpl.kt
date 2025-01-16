@@ -14,27 +14,27 @@ class AnimeMergeRepositoryImpl(
 ) : AnimeMergeRepository {
 
     override suspend fun getMergedManga(): List<Manga> {
-        return handler.awaitList { mergedQueries.selectAllMergedMangas(MangaMapper::mapManga) }
+        return handler.awaitList { mergedQueries.selectAllMergedMangas(AnimeMapper::mapAnime) }
     }
 
     override suspend fun subscribeMergedManga(): Flow<List<Manga>> {
-        return handler.subscribeToList { mergedQueries.selectAllMergedMangas(MangaMapper::mapManga) }
+        return handler.subscribeToList { mergedQueries.selectAllMergedMangas(AnimeMapper::mapAnime) }
     }
 
     override suspend fun getMergedMangaById(id: Long): List<Manga> {
-        return handler.awaitList { mergedQueries.selectMergedMangasById(id, MangaMapper::mapManga) }
+        return handler.awaitList { mergedQueries.selectMergedMangasById(id, AnimeMapper::mapAnime) }
     }
 
     override suspend fun subscribeMergedMangaById(id: Long): Flow<List<Manga>> {
-        return handler.subscribeToList { mergedQueries.selectMergedMangasById(id, MangaMapper::mapManga) }
+        return handler.subscribeToList { mergedQueries.selectMergedMangasById(id, AnimeMapper::mapAnime) }
     }
 
     override suspend fun getReferencesById(id: Long): List<MergedAnimeReference> {
-        return handler.awaitList { mergedQueries.selectByMergeId(id, MergedMangaMapper::map) }
+        return handler.awaitList { mergedQueries.selectByMergeId(id, MergedAnimeMapper::map) }
     }
 
     override suspend fun subscribeReferencesById(id: Long): Flow<List<MergedAnimeReference>> {
-        return handler.subscribeToList { mergedQueries.selectByMergeId(id, MergedMangaMapper::map) }
+        return handler.subscribeToList { mergedQueries.selectByMergeId(id, MergedAnimeMapper::map) }
     }
 
     override suspend fun updateSettings(update: MergeAnimeSettingsUpdate): Boolean {
@@ -122,6 +122,6 @@ class AnimeMergeRepositoryImpl(
     }
 
     override suspend fun getMergeMangaForDownloading(mergeId: Long): List<Manga> {
-        return handler.awaitList { mergedQueries.selectMergedMangasForDownloadingById(mergeId, MangaMapper::mapManga) }
+        return handler.awaitList { mergedQueries.selectMergedMangasForDownloadingById(mergeId, AnimeMapper::mapAnime) }
     }
 }

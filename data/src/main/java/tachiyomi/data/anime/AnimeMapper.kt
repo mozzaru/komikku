@@ -5,8 +5,8 @@ import tachiyomi.domain.anime.model.Manga
 import tachiyomi.domain.library.model.LibraryAnime
 import tachiyomi.view.LibraryView
 
-object MangaMapper {
-    fun mapManga(
+object AnimeMapper {
+    fun mapAnime(
         id: Long,
         source: Long,
         url: String,
@@ -64,7 +64,7 @@ object MangaMapper {
         version = version,
     )
 
-    fun mapLibraryManga(
+    fun mapLibraryAnime(
         id: Long,
         source: Long,
         url: String,
@@ -101,7 +101,7 @@ object MangaMapper {
         bookmarkCount: Double,
         category: Long,
     ): LibraryAnime = LibraryAnime(
-        manga = mapManga(
+        manga = mapAnime(
             id,
             source,
             url,

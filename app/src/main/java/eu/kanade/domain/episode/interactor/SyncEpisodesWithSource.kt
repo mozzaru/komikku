@@ -11,7 +11,7 @@ import eu.kanade.tachiyomi.source.Source
 import eu.kanade.tachiyomi.source.model.SChapter
 import eu.kanade.tachiyomi.source.online.HttpSource
 import exh.source.isEhBasedManga
-import tachiyomi.data.episode.ChapterSanitizer
+import tachiyomi.data.episode.EpisodeSanitizer
 import tachiyomi.domain.anime.model.Manga
 import tachiyomi.domain.episode.interactor.GetEpisodesByAnimeId
 import tachiyomi.domain.episode.interactor.ShouldUpdateDbEpisode
@@ -64,7 +64,7 @@ class SyncEpisodesWithSource(
             .mapIndexed { i, sChapter ->
                 Chapter.create()
                     .copyFromSChapter(sChapter)
-                    .copy(name = with(ChapterSanitizer) { sChapter.name.sanitize(manga.title) })
+                    .copy(name = with(EpisodeSanitizer) { sChapter.name.sanitize(manga.title) })
                     .copy(mangaId = manga.id, sourceOrder = i.toLong())
             }
 
