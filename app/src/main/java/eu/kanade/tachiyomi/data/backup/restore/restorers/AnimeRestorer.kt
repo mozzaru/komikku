@@ -380,7 +380,7 @@ class AnimeRestorer(
 
     private suspend fun restoreHistory(manga: Manga, backupHistory: List<BackupHistory>) {
         val toUpdate = backupHistory.mapNotNull { history ->
-            val dbHistory = handler.awaitOneOrNull { historyQueries.getHistoryByChapterUrl(manga.id, history.url) }
+            val dbHistory = handler.awaitOneOrNull { historyQueries.getHistoryByEpisodeUrl(manga.id, history.url) }
             val item = history.getHistoryImpl()
 
             if (dbHistory == null) {

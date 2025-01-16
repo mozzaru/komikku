@@ -11,7 +11,7 @@ CREATE TABLE history(
 
 CREATE INDEX history_history_chapter_id_index ON history(chapter_id);
 
-getHistoryByMangaId:
+getHistoryByAnimeId:
 SELECT
 H._id,
 H.chapter_id,
@@ -22,7 +22,7 @@ JOIN chapters C
 ON H.chapter_id = C._id
 WHERE C.manga_id = :mangaId AND C._id = H.chapter_id;
 
-getHistoryByChapterUrl:
+getHistoryByEpisodeUrl:
 SELECT
 H._id,
 H.chapter_id,
@@ -38,7 +38,7 @@ UPDATE history
 SET last_read = 0
 WHERE _id = :historyId;
 
-resetHistoryByMangaId:
+resetHistoryByAnimeId:
 UPDATE history
 SET last_read = 0
 WHERE _id IN (
@@ -68,6 +68,6 @@ SET
     time_read = time_read + :time_read
 WHERE chapter_id = :chapterId;
 
-getReadDuration:
+getSeenDuration:
 SELECT coalesce(sum(time_read), 0)
 FROM history;
