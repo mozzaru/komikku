@@ -452,7 +452,7 @@ class AnimeRestorer(
         if (existingTracks.isNotEmpty()) {
             handler.await(true) {
                 existingTracks.forEach { track ->
-                    manga_syncQueries.update(
+                    anime_syncQueries.update(
                         track.mangaId,
                         track.trackerId,
                         track.remoteId,

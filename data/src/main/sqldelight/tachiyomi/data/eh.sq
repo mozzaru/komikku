@@ -1,5 +1,5 @@
 deleteBySyncId:
-DELETE FROM manga_sync WHERE sync_id = :syncId;
+DELETE FROM anime_sync WHERE sync_id = :syncId;
 
 migrateSource:
 UPDATE mangas
