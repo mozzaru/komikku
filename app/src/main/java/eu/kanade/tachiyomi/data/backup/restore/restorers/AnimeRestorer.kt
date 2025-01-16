@@ -58,7 +58,7 @@ class AnimeRestorer(
     }
 
     suspend fun sortByNew(backupAnimes: List<BackupAnime>): List<BackupAnime> {
-        val urlsBySource = handler.awaitList { mangasQueries.getAllMangaSourceAndUrl() }
+        val urlsBySource = handler.awaitList { animesQueries.getAllAnimeSourceAndUrl() }
             .groupBy({ it.source }, { it.url })
 
         return backupAnimes
@@ -103,7 +103,7 @@ class AnimeRestorer(
             )
 
             if (isSync) {
-                mangasQueries.resetIsSyncing()
+                animesQueries.resetIsSyncing()
                 episodesQueries.resetIsSyncing()
             }
         }
@@ -139,7 +139,7 @@ class AnimeRestorer(
 
     suspend fun updateManga(manga: Manga): Manga {
         handler.await(true) {
-            mangasQueries.update(
+            animesQueries.update(
                 source = manga.source,
                 url = manga.url,
                 artist = manga.artist,
@@ -289,7 +289,7 @@ class AnimeRestorer(
      */
     private suspend fun insertManga(manga: Manga): Long {
         return handler.awaitOneExecutable(true) {
-            mangasQueries.insert(
+            animesQueries.insert(
                 source = manga.source,
                 url = manga.url,
                 artist = manga.artist,
@@ -311,7 +311,7 @@ class AnimeRestorer(
                 updateStrategy = manga.updateStrategy,
                 version = manga.version,
             )
-            mangasQueries.selectLastInsertedRowId()
+            animesQueries.selectLastInsertedRowId()
         }
     }
 
@@ -500,7 +500,7 @@ class AnimeRestorer(
             ) {
                 // Let the db assign the id
                 val mergedManga = handler.awaitOneOrNull {
-                    mangasQueries.getMangaByUrlAndSource(
+                    animesQueries.getAnimeByUrlAndSource(
                         backupMergedMangaReference.mangaUrl,
                         backupMergedMangaReference.mangaSourceId,
                         AnimeMapper::mapAnime,

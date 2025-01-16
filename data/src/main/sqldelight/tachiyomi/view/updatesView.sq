@@ -1,21 +1,21 @@
 CREATE VIEW updatesView AS
 SELECT
-    mangas._id AS mangaId,
-    mangas.title AS mangaTitle,
+    animes._id AS mangaId,
+    animes.title AS mangaTitle,
     episodes._id AS chapterId,
     episodes.name AS chapterName,
     episodes.scanlator,
     episodes.read,
     episodes.bookmark,
     episodes.last_page_read,
-    mangas.source,
-    mangas.favorite,
-    mangas.thumbnail_url AS thumbnailUrl,
-    mangas.cover_last_modified AS coverLastModified,
+    animes.source,
+    animes.favorite,
+    animes.thumbnail_url AS thumbnailUrl,
+    animes.cover_last_modified AS coverLastModified,
     episodes.date_upload AS dateUpload,
     episodes.date_fetch AS datefetch
-FROM mangas JOIN episodes
-ON mangas._id = episodes.manga_id
+FROM animes JOIN episodes
+ON animes._id = episodes.manga_id
 WHERE favorite = 1
 AND date_fetch > date_added
 ORDER BY date_fetch DESC;

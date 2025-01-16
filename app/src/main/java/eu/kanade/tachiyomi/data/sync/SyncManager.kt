@@ -71,7 +71,7 @@ class SyncManager(
     suspend fun syncData() {
         // Reset isSyncing in case it was left over or failed syncing during restore.
         handler.await(inTransaction = true) {
-            mangasQueries.resetIsSyncing()
+            animesQueries.resetIsSyncing()
             episodesQueries.resetIsSyncing()
         }
 
@@ -242,11 +242,11 @@ class SyncManager(
      * @return a list of all manga stored in the database
      */
     private suspend fun getAllMangaFromDB(): List<Manga> {
-        return handler.awaitList { mangasQueries.getAllManga(::mapAnime) }
+        return handler.awaitList { animesQueries.getAllAnime(::mapAnime) }
     }
 
     private suspend fun getAllMangaThatNeedsSync(): List<Manga> {
-        return handler.awaitList { mangasQueries.getMangasWithFavoriteTimestamp(::mapAnime) }
+        return handler.awaitList { animesQueries.getAnimesWithFavoriteTimestamp(::mapAnime) }
     }
 
     private suspend fun isMangaDifferent(localManga: Manga, remoteManga: BackupAnime): Boolean {

@@ -4,15 +4,15 @@ CREATE TABLE animes_categories(
     category_id INTEGER NOT NULL,
     FOREIGN KEY(category_id) REFERENCES categories (_id)
     ON DELETE CASCADE,
-    FOREIGN KEY(manga_id) REFERENCES mangas (_id)
+    FOREIGN KEY(manga_id) REFERENCES animes (_id)
     ON DELETE CASCADE
 );
 
 CREATE TRIGGER insert_manga_category_update_version AFTER INSERT ON animes_categories
 BEGIN
-    UPDATE mangas
+    UPDATE animes
     SET version = version + 1
-    WHERE _id = new.manga_id AND (SELECT is_syncing FROM mangas WHERE _id = new.manga_id) = 0;
+    WHERE _id = new.manga_id AND (SELECT is_syncing FROM animes WHERE _id = new.manga_id) = 0;
 END;
 
 insert:

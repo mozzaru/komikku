@@ -228,9 +228,9 @@ private class ClearDatabaseScreenModel : StateScreenModel<ClearDatabaseScreenMod
         val state = state.value as? State.Ready ?: return@withNonCancellableContext
         // SY -->
         if (keepReadManga) {
-            database.mangasQueries.deleteMangasNotInLibraryAndNotReadBySourceIds(state.selection)
+            database.animesQueries.deleteAnimesNotInLibraryAndNotSeenBySourceIds(state.selection)
         } else {
-            database.mangasQueries.deleteMangasNotInLibraryBySourceIds(state.selection)
+            database.animesQueries.deleteAnimesNotInLibraryBySourceIds(state.selection)
         }
         // SY <--
         database.historyQueries.removeResettedHistory()

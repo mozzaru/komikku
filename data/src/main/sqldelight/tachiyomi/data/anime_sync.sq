@@ -13,7 +13,7 @@ CREATE TABLE anime_sync(
     start_date INTEGER NOT NULL,
     finish_date INTEGER NOT NULL,
     UNIQUE (manga_id, sync_id) ON CONFLICT REPLACE,
-    FOREIGN KEY(manga_id) REFERENCES mangas (_id)
+    FOREIGN KEY(manga_id) REFERENCES animes (_id)
     ON DELETE CASCADE
 );
 

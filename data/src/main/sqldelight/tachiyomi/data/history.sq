@@ -43,7 +43,7 @@ UPDATE history
 SET last_read = 0
 WHERE _id IN (
     SELECT H._id
-    FROM mangas M
+    FROM animes M
     INNER JOIN episodes C
     ON M._id = C.manga_id
     INNER JOIN history H

@@ -8,7 +8,7 @@ SELECT
     coalesce(C.lastRead, 0) AS lastRead,
     coalesce(C.bookmarkCount, 0) AS bookmarkCount,
     coalesce(MC.category_id, 0) AS category
-FROM mangas M
+FROM animes M
 LEFT JOIN(
     SELECT
         episodes.manga_id,

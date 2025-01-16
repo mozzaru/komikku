@@ -2,7 +2,7 @@ deleteBySyncId:
 DELETE FROM anime_sync WHERE sync_id = :syncId;
 
 migrateSource:
-UPDATE mangas
+UPDATE animes
 SET source = :newId
 WHERE source = :oldId;
 
@@ -10,19 +10,19 @@ getChaptersByMangaIds:
 SELECT * FROM episodes WHERE manga_id IN :mangaIds;
 
 migrateAllNhentaiToOtherLang:
-UPDATE mangas
+UPDATE animes
 SET source = :nh
 WHERE favorite = 1 AND source IN :sources;
 
 resetReaderViewerForAllManga:
-UPDATE mangas
+UPDATE animes
 SET viewer = 0;
 
 fixReaderViewerBackupBug:
-UPDATE mangas
+UPDATE animes
 SET viewer = 0
 WHERE viewer = -1;
 
 addAllMangaInDatabaseToLibrary:
-UPDATE mangas
+UPDATE animes
 SET favorite = 1;
