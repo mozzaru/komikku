@@ -68,12 +68,12 @@ selectAll:
 SELECT * FROM merged;
 
 selectChaptersByMergedId:
-SELECT chapters.*
+SELECT episodes.*
 FROM (
     SELECT manga_id FROM merged WHERE merge_id = ?
 ) AS M
-JOIN chapters
-ON chapters.manga_id = M.manga_id;
+JOIN episodes
+ON episodes.manga_id = M.manga_id;
 
 insert:
 INSERT INTO merged(

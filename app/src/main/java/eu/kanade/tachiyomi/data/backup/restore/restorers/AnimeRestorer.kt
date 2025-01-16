@@ -104,7 +104,7 @@ class AnimeRestorer(
 
             if (isSync) {
                 mangasQueries.resetIsSyncing()
-                chaptersQueries.resetIsSyncing()
+                episodesQueries.resetIsSyncing()
             }
         }
     }
@@ -239,7 +239,7 @@ class AnimeRestorer(
     private suspend fun insertNewChapters(chapters: List<Chapter>) {
         handler.await(true) {
             chapters.forEach { chapter ->
-                chaptersQueries.insert(
+                episodesQueries.insert(
                     chapter.mangaId,
                     chapter.url,
                     chapter.name,
@@ -260,7 +260,7 @@ class AnimeRestorer(
     private suspend fun updateExistingChapters(chapters: List<Chapter>) {
         handler.await(true) {
             chapters.forEach { chapter ->
-                chaptersQueries.update(
+                episodesQueries.update(
                     mangaId = null,
                     url = null,
                     name = null,
@@ -384,7 +384,7 @@ class AnimeRestorer(
             val item = history.getHistoryImpl()
 
             if (dbHistory == null) {
-                val chapter = handler.awaitList { chaptersQueries.getChapterByUrl(history.url) }
+                val chapter = handler.awaitList { episodesQueries.getEpisodeByUrl(history.url) }
                     .find { it.manga_id == manga.id }
                 return@mapNotNull if (chapter == null) {
                     // Episode doesn't exist; skip

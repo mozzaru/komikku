@@ -11,21 +11,21 @@ SELECT
 FROM mangas M
 LEFT JOIN(
     SELECT
-        chapters.manga_id,
+        episodes.manga_id,
         count(*) AS total,
         sum(read) AS readCount,
-        coalesce(max(chapters.date_upload), 0) AS latestUpload,
+        coalesce(max(episodes.date_upload), 0) AS latestUpload,
         coalesce(max(history.last_read), 0) AS lastRead,
-        coalesce(max(chapters.date_fetch), 0) AS fetchedAt,
-        sum(chapters.bookmark) AS bookmarkCount
-    FROM chapters
+        coalesce(max(episodes.date_fetch), 0) AS fetchedAt,
+        sum(episodes.bookmark) AS bookmarkCount
+    FROM episodes
     LEFT JOIN excluded_scanlators
-    ON chapters.manga_id = excluded_scanlators.manga_id
-    AND chapters.scanlator = excluded_scanlators.scanlator
+    ON episodes.manga_id = excluded_scanlators.manga_id
+    AND episodes.scanlator = excluded_scanlators.scanlator
     LEFT JOIN history
-    ON chapters._id = history.chapter_id
+    ON episodes._id = history.chapter_id
     WHERE excluded_scanlators.scanlator IS NULL
-    GROUP BY chapters.manga_id
+    GROUP BY episodes.manga_id
 ) AS C
 ON M._id = C.manga_id
 LEFT JOIN animes_categories AS MC

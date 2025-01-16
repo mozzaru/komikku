@@ -7,7 +7,7 @@ SET source = :newId
 WHERE source = :oldId;
 
 getChaptersByMangaIds:
-SELECT * FROM chapters WHERE manga_id IN :mangaIds;
+SELECT * FROM episodes WHERE manga_id IN :mangaIds;
 
 migrateAllNhentaiToOtherLang:
 UPDATE mangas
