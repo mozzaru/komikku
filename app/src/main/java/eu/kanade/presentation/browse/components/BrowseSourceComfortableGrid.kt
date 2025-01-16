@@ -21,8 +21,8 @@ import eu.kanade.tachiyomi.R
 import exh.metadata.metadata.MangaDexSearchMetadata
 import exh.metadata.metadata.RaisedSearchMetadata
 import kotlinx.coroutines.flow.StateFlow
+import tachiyomi.domain.anime.model.AnimeCover
 import tachiyomi.domain.anime.model.Manga
-import tachiyomi.domain.anime.model.MangaCover
 import tachiyomi.presentation.core.components.Badge
 import tachiyomi.presentation.core.i18n.stringResource
 import tachiyomi.presentation.core.util.plus
@@ -95,7 +95,7 @@ internal fun BrowseSourceComfortableGridItem(
 ) {
     AnimeComfortableGridItem(
         title = manga.title,
-        coverData = MangaCover(
+        coverData = AnimeCover(
             animeId = manga.id,
             sourceId = manga.source,
             isAnimeFavorite = manga.favorite,

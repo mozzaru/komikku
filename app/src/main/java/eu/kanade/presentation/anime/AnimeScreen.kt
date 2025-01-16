@@ -112,10 +112,10 @@ import exh.ui.metadata.adapters.MangaDexDescription
 import exh.ui.metadata.adapters.NHentaiDescription
 import exh.ui.metadata.adapters.PururinDescription
 import exh.ui.metadata.adapters.TsuminoDescription
+import tachiyomi.domain.anime.model.AnimeCover
 import tachiyomi.domain.anime.model.Manga
-import tachiyomi.domain.anime.model.MangaCover
 import tachiyomi.domain.episode.model.Chapter
-import tachiyomi.domain.episode.service.missingChaptersCount
+import tachiyomi.domain.episode.service.missingEpisodesCount
 import tachiyomi.domain.library.service.LibraryPreferences
 import tachiyomi.domain.source.model.StubSource
 import tachiyomi.i18n.MR
@@ -203,7 +203,7 @@ fun AnimeScreen(
     onRelatedMangaLongClick: (Manga) -> Unit,
     librarySearch: (query: String) -> Unit,
     onSourceClick: () -> Unit,
-    onCoverLoaded: (MangaCover) -> Unit,
+    onCoverLoaded: (AnimeCover) -> Unit,
     coverRatio: MutableFloatState,
     onPaletteScreenClick: () -> Unit,
     hazeState: HazeState,
@@ -401,7 +401,7 @@ private fun AnimeScreenSmallImpl(
     onRelatedMangaLongClick: (Manga) -> Unit,
     librarySearch: (query: String) -> Unit,
     onSourceClick: () -> Unit,
-    onCoverLoaded: (MangaCover) -> Unit,
+    onCoverLoaded: (AnimeCover) -> Unit,
     coverRatio: MutableFloatState,
     onPaletteScreenClick: () -> Unit,
     hazeState: HazeState,
@@ -759,7 +759,7 @@ private fun AnimeScreenSmallImpl(
                         contentType = AnimeScreenItem.CHAPTER_HEADER,
                     ) {
                         val missingChapterCount = remember(chapters) {
-                            chapters.map { it.chapter.chapterNumber }.missingChaptersCount()
+                            chapters.map { it.chapter.chapterNumber }.missingEpisodesCount()
                         }
                         EpisodeHeader(
                             enabled = !isAnySelected,
@@ -856,7 +856,7 @@ private fun AnimeScreenLargeImpl(
     onRelatedMangaLongClick: (Manga) -> Unit,
     librarySearch: (query: String) -> Unit,
     onSourceClick: () -> Unit,
-    onCoverLoaded: (MangaCover) -> Unit,
+    onCoverLoaded: (AnimeCover) -> Unit,
     coverRatio: MutableFloatState,
     onPaletteScreenClick: () -> Unit,
     hazeState: HazeState,
@@ -1189,7 +1189,7 @@ private fun AnimeScreenLargeImpl(
                                 contentType = AnimeScreenItem.CHAPTER_HEADER,
                             ) {
                                 val missingChapterCount = remember(chapters) {
-                                    chapters.map { it.chapter.chapterNumber }.missingChaptersCount()
+                                    chapters.map { it.chapter.chapterNumber }.missingEpisodesCount()
                                 }
                                 EpisodeHeader(
                                     enabled = !isAnySelected,

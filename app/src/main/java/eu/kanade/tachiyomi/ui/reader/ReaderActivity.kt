@@ -136,7 +136,7 @@ import tachiyomi.core.common.util.lang.launchIO
 import tachiyomi.core.common.util.lang.launchNonCancellable
 import tachiyomi.core.common.util.lang.withUIContext
 import tachiyomi.core.common.util.system.logcat
-import tachiyomi.domain.anime.model.MangaCover
+import tachiyomi.domain.anime.model.AnimeCover
 import tachiyomi.domain.anime.model.asMangaCover
 import tachiyomi.domain.source.service.SourceManager
 import tachiyomi.i18n.MR
@@ -786,7 +786,7 @@ class ReaderActivity : BaseActivity() {
     private fun seedColorStatic(): ComposeColor? {
         return viewModel.manga?.asMangaCover()?.vibrantCoverColor?.let { ComposeColor(it) }
             ?: intent.extras?.getLong("manga")?.takeIf { it > 0 }
-                ?.let { MangaCover.vibrantCoverColorMap[it] }
+                ?.let { AnimeCover.vibrantCoverColorMap[it] }
                 ?.let { ComposeColor(it) }
     }
     // KMK <--

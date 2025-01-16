@@ -17,13 +17,13 @@ import okio.source
 import org.junit.jupiter.api.BeforeAll
 import org.junit.jupiter.api.Disabled
 import org.junit.jupiter.api.Test
-import tachiyomi.domain.anime.interactor.GetCustomMangaInfo
+import tachiyomi.domain.anime.interactor.GetCustomAnimeInfo
 import tachiyomi.domain.anime.interactor.GetFavoriteEntries
 import tachiyomi.domain.anime.interactor.GetFavorites
-import tachiyomi.domain.anime.model.CustomMangaInfo
+import tachiyomi.domain.anime.model.CustomAnimeInfo
 import tachiyomi.domain.anime.model.FavoriteEntry
 import tachiyomi.domain.anime.model.Manga
-import tachiyomi.domain.anime.repository.CustomMangaRepository
+import tachiyomi.domain.anime.repository.CustomAnimeRepository
 import tachiyomi.domain.category.interactor.GetCategories
 import tachiyomi.domain.category.model.Category
 import uy.kohesive.injekt.Injekt
@@ -169,10 +169,10 @@ class Tester {
         @BeforeAll
         fun before() {
             Injekt.addSingletonFactory {
-                GetCustomMangaInfo(
-                    object : CustomMangaRepository {
+                GetCustomAnimeInfo(
+                    object : CustomAnimeRepository {
                         override fun get(mangaId: Long) = null
-                        override fun set(mangaInfo: CustomMangaInfo) = Unit
+                        override fun set(mangaInfo: CustomAnimeInfo) = Unit
                     },
                 )
             }

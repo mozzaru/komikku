@@ -114,7 +114,7 @@ private fun LibraryUpdateErrorUiItem(
             modifier = Modifier
                 .padding(vertical = 6.dp)
                 .height(48.dp),
-            data = error.mangaCover,
+            data = error.animeCover,
             onClick = onClickCover,
         )
 

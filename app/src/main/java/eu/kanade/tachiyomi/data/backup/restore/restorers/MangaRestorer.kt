@@ -14,14 +14,14 @@ import tachiyomi.data.UpdateStrategyColumnAdapter
 import tachiyomi.data.anime.MangaMapper
 import tachiyomi.data.anime.MergedMangaMapper
 import tachiyomi.domain.anime.interactor.FetchInterval
+import tachiyomi.domain.anime.interactor.GetAnimeByUrlAndSourceId
 import tachiyomi.domain.anime.interactor.GetFlatMetadataById
-import tachiyomi.domain.anime.interactor.GetMangaByUrlAndSourceId
 import tachiyomi.domain.anime.interactor.InsertFlatMetadata
-import tachiyomi.domain.anime.interactor.SetCustomMangaInfo
-import tachiyomi.domain.anime.model.CustomMangaInfo
+import tachiyomi.domain.anime.interactor.SetCustomAnimeInfo
+import tachiyomi.domain.anime.model.CustomAnimeInfo
 import tachiyomi.domain.anime.model.Manga
 import tachiyomi.domain.category.interactor.GetCategories
-import tachiyomi.domain.episode.interactor.GetChaptersByMangaId
+import tachiyomi.domain.episode.interactor.GetEpisodesByAnimeId
 import tachiyomi.domain.episode.model.Chapter
 import tachiyomi.domain.track.interactor.GetTracks
 import tachiyomi.domain.track.interactor.InsertTrack
@@ -37,14 +37,14 @@ class MangaRestorer(
 
     private val handler: DatabaseHandler = Injekt.get(),
     private val getCategories: GetCategories = Injekt.get(),
-    private val getMangaByUrlAndSourceId: GetMangaByUrlAndSourceId = Injekt.get(),
-    private val getChaptersByMangaId: GetChaptersByMangaId = Injekt.get(),
+    private val getAnimeByUrlAndSourceId: GetAnimeByUrlAndSourceId = Injekt.get(),
+    private val getEpisodesByAnimeId: GetEpisodesByAnimeId = Injekt.get(),
     private val updateAnime: UpdateAnime = Injekt.get(),
     private val getTracks: GetTracks = Injekt.get(),
     private val insertTrack: InsertTrack = Injekt.get(),
     fetchInterval: FetchInterval = Injekt.get(),
     // SY -->
-    private val setCustomMangaInfo: SetCustomMangaInfo = Injekt.get(),
+    private val setCustomAnimeInfo: SetCustomAnimeInfo = Injekt.get(),
     private val insertFlatMetadata: InsertFlatMetadata = Injekt.get(),
     private val getFlatMetadataById: GetFlatMetadataById = Injekt.get(),
     // SY <--
@@ -110,7 +110,7 @@ class MangaRestorer(
     }
 
     private suspend fun findExistingManga(backupManga: BackupManga): Manga? {
-        return getMangaByUrlAndSourceId.await(backupManga.url, backupManga.source)
+        return getAnimeByUrlAndSourceId.await(backupManga.url, backupManga.source)
     }
 
     private suspend fun restoreExistingManga(manga: Manga, dbManga: Manga): Manga {
@@ -178,7 +178,7 @@ class MangaRestorer(
     }
 
     private suspend fun restoreChapters(manga: Manga, backupChapters: List<BackupChapter>) {
-        val dbChaptersByUrl = getChaptersByMangaId.await(manga.id)
+        val dbChaptersByUrl = getEpisodesByAnimeId.await(manga.id)
             .associateBy { it.url }
 
         val (existingChapters, newChapters) = backupChapters
@@ -326,7 +326,7 @@ class MangaRestorer(
         // SY -->
         mergedMangaReferences: List<BackupMergedMangaReference>,
         flatMetadata: BackupFlatMetadata?,
-        customManga: CustomMangaInfo?,
+        customManga: CustomAnimeInfo?,
         // SY <--
     ): Manga {
         restoreCategories(manga, categories, backupCategories)
@@ -532,12 +532,12 @@ class MangaRestorer(
         }
     }
 
-    private fun restoreEditedInfo(mangaJson: CustomMangaInfo?) {
+    private fun restoreEditedInfo(mangaJson: CustomAnimeInfo?) {
         mangaJson ?: return
-        setCustomMangaInfo.set(mangaJson)
+        setCustomAnimeInfo.set(mangaJson)
     }
 
-    fun BackupManga.getCustomMangaInfo(): CustomMangaInfo? {
+    fun BackupManga.getCustomMangaInfo(): CustomAnimeInfo? {
         if (customTitle != null ||
             customArtist != null ||
             customAuthor != null ||
@@ -546,7 +546,7 @@ class MangaRestorer(
             customGenre != null ||
             customStatus != 0
         ) {
-            return CustomMangaInfo(
+            return CustomAnimeInfo(
                 id = 0L,
                 title = customTitle,
                 author = customAuthor,

@@ -1,17 +1,17 @@
 package tachiyomi.domain.anime.interactor
 
-import tachiyomi.domain.anime.model.MergedMangaReference
-import tachiyomi.domain.anime.repository.MangaMergeRepository
+import tachiyomi.domain.anime.model.MergedAnimeReference
+import tachiyomi.domain.anime.repository.AnimeMergeRepository
 
 class InsertMergedReference(
-    private val mangaMergedRepository: MangaMergeRepository,
+    private val mangaMergedRepository: AnimeMergeRepository,
 ) {
 
-    suspend fun await(reference: MergedMangaReference): Long? {
+    suspend fun await(reference: MergedAnimeReference): Long? {
         return mangaMergedRepository.insert(reference)
     }
 
-    suspend fun awaitAll(references: List<MergedMangaReference>) {
+    suspend fun awaitAll(references: List<MergedAnimeReference>) {
         mangaMergedRepository.insertAll(references)
     }
 }

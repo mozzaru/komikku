@@ -15,7 +15,7 @@ import kotlinx.collections.immutable.toImmutableMap
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
-import mihon.domain.upcoming.interactor.GetUpcomingManga
+import mihon.domain.upcoming.interactor.GetUpcomingAnime
 import tachiyomi.domain.anime.model.Manga
 import tachiyomi.domain.library.service.LibraryPreferences
 import uy.kohesive.injekt.Injekt
@@ -24,7 +24,7 @@ import java.time.LocalDate
 import java.time.YearMonth
 
 class UpcomingScreenModel(
-    private val getUpcomingManga: GetUpcomingManga = Injekt.get(),
+    private val getUpcomingAnime: GetUpcomingAnime = Injekt.get(),
 ) : StateScreenModel<UpcomingScreenModel.State>(State()) {
     // KMK -->
     private val libraryPreferences: LibraryPreferences = Injekt.get()
@@ -32,7 +32,7 @@ class UpcomingScreenModel(
 
     init {
         screenModelScope.launch {
-            getUpcomingManga.subscribe().collectLatest {
+            getUpcomingAnime.subscribe().collectLatest {
                 mutableState.update { state ->
                     val upcomingItems = it.toUpcomingUIModels()
                     state.copy(
@@ -49,7 +49,7 @@ class UpcomingScreenModel(
         // KMK -->
         screenModelScope.launch {
             mutableState.update { state ->
-                val updatingItems = getUpcomingManga.updatingMangas().toUpcomingUIModels()
+                val updatingItems = getUpcomingAnime.updatingMangas().toUpcomingUIModels()
                 state.copy(
                     isLoadingUpdating = false,
                     updatingItems = updatingItems,

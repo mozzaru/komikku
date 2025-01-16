@@ -7,18 +7,18 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.util.fastAny
 import eu.kanade.tachiyomi.ui.library.LibraryItem
-import tachiyomi.domain.anime.model.MangaCover
-import tachiyomi.domain.library.model.LibraryManga
+import tachiyomi.domain.anime.model.AnimeCover
+import tachiyomi.domain.library.model.LibraryAnime
 
 @Composable
 internal fun LibraryComfortableGrid(
     items: List<LibraryItem>,
     columns: Int,
     contentPadding: PaddingValues,
-    selection: List<LibraryManga>,
-    onClick: (LibraryManga) -> Unit,
-    onLongClick: (LibraryManga) -> Unit,
-    onClickContinueReading: ((LibraryManga) -> Unit)?,
+    selection: List<LibraryAnime>,
+    onClick: (LibraryAnime) -> Unit,
+    onLongClick: (LibraryAnime) -> Unit,
+    onClickContinueReading: ((LibraryAnime) -> Unit)?,
     searchQuery: String?,
     onGlobalSearchClicked: () -> Unit,
     // KMK -->
@@ -36,11 +36,11 @@ internal fun LibraryComfortableGrid(
             items = items,
             contentType = { "library_comfortable_grid_item" },
         ) { libraryItem ->
-            val manga = libraryItem.libraryManga.manga
+            val manga = libraryItem.libraryAnime.manga
             AnimeComfortableGridItem(
-                isSelected = selection.fastAny { it.id == libraryItem.libraryManga.id },
+                isSelected = selection.fastAny { it.id == libraryItem.libraryAnime.id },
                 title = manga.title,
-                coverData = MangaCover(
+                coverData = AnimeCover(
                     animeId = manga.id,
                     sourceId = manga.source,
                     isAnimeFavorite = manga.favorite,
@@ -63,10 +63,10 @@ internal fun LibraryComfortableGrid(
                     SourceIconBadge(source = libraryItem.source)
                     // KMK <--
                 },
-                onLongClick = { onLongClick(libraryItem.libraryManga) },
-                onClick = { onClick(libraryItem.libraryManga) },
+                onLongClick = { onLongClick(libraryItem.libraryAnime) },
+                onClick = { onClick(libraryItem.libraryAnime) },
                 onClickContinueReading = if (onClickContinueReading != null && libraryItem.unreadCount > 0) {
-                    { onClickContinueReading(libraryItem.libraryManga) }
+                    { onClickContinueReading(libraryItem.libraryAnime) }
                 } else {
                     null
                 },

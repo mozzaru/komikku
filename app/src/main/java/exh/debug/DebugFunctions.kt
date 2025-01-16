@@ -25,8 +25,8 @@ import mihon.core.migration.MigrationStrategyFactory
 import mihon.core.migration.Migrator
 import mihon.core.migration.migrations.migrations
 import tachiyomi.data.DatabaseHandler
-import tachiyomi.domain.anime.interactor.GetAllManga
-import tachiyomi.domain.anime.interactor.GetExhFavoriteMangaWithMetadata
+import tachiyomi.domain.anime.interactor.GetAllAnime
+import tachiyomi.domain.anime.interactor.GetExhFavoriteAnimeWithMetadata
 import tachiyomi.domain.anime.interactor.GetFavorites
 import tachiyomi.domain.anime.interactor.GetFlatMetadataById
 import tachiyomi.domain.anime.interactor.GetSearchMetadata
@@ -46,9 +46,9 @@ object DebugFunctions {
     private val getFavorites: GetFavorites by injectLazy()
     private val getFlatMetadataById: GetFlatMetadataById by injectLazy()
     private val insertFlatMetadata: InsertFlatMetadata by injectLazy()
-    private val getExhFavoriteMangaWithMetadata: GetExhFavoriteMangaWithMetadata by injectLazy()
+    private val getExhFavoriteAnimeWithMetadata: GetExhFavoriteAnimeWithMetadata by injectLazy()
     private val getSearchMetadata: GetSearchMetadata by injectLazy()
-    private val getAllManga: GetAllManga by injectLazy()
+    private val getAllAnime: GetAllAnime by injectLazy()
 
     fun forceUpgradeMigration(): Boolean {
         val migrationContext = MigrationContext(dryrun = false)
@@ -68,7 +68,7 @@ object DebugFunctions {
 
     fun resetAgedFlagInExhManga() {
         runBlocking {
-            getExhFavoriteMangaWithMetadata.await().forEach { manga ->
+            getExhFavoriteAnimeWithMetadata.await().forEach { manga ->
                 val meta = getFlatMetadataById.await(manga.id)?.raise<EHentaiSearchMetadata>() ?: return@forEach
                 // remove age flag
                 meta.aged = false
@@ -85,7 +85,7 @@ object DebugFunctions {
     fun resetEHGalleriesForUpdater() {
         throttleManager.resetThrottle()
         runBlocking {
-            val allManga = getExhFavoriteMangaWithMetadata.await()
+            val allManga = getExhFavoriteAnimeWithMetadata.await()
 
             val eh = sourceManager.get(EH_SOURCE_ID)
             val ex = sourceManager.get(EXH_SOURCE_ID)
@@ -106,7 +106,7 @@ object DebugFunctions {
 
     fun getEHMangaListWithAgedFlagInfo(): String {
         return runBlocking {
-            val result = getExhFavoriteMangaWithMetadata.await().mapNotNull { manga ->
+            val result = getExhFavoriteAnimeWithMetadata.await().mapNotNull { manga ->
                 val meta = getFlatMetadataById.await(manga.id)?.raise<EHentaiSearchMetadata>()
                 // KMK -->
                 meta?.let { "Aged: ${meta.aged}\t-\tTitle: ${manga.title}" }
@@ -118,7 +118,7 @@ object DebugFunctions {
 
     fun countAgedFlagInExhManga(): Int {
         return runBlocking {
-            getExhFavoriteMangaWithMetadata.await()
+            getExhFavoriteAnimeWithMetadata.await()
                 .count { manga ->
                     val meta = getFlatMetadataById.await(manga.id)
                         ?.raise<EHentaiSearchMetadata>()
@@ -134,14 +134,14 @@ object DebugFunctions {
 
     fun countMangaInDatabaseInLibrary() = runBlocking { getFavorites.await().size }
 
-    fun countMangaInDatabaseNotInLibrary() = runBlocking { getAllManga.await() }.count { !it.favorite }
+    fun countMangaInDatabaseNotInLibrary() = runBlocking { getAllAnime.await() }.count { !it.favorite }
 
-    fun countMangaInDatabase() = runBlocking { getAllManga.await() }.size
+    fun countMangaInDatabase() = runBlocking { getAllAnime.await() }.size
 
     fun countMetadataInDatabase() = runBlocking { getSearchMetadata.await().size }
 
     fun countMangaInLibraryWithMissingMetadata() = runBlocking {
-        runBlocking { getAllManga.await() }.count {
+        runBlocking { getAllAnime.await() }.count {
             it.favorite && getSearchMetadata.await(it.id) == null
         }
     }

@@ -31,7 +31,7 @@ import coil3.compose.SubcomposeAsyncImage
 import eu.kanade.tachiyomi.R
 import tachiyomi.domain.anime.model.Manga
 import tachiyomi.domain.anime.model.asMangaCover
-import tachiyomi.domain.anime.model.MangaCover as DomainMangaCover
+import tachiyomi.domain.anime.model.AnimeCover as DomainMangaCover
 
 enum class AnimeCover(val ratio: Float) {
     Square(1f / 1f),

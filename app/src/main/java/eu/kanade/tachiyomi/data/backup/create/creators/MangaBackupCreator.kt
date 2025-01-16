@@ -13,9 +13,9 @@ import eu.kanade.tachiyomi.ui.reader.setting.ReadingMode
 import exh.source.MERGED_SOURCE_ID
 import exh.source.getMainSource
 import tachiyomi.data.DatabaseHandler
-import tachiyomi.domain.anime.interactor.GetCustomMangaInfo
+import tachiyomi.domain.anime.interactor.GetCustomAnimeInfo
 import tachiyomi.domain.anime.interactor.GetFlatMetadataById
-import tachiyomi.domain.anime.model.CustomMangaInfo
+import tachiyomi.domain.anime.model.CustomAnimeInfo
 import tachiyomi.domain.anime.model.Manga
 import tachiyomi.domain.category.interactor.GetCategories
 import tachiyomi.domain.history.interactor.GetHistory
@@ -29,7 +29,7 @@ class MangaBackupCreator(
     private val getHistory: GetHistory = Injekt.get(),
     // SY -->
     private val sourceManager: SourceManager = Injekt.get(),
-    private val getCustomMangaInfo: GetCustomMangaInfo = Injekt.get(),
+    private val getCustomAnimeInfo: GetCustomAnimeInfo = Injekt.get(),
     private val getFlatMetadataById: GetFlatMetadataById = Injekt.get(),
     // SY <--
 ) {
@@ -45,7 +45,7 @@ class MangaBackupCreator(
         val mangaObject = manga.toBackupManga(
             // SY -->
             if (options.customInfo) {
-                getCustomMangaInfo.get(manga.id)
+                getCustomAnimeInfo.get(manga.id)
             } else {
                 null
             }, /* SY <-- */
@@ -115,7 +115,7 @@ class MangaBackupCreator(
     }
 }
 
-private fun Manga.toBackupManga(/* SY --> */customMangaInfo: CustomMangaInfo?/* SY <-- */) =
+private fun Manga.toBackupManga(/* SY --> */customAnimeInfo: CustomAnimeInfo?/* SY <-- */) =
     BackupManga(
         url = this.url,
         title = this.title,
@@ -137,7 +137,7 @@ private fun Manga.toBackupManga(/* SY --> */customMangaInfo: CustomMangaInfo?/* 
         version = this.version,
         // SY -->
     ).also { backupManga ->
-        customMangaInfo?.let {
+        customAnimeInfo?.let {
             backupManga.customTitle = it.title
             backupManga.customArtist = it.artist
             backupManga.customAuthor = it.author

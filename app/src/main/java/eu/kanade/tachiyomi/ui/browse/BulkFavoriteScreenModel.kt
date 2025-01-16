@@ -44,13 +44,13 @@ import tachiyomi.core.common.preference.mapAsCheckboxState
 import tachiyomi.core.common.util.lang.launchIO
 import tachiyomi.core.common.util.lang.launchNonCancellable
 import tachiyomi.domain.UnsortedPreferences
-import tachiyomi.domain.anime.interactor.GetDuplicateLibraryManga
+import tachiyomi.domain.anime.interactor.GetDuplicateLibraryAnime
 import tachiyomi.domain.anime.model.Manga
 import tachiyomi.domain.anime.model.toMangaUpdate
 import tachiyomi.domain.category.interactor.GetCategories
-import tachiyomi.domain.category.interactor.SetMangaCategories
+import tachiyomi.domain.category.interactor.SetAnimeCategories
 import tachiyomi.domain.category.model.Category
-import tachiyomi.domain.episode.interactor.SetMangaDefaultChapterFlags
+import tachiyomi.domain.episode.interactor.SetAnimeDefaultEpisodeFlags
 import tachiyomi.domain.library.service.LibraryPreferences
 import tachiyomi.domain.source.service.SourceManager
 import tachiyomi.i18n.kmk.KMR
@@ -63,12 +63,12 @@ class BulkFavoriteScreenModel(
     initialState: State = State(),
     private val sourceManager: SourceManager = Injekt.get(),
     private val libraryPreferences: LibraryPreferences = Injekt.get(),
-    private val getDuplicateLibraryManga: GetDuplicateLibraryManga = Injekt.get(),
+    private val getDuplicateLibraryAnime: GetDuplicateLibraryAnime = Injekt.get(),
     private val getCategories: GetCategories = Injekt.get(),
-    private val setMangaCategories: SetMangaCategories = Injekt.get(),
+    private val setAnimeCategories: SetAnimeCategories = Injekt.get(),
     private val updateAnime: UpdateAnime = Injekt.get(),
     private val coverCache: CoverCache = Injekt.get(),
-    private val setMangaDefaultChapterFlags: SetMangaDefaultChapterFlags = Injekt.get(),
+    private val setAnimeDefaultEpisodeFlags: SetAnimeDefaultEpisodeFlags = Injekt.get(),
     private val addTracks: AddTracks = Injekt.get(),
 ) : StateScreenModel<BulkFavoriteScreenModel.State>(initialState) {
 
@@ -195,7 +195,7 @@ class BulkFavoriteScreenModel(
 
     private suspend fun getNotDuplicateLibraryMangas(): List<Manga> {
         return state.value.selection.filterNot { manga ->
-            getDuplicateLibraryManga.await(manga).isNotEmpty()
+            getDuplicateLibraryAnime.await(manga).isNotEmpty()
         }
     }
 
@@ -203,7 +203,7 @@ class BulkFavoriteScreenModel(
         val mangas = state.value.selection
         mangas.fastForEachIndexed { index, manga ->
             if (index < startIdx) return@fastForEachIndexed
-            val dup = getDuplicateLibraryManga.await(manga)
+            val dup = getDuplicateLibraryAnime.await(manga)
             if (dup.isEmpty()) return@fastForEachIndexed
             return Pair(index, dup.first())
         }
@@ -254,7 +254,7 @@ class BulkFavoriteScreenModel(
 
     private fun moveMangaToCategory(mangaId: Long, categoryIds: List<Long>) {
         screenModelScope.launchIO {
-            setMangaCategories.await(mangaId, categoryIds)
+            setAnimeCategories.await(mangaId, categoryIds)
         }
     }
 
@@ -295,7 +295,7 @@ class BulkFavoriteScreenModel(
     }
 
     private suspend fun getDuplicateLibraryManga(manga: Manga): Manga? {
-        return getDuplicateLibraryManga.await(manga).getOrNull(0)
+        return getDuplicateLibraryAnime.await(manga).getOrNull(0)
     }
 
     private fun moveMangaToCategories(manga: Manga, vararg categories: Category) {
@@ -304,7 +304,7 @@ class BulkFavoriteScreenModel(
 
     fun moveMangaToCategories(manga: Manga, categoryIds: List<Long>) {
         screenModelScope.launchIO {
-            setMangaCategories.await(
+            setAnimeCategories.await(
                 mangaId = manga.id,
                 categoryIds = categoryIds.toList(),
             )
@@ -331,7 +331,7 @@ class BulkFavoriteScreenModel(
             if (!new.favorite) {
                 new = new.removeCovers(coverCache)
             } else {
-                setMangaDefaultChapterFlags.await(manga)
+                setAnimeDefaultEpisodeFlags.await(manga)
                 addTracks.bindEnhancedTrackers(manga, source)
             }
 

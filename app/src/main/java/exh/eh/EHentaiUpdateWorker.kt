@@ -37,11 +37,11 @@ import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.Json
 import tachiyomi.core.common.preference.getAndSet
 import tachiyomi.domain.UnsortedPreferences
-import tachiyomi.domain.anime.interactor.GetExhFavoriteMangaWithMetadata
+import tachiyomi.domain.anime.interactor.GetExhFavoriteAnimeWithMetadata
 import tachiyomi.domain.anime.interactor.GetFlatMetadataById
 import tachiyomi.domain.anime.interactor.InsertFlatMetadata
 import tachiyomi.domain.anime.model.Manga
-import tachiyomi.domain.episode.interactor.GetChaptersByMangaId
+import tachiyomi.domain.episode.interactor.GetEpisodesByAnimeId
 import tachiyomi.domain.episode.model.Chapter
 import tachiyomi.domain.library.service.LibraryPreferences
 import tachiyomi.domain.library.service.LibraryPreferences.Companion.DEVICE_CHARGING
@@ -62,10 +62,10 @@ class EHentaiUpdateWorker(private val context: Context, workerParams: WorkerPara
     private val logger: Logger by lazy { xLog() }
     private val updateAnime: UpdateAnime by injectLazy()
     private val syncEpisodesWithSource: SyncEpisodesWithSource by injectLazy()
-    private val getChaptersByMangaId: GetChaptersByMangaId by injectLazy()
+    private val getEpisodesByAnimeId: GetEpisodesByAnimeId by injectLazy()
     private val getFlatMetadataById: GetFlatMetadataById by injectLazy()
     private val insertFlatMetadata: InsertFlatMetadata by injectLazy()
-    private val getExhFavoriteMangaWithMetadata: GetExhFavoriteMangaWithMetadata by injectLazy()
+    private val getExhFavoriteAnimeWithMetadata: GetExhFavoriteAnimeWithMetadata by injectLazy()
 
     private val updateNotifier by lazy { EHentaiUpdateNotifier(context) }
     private val libraryUpdateNotifier by lazy { LibraryUpdateNotifier(context) }
@@ -107,7 +107,7 @@ class EHentaiUpdateWorker(private val context: Context, workerParams: WorkerPara
         val startTime = System.currentTimeMillis()
 
         logger.d("Finding manga with metadata...")
-        val metadataManga = getExhFavoriteMangaWithMetadata.await()
+        val metadataManga = getExhFavoriteAnimeWithMetadata.await()
 
         logger.d("Filtering manga and raising metadata...")
         val curTime = System.currentTimeMillis()
@@ -127,7 +127,7 @@ class EHentaiUpdateWorker(private val context: Context, workerParams: WorkerPara
                 return@mapNotNull null
             }
 
-            val chapter = getChaptersByMangaId.await(manga.id).minByOrNull {
+            val chapter = getEpisodesByAnimeId.await(manga.id).minByOrNull {
                 it.dateUpload
             }
 
@@ -249,7 +249,7 @@ class EHentaiUpdateWorker(private val context: Context, workerParams: WorkerPara
             val newChapters = source.getChapterList(manga.toSManga())
 
             val new = syncEpisodesWithSource.await(newChapters, manga, source)
-            return new to getChaptersByMangaId.await(manga.id)
+            return new to getEpisodesByAnimeId.await(manga.id)
         } catch (t: Throwable) {
             if (t is EHentai.GalleryNotFoundException) {
                 val meta = getFlatMetadataById.await(manga.id)?.raise<EHentaiSearchMetadata>()

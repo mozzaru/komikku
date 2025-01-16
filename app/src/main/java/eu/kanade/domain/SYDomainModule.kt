@@ -17,46 +17,46 @@ import eu.kanade.domain.source.interactor.SetSourceCategories
 import eu.kanade.domain.source.interactor.ToggleExcludeFromDataSaver
 import eu.kanade.tachiyomi.source.online.MetadataSource
 import exh.search.SearchEngine
-import tachiyomi.data.anime.CustomMangaRepositoryImpl
+import tachiyomi.data.anime.AnimeMergeRepositoryImpl
+import tachiyomi.data.anime.AnimeMetadataRepositoryImpl
+import tachiyomi.data.anime.CustomAnimeRepositoryImpl
 import tachiyomi.data.anime.FavoritesEntryRepositoryImpl
-import tachiyomi.data.anime.MangaMergeRepositoryImpl
-import tachiyomi.data.anime.MangaMetadataRepositoryImpl
 import tachiyomi.data.source.FeedSavedSearchRepositoryImpl
 import tachiyomi.data.source.SavedSearchRepositoryImpl
+import tachiyomi.domain.anime.interactor.DeleteAnimeById
 import tachiyomi.domain.anime.interactor.DeleteByMergeId
 import tachiyomi.domain.anime.interactor.DeleteFavoriteEntries
-import tachiyomi.domain.anime.interactor.DeleteMangaById
 import tachiyomi.domain.anime.interactor.DeleteMergeById
-import tachiyomi.domain.anime.interactor.GetAllManga
-import tachiyomi.domain.anime.interactor.GetCustomMangaInfo
-import tachiyomi.domain.anime.interactor.GetExhFavoriteMangaWithMetadata
+import tachiyomi.domain.anime.interactor.GetAllAnime
+import tachiyomi.domain.anime.interactor.GetAnime
+import tachiyomi.domain.anime.interactor.GetAnimeBySource
+import tachiyomi.domain.anime.interactor.GetCustomAnimeInfo
+import tachiyomi.domain.anime.interactor.GetExhFavoriteAnimeWithMetadata
 import tachiyomi.domain.anime.interactor.GetFavoriteEntries
 import tachiyomi.domain.anime.interactor.GetFlatMetadataById
-import tachiyomi.domain.anime.interactor.GetIdsOfFavoriteMangaWithMetadata
-import tachiyomi.domain.anime.interactor.GetManga
-import tachiyomi.domain.anime.interactor.GetMangaBySource
-import tachiyomi.domain.anime.interactor.GetMergedManga
-import tachiyomi.domain.anime.interactor.GetMergedMangaById
-import tachiyomi.domain.anime.interactor.GetMergedMangaForDownloading
+import tachiyomi.domain.anime.interactor.GetIdsOfFavoriteAnimeWithMetadata
+import tachiyomi.domain.anime.interactor.GetMergedAnime
+import tachiyomi.domain.anime.interactor.GetMergedAnimeById
+import tachiyomi.domain.anime.interactor.GetMergedAnimeForDownloading
 import tachiyomi.domain.anime.interactor.GetMergedReferencesById
-import tachiyomi.domain.anime.interactor.GetReadMangaNotInLibraryView
 import tachiyomi.domain.anime.interactor.GetSearchMetadata
 import tachiyomi.domain.anime.interactor.GetSearchTags
 import tachiyomi.domain.anime.interactor.GetSearchTitles
+import tachiyomi.domain.anime.interactor.GetSeenAnimeNotInLibraryView
 import tachiyomi.domain.anime.interactor.InsertFavoriteEntries
 import tachiyomi.domain.anime.interactor.InsertFavoriteEntryAlternative
 import tachiyomi.domain.anime.interactor.InsertFlatMetadata
 import tachiyomi.domain.anime.interactor.InsertMergedReference
-import tachiyomi.domain.anime.interactor.SetCustomMangaInfo
+import tachiyomi.domain.anime.interactor.SetCustomAnimeInfo
 import tachiyomi.domain.anime.interactor.UpdateMergedSettings
-import tachiyomi.domain.anime.repository.CustomMangaRepository
+import tachiyomi.domain.anime.repository.AnimeMergeRepository
+import tachiyomi.domain.anime.repository.AnimeMetadataRepository
+import tachiyomi.domain.anime.repository.CustomAnimeRepository
 import tachiyomi.domain.anime.repository.FavoritesEntryRepository
-import tachiyomi.domain.anime.repository.MangaMergeRepository
-import tachiyomi.domain.anime.repository.MangaMetadataRepository
-import tachiyomi.domain.episode.interactor.DeleteChapters
-import tachiyomi.domain.episode.interactor.GetChapterByUrl
-import tachiyomi.domain.episode.interactor.GetMergedChaptersByMangaId
-import tachiyomi.domain.history.interactor.GetHistoryByMangaId
+import tachiyomi.domain.episode.interactor.DeleteEpisodes
+import tachiyomi.domain.episode.interactor.GetEpisodeByUrl
+import tachiyomi.domain.episode.interactor.GetMergedEpisodesByAnimeId
+import tachiyomi.domain.history.interactor.GetHistoryByAnimeId
 import tachiyomi.domain.source.interactor.CountFeedSavedSearchBySourceId
 import tachiyomi.domain.source.interactor.CountFeedSavedSearchGlobal
 import tachiyomi.domain.source.interactor.DeleteFeedSavedSearchById
@@ -86,13 +86,13 @@ class SYDomainModule : InjektModule {
         addFactory { GetShowLatest(get()) }
         addFactory { ToggleExcludeFromDataSaver(get()) }
         addFactory { SetSourceCategories(get()) }
-        addFactory { GetAllManga(get()) }
-        addFactory { GetMangaBySource(get()) }
-        addFactory { DeleteChapters(get()) }
-        addFactory { DeleteMangaById(get()) }
+        addFactory { GetAllAnime(get()) }
+        addFactory { GetAnimeBySource(get()) }
+        addFactory { DeleteEpisodes(get()) }
+        addFactory { DeleteAnimeById(get()) }
         addFactory { FilterSerializer() }
-        addFactory { GetHistoryByMangaId(get()) }
-        addFactory { GetChapterByUrl(get()) }
+        addFactory { GetHistoryByAnimeId(get()) }
+        addFactory { GetEpisodeByUrl(get()) }
         addFactory { GetSourceCategories(get()) }
         addFactory { CreateSourceCategory(get()) }
         addFactory { RenameSourceCategory(get(), get()) }
@@ -104,32 +104,32 @@ class SYDomainModule : InjektModule {
         addFactory { GetPagePreviews(get(), get()) }
         addFactory { SearchEngine() }
         addFactory { IsTrackUnfollowed() }
-        addFactory { GetReadMangaNotInLibraryView(get()) }
+        addFactory { GetSeenAnimeNotInLibraryView(get()) }
 
         // Required for [MetadataSource]
-        addFactory<MetadataSource.GetMangaId> { GetManga(get()) }
+        addFactory<MetadataSource.GetMangaId> { GetAnime(get()) }
         addFactory<MetadataSource.GetFlatMetadataById> { GetFlatMetadataById(get()) }
         addFactory<MetadataSource.InsertFlatMetadata> { InsertFlatMetadata(get()) }
 
-        addSingletonFactory<MangaMetadataRepository> { MangaMetadataRepositoryImpl(get()) }
+        addSingletonFactory<AnimeMetadataRepository> { AnimeMetadataRepositoryImpl(get()) }
         addFactory { GetFlatMetadataById(get()) }
         addFactory { InsertFlatMetadata(get()) }
-        addFactory { GetExhFavoriteMangaWithMetadata(get()) }
+        addFactory { GetExhFavoriteAnimeWithMetadata(get()) }
         addFactory { GetSearchMetadata(get()) }
         addFactory { GetSearchTags(get()) }
         addFactory { GetSearchTitles(get()) }
-        addFactory { GetIdsOfFavoriteMangaWithMetadata(get()) }
+        addFactory { GetIdsOfFavoriteAnimeWithMetadata(get()) }
 
-        addSingletonFactory<MangaMergeRepository> { MangaMergeRepositoryImpl(get()) }
-        addFactory { GetMergedManga(get()) }
-        addFactory { GetMergedMangaById(get()) }
+        addSingletonFactory<AnimeMergeRepository> { AnimeMergeRepositoryImpl(get()) }
+        addFactory { GetMergedAnime(get()) }
+        addFactory { GetMergedAnimeById(get()) }
         addFactory { GetMergedReferencesById(get()) }
-        addFactory { GetMergedChaptersByMangaId(get(), get()) }
+        addFactory { GetMergedEpisodesByAnimeId(get(), get()) }
         addFactory { InsertMergedReference(get()) }
         addFactory { UpdateMergedSettings(get()) }
         addFactory { DeleteByMergeId(get()) }
         addFactory { DeleteMergeById(get()) }
-        addFactory { GetMergedMangaForDownloading(get()) }
+        addFactory { GetMergedAnimeForDownloading(get()) }
         // KMK -->
         addFactory { SmartSearchMerge(get()) }
         // KMK <--
@@ -160,8 +160,8 @@ class SYDomainModule : InjektModule {
         addFactory { ReorderFeed(get()) }
         // KMK <--
 
-        addSingletonFactory<CustomMangaRepository> { CustomMangaRepositoryImpl(get<Application>()) }
-        addFactory { GetCustomMangaInfo(get()) }
-        addFactory { SetCustomMangaInfo(get()) }
+        addSingletonFactory<CustomAnimeRepository> { CustomAnimeRepositoryImpl(get<Application>()) }
+        addFactory { GetCustomAnimeInfo(get()) }
+        addFactory { SetCustomAnimeInfo(get()) }
     }
 }

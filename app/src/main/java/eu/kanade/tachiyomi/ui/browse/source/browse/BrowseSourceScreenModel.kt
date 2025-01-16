@@ -59,19 +59,19 @@ import tachiyomi.core.common.util.lang.launchIO
 import tachiyomi.core.common.util.lang.launchNonCancellable
 import tachiyomi.core.common.util.lang.withUIContext
 import tachiyomi.domain.UnsortedPreferences
-import tachiyomi.domain.anime.interactor.GetDuplicateLibraryManga
+import tachiyomi.domain.anime.interactor.GetAnime
+import tachiyomi.domain.anime.interactor.GetDuplicateLibraryAnime
 import tachiyomi.domain.anime.interactor.GetFlatMetadataById
-import tachiyomi.domain.anime.interactor.GetManga
-import tachiyomi.domain.anime.interactor.NetworkToLocalManga
+import tachiyomi.domain.anime.interactor.NetworkToLocalAnime
 import tachiyomi.domain.anime.model.Manga
 import tachiyomi.domain.anime.model.toMangaUpdate
 import tachiyomi.domain.category.interactor.GetCategories
-import tachiyomi.domain.category.interactor.SetMangaCategories
+import tachiyomi.domain.category.interactor.SetAnimeCategories
 import tachiyomi.domain.category.model.Category
-import tachiyomi.domain.episode.interactor.SetMangaDefaultChapterFlags
+import tachiyomi.domain.episode.interactor.SetAnimeDefaultEpisodeFlags
 import tachiyomi.domain.library.service.LibraryPreferences
 import tachiyomi.domain.source.interactor.DeleteSavedSearchById
-import tachiyomi.domain.source.interactor.GetRemoteManga
+import tachiyomi.domain.source.interactor.GetRemoteAnime
 import tachiyomi.domain.source.interactor.InsertSavedSearch
 import tachiyomi.domain.source.model.EXHSavedSearch
 import tachiyomi.domain.source.model.SavedSearch
@@ -96,13 +96,13 @@ open class BrowseSourceScreenModel(
     basePreferences: BasePreferences = Injekt.get(),
     private val libraryPreferences: LibraryPreferences = Injekt.get(),
     private val coverCache: CoverCache = Injekt.get(),
-    private val getRemoteManga: GetRemoteManga = Injekt.get(),
-    private val getDuplicateLibraryManga: GetDuplicateLibraryManga = Injekt.get(),
+    private val getRemoteAnime: GetRemoteAnime = Injekt.get(),
+    private val getDuplicateLibraryAnime: GetDuplicateLibraryAnime = Injekt.get(),
     private val getCategories: GetCategories = Injekt.get(),
-    private val setMangaCategories: SetMangaCategories = Injekt.get(),
-    private val setMangaDefaultChapterFlags: SetMangaDefaultChapterFlags = Injekt.get(),
-    private val getManga: GetManga = Injekt.get(),
-    val networkToLocalManga: NetworkToLocalManga = Injekt.get(),
+    private val setAnimeCategories: SetAnimeCategories = Injekt.get(),
+    private val setAnimeDefaultEpisodeFlags: SetAnimeDefaultEpisodeFlags = Injekt.get(),
+    private val getAnime: GetAnime = Injekt.get(),
+    val networkToLocalAnime: NetworkToLocalAnime = Injekt.get(),
     private val updateAnime: UpdateAnime = Injekt.get(),
     private val addTracks: AddTracks = Injekt.get(),
 
@@ -214,7 +214,7 @@ open class BrowseSourceScreenModel(
                     // KMK -->
                     it.toDomainManga(sourceId)
                         .let { manga ->
-                            getManga.subscribe(manga.url, manga.source)
+                            getAnime.subscribe(manga.url, manga.source)
                                 .map { it ?: manga }
                         }
                         // KMK <--
@@ -385,7 +385,7 @@ open class BrowseSourceScreenModel(
             if (!new.favorite) {
                 new = new.removeCovers(coverCache)
             } else {
-                setMangaDefaultChapterFlags.await(manga)
+                setAnimeDefaultEpisodeFlags.await(manga)
                 addTracks.bindEnhancedTrackers(manga, source)
             }
 
@@ -430,7 +430,7 @@ open class BrowseSourceScreenModel(
 
     // SY -->
     open fun createSourcePagingSource(query: String, filters: FilterList): SourcePagingSourceType {
-        return getRemoteManga.subscribe(sourceId, query, filters)
+        return getRemoteAnime.subscribe(sourceId, query, filters)
     }
     // SY <--
 
@@ -447,7 +447,7 @@ open class BrowseSourceScreenModel(
     }
 
     suspend fun getDuplicateLibraryManga(manga: Manga): Manga? {
-        return getDuplicateLibraryManga.await(manga).getOrNull(0)
+        return getDuplicateLibraryAnime.await(manga).getOrNull(0)
     }
 
     private fun moveMangaToCategories(manga: Manga, vararg categories: Category) {
@@ -456,7 +456,7 @@ open class BrowseSourceScreenModel(
 
     fun moveMangaToCategories(manga: Manga, categoryIds: List<Long>) {
         screenModelScope.launchIO {
-            setMangaCategories.await(
+            setAnimeCategories.await(
                 mangaId = manga.id,
                 categoryIds = categoryIds.toList(),
             )
@@ -476,8 +476,8 @@ open class BrowseSourceScreenModel(
     }
 
     sealed class Listing(open val query: String?, open val filters: FilterList) {
-        data object Popular : Listing(query = GetRemoteManga.QUERY_POPULAR, filters = FilterList())
-        data object Latest : Listing(query = GetRemoteManga.QUERY_LATEST, filters = FilterList())
+        data object Popular : Listing(query = GetRemoteAnime.QUERY_POPULAR, filters = FilterList())
+        data object Latest : Listing(query = GetRemoteAnime.QUERY_LATEST, filters = FilterList())
         data class Search(
             override val query: String?,
             override val filters: FilterList,
@@ -489,8 +489,8 @@ open class BrowseSourceScreenModel(
         companion object {
             fun valueOf(query: String?): Listing {
                 return when (query) {
-                    GetRemoteManga.QUERY_POPULAR -> Popular
-                    GetRemoteManga.QUERY_LATEST -> Latest
+                    GetRemoteAnime.QUERY_POPULAR -> Popular
+                    GetRemoteAnime.QUERY_LATEST -> Latest
                     else -> Search(query = query, filters = FilterList()) // filters are filled in later
                 }
             }
@@ -613,7 +613,7 @@ open class BrowseSourceScreenModel(
         if (source !is CatalogueSource) return
         screenModelScope.launchNonCancellable {
             val query = state.value.toolbarQuery?.takeUnless {
-                it.isBlank() || it == GetRemoteManga.QUERY_POPULAR || it == GetRemoteManga.QUERY_LATEST
+                it.isBlank() || it == GetRemoteAnime.QUERY_POPULAR || it == GetRemoteAnime.QUERY_LATEST
             }?.trim()
             val filterList = state.value.filters.ifEmpty { source.getFilterList() }
             insertSavedSearch.await(

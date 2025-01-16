@@ -14,7 +14,7 @@ import tachiyomi.core.common.i18n.stringResource
 import tachiyomi.core.common.util.lang.withIOContext
 import tachiyomi.core.common.util.system.logcat
 import tachiyomi.domain.anime.model.Manga
-import tachiyomi.domain.anime.model.MergedMangaReference
+import tachiyomi.domain.anime.model.MergedAnimeReference
 import tachiyomi.domain.source.model.StubSource
 import tachiyomi.domain.source.service.SourceManager
 import tachiyomi.i18n.MR
@@ -33,7 +33,7 @@ class ChapterLoader(
     // SY -->
     private val sourceManager: SourceManager,
     private val readerPrefs: ReaderPreferences,
-    private val mergedReferences: List<MergedMangaReference>,
+    private val mergedReferences: List<MergedAnimeReference>,
     private val mergedManga: Map<Long, Manga>,
     // SY <--
 ) {

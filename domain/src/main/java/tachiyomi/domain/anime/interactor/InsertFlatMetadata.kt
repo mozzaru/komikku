@@ -5,15 +5,15 @@ import exh.metadata.metadata.RaisedSearchMetadata
 import exh.metadata.metadata.base.FlatMetadata
 import logcat.LogPriority
 import tachiyomi.core.common.util.system.logcat
-import tachiyomi.domain.anime.repository.MangaMetadataRepository
+import tachiyomi.domain.anime.repository.AnimeMetadataRepository
 
 class InsertFlatMetadata(
-    private val mangaMetadataRepository: MangaMetadataRepository,
+    private val animeMetadataRepository: AnimeMetadataRepository,
 ) : MetadataSource.InsertFlatMetadata {
 
     suspend fun await(flatMetadata: FlatMetadata) {
         try {
-            mangaMetadataRepository.insertFlatMetadata(flatMetadata)
+            animeMetadataRepository.insertFlatMetadata(flatMetadata)
         } catch (e: Exception) {
             logcat(LogPriority.ERROR, e)
         }
@@ -21,7 +21,7 @@ class InsertFlatMetadata(
 
     override suspend fun await(metadata: RaisedSearchMetadata) {
         try {
-            mangaMetadataRepository.insertMetadata(metadata)
+            animeMetadataRepository.insertMetadata(metadata)
         } catch (e: Exception) {
             logcat(LogPriority.ERROR, e)
         }

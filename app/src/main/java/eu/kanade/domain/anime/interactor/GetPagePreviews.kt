@@ -8,17 +8,17 @@ import eu.kanade.tachiyomi.source.PagePreviewSource
 import eu.kanade.tachiyomi.source.Source
 import exh.source.getMainSource
 import tachiyomi.domain.anime.model.Manga
-import tachiyomi.domain.episode.interactor.GetChaptersByMangaId
+import tachiyomi.domain.episode.interactor.GetEpisodesByAnimeId
 
 class GetPagePreviews(
     private val pagePreviewCache: PagePreviewCache,
-    private val getChaptersByMangaId: GetChaptersByMangaId,
+    private val getEpisodesByAnimeId: GetEpisodesByAnimeId,
 ) {
 
     suspend fun await(manga: Manga, source: Source, page: Int): Result {
         @Suppress("NAME_SHADOWING")
         val source = source.getMainSource<PagePreviewSource>() ?: return Result.Unused
-        val chapters = getChaptersByMangaId.await(manga.id).sortedByDescending { it.sourceOrder }
+        val chapters = getEpisodesByAnimeId.await(manga.id).sortedByDescending { it.sourceOrder }
         val chapterIds = chapters.map { it.id }
         return try {
             val pagePreviews = try {

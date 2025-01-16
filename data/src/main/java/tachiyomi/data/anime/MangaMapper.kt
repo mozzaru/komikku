@@ -2,7 +2,7 @@ package tachiyomi.data.anime
 
 import eu.kanade.tachiyomi.source.model.UpdateStrategy
 import tachiyomi.domain.anime.model.Manga
-import tachiyomi.domain.library.model.LibraryManga
+import tachiyomi.domain.library.model.LibraryAnime
 import tachiyomi.view.LibraryView
 
 object MangaMapper {
@@ -100,7 +100,7 @@ object MangaMapper {
         lastRead: Long,
         bookmarkCount: Double,
         category: Long,
-    ): LibraryManga = LibraryManga(
+    ): LibraryAnime = LibraryAnime(
         manga = mapManga(
             id,
             source,
@@ -139,8 +139,8 @@ object MangaMapper {
         lastRead = lastRead,
     )
 
-    fun mapLibraryView(libraryView: LibraryView): LibraryManga {
-        return LibraryManga(
+    fun mapLibraryView(libraryView: LibraryView): LibraryAnime {
+        return LibraryAnime(
             manga = Manga(
                 id = libraryView._id,
                 source = libraryView.source,

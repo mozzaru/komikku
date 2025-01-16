@@ -11,10 +11,10 @@ import eu.kanade.tachiyomi.source.online.all.EHentai
 import exh.log.xLogStack
 import exh.source.getMainSource
 import tachiyomi.core.common.i18n.stringResource
-import tachiyomi.domain.anime.interactor.GetManga
-import tachiyomi.domain.anime.interactor.NetworkToLocalManga
+import tachiyomi.domain.anime.interactor.GetAnime
+import tachiyomi.domain.anime.interactor.NetworkToLocalAnime
 import tachiyomi.domain.anime.model.Manga
-import tachiyomi.domain.episode.interactor.GetChapter
+import tachiyomi.domain.episode.interactor.GetEpisode
 import tachiyomi.domain.episode.model.Chapter
 import tachiyomi.domain.source.service.SourceManager
 import tachiyomi.i18n.sy.SYMR
@@ -22,10 +22,10 @@ import uy.kohesive.injekt.Injekt
 import uy.kohesive.injekt.api.get
 
 class GalleryAdder(
-    private val getManga: GetManga = Injekt.get(),
+    private val getAnime: GetAnime = Injekt.get(),
     private val updateAnime: UpdateAnime = Injekt.get(),
-    private val networkToLocalManga: NetworkToLocalManga = Injekt.get(),
-    private val getChapter: GetChapter = Injekt.get(),
+    private val networkToLocalAnime: NetworkToLocalAnime = Injekt.get(),
+    private val getEpisode: GetEpisode = Injekt.get(),
     private val syncEpisodesWithSource: SyncEpisodesWithSource = Injekt.get(),
     private val sourceManager: SourceManager = Injekt.get(),
 ) {
@@ -135,8 +135,8 @@ class GalleryAdder(
             } ?: return GalleryAddEvent.Fail.UnknownType(url, context)
 
             // Use manga in DB if possible, otherwise, make a new manga
-            var manga = getManga.await(cleanedMangaUrl, source.id)
-                ?: networkToLocalManga.await(
+            var manga = getAnime.await(cleanedMangaUrl, source.id)
+                ?: networkToLocalAnime.await(
                     Manga.create().copy(
                         source = source.id,
                         url = cleanedMangaUrl,
@@ -146,7 +146,7 @@ class GalleryAdder(
             // Fetch and copy details
             val newManga = retry(retry) { source.getMangaDetails(manga.toSManga()) }
             updateAnime.awaitUpdateFromSource(manga, newManga, false)
-            manga = getManga.await(manga.id)!!
+            manga = getAnime.await(manga.id)!!
 
             if (fav) {
                 updateAnime.awaitUpdateFavorite(manga.id, true)
@@ -172,7 +172,7 @@ class GalleryAdder(
             }
 
             return if (cleanedChapterUrl != null) {
-                val chapter = getChapter.await(cleanedChapterUrl, manga.id)
+                val chapter = getEpisode.await(cleanedChapterUrl, manga.id)
                 if (chapter != null) {
                     GalleryAddEvent.Success(url, manga, context, chapter)
                 } else {

@@ -66,7 +66,7 @@ import tachiyomi.core.common.util.lang.withUIContext
 import tachiyomi.core.common.util.system.logcat
 import tachiyomi.domain.UnsortedPreferences
 import tachiyomi.domain.anime.interactor.DeleteFavoriteEntries
-import tachiyomi.domain.anime.interactor.GetExhFavoriteMangaWithMetadata
+import tachiyomi.domain.anime.interactor.GetExhFavoriteAnimeWithMetadata
 import tachiyomi.domain.anime.interactor.GetFlatMetadataById
 import tachiyomi.domain.library.service.LibraryPreferences.Companion.DEVICE_CHARGING
 import tachiyomi.domain.library.service.LibraryPreferences.Companion.DEVICE_ONLY_ON_WIFI
@@ -129,7 +129,7 @@ object SettingsEhScreen : SearchableSettings {
         val unsortedPreferences: UnsortedPreferences = remember { Injekt.get() }
         val getFlatMetadataById: GetFlatMetadataById = remember { Injekt.get() }
         val deleteFavoriteEntries: DeleteFavoriteEntries = remember { Injekt.get() }
-        val getExhFavoriteMangaWithMetadata: GetExhFavoriteMangaWithMetadata = remember { Injekt.get() }
+        val getExhFavoriteAnimeWithMetadata: GetExhFavoriteAnimeWithMetadata = remember { Injekt.get() }
         val exhentaiEnabled by unsortedPreferences.enableExhentai().collectAsState()
         var runConfigureDialog by remember { mutableStateOf(false) }
         val openWarnConfigureDialogController = { runConfigureDialog = true }
@@ -172,7 +172,7 @@ object SettingsEhScreen : SearchableSettings {
                     autoUpdateRequirements(unsortedPreferences),
                     updaterStatistics(
                         unsortedPreferences,
-                        getExhFavoriteMangaWithMetadata,
+                        getExhFavoriteAnimeWithMetadata,
                         getFlatMetadataById,
                     ),
                 ),
@@ -1143,7 +1143,7 @@ object SettingsEhScreen : SearchableSettings {
     @Composable
     fun updaterStatistics(
         unsortedPreferences: UnsortedPreferences,
-        getExhFavoriteMangaWithMetadata: GetExhFavoriteMangaWithMetadata,
+        getExhFavoriteAnimeWithMetadata: GetExhFavoriteAnimeWithMetadata,
         getFlatMetadataById: GetFlatMetadataById,
     ): Preference.PreferenceItem.TextPreference {
         val context = LocalContext.current
@@ -1168,7 +1168,7 @@ object SettingsEhScreen : SearchableSettings {
                             context.stringResource(SYMR.strings.gallery_updater_not_ran_yet)
                         }
 
-                        val allMeta = getExhFavoriteMangaWithMetadata.await()
+                        val allMeta = getExhFavoriteAnimeWithMetadata.await()
                             .mapNotNull {
                                 getFlatMetadataById.await(it.id)
                                     ?.raise<EHentaiSearchMetadata>()

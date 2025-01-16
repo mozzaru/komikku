@@ -64,8 +64,8 @@ import tachiyomi.core.common.util.lang.launchIO
 import tachiyomi.domain.UnsortedPreferences
 import tachiyomi.domain.anime.model.Manga
 import tachiyomi.domain.category.model.Category
+import tachiyomi.domain.library.model.LibraryAnime
 import tachiyomi.domain.library.model.LibraryGroup
-import tachiyomi.domain.library.model.LibraryManga
 import tachiyomi.i18n.MR
 import tachiyomi.i18n.kmk.KMR
 import tachiyomi.i18n.sy.SYMR
@@ -159,7 +159,7 @@ data object LibraryTab : Tab {
                         scope.launch {
                             val randomItem = screenModel.getRandomLibraryItemForCurrentCategory()
                             if (randomItem != null) {
-                                navigator.push(AnimeScreen(randomItem.libraryManga.manga.id))
+                                navigator.push(AnimeScreen(randomItem.libraryAnime.manga.id))
                             } else {
                                 snackbarHostState.showSnackbar(
                                     context.stringResource(MR.strings.information_no_entries_found),
@@ -283,7 +283,7 @@ data object LibraryTab : Tab {
                         showPageTabs = state.showCategoryTabs || !state.searchQuery.isNullOrEmpty(),
                         onChangeCurrentPage = { screenModel.activeCategoryIndex = it },
                         onMangaClicked = { navigator.push(AnimeScreen(it)) },
-                        onContinueReadingClicked = { it: LibraryManga ->
+                        onContinueReadingClicked = { it: LibraryAnime ->
                             scope.launchIO {
                                 val chapter = screenModel.getNextUnreadChapter(it.manga)
                                 if (chapter != null) {

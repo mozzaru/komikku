@@ -5,9 +5,9 @@ import eu.kanade.tachiyomi.data.cache.CoverCache
 import eu.kanade.tachiyomi.data.download.DownloadManager
 import eu.kanade.tachiyomi.source.model.SManga
 import tachiyomi.domain.anime.interactor.FetchInterval
+import tachiyomi.domain.anime.model.AnimeUpdate
 import tachiyomi.domain.anime.model.Manga
-import tachiyomi.domain.anime.model.MangaUpdate
-import tachiyomi.domain.anime.repository.MangaRepository
+import tachiyomi.domain.anime.repository.AnimeRepository
 import tachiyomi.source.local.isLocal
 import uy.kohesive.injekt.Injekt
 import uy.kohesive.injekt.api.get
@@ -15,16 +15,16 @@ import java.time.Instant
 import java.time.ZonedDateTime
 
 class UpdateAnime(
-    private val mangaRepository: MangaRepository,
+    private val animeRepository: AnimeRepository,
     private val fetchInterval: FetchInterval,
 ) {
 
-    suspend fun await(mangaUpdate: MangaUpdate): Boolean {
-        return mangaRepository.update(mangaUpdate)
+    suspend fun await(mangaUpdate: AnimeUpdate): Boolean {
+        return animeRepository.update(mangaUpdate)
     }
 
-    suspend fun awaitAll(mangaUpdates: List<MangaUpdate>): Boolean {
-        return mangaRepository.updateAll(mangaUpdates)
+    suspend fun awaitAll(mangaUpdates: List<AnimeUpdate>): Boolean {
+        return animeRepository.updateAll(mangaUpdates)
     }
 
     suspend fun awaitUpdateFromSource(
@@ -69,8 +69,8 @@ class UpdateAnime(
 
         val thumbnailUrl = remoteManga.thumbnail_url?.takeIf { it.isNotEmpty() }
 
-        return mangaRepository.update(
-            MangaUpdate(
+        return animeRepository.update(
+            AnimeUpdate(
                 id = localManga.id,
                 title = title,
                 coverLastModified = coverLastModified,
@@ -91,17 +91,17 @@ class UpdateAnime(
         dateTime: ZonedDateTime = ZonedDateTime.now(),
         window: Pair<Long, Long> = fetchInterval.getWindow(dateTime),
     ): Boolean {
-        return mangaRepository.update(
+        return animeRepository.update(
             fetchInterval.toMangaUpdate(manga, dateTime, window),
         )
     }
 
     suspend fun awaitUpdateLastUpdate(mangaId: Long): Boolean {
-        return mangaRepository.update(MangaUpdate(id = mangaId, lastUpdate = Instant.now().toEpochMilli()))
+        return animeRepository.update(AnimeUpdate(id = mangaId, lastUpdate = Instant.now().toEpochMilli()))
     }
 
     suspend fun awaitUpdateCoverLastModified(mangaId: Long): Boolean {
-        return mangaRepository.update(MangaUpdate(id = mangaId, coverLastModified = Instant.now().toEpochMilli()))
+        return animeRepository.update(AnimeUpdate(id = mangaId, coverLastModified = Instant.now().toEpochMilli()))
     }
 
     suspend fun awaitUpdateFavorite(mangaId: Long, favorite: Boolean): Boolean {
@@ -109,8 +109,8 @@ class UpdateAnime(
             true -> Instant.now().toEpochMilli()
             false -> 0
         }
-        return mangaRepository.update(
-            MangaUpdate(id = mangaId, favorite = favorite, dateAdded = dateAdded),
+        return animeRepository.update(
+            AnimeUpdate(id = mangaId, favorite = favorite, dateAdded = dateAdded),
         )
     }
 }

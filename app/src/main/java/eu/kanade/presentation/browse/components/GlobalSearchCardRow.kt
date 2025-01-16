@@ -21,8 +21,8 @@ import eu.kanade.domain.ui.UiPreferences
 import eu.kanade.presentation.anime.components.RatioSwitchToPanorama
 import eu.kanade.presentation.library.components.AnimeComfortableGridItem
 import eu.kanade.presentation.library.components.CommonAnimeItemDefaults
+import tachiyomi.domain.anime.model.AnimeCover
 import tachiyomi.domain.anime.model.Manga
-import tachiyomi.domain.anime.model.MangaCover
 import tachiyomi.domain.anime.model.asMangaCover
 import tachiyomi.i18n.MR
 import tachiyomi.presentation.core.components.material.padding
@@ -69,7 +69,7 @@ fun GlobalSearchCardRow(
 @Composable
 internal fun AnimeItem(
     title: String,
-    cover: MangaCover,
+    cover: AnimeCover,
     isFavorite: Boolean,
     onClick: () -> Unit,
     onLongClick: () -> Unit,

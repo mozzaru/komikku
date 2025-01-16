@@ -5,9 +5,9 @@ import eu.kanade.domain.track.service.TrackPreferences
 import eu.kanade.tachiyomi.data.track.Tracker
 import logcat.LogPriority
 import tachiyomi.core.common.util.system.logcat
-import tachiyomi.domain.episode.interactor.GetChaptersByMangaId
-import tachiyomi.domain.episode.interactor.UpdateChapter
-import tachiyomi.domain.episode.model.toChapterUpdate
+import tachiyomi.domain.episode.interactor.GetEpisodesByAnimeId
+import tachiyomi.domain.episode.interactor.UpdateEpisode
+import tachiyomi.domain.episode.model.toEpisodeUpdate
 import tachiyomi.domain.track.interactor.InsertTrack
 import tachiyomi.domain.track.model.Track
 import uy.kohesive.injekt.Injekt
@@ -15,9 +15,9 @@ import uy.kohesive.injekt.api.get
 import kotlin.math.max
 
 class SyncEpisodeProgressWithTrack(
-    private val updateChapter: UpdateChapter,
+    private val updateEpisode: UpdateEpisode,
     private val insertTrack: InsertTrack,
-    private val getChaptersByMangaId: GetChaptersByMangaId,
+    private val getEpisodesByAnimeId: GetEpisodesByAnimeId,
 ) {
     val trackPreferences: TrackPreferences = Injekt.get()
 
@@ -33,7 +33,7 @@ class SyncEpisodeProgressWithTrack(
         // <-- KKM
 
         // Current chapters in database, sort by source's order because database's order is a mess
-        val dbChapters = getChaptersByMangaId.await(mangaId)
+        val dbChapters = getEpisodesByAnimeId.await(mangaId)
             // KMK -->
             .sortedByDescending { it.sourceOrder }
             // KMK <--
@@ -60,7 +60,7 @@ class SyncEpisodeProgressWithTrack(
             }
             .filter { chapter -> !chapter.read }
             // KMK <--
-            .map { it.copy(read = true).toChapterUpdate() }
+            .map { it.copy(read = true).toEpisodeUpdate() }
 
         // only take into account continuous reading
         val localLastRead = sortedChapters.takeWhile { it.read }.lastOrNull()?.chapterNumber ?: 0F
@@ -81,7 +81,7 @@ class SyncEpisodeProgressWithTrack(
                 trackPreferences.autoSyncProgressFromTrackers().get() &&
                 !tracker.hasNotStartedReading(remoteTrack.status)
             ) {
-                updateChapter.awaitAll(chapterUpdates)
+                updateEpisode.awaitAll(chapterUpdates)
                 return lastRead.toInt()
             }
             // KMK <--

@@ -4,7 +4,7 @@ import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
 import tachiyomi.data.AndroidDatabaseHandler
 import tachiyomi.data.DatabaseHandler
-import tachiyomi.domain.anime.model.MangaCover
+import tachiyomi.domain.anime.model.AnimeCover
 import tachiyomi.domain.updates.model.UpdatesWithRelations
 import tachiyomi.domain.updates.repository.UpdatesRepository
 import tachiyomi.view.UpdatesView
@@ -82,7 +82,7 @@ class UpdatesRepositoryImpl(
         lastPageRead = lastPageRead,
         sourceId = sourceId,
         dateFetch = dateFetch,
-        coverData = MangaCover(
+        coverData = AnimeCover(
             animeId = mangaId,
             sourceId = sourceId,
             isAnimeFavorite = favorite,
@@ -103,7 +103,7 @@ class UpdatesRepositoryImpl(
             lastPageRead = updatesView.last_page_read,
             sourceId = updatesView.source,
             dateFetch = updatesView.datefetch,
-            coverData = MangaCover(
+            coverData = AnimeCover(
                 animeId = updatesView.mangaId,
                 sourceId = updatesView.source,
                 isAnimeFavorite = updatesView.favorite,

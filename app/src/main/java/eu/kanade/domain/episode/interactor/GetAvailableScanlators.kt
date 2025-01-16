@@ -2,10 +2,10 @@ package eu.kanade.domain.episode.interactor
 
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
-import tachiyomi.domain.episode.repository.ChapterRepository
+import tachiyomi.domain.episode.repository.EpisodeRepository
 
 class GetAvailableScanlators(
-    private val repository: ChapterRepository,
+    private val repository: EpisodeRepository,
 ) {
 
     private fun List<String>.cleanupAvailableScanlators(): Set<String> {

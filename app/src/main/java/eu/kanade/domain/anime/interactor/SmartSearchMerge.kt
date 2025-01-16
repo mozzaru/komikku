@@ -6,35 +6,35 @@ import eu.kanade.domain.anime.model.toSManga
 import exh.source.MERGED_SOURCE_ID
 import tachiyomi.core.common.i18n.stringResource
 import tachiyomi.core.common.util.lang.withNonCancellableContext
+import tachiyomi.domain.anime.interactor.DeleteAnimeById
 import tachiyomi.domain.anime.interactor.DeleteByMergeId
-import tachiyomi.domain.anime.interactor.DeleteMangaById
-import tachiyomi.domain.anime.interactor.GetManga
+import tachiyomi.domain.anime.interactor.GetAnime
 import tachiyomi.domain.anime.interactor.GetMergedReferencesById
 import tachiyomi.domain.anime.interactor.InsertMergedReference
-import tachiyomi.domain.anime.interactor.NetworkToLocalManga
+import tachiyomi.domain.anime.interactor.NetworkToLocalAnime
 import tachiyomi.domain.anime.model.Manga
-import tachiyomi.domain.anime.model.MergedMangaReference
+import tachiyomi.domain.anime.model.MergedAnimeReference
 import tachiyomi.domain.category.interactor.GetCategories
-import tachiyomi.domain.category.interactor.SetMangaCategories
+import tachiyomi.domain.category.interactor.SetAnimeCategories
 import tachiyomi.i18n.sy.SYMR
 import uy.kohesive.injekt.Injekt
 import uy.kohesive.injekt.api.get
 
 class SmartSearchMerge(
-    private val getManga: GetManga = Injekt.get(),
+    private val getAnime: GetAnime = Injekt.get(),
     private val getMergedReferencesById: GetMergedReferencesById = Injekt.get(),
     private val insertMergedReference: InsertMergedReference = Injekt.get(),
-    private val networkToLocalManga: NetworkToLocalManga = Injekt.get(),
-    private val deleteMangaById: DeleteMangaById = Injekt.get(),
+    private val networkToLocalAnime: NetworkToLocalAnime = Injekt.get(),
+    private val deleteAnimeById: DeleteAnimeById = Injekt.get(),
     private val deleteByMergeId: DeleteByMergeId = Injekt.get(),
     private val getCategories: GetCategories = Injekt.get(),
-    private val setMangaCategories: SetMangaCategories = Injekt.get(),
+    private val setAnimeCategories: SetAnimeCategories = Injekt.get(),
 ) {
     suspend fun smartSearchMerge(manga: Manga, originalMangaId: Long): Manga {
         // KMK -->
         val context = Injekt.get<Application>()
         // KMK <--
-        val originalManga = getManga.await(originalMangaId)
+        val originalManga = getAnime.await(originalMangaId)
             ?: throw IllegalArgumentException(context.stringResource(SYMR.strings.merge_unknown_entry, originalMangaId))
         if (originalManga.source == MERGED_SOURCE_ID) {
             val children = getMergedReferencesById.await(originalMangaId)
@@ -44,7 +44,7 @@ class SmartSearchMerge(
             }
 
             val mangaReferences = mutableListOf(
-                MergedMangaReference(
+                MergedAnimeReference(
                     id = -1,
                     isInfoManga = false,
                     getChapterUpdates = true,
@@ -60,7 +60,7 @@ class SmartSearchMerge(
             )
 
             if (children.isEmpty() || children.all { it.mangaSourceId != MERGED_SOURCE_ID }) {
-                mangaReferences += MergedMangaReference(
+                mangaReferences += MergedAnimeReference(
                     id = -1,
                     isInfoManga = false,
                     getChapterUpdates = false,
@@ -99,7 +99,7 @@ class SmartSearchMerge(
                     dateAdded = System.currentTimeMillis(),
                 )
 
-            var existingManga = getManga.await(mergedManga.url, mergedManga.source)
+            var existingManga = getAnime.await(mergedManga.url, mergedManga.source)
             while (existingManga != null) {
                 if (existingManga.favorite) {
                     // Duplicate entry found -> use it instead
@@ -109,22 +109,22 @@ class SmartSearchMerge(
                     withNonCancellableContext {
                         existingManga?.id?.let {
                             deleteByMergeId.await(it)
-                            deleteMangaById.await(it)
+                            deleteAnimeById.await(it)
                         }
                     }
                 }
                 // Remove previously merged entry from database (user already removed from favorites)
-                existingManga = getManga.await(mergedManga.url, mergedManga.source)
+                existingManga = getAnime.await(mergedManga.url, mergedManga.source)
             }
 
-            mergedManga = networkToLocalManga.await(mergedManga)
+            mergedManga = networkToLocalAnime.await(mergedManga)
 
             getCategories.await(originalMangaId)
                 .let { categories ->
-                    setMangaCategories.await(mergedManga.id, categories.map { it.id })
+                    setAnimeCategories.await(mergedManga.id, categories.map { it.id })
                 }
 
-            val originalMangaReference = MergedMangaReference(
+            val originalMangaReference = MergedAnimeReference(
                 id = -1,
                 isInfoManga = true,
                 getChapterUpdates = true,
@@ -138,7 +138,7 @@ class SmartSearchMerge(
                 mangaSourceId = originalManga.source,
             )
 
-            val newMangaReference = MergedMangaReference(
+            val newMangaReference = MergedAnimeReference(
                 id = -1,
                 isInfoManga = false,
                 getChapterUpdates = true,
@@ -152,7 +152,7 @@ class SmartSearchMerge(
                 mangaSourceId = manga.source,
             )
 
-            val mergedMangaReference = MergedMangaReference(
+            val mergedAnimeReference = MergedAnimeReference(
                 id = -1,
                 isInfoManga = false,
                 getChapterUpdates = false,
@@ -166,7 +166,7 @@ class SmartSearchMerge(
                 mangaSourceId = MERGED_SOURCE_ID,
             )
 
-            insertMergedReference.awaitAll(listOf(originalMangaReference, newMangaReference, mergedMangaReference))
+            insertMergedReference.awaitAll(listOf(originalMangaReference, newMangaReference, mergedAnimeReference))
 
             return mergedManga
         }

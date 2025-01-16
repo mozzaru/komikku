@@ -29,10 +29,10 @@ import kotlinx.coroutines.sync.withPermit
 import logcat.LogPriority
 import tachiyomi.core.common.util.lang.withIOContext
 import tachiyomi.core.common.util.system.logcat
-import tachiyomi.domain.anime.interactor.GetLibraryManga
+import tachiyomi.domain.anime.interactor.GetLibraryAnime
 import tachiyomi.domain.anime.model.Manga
 import tachiyomi.domain.anime.model.toMangaUpdate
-import tachiyomi.domain.library.model.LibraryManga
+import tachiyomi.domain.library.model.LibraryAnime
 import tachiyomi.domain.source.service.SourceManager
 import uy.kohesive.injekt.Injekt
 import uy.kohesive.injekt.api.get
@@ -44,12 +44,12 @@ class MetadataUpdateJob(private val context: Context, workerParams: WorkerParame
 
     private val sourceManager: SourceManager = Injekt.get()
     private val coverCache: CoverCache = Injekt.get()
-    private val getLibraryManga: GetLibraryManga = Injekt.get()
+    private val getLibraryAnime: GetLibraryAnime = Injekt.get()
     private val updateAnime: UpdateAnime = Injekt.get()
 
     private val notifier = LibraryUpdateNotifier(context)
 
-    private var mangaToUpdate: List<LibraryManga> = mutableListOf()
+    private var mangaToUpdate: List<LibraryAnime> = mutableListOf()
 
     override suspend fun doWork(): Result {
         setForegroundSafely()
@@ -91,7 +91,7 @@ class MetadataUpdateJob(private val context: Context, workerParams: WorkerParame
      * Adds list of manga to be updated.
      */
     private suspend fun addMangaToQueue() {
-        mangaToUpdate = getLibraryManga.await()
+        mangaToUpdate = getLibraryAnime.await()
         notifier.showQueueSizeWarningNotificationIfNeeded(mangaToUpdate)
     }
 

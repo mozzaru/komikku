@@ -9,14 +9,14 @@ import eu.kanade.tachiyomi.R
 import eu.kanade.tachiyomi.databinding.EditMergedSettingsItemBinding
 import eu.kanade.tachiyomi.util.system.dpToPx
 import exh.ui.metadata.adapters.MetadataUIUtil.getResourceColor
-import tachiyomi.domain.anime.model.MergedMangaReference
+import tachiyomi.domain.anime.model.MergedAnimeReference
 import tachiyomi.domain.source.service.SourceManager
 import uy.kohesive.injekt.Injekt
 import uy.kohesive.injekt.api.get
 
 class EditMergedMangaHolder(view: View, val adapter: EditMergedMangaAdapter) : FlexibleViewHolder(view, adapter) {
 
-    lateinit var reference: MergedMangaReference
+    lateinit var reference: MergedAnimeReference
     var binding = EditMergedSettingsItemBinding.bind(view)
 
     init {
@@ -39,17 +39,17 @@ class EditMergedMangaHolder(view: View, val adapter: EditMergedMangaAdapter) : F
     }
 
     fun bind(item: EditMergedMangaItem) {
-        reference = item.mergedMangaReference
+        reference = item.mergedAnimeReference
         item.mergedManga?.let {
             binding.cover.load(it) {
                 transformations(RoundedCornersTransformation(4.dpToPx.toFloat()))
             }
         }
 
-        binding.title.text = Injekt.get<SourceManager>().getOrStub(item.mergedMangaReference.mangaSourceId).toString()
+        binding.title.text = Injekt.get<SourceManager>().getOrStub(item.mergedAnimeReference.mangaSourceId).toString()
         binding.subtitle.text = item.mergedManga?.title
-        updateDownloadChaptersIcon(item.mergedMangaReference.downloadChapters)
-        updateChapterUpdatesIcon(item.mergedMangaReference.getChapterUpdates)
+        updateDownloadChaptersIcon(item.mergedAnimeReference.downloadChapters)
+        updateChapterUpdatesIcon(item.mergedAnimeReference.getChapterUpdates)
     }
 
     fun setHandelAlpha(isPriorityOrder: Boolean) {

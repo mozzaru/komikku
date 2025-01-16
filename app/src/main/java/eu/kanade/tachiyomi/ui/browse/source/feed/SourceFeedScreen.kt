@@ -46,7 +46,7 @@ import exh.source.isEhBasedSource
 import exh.util.nullIfBlank
 import tachiyomi.core.common.util.lang.launchIO
 import tachiyomi.domain.anime.model.Manga
-import tachiyomi.domain.source.interactor.GetRemoteManga
+import tachiyomi.domain.source.interactor.GetRemoteAnime
 import tachiyomi.domain.source.model.SavedSearch
 import tachiyomi.domain.source.model.StubSource
 import tachiyomi.i18n.kmk.KMR
@@ -130,7 +130,7 @@ class SourceFeedScreen(val sourceId: Long) : Screen() {
                     onClickManga = {
                         // KMK -->
                         scope.launchIO {
-                            val manga = screenModel.networkToLocalManga.getLocal(it)
+                            val manga = screenModel.networkToLocalAnime.getLocal(it)
                             if (bulkFavoriteState.selectionMode) {
                                 bulkFavoriteScreenModel.toggleSelection(manga)
                             } else {
@@ -181,7 +181,7 @@ class SourceFeedScreen(val sourceId: Long) : Screen() {
                         },
                     onLongClickManga = {
                         scope.launchIO {
-                            val manga = screenModel.networkToLocalManga.getLocal(it)
+                            val manga = screenModel.networkToLocalAnime.getLocal(it)
                             if (!bulkFavoriteState.selectionMode) {
                                 bulkFavoriteScreenModel.addRemoveManga(manga, haptic)
                             } else {
@@ -344,15 +344,15 @@ class SourceFeedScreen(val sourceId: Long) : Screen() {
 
     private fun onLatestClick(navigator: Navigator, source: Source) {
         // KMK -->
-        // navigator.replace(BrowseSourceScreen(source.id, GetRemoteManga.QUERY_LATEST))
-        navigator.push(BrowseSourceScreen(source.id, GetRemoteManga.QUERY_LATEST))
+        // navigator.replace(BrowseSourceScreen(source.id, GetRemoteAnime.QUERY_LATEST))
+        navigator.push(BrowseSourceScreen(source.id, GetRemoteAnime.QUERY_LATEST))
         // KMK <--
     }
 
     private fun onBrowseClick(navigator: Navigator, source: Source) {
         // KMK -->
-        // navigator.replace(BrowseSourceScreen(source.id, GetRemoteManga.QUERY_POPULAR))
-        navigator.push(BrowseSourceScreen(source.id, GetRemoteManga.QUERY_POPULAR))
+        // navigator.replace(BrowseSourceScreen(source.id, GetRemoteAnime.QUERY_POPULAR))
+        navigator.push(BrowseSourceScreen(source.id, GetRemoteAnime.QUERY_POPULAR))
         // KMK <--
     }
 

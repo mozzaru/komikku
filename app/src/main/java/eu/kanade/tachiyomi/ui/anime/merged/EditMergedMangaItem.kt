@@ -8,9 +8,9 @@ import eu.davidea.flexibleadapter.items.IFlexible
 import eu.kanade.tachiyomi.R
 import eu.kanade.tachiyomi.databinding.EditMergedSettingsItemBinding
 import tachiyomi.domain.anime.model.Manga
-import tachiyomi.domain.anime.model.MergedMangaReference
+import tachiyomi.domain.anime.model.MergedAnimeReference
 
-class EditMergedMangaItem(val mergedManga: Manga?, val mergedMangaReference: MergedMangaReference) : AbstractFlexibleItem<EditMergedMangaHolder>() {
+class EditMergedMangaItem(val mergedManga: Manga?, val mergedAnimeReference: MergedAnimeReference) : AbstractFlexibleItem<EditMergedMangaHolder>() {
 
     override fun getLayoutRes(): Int {
         return R.layout.edit_merged_settings_item
@@ -37,13 +37,13 @@ class EditMergedMangaItem(val mergedManga: Manga?, val mergedMangaReference: Mer
     }
 
     override fun hashCode(): Int {
-        return mergedMangaReference.id.hashCode()
+        return mergedAnimeReference.id.hashCode()
     }
 
     override fun equals(other: Any?): Boolean {
         if (this === other) return true
         if (other is EditMergedMangaItem) {
-            return mergedMangaReference.id == other.mergedMangaReference.id
+            return mergedAnimeReference.id == other.mergedAnimeReference.id
         }
         return false
     }

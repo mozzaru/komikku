@@ -9,8 +9,8 @@ import exh.source.getMainSource
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import tachiyomi.core.common.util.lang.launchIO
+import tachiyomi.domain.anime.interactor.GetAnime
 import tachiyomi.domain.anime.interactor.GetFlatMetadataById
-import tachiyomi.domain.anime.interactor.GetManga
 import tachiyomi.domain.anime.model.Manga
 import tachiyomi.domain.source.service.SourceManager
 import uy.kohesive.injekt.Injekt
@@ -21,7 +21,7 @@ class MetadataViewScreenModel(
     val sourceId: Long,
     private val getFlatMetadataById: GetFlatMetadataById = Injekt.get(),
     private val sourceManager: SourceManager = Injekt.get(),
-    private val getManga: GetManga = Injekt.get(),
+    private val getAnime: GetAnime = Injekt.get(),
 ) : StateScreenModel<MetadataViewState>(MetadataViewState.Loading) {
 
     // KMK -->
@@ -34,7 +34,7 @@ class MetadataViewScreenModel(
 
     init {
         screenModelScope.launchIO {
-            _manga.value = getManga.await(mangaId)
+            _manga.value = getAnime.await(mangaId)
         }
 
         screenModelScope.launchIO {

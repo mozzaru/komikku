@@ -56,7 +56,7 @@ class MigrateSearchScreen(private val mangaId: Long, private val validSources: L
             onClickItem = {
                 // KMK -->
                 scope.launchIO {
-                    val manga = screenModel.networkToLocalManga.getLocal(it)
+                    val manga = screenModel.networkToLocalAnime.getLocal(it)
                     if (bulkFavoriteState.selectionMode) {
                         bulkFavoriteScreenModel.toggleSelection(manga)
                     } else
@@ -75,7 +75,7 @@ class MigrateSearchScreen(private val mangaId: Long, private val validSources: L
             onLongClickItem = {
                 // KMK -->
                 scope.launchIO {
-                    val manga = screenModel.networkToLocalManga.getLocal(it)
+                    val manga = screenModel.networkToLocalAnime.getLocal(it)
                     // KMK <--
                     navigator.push(AnimeScreen(manga.id, true))
                 }

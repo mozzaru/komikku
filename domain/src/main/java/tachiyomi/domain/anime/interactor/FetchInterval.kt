@@ -1,8 +1,8 @@
 package tachiyomi.domain.anime.interactor
 
+import tachiyomi.domain.anime.model.AnimeUpdate
 import tachiyomi.domain.anime.model.Manga
-import tachiyomi.domain.anime.model.MangaUpdate
-import tachiyomi.domain.episode.interactor.GetChaptersByMangaId
+import tachiyomi.domain.episode.interactor.GetEpisodesByAnimeId
 import tachiyomi.domain.episode.model.Chapter
 import java.time.Instant
 import java.time.ZoneId
@@ -11,16 +11,16 @@ import java.time.temporal.ChronoUnit
 import kotlin.math.absoluteValue
 
 class FetchInterval(
-    private val getChaptersByMangaId: GetChaptersByMangaId,
+    private val getEpisodesByAnimeId: GetEpisodesByAnimeId,
 ) {
 
     suspend fun toMangaUpdate(
         manga: Manga,
         dateTime: ZonedDateTime,
         window: Pair<Long, Long>,
-    ): MangaUpdate {
+    ): AnimeUpdate {
         val interval = manga.fetchInterval.takeIf { it < 0 } ?: calculateInterval(
-            chapters = getChaptersByMangaId.await(manga.id, applyScanlatorFilter = true),
+            chapters = getEpisodesByAnimeId.await(manga.id, applyScanlatorFilter = true),
             zone = dateTime.zone,
         )
         val currentWindow = if (window.first == 0L && window.second == 0L) {
@@ -30,7 +30,7 @@ class FetchInterval(
         }
         val nextUpdate = calculateNextUpdate(manga, interval, dateTime, currentWindow)
 
-        return MangaUpdate(id = manga.id, nextUpdate = nextUpdate, fetchInterval = interval)
+        return AnimeUpdate(id = manga.id, nextUpdate = nextUpdate, fetchInterval = interval)
     }
 
     fun getWindow(dateTime: ZonedDateTime): Pair<Long, Long> {

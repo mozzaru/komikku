@@ -90,9 +90,9 @@ import tachiyomi.core.common.util.lang.withUIContext
 import tachiyomi.core.common.util.system.ImageUtil
 import tachiyomi.core.common.util.system.logcat
 import tachiyomi.domain.UnsortedPreferences
-import tachiyomi.domain.anime.interactor.GetAllManga
+import tachiyomi.domain.anime.interactor.GetAllAnime
 import tachiyomi.domain.anime.interactor.ResetViewerFlags
-import tachiyomi.domain.episode.interactor.GetChaptersByMangaId
+import tachiyomi.domain.episode.interactor.GetEpisodesByAnimeId
 import tachiyomi.domain.release.service.AppUpdatePolicy
 import tachiyomi.domain.source.service.SourceManager
 import tachiyomi.i18n.MR
@@ -583,7 +583,7 @@ object SettingsAdvancedScreen : SearchableSettings {
                     if (job?.isActive == true) return@CleanupDownloadsDialog
                     context.toast(SYMR.strings.starting_cleanup)
                     job = scope.launchNonCancellable {
-                        val mangaList = Injekt.get<GetAllManga>().await()
+                        val mangaList = Injekt.get<GetAllAnime>().await()
                         val downloadManager: DownloadManager = Injekt.get()
                         var foldersCleared = 0
                         Injekt.get<SourceManager>().getOnlineSources().forEach { source ->
@@ -607,7 +607,7 @@ object SettingsAdvancedScreen : SearchableSettings {
                                         )
                                     mangaFolder.delete()
                                 } else {
-                                    val chapterList = Injekt.get<GetChaptersByMangaId>().await(manga.id)
+                                    val chapterList = Injekt.get<GetEpisodesByAnimeId>().await(manga.id)
                                     foldersCleared += downloadManager.cleanupChapters(
                                         chapterList,
                                         manga,

@@ -14,9 +14,9 @@ import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.flow.update
 import tachiyomi.core.common.util.lang.launchIO
-import tachiyomi.domain.anime.interactor.GetManga
+import tachiyomi.domain.anime.interactor.GetAnime
 import tachiyomi.domain.anime.model.Manga
-import tachiyomi.domain.episode.interactor.GetChaptersByMangaId
+import tachiyomi.domain.episode.interactor.GetEpisodesByAnimeId
 import tachiyomi.domain.episode.model.Chapter
 import tachiyomi.domain.source.service.SourceManager
 import uy.kohesive.injekt.Injekt
@@ -25,8 +25,8 @@ import uy.kohesive.injekt.api.get
 class PagePreviewScreenModel(
     private val mangaId: Long,
     private val getPagePreviews: GetPagePreviews = Injekt.get(),
-    private val getManga: GetManga = Injekt.get(),
-    private val getChaptersByMangaId: GetChaptersByMangaId = Injekt.get(),
+    private val getAnime: GetAnime = Injekt.get(),
+    private val getEpisodesByAnimeId: GetEpisodesByAnimeId = Injekt.get(),
     private val sourceManager: SourceManager = Injekt.get(),
 ) : StateScreenModel<PagePreviewState>(PagePreviewState.Loading) {
 
@@ -36,8 +36,8 @@ class PagePreviewScreenModel(
 
     init {
         screenModelScope.launchIO {
-            val manga = getManga.await(mangaId)!!
-            val chapter = getChaptersByMangaId.await(mangaId).minByOrNull { it.sourceOrder }
+            val manga = getAnime.await(mangaId)!!
+            val chapter = getEpisodesByAnimeId.await(mangaId).minByOrNull { it.sourceOrder }
             if (chapter == null) {
                 mutableState.update {
                     PagePreviewState.Error(Exception("No chapters found"))

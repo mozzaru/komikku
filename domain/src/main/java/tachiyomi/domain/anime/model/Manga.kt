@@ -3,7 +3,7 @@ package tachiyomi.domain.anime.model
 import androidx.compose.runtime.Immutable
 import eu.kanade.tachiyomi.source.model.UpdateStrategy
 import tachiyomi.core.common.preference.TriState
-import tachiyomi.domain.anime.interactor.GetCustomMangaInfo
+import tachiyomi.domain.anime.interactor.GetCustomAnimeInfo
 import uy.kohesive.injekt.injectLazy
 import java.io.Serializable
 import java.time.Instant
@@ -39,7 +39,7 @@ data class Manga(
 
     // SY -->
     private val customMangaInfo = if (favorite) {
-        getCustomMangaInfo.get(id)
+        getCustomAnimeInfo.get(id)
     } else {
         null
     }
@@ -168,7 +168,7 @@ data class Manga(
         )
 
         // SY -->
-        private val getCustomMangaInfo: GetCustomMangaInfo by injectLazy()
+        private val getCustomAnimeInfo: GetCustomAnimeInfo by injectLazy()
         // SY <--
     }
 }

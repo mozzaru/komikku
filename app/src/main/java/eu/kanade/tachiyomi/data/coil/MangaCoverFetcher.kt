@@ -33,8 +33,8 @@ import okio.buffer
 import okio.sink
 import okio.source
 import tachiyomi.core.common.util.system.logcat
+import tachiyomi.domain.anime.model.AnimeCover
 import tachiyomi.domain.anime.model.Manga
-import tachiyomi.domain.anime.model.MangaCover
 import tachiyomi.domain.anime.model.asMangaCover
 import tachiyomi.domain.source.service.SourceManager
 import uy.kohesive.injekt.Injekt
@@ -55,8 +55,8 @@ import java.io.IOException
  */
 class MangaCoverFetcher(
     // KMK -->
-    private val mangaCover: MangaCover,
-    private val url: String? = mangaCover.url,
+    private val animeCover: AnimeCover,
+    private val url: String? = animeCover.url,
     // private val url: String?,
     // KMK <--
     private val isLibraryManga: Boolean,
@@ -104,7 +104,7 @@ class MangaCoverFetcher(
 
     private fun fileLoader(file: File): FetchResult {
         // KMK -->
-        setRatioAndColorsInScope(mangaCover, ogFile = file)
+        setRatioAndColorsInScope(animeCover, ogFile = file)
         // KMK <--
         return SourceFetchResult(
             source = ImageSource(
@@ -119,7 +119,7 @@ class MangaCoverFetcher(
 
     private fun fileUriLoader(uri: String): FetchResult {
         // KMK -->
-        setRatioAndColorsInScope(mangaCover)
+        setRatioAndColorsInScope(animeCover)
         // KMK <--
         val source = UniFile.fromUri(options.context, uri.toUri())!!
             .openInputStream()
@@ -155,7 +155,7 @@ class MangaCoverFetcher(
 
                 // Read from snapshot
                 // KMK -->
-                setRatioAndColorsInScope(mangaCover, bufferedSource = snapshot.toImageSource().source())
+                setRatioAndColorsInScope(animeCover, bufferedSource = snapshot.toImageSource().source())
                 // KMK <--
                 return SourceFetchResult(
                     source = snapshot.toImageSource(),
@@ -178,7 +178,7 @@ class MangaCoverFetcher(
                 snapshot = writeToDiskCache(response)
                 if (snapshot != null) {
                     // KMK -->
-                    setRatioAndColorsInScope(mangaCover, bufferedSource = snapshot.toImageSource().source())
+                    setRatioAndColorsInScope(animeCover, bufferedSource = snapshot.toImageSource().source())
                     // KMK <--
                     return SourceFetchResult(
                         source = snapshot.toImageSource(),
@@ -189,7 +189,7 @@ class MangaCoverFetcher(
 
                 // KMK -->
                 setRatioAndColorsInScope(
-                    mangaCover,
+                    animeCover,
                     bufferedSource = ImageSource(
                         source = responseBody.source(),
                         fileSystem = FileSystem.SYSTEM,
@@ -344,7 +344,7 @@ class MangaCoverFetcher(
      * @param force if true then it will always re-calculate ratio & color for favorite mangas.
      */
     private fun setRatioAndColorsInScope(
-        mangaCover: MangaCover,
+        animeCover: AnimeCover,
         bufferedSource: BufferedSource? = null,
         ogFile: File? = null,
         onlyFavorite: Boolean = !themeCoverBased,
@@ -352,7 +352,7 @@ class MangaCoverFetcher(
     ) {
         if (!preloadLibraryColor) return
         scope.launch {
-            MangaCoverMetadata.setRatioAndColors(mangaCover, bufferedSource, ogFile, onlyFavorite, force)
+            MangaCoverMetadata.setRatioAndColors(animeCover, bufferedSource, ogFile, onlyFavorite, force)
         }
     }
     // KMK <--
@@ -374,7 +374,7 @@ class MangaCoverFetcher(
             return MangaCoverFetcher(
                 // KMK -->
                 // url = data.thumbnailUrl,
-                mangaCover = data.asMangaCover(),
+                animeCover = data.asMangaCover(),
                 // KMK <--
                 isLibraryManga = data.favorite,
                 options = options,
@@ -390,16 +390,16 @@ class MangaCoverFetcher(
 
     class MangaCoverFactory(
         private val callFactoryLazy: Lazy<Call.Factory>,
-    ) : Fetcher.Factory<MangaCover> {
+    ) : Fetcher.Factory<AnimeCover> {
 
         private val coverCache: CoverCache by injectLazy()
         private val sourceManager: SourceManager by injectLazy()
 
-        override fun create(data: MangaCover, options: Options, imageLoader: ImageLoader): Fetcher {
+        override fun create(data: AnimeCover, options: Options, imageLoader: ImageLoader): Fetcher {
             return MangaCoverFetcher(
                 // KMK -->
                 // url = data.url,
-                mangaCover = data,
+                animeCover = data,
                 // KMK <--
                 isLibraryManga = data.isAnimeFavorite,
                 options = options,

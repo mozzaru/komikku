@@ -39,10 +39,10 @@ import logcat.LogPriority
 import tachiyomi.core.common.util.lang.launchIO
 import tachiyomi.core.common.util.lang.launchNonCancellable
 import tachiyomi.core.common.util.system.logcat
-import tachiyomi.domain.anime.interactor.GetManga
-import tachiyomi.domain.episode.interactor.GetChapter
-import tachiyomi.domain.episode.interactor.UpdateChapter
-import tachiyomi.domain.episode.model.ChapterUpdate
+import tachiyomi.domain.anime.interactor.GetAnime
+import tachiyomi.domain.episode.interactor.GetEpisode
+import tachiyomi.domain.episode.interactor.UpdateEpisode
+import tachiyomi.domain.episode.model.EpisodeUpdate
 import tachiyomi.domain.library.service.LibraryPreferences
 import tachiyomi.domain.source.service.SourceManager
 import tachiyomi.domain.updates.interactor.GetUpdates
@@ -55,11 +55,11 @@ class UpdatesScreenModel(
     private val sourceManager: SourceManager = Injekt.get(),
     private val downloadManager: DownloadManager = Injekt.get(),
     private val downloadCache: DownloadCache = Injekt.get(),
-    private val updateChapter: UpdateChapter = Injekt.get(),
+    private val updateEpisode: UpdateEpisode = Injekt.get(),
     private val setSeenStatus: SetSeenStatus = Injekt.get(),
     private val getUpdates: GetUpdates = Injekt.get(),
-    private val getManga: GetManga = Injekt.get(),
-    private val getChapter: GetChapter = Injekt.get(),
+    private val getAnime: GetAnime = Injekt.get(),
+    private val getEpisode: GetEpisode = Injekt.get(),
     private val libraryPreferences: LibraryPreferences = Injekt.get(),
     val snackbarHostState: SnackbarHostState = SnackbarHostState(),
     // SY -->
@@ -213,7 +213,7 @@ class UpdatesScreenModel(
             setSeenStatus.await(
                 read = read,
                 chapters = updates
-                    .mapNotNull { getChapter.await(it.update.episodeId) }
+                    .mapNotNull { getEpisode.await(it.update.episodeId) }
                     .toTypedArray(),
             )
         }
@@ -228,8 +228,8 @@ class UpdatesScreenModel(
         screenModelScope.launchIO {
             updates
                 .filterNot { it.update.bookmark == bookmark }
-                .map { ChapterUpdate(id = it.update.episodeId, bookmark = bookmark) }
-                .let { updateChapter.awaitAll(it) }
+                .map { EpisodeUpdate(id = it.update.episodeId, bookmark = bookmark) }
+                .let { updateEpisode.awaitAll(it) }
         }
         toggleAllSelection(false)
     }
@@ -243,10 +243,10 @@ class UpdatesScreenModel(
             val groupedUpdates = updatesItem.groupBy { it.update.animeId }.values
             for (updates in groupedUpdates) {
                 val mangaId = updates.first().update.animeId
-                val manga = getManga.await(mangaId) ?: continue
+                val manga = getAnime.await(mangaId) ?: continue
                 // Don't download if source isn't available
                 sourceManager.get(manga.source) ?: continue
-                val chapters = updates.mapNotNull { getChapter.await(it.update.episodeId) }
+                val chapters = updates.mapNotNull { getEpisode.await(it.update.episodeId) }
                 downloadManager.downloadChapters(manga, chapters)
             }
         }
@@ -263,9 +263,9 @@ class UpdatesScreenModel(
                 .groupBy { it.update.animeId }
                 .entries
                 .forEach { (mangaId, updates) ->
-                    val manga = getManga.await(mangaId) ?: return@forEach
+                    val manga = getAnime.await(mangaId) ?: return@forEach
                     val source = sourceManager.get(manga.source) ?: return@forEach
-                    val chapters = updates.mapNotNull { getChapter.await(it.update.episodeId) }
+                    val chapters = updates.mapNotNull { getEpisode.await(it.update.episodeId) }
                     downloadManager.deleteChapters(
                         chapters,
                         manga,

@@ -4,7 +4,7 @@ import androidx.compose.ui.tooling.preview.PreviewParameterProvider
 import eu.kanade.tachiyomi.ui.history.HistoryScreenModel
 import kotlinx.collections.immutable.persistentListOf
 import kotlinx.collections.immutable.toImmutableList
-import tachiyomi.domain.anime.model.MangaCover
+import tachiyomi.domain.anime.model.AnimeCover
 import tachiyomi.domain.history.model.HistoryWithRelations
 import java.time.Instant
 import java.time.LocalDate
@@ -100,7 +100,7 @@ class HistoryScreenModelStateProvider : PreviewParameterProvider<HistoryScreenMo
                         chapterNumber = Random.nextDouble(),
                         readAt = Date.from(Instant.now()),
                         readDuration = Random.nextLong(),
-                        coverData = MangaCover(
+                        coverData = AnimeCover(
                             animeId = Random.nextLong(),
                             sourceId = Random.nextLong(),
                             isAnimeFavorite = Random.nextBoolean(),

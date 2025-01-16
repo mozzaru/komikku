@@ -29,9 +29,9 @@ import okio.sink
 import tachiyomi.core.common.i18n.stringResource
 import tachiyomi.core.common.util.system.logcat
 import tachiyomi.domain.anime.interactor.GetFavorites
-import tachiyomi.domain.anime.interactor.GetMergedManga
+import tachiyomi.domain.anime.interactor.GetMergedAnime
 import tachiyomi.domain.anime.model.Manga
-import tachiyomi.domain.anime.repository.MangaRepository
+import tachiyomi.domain.anime.repository.AnimeRepository
 import tachiyomi.domain.backup.service.BackupPreferences
 import tachiyomi.i18n.MR
 import uy.kohesive.injekt.Injekt
@@ -49,7 +49,7 @@ class BackupCreator(
     private val parser: ProtoBuf = Injekt.get(),
     private val getFavorites: GetFavorites = Injekt.get(),
     private val backupPreferences: BackupPreferences = Injekt.get(),
-    private val mangaRepository: MangaRepository = Injekt.get(),
+    private val animeRepository: AnimeRepository = Injekt.get(),
 
     private val categoriesBackupCreator: CategoriesBackupCreator = CategoriesBackupCreator(),
     private val mangaBackupCreator: MangaBackupCreator = MangaBackupCreator(),
@@ -61,7 +61,7 @@ class BackupCreator(
     // KMK <--
     // SY -->
     private val savedSearchBackupCreator: SavedSearchBackupCreator = SavedSearchBackupCreator(),
-    private val getMergedManga: GetMergedManga = Injekt.get(),
+    private val getMergedAnime: GetMergedAnime = Injekt.get(),
     // SY <--
 ) {
 
@@ -89,9 +89,9 @@ class BackupCreator(
                 throw IllegalStateException(context.stringResource(MR.strings.create_backup_file_error))
             }
 
-            val nonFavoriteManga = if (options.readEntries) mangaRepository.getReadMangaNotInLibrary() else emptyList()
+            val nonFavoriteManga = if (options.readEntries) animeRepository.getReadMangaNotInLibrary() else emptyList()
             // SY -->
-            val mergedManga = getMergedManga.await()
+            val mergedManga = getMergedAnime.await()
             // SY <--
             val backupManga =
                 backupMangas(getFavorites.await() + nonFavoriteManga /* SY --> */ + mergedManga /* SY <-- */, options)

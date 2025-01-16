@@ -25,7 +25,7 @@ import tachiyomi.core.common.util.lang.launchIO
 import tachiyomi.core.common.util.lang.withIOContext
 import tachiyomi.core.common.util.lang.withUIContext
 import tachiyomi.core.common.util.system.logcat
-import tachiyomi.domain.anime.interactor.GetManga
+import tachiyomi.domain.anime.interactor.GetAnime
 import tachiyomi.domain.anime.model.Manga
 import tachiyomi.i18n.MR
 import uy.kohesive.injekt.Injekt
@@ -33,7 +33,7 @@ import uy.kohesive.injekt.api.get
 
 class AnimeCoverScreenModel(
     private val mangaId: Long,
-    private val getManga: GetManga = Injekt.get(),
+    private val getAnime: GetAnime = Injekt.get(),
     private val imageSaver: ImageSaver = Injekt.get(),
     private val coverCache: CoverCache = Injekt.get(),
     private val updateAnime: UpdateAnime = Injekt.get(),
@@ -43,7 +43,7 @@ class AnimeCoverScreenModel(
 
     init {
         screenModelScope.launchIO {
-            getManga.subscribe(mangaId)
+            getAnime.subscribe(mangaId)
                 .collect { newManga -> mutableState.update { newManga } }
         }
     }

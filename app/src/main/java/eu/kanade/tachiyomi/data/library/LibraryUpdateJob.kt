@@ -58,28 +58,28 @@ import kotlinx.coroutines.runBlocking
 import kotlinx.coroutines.sync.Semaphore
 import kotlinx.coroutines.sync.withPermit
 import logcat.LogPriority
-import mihon.domain.episode.interactor.FilterChaptersForDownload
+import mihon.domain.episode.interactor.FilterEpisodesForDownload
 import tachiyomi.core.common.i18n.stringResource
 import tachiyomi.core.common.preference.getAndSet
 import tachiyomi.core.common.util.lang.withIOContext
 import tachiyomi.core.common.util.system.logcat
 import tachiyomi.domain.UnsortedPreferences
 import tachiyomi.domain.anime.interactor.FetchInterval
+import tachiyomi.domain.anime.interactor.GetAnime
 import tachiyomi.domain.anime.interactor.GetFavorites
-import tachiyomi.domain.anime.interactor.GetLibraryManga
-import tachiyomi.domain.anime.interactor.GetManga
-import tachiyomi.domain.anime.interactor.GetMergedMangaForDownloading
+import tachiyomi.domain.anime.interactor.GetLibraryAnime
+import tachiyomi.domain.anime.interactor.GetMergedAnimeForDownloading
 import tachiyomi.domain.anime.interactor.InsertFlatMetadata
-import tachiyomi.domain.anime.interactor.NetworkToLocalManga
+import tachiyomi.domain.anime.interactor.NetworkToLocalAnime
 import tachiyomi.domain.anime.model.Manga
 import tachiyomi.domain.anime.model.toMangaUpdate
 import tachiyomi.domain.category.model.Category
-import tachiyomi.domain.episode.interactor.GetChaptersByMangaId
+import tachiyomi.domain.episode.interactor.GetEpisodesByAnimeId
 import tachiyomi.domain.episode.model.Chapter
-import tachiyomi.domain.episode.model.NoChaptersException
+import tachiyomi.domain.episode.model.NoEpisodesException
 import tachiyomi.domain.library.model.GroupLibraryMode
+import tachiyomi.domain.library.model.LibraryAnime
 import tachiyomi.domain.library.model.LibraryGroup
-import tachiyomi.domain.library.model.LibraryManga
 import tachiyomi.domain.library.service.LibraryPreferences
 import tachiyomi.domain.library.service.LibraryPreferences.Companion.DEVICE_CHARGING
 import tachiyomi.domain.library.service.LibraryPreferences.Companion.DEVICE_NETWORK_NOT_METERED
@@ -114,23 +114,23 @@ class LibraryUpdateJob(private val context: Context, workerParams: WorkerParamet
     private val libraryPreferences: LibraryPreferences = Injekt.get()
     private val downloadManager: DownloadManager = Injekt.get()
     private val coverCache: CoverCache = Injekt.get()
-    private val getLibraryManga: GetLibraryManga = Injekt.get()
-    private val getManga: GetManga = Injekt.get()
+    private val getLibraryAnime: GetLibraryAnime = Injekt.get()
+    private val getAnime: GetAnime = Injekt.get()
     private val updateAnime: UpdateAnime = Injekt.get()
     private val syncEpisodesWithSource: SyncEpisodesWithSource = Injekt.get()
     private val fetchInterval: FetchInterval = Injekt.get()
-    private val filterChaptersForDownload: FilterChaptersForDownload = Injekt.get()
+    private val filterEpisodesForDownload: FilterEpisodesForDownload = Injekt.get()
 
     // SY -->
     private val getFavorites: GetFavorites = Injekt.get()
     private val insertFlatMetadata: InsertFlatMetadata = Injekt.get()
-    private val networkToLocalManga: NetworkToLocalManga = Injekt.get()
-    private val getMergedMangaForDownloading: GetMergedMangaForDownloading = Injekt.get()
+    private val networkToLocalAnime: NetworkToLocalAnime = Injekt.get()
+    private val getMergedAnimeForDownloading: GetMergedAnimeForDownloading = Injekt.get()
     private val getTracks: GetTracks = Injekt.get()
     private val insertTrack: InsertTrack = Injekt.get()
     private val trackerManager: TrackerManager = Injekt.get()
     private val mdList = trackerManager.mdList
-    private val getChaptersByMangaId: GetChaptersByMangaId = Injekt.get()
+    private val getEpisodesByAnimeId: GetEpisodesByAnimeId = Injekt.get()
     private val setSeenStatus: SetSeenStatus = Injekt.get()
     // SY <--
 
@@ -143,7 +143,7 @@ class LibraryUpdateJob(private val context: Context, workerParams: WorkerParamet
     private val insertLibraryUpdateErrorMessages: InsertLibraryUpdateErrorMessages = Injekt.get()
     // KMK <--
 
-    private var mangaToUpdate: List<LibraryManga> = mutableListOf()
+    private var mangaToUpdate: List<LibraryAnime> = mutableListOf()
 
     override suspend fun doWork(): Result {
         if (tags.contains(WORK_NAME_AUTO)) {
@@ -230,7 +230,7 @@ class LibraryUpdateJob(private val context: Context, workerParams: WorkerParamet
      * @param categoryId the ID of the category to update, or -1 if no category specified.
      */
     private suspend fun addMangaToQueue(categoryId: Long, group: Int, groupExtra: String?) {
-        val libraryManga = getLibraryManga.await()
+        val libraryManga = getLibraryAnime.await()
         // SY -->
         val groupLibraryUpdateType = libraryPreferences.groupLibraryUpdateType().get()
         // SY <--
@@ -413,7 +413,7 @@ class LibraryUpdateJob(private val context: Context, workerParams: WorkerParamet
                                 ensureActive()
 
                                 // Don't continue to update if manga is not in library
-                                if (getManga.await(manga.id)?.favorite != true) {
+                                if (getAnime.await(manga.id)?.favorite != true) {
                                     return@forEach
                                 }
 
@@ -427,7 +427,7 @@ class LibraryUpdateJob(private val context: Context, workerParams: WorkerParamet
                                             // SY -->
                                             .sortedByDescending { it.sourceOrder }.run {
                                                 if (libraryPreferences.libraryReadDuplicateChapters().get()) {
-                                                    val readChapters = getChaptersByMangaId.await(manga.id).filter {
+                                                    val readChapters = getEpisodesByAnimeId.await(manga.id).filter {
                                                         it.read
                                                     }
                                                     val newReadChapters = this.filter { chapter ->
@@ -455,7 +455,7 @@ class LibraryUpdateJob(private val context: Context, workerParams: WorkerParamet
                                         // SY <--
 
                                         if (newChapters.isNotEmpty()) {
-                                            val chaptersToDownload = filterChaptersForDownload.await(manga, newChapters)
+                                            val chaptersToDownload = filterEpisodesForDownload.await(manga, newChapters)
 
                                             if (chaptersToDownload.isNotEmpty()) {
                                                 downloadChapters(manga, chaptersToDownload)
@@ -470,7 +470,7 @@ class LibraryUpdateJob(private val context: Context, workerParams: WorkerParamet
                                         clearErrorFromDB(mangaId = manga.id)
                                     } catch (e: Throwable) {
                                         val errorMessage = when (e) {
-                                            is NoChaptersException ->
+                                            is NoEpisodesException ->
                                                 context.stringResource(MR.strings.no_chapters_error)
                                             // failedUpdates will already have the source,
                                             // don't need to copy it into the message
@@ -512,7 +512,7 @@ class LibraryUpdateJob(private val context: Context, workerParams: WorkerParamet
         // may don't like it and they could ban the user.
         // SY -->
         if (manga.source == MERGED_SOURCE_ID) {
-            val downloadingManga = runBlocking { getMergedMangaForDownloading.await(manga.id) }
+            val downloadingManga = runBlocking { getMergedAnimeForDownloading.await(manga.id) }
                 .associateBy { it.id }
             chapters.groupBy { it.mangaId }
                 .forEach {
@@ -552,7 +552,7 @@ class LibraryUpdateJob(private val context: Context, workerParams: WorkerParamet
 
         // Get manga from database to account for if it was removed during the update and
         // to get latest data so it doesn't get overwritten later on
-        val dbManga = getManga.await(manga.id)?.takeIf { it.favorite } ?: return emptyList()
+        val dbManga = getAnime.await(manga.id)?.takeIf { it.favorite } ?: return emptyList()
 
         return syncEpisodesWithSource.await(chapters, dbManga, source, false, fetchWindow)
     }
@@ -631,10 +631,10 @@ class LibraryUpdateJob(private val context: Context, workerParams: WorkerParamet
                     listOf(Manga.create().copy(ogTitle = networkManga.title)), count, size,
                 )
 
-                var dbManga = getManga.await(networkManga.url, mangaDex.id)
+                var dbManga = getAnime.await(networkManga.url, mangaDex.id)
 
                 if (dbManga == null) {
-                    dbManga = networkToLocalManga.await(
+                    dbManga = networkToLocalAnime.await(
                         Manga.create().copy(
                             url = networkManga.url,
                             ogTitle = networkManga.title,

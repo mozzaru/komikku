@@ -42,7 +42,7 @@ import kotlinx.collections.immutable.persistentListOf
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
 import tachiyomi.core.common.util.lang.launchIO
-import tachiyomi.domain.source.interactor.GetRemoteManga
+import tachiyomi.domain.source.interactor.GetRemoteAnime
 import tachiyomi.i18n.MR
 import tachiyomi.i18n.kmk.KMR
 import tachiyomi.i18n.sy.SYMR
@@ -167,10 +167,10 @@ fun feedTab(
                                     source.id,
                                     // KMK -->
                                     listingQuery = if (!source.supportsLatest) {
-                                        GetRemoteManga.QUERY_POPULAR
+                                        GetRemoteAnime.QUERY_POPULAR
                                     } else {
                                         // KMK <--
-                                        GetRemoteManga.QUERY_LATEST
+                                        GetRemoteAnime.QUERY_LATEST
                                     },
                                 ),
                             )
@@ -181,7 +181,7 @@ fun feedTab(
                         onClickManga = {
                             // KMK -->
                             scope.launchIO {
-                                val manga = screenModel.networkToLocalManga.getLocal(it)
+                                val manga = screenModel.networkToLocalAnime.getLocal(it)
                                 if (bulkFavoriteState.selectionMode) {
                                     bulkFavoriteScreenModel.toggleSelection(manga)
                                 } else {
@@ -193,7 +193,7 @@ fun feedTab(
                         // KMK -->
                         onLongClickManga = {
                             scope.launchIO {
-                                val manga = screenModel.networkToLocalManga.getLocal(it)
+                                val manga = screenModel.networkToLocalAnime.getLocal(it)
                                 if (!bulkFavoriteState.selectionMode) {
                                     bulkFavoriteScreenModel.addRemoveManga(manga, haptic)
                                 } else {

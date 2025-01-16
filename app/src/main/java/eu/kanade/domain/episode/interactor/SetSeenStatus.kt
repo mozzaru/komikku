@@ -11,25 +11,25 @@ import logcat.LogPriority
 import tachiyomi.core.common.util.lang.withNonCancellableContext
 import tachiyomi.core.common.util.system.logcat
 import tachiyomi.domain.anime.model.Manga
-import tachiyomi.domain.anime.repository.MangaRepository
+import tachiyomi.domain.anime.repository.AnimeRepository
 import tachiyomi.domain.download.service.DownloadPreferences
-import tachiyomi.domain.episode.interactor.GetMergedChaptersByMangaId
+import tachiyomi.domain.episode.interactor.GetMergedEpisodesByAnimeId
 import tachiyomi.domain.episode.model.Chapter
-import tachiyomi.domain.episode.model.ChapterUpdate
-import tachiyomi.domain.episode.repository.ChapterRepository
+import tachiyomi.domain.episode.model.EpisodeUpdate
+import tachiyomi.domain.episode.repository.EpisodeRepository
 
 class SetSeenStatus(
     private val downloadPreferences: DownloadPreferences,
     private val deleteDownload: DeleteDownload,
-    private val mangaRepository: MangaRepository,
-    private val chapterRepository: ChapterRepository,
+    private val animeRepository: AnimeRepository,
+    private val episodeRepository: EpisodeRepository,
     // SY -->
-    private val getMergedChaptersByMangaId: GetMergedChaptersByMangaId,
+    private val getMergedEpisodesByAnimeId: GetMergedEpisodesByAnimeId,
     // SY <--
 ) {
 
     private val mapper = { chapter: Chapter, read: Boolean ->
-        ChapterUpdate(
+        EpisodeUpdate(
             read = read,
             lastPageRead = if (!read) 0 else null,
             id = chapter.id,
@@ -67,7 +67,7 @@ class SetSeenStatus(
         }
 
         try {
-            chapterRepository.updateAll(
+            episodeRepository.updateAll(
                 chaptersToUpdate.map { mapper(it, read) },
             )
         } catch (e: Exception) {
@@ -89,7 +89,7 @@ class SetSeenStatus(
                 .groupBy { it.mangaId }
                 .forEach { (mangaId, chapters) ->
                     deleteDownload.awaitAll(
-                        manga = mangaRepository.getMangaById(mangaId),
+                        manga = animeRepository.getMangaById(mangaId),
                         chapters = chapters.toTypedArray(),
                     )
                 }
@@ -101,7 +101,7 @@ class SetSeenStatus(
     suspend fun await(mangaId: Long, read: Boolean): Result = withNonCancellableContext {
         await(
             read = read,
-            chapters = chapterRepository
+            chapters = episodeRepository
                 .getChapterByMangaId(mangaId)
                 .toTypedArray(),
         )
@@ -111,7 +111,7 @@ class SetSeenStatus(
     private suspend fun awaitMerged(mangaId: Long, read: Boolean) = withNonCancellableContext f@{
         return@f await(
             read = read,
-            chapters = getMergedChaptersByMangaId
+            chapters = getMergedEpisodesByAnimeId
                 .await(mangaId, dedupe = false)
                 .toTypedArray(),
         )

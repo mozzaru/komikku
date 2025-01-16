@@ -25,8 +25,8 @@ import kotlinx.coroutines.isActive
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import tachiyomi.core.common.preference.toggle
-import tachiyomi.domain.anime.interactor.GetManga
-import tachiyomi.domain.anime.interactor.NetworkToLocalManga
+import tachiyomi.domain.anime.interactor.GetAnime
+import tachiyomi.domain.anime.interactor.NetworkToLocalAnime
 import tachiyomi.domain.anime.model.Manga
 import tachiyomi.domain.source.service.SourceManager
 import uy.kohesive.injekt.Injekt
@@ -38,8 +38,8 @@ abstract class SearchScreenModel(
     sourcePreferences: SourcePreferences = Injekt.get(),
     private val sourceManager: SourceManager = Injekt.get(),
     private val extensionManager: ExtensionManager = Injekt.get(),
-    val networkToLocalManga: NetworkToLocalManga = Injekt.get(),
-    private val getManga: GetManga = Injekt.get(),
+    val networkToLocalAnime: NetworkToLocalAnime = Injekt.get(),
+    private val getAnime: GetAnime = Injekt.get(),
     private val preferences: SourcePreferences = Injekt.get(),
 ) : StateScreenModel<SearchScreenModel.State>(initialState) {
 
@@ -81,7 +81,7 @@ abstract class SearchScreenModel(
     @Composable
     fun getManga(initialManga: Manga): androidx.compose.runtime.State<Manga> {
         return produceState(initialValue = initialManga) {
-            getManga.subscribe(initialManga.url, initialManga.source)
+            getAnime.subscribe(initialManga.url, initialManga.source)
                 .collectLatest { manga ->
                     value = manga
                         // KMK -->

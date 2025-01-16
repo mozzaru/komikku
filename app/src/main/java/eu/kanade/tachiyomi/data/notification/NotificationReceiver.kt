@@ -22,13 +22,13 @@ import kotlinx.coroutines.DelicateCoroutinesApi
 import kotlinx.coroutines.runBlocking
 import tachiyomi.core.common.Constants
 import tachiyomi.core.common.util.lang.launchIO
-import tachiyomi.domain.anime.interactor.GetManga
+import tachiyomi.domain.anime.interactor.GetAnime
 import tachiyomi.domain.anime.model.Manga
 import tachiyomi.domain.download.service.DownloadPreferences
-import tachiyomi.domain.episode.interactor.GetChapter
-import tachiyomi.domain.episode.interactor.UpdateChapter
+import tachiyomi.domain.episode.interactor.GetEpisode
+import tachiyomi.domain.episode.interactor.UpdateEpisode
 import tachiyomi.domain.episode.model.Chapter
-import tachiyomi.domain.episode.model.toChapterUpdate
+import tachiyomi.domain.episode.model.toEpisodeUpdate
 import tachiyomi.domain.source.service.SourceManager
 import tachiyomi.i18n.MR
 import uy.kohesive.injekt.Injekt
@@ -44,9 +44,9 @@ import eu.kanade.tachiyomi.BuildConfig.APPLICATION_ID as ID
 @OptIn(DelicateCoroutinesApi::class)
 class NotificationReceiver : BroadcastReceiver() {
 
-    private val getManga: GetManga by injectLazy()
-    private val getChapter: GetChapter by injectLazy()
-    private val updateChapter: UpdateChapter by injectLazy()
+    private val getAnime: GetAnime by injectLazy()
+    private val getEpisode: GetEpisode by injectLazy()
+    private val updateEpisode: UpdateEpisode by injectLazy()
     private val downloadManager: DownloadManager by injectLazy()
 
     override fun onReceive(context: Context, intent: Intent) {
@@ -153,8 +153,8 @@ class NotificationReceiver : BroadcastReceiver() {
      * @param chapterId id of chapter
      */
     private fun openChapter(context: Context, mangaId: Long, chapterId: Long) {
-        val manga = runBlocking { getManga.await(mangaId) }
-        val chapter = runBlocking { getChapter.await(chapterId) }
+        val manga = runBlocking { getAnime.await(mangaId) }
+        val chapter = runBlocking { getEpisode.await(chapterId) }
         if (manga != null && chapter != null) {
             val intent = ReaderActivity.newIntent(context, manga.id, chapter.id).apply {
                 flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TOP
@@ -212,11 +212,11 @@ class NotificationReceiver : BroadcastReceiver() {
         val sourceManager: SourceManager = Injekt.get()
 
         launchIO {
-            val toUpdate = chapterUrls.mapNotNull { getChapter.await(it, mangaId) }
+            val toUpdate = chapterUrls.mapNotNull { getEpisode.await(it, mangaId) }
                 .map {
                     val chapter = it.copy(read = true)
                     if (downloadPreferences.removeAfterMarkedAsRead().get()) {
-                        val manga = getManga.await(mangaId)
+                        val manga = getAnime.await(mangaId)
                         if (manga != null) {
                             val source = sourceManager.get(manga.source)
                             if (source != null) {
@@ -224,9 +224,9 @@ class NotificationReceiver : BroadcastReceiver() {
                             }
                         }
                     }
-                    chapter.toChapterUpdate()
+                    chapter.toEpisodeUpdate()
                 }
-            updateChapter.awaitAll(toUpdate)
+            updateEpisode.awaitAll(toUpdate)
         }
     }
 
@@ -238,8 +238,8 @@ class NotificationReceiver : BroadcastReceiver() {
      */
     private fun downloadChapters(chapterUrls: Array<String>, mangaId: Long) {
         launchIO {
-            val manga = getManga.await(mangaId) ?: return@launchIO
-            val chapters = chapterUrls.mapNotNull { getChapter.await(it, mangaId) }
+            val manga = getAnime.await(mangaId) ?: return@launchIO
+            val chapters = chapterUrls.mapNotNull { getEpisode.await(it, mangaId) }
             downloadManager.downloadChapters(manga, chapters)
         }
     }

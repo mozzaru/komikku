@@ -5,7 +5,7 @@ import androidx.palette.graphics.Palette
 import eu.kanade.tachiyomi.data.cache.CoverCache
 import eu.kanade.tachiyomi.ui.anime.AnimeScreenModel
 import okio.BufferedSource
-import tachiyomi.domain.anime.model.MangaCover
+import tachiyomi.domain.anime.model.AnimeCover
 import tachiyomi.domain.library.service.LibraryPreferences
 import uy.kohesive.injekt.injectLazy
 import java.io.File
@@ -21,7 +21,7 @@ object MangaCoverMetadata {
 
     fun load() {
         val ratios = preferences.coverRatios().get()
-        MangaCover.coverRatioMap = ConcurrentHashMap(
+        AnimeCover.coverRatioMap = ConcurrentHashMap(
             ratios.mapNotNull {
                 val splits = it.split("|")
                 val id = splits.firstOrNull()?.toLongOrNull()
@@ -34,7 +34,7 @@ object MangaCoverMetadata {
             }.toMap(),
         )
         val colors = preferences.coverColors().get()
-        MangaCover.dominantCoverColorMap = ConcurrentHashMap(
+        AnimeCover.dominantCoverColorMap = ConcurrentHashMap(
             colors.mapNotNull {
                 val splits = it.split("|")
                 val id = splits.firstOrNull()?.toLongOrNull()
@@ -54,14 +54,14 @@ object MangaCoverMetadata {
      * It's called along with [MangaCoverFetcher.fetch] everytime a cover is **displayed** (anywhere).
      *
      * When called:
-     *  - It removes saved colors from saved Prefs of [MangaCover.dominantCoverColorMap] if manga is not favorite.
-     *  - If a favorite manga already restored [MangaCover.dominantCoverColors] then it
-     * will skip actually reading bitmap, only extract ratio. Except when [MangaCover.vibrantCoverColor]
+     *  - It removes saved colors from saved Prefs of [AnimeCover.dominantCoverColorMap] if manga is not favorite.
+     *  - If a favorite manga already restored [AnimeCover.dominantCoverColors] then it
+     * will skip actually reading bitmap, only extract ratio. Except when [AnimeCover.vibrantCoverColor]
      * is not loaded then it will read bitmap & extract vibrant color.
      * => always set [force] to true so it will always re-calculate ratio & color.
      *
-     * Set [MangaCover.dominantCoverColors] for favorite manga only.
-     * Set [MangaCover.vibrantCoverColor] for all mangas.
+     * Set [AnimeCover.dominantCoverColors] for favorite manga only.
+     * Set [AnimeCover.vibrantCoverColor] for all mangas.
      *
      * @param bufferedSource if not null then it will load bitmap from [BufferedSource], regardless of [ogFile]
      * @param ogFile if not null then it will load bitmap from [File]. If it's null then it will try to load bitmap
@@ -74,25 +74,25 @@ object MangaCoverMetadata {
      * @author Jays2Kings, cuong-tran
      */
     fun setRatioAndColors(
-        mangaCover: MangaCover,
+        animeCover: AnimeCover,
         bufferedSource: BufferedSource? = null,
         ogFile: File? = null,
         onlyDominantColor: Boolean = true,
         force: Boolean = false,
     ) {
-        if (!mangaCover.isAnimeFavorite) {
-            mangaCover.remove()
-            if (mangaCover.vibrantCoverColor != null) return
+        if (!animeCover.isAnimeFavorite) {
+            animeCover.remove()
+            if (animeCover.vibrantCoverColor != null) return
         }
 
-        if (mangaCover.isAnimeFavorite && onlyDominantColor && mangaCover.dominantCoverColors != null) return
+        if (animeCover.isAnimeFavorite && onlyDominantColor && animeCover.dominantCoverColors != null) return
 
         val options = BitmapFactory.Options()
 
-        val updateColors = mangaCover.isAnimeFavorite &&
-            mangaCover.dominantCoverColors == null ||
+        val updateColors = animeCover.isAnimeFavorite &&
+            animeCover.dominantCoverColors == null ||
             !onlyDominantColor &&
-            mangaCover.vibrantCoverColor == null ||
+            animeCover.vibrantCoverColor == null ||
             force
 
         if (updateColors) {
@@ -119,8 +119,8 @@ object MangaCoverMetadata {
         }
 
         val file = ogFile
-            ?: coverCache.getCustomCoverFile(mangaCover.animeId).takeIf { it.exists() }
-            ?: coverCache.getCoverFile(mangaCover.url)
+            ?: coverCache.getCustomCoverFile(animeCover.animeId).takeIf { it.exists() }
+            ?: coverCache.getCoverFile(animeCover.url)
 
         val bitmap = when {
             bufferedSource != null -> BitmapFactory.decodeStream(bufferedSource.inputStream(), null, options)
@@ -134,29 +134,29 @@ object MangaCoverMetadata {
         if (bitmap != null) {
             Palette.from(bitmap).generate {
                 if (it == null) return@generate
-                if (mangaCover.isAnimeFavorite) {
+                if (animeCover.isAnimeFavorite) {
                     it.dominantSwatch?.let { swatch ->
-                        mangaCover.dominantCoverColors = swatch.rgb to swatch.titleTextColor
+                        animeCover.dominantCoverColors = swatch.rgb to swatch.titleTextColor
                     }
                 }
                 val color = it.getBestColor() ?: return@generate
-                mangaCover.vibrantCoverColor = color
+                animeCover.vibrantCoverColor = color
             }
         }
-        if (mangaCover.isAnimeFavorite && options.outWidth != -1 && options.outHeight != -1) {
-            mangaCover.ratio = options.outWidth / options.outHeight.toFloat()
+        if (animeCover.isAnimeFavorite && options.outWidth != -1 && options.outHeight != -1) {
+            animeCover.ratio = options.outWidth / options.outHeight.toFloat()
         }
     }
 
-    fun MangaCover.remove() {
-        MangaCover.coverRatioMap.remove(animeId)
-        MangaCover.dominantCoverColorMap.remove(animeId)
+    fun AnimeCover.remove() {
+        AnimeCover.coverRatioMap.remove(animeId)
+        AnimeCover.dominantCoverColorMap.remove(animeId)
     }
 
     fun savePrefs() {
-        val mapCopy = MangaCover.coverRatioMap.toMap()
+        val mapCopy = AnimeCover.coverRatioMap.toMap()
         preferences.coverRatios().set(mapCopy.map { "${it.key}|${it.value}" }.toSet())
-        val mapColorCopy = MangaCover.dominantCoverColorMap.toMap()
+        val mapColorCopy = AnimeCover.dominantCoverColorMap.toMap()
         preferences.coverColors().set(mapColorCopy.map { "${it.key}|${it.value.first}|${it.value.second}" }.toSet())
     }
 

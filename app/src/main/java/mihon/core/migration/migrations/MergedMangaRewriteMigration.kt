@@ -11,15 +11,15 @@ import mihon.core.migration.MigrationContext
 import tachiyomi.core.common.util.lang.withIOContext
 import tachiyomi.data.DatabaseHandler
 import tachiyomi.data.episode.ChapterMapper
-import tachiyomi.domain.anime.interactor.GetManga
-import tachiyomi.domain.anime.interactor.GetMangaBySource
+import tachiyomi.domain.anime.interactor.GetAnime
+import tachiyomi.domain.anime.interactor.GetAnimeBySource
 import tachiyomi.domain.anime.interactor.InsertMergedReference
+import tachiyomi.domain.anime.model.AnimeUpdate
 import tachiyomi.domain.anime.model.Manga
-import tachiyomi.domain.anime.model.MangaUpdate
-import tachiyomi.domain.anime.model.MergedMangaReference
-import tachiyomi.domain.episode.interactor.DeleteChapters
-import tachiyomi.domain.episode.interactor.UpdateChapter
-import tachiyomi.domain.episode.model.ChapterUpdate
+import tachiyomi.domain.anime.model.MergedAnimeReference
+import tachiyomi.domain.episode.interactor.DeleteEpisodes
+import tachiyomi.domain.episode.interactor.UpdateEpisode
+import tachiyomi.domain.episode.model.EpisodeUpdate
 import tachiyomi.domain.source.service.SourceManager
 
 class MergedMangaRewriteMigration : Migration {
@@ -27,29 +27,29 @@ class MergedMangaRewriteMigration : Migration {
 
     override suspend fun invoke(migrationContext: MigrationContext): Boolean = withIOContext {
         val handler = migrationContext.get<DatabaseHandler>() ?: return@withIOContext false
-        val getMangaBySource = migrationContext.get<GetMangaBySource>() ?: return@withIOContext false
-        val getManga = migrationContext.get<GetManga>() ?: return@withIOContext false
+        val getAnimeBySource = migrationContext.get<GetAnimeBySource>() ?: return@withIOContext false
+        val getAnime = migrationContext.get<GetAnime>() ?: return@withIOContext false
         val updateAnime = migrationContext.get<UpdateAnime>() ?: return@withIOContext false
         val insertMergedReference = migrationContext.get<InsertMergedReference>() ?: return@withIOContext false
         val sourceManager = migrationContext.get<SourceManager>() ?: return@withIOContext false
-        val deleteChapters = migrationContext.get<DeleteChapters>() ?: return@withIOContext false
-        val updateChapter = migrationContext.get<UpdateChapter>() ?: return@withIOContext false
-        val mergedMangas = getMangaBySource.await(MERGED_SOURCE_ID)
+        val deleteEpisodes = migrationContext.get<DeleteEpisodes>() ?: return@withIOContext false
+        val updateEpisode = migrationContext.get<UpdateEpisode>() ?: return@withIOContext false
+        val mergedMangas = getAnimeBySource.await(MERGED_SOURCE_ID)
 
         if (mergedMangas.isNotEmpty()) {
             val mangaConfigs = mergedMangas.mapNotNull { mergedManga ->
                 readMangaConfig(mergedManga)?.let { mergedManga to it }
             }
             if (mangaConfigs.isNotEmpty()) {
-                val mangaToUpdate = mutableListOf<MangaUpdate>()
-                val mergedMangaReferences = mutableListOf<MergedMangaReference>()
+                val mangaToUpdate = mutableListOf<AnimeUpdate>()
+                val mergedAnimeReferences = mutableListOf<MergedAnimeReference>()
                 mangaConfigs.onEach { mergedManga ->
                     val newFirst = mergedManga.second.children.firstOrNull()?.url?.let {
-                        if (getManga.await(it, MERGED_SOURCE_ID) != null) return@onEach
-                        mangaToUpdate += MangaUpdate(id = mergedManga.first.id, url = it)
+                        if (getAnime.await(it, MERGED_SOURCE_ID) != null) return@onEach
+                        mangaToUpdate += AnimeUpdate(id = mergedManga.first.id, url = it)
                         mergedManga.first.copy(url = it)
                     } ?: mergedManga.first
-                    mergedMangaReferences += MergedMangaReference(
+                    mergedAnimeReferences += MergedAnimeReference(
                         id = -1,
                         isInfoManga = false,
                         getChapterUpdates = false,
@@ -63,8 +63,8 @@ class MergedMangaRewriteMigration : Migration {
                         mangaSourceId = MERGED_SOURCE_ID,
                     )
                     mergedManga.second.children.distinct().forEachIndexed { index, mangaSource ->
-                        val load = mangaSource.load(getManga, sourceManager) ?: return@forEachIndexed
-                        mergedMangaReferences += MergedMangaReference(
+                        val load = mangaSource.load(getAnime, sourceManager) ?: return@forEachIndexed
+                        mergedAnimeReferences += MergedAnimeReference(
                             id = -1,
                             isInfoManga = index == 0,
                             getChapterUpdates = true,
@@ -81,12 +81,12 @@ class MergedMangaRewriteMigration : Migration {
                 }
 
                 updateAnime.awaitAll(mangaToUpdate)
-                insertMergedReference.awaitAll(mergedMangaReferences)
+                insertMergedReference.awaitAll(mergedAnimeReferences)
 
                 val loadedMangaList = mangaConfigs
                     .map { it.second.children }
                     .flatten()
-                    .mapNotNull { it.load(getManga, sourceManager) }
+                    .mapNotNull { it.load(getAnime, sourceManager) }
                     .distinct()
                 val chapters =
                     handler.awaitList {
@@ -112,14 +112,14 @@ class MergedMangaRewriteMigration : Migration {
                 val parsedChapters = chapters.filter {
                     it.read || it.lastPageRead != 0L
                 }.mapNotNull { chapter -> readUrlConfig(chapter.url)?.let { chapter to it } }
-                val chaptersToUpdate = mutableListOf<ChapterUpdate>()
+                val chaptersToUpdate = mutableListOf<EpisodeUpdate>()
                 parsedChapters.forEach { parsedChapter ->
                     mergedMangaChaptersMatched.firstOrNull {
                         it.second.url == parsedChapter.second.url &&
                             it.first.source.id == parsedChapter.second.source &&
                             it.first.manga.url == parsedChapter.second.mangaUrl
                     }?.let {
-                        chaptersToUpdate += ChapterUpdate(
+                        chaptersToUpdate += EpisodeUpdate(
                             it.second.id,
                             read = parsedChapter.first.read,
                             lastPageRead = parsedChapter.first.lastPageRead,
@@ -127,8 +127,8 @@ class MergedMangaRewriteMigration : Migration {
                     }
                 }
 
-                deleteChapters.await(mergedMangaChapters.map { it.id })
-                updateChapter.awaitAll(chaptersToUpdate)
+                deleteEpisodes.await(mergedMangaChapters.map { it.id })
+                updateEpisode.awaitAll(chaptersToUpdate)
             }
         }
         return@withIOContext true
@@ -171,8 +171,8 @@ class MergedMangaRewriteMigration : Migration {
         @SerialName("u")
         val url: String,
     ) {
-        suspend fun load(getManga: GetManga, sourceManager: SourceManager): LoadedMangaSource? {
-            val manga = getManga.await(url, source) ?: return null
+        suspend fun load(getAnime: GetAnime, sourceManager: SourceManager): LoadedMangaSource? {
+            val manga = getAnime.await(url, source) ?: return null
             val source = sourceManager.getOrStub(source)
             return LoadedMangaSource(source, manga)
         }

@@ -35,7 +35,7 @@ import tachiyomi.core.common.i18n.stringResource
 import tachiyomi.core.common.util.lang.launchUI
 import tachiyomi.domain.anime.model.Manga
 import tachiyomi.domain.episode.model.Chapter
-import tachiyomi.domain.library.model.LibraryManga
+import tachiyomi.domain.library.model.LibraryAnime
 import tachiyomi.domain.source.service.SourceManager
 import tachiyomi.i18n.MR
 import uy.kohesive.injekt.Injekt
@@ -123,7 +123,7 @@ class LibraryUpdateNotifier(
     /**
      * Warn when excessively checking any single source.
      */
-    fun showQueueSizeWarningNotificationIfNeeded(mangaToUpdate: List<LibraryManga>) {
+    fun showQueueSizeWarningNotificationIfNeeded(mangaToUpdate: List<LibraryAnime>) {
         val maxUpdatesFromSource = mangaToUpdate
             .groupBy { it.manga.source }
             .filterKeys { sourceManager.get(it) !is UnmeteredSource }

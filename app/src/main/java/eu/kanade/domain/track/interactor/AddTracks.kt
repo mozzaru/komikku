@@ -17,7 +17,7 @@ import tachiyomi.core.common.util.lang.withNonCancellableContext
 import tachiyomi.core.common.util.lang.withUIContext
 import tachiyomi.core.common.util.system.logcat
 import tachiyomi.domain.anime.model.Manga
-import tachiyomi.domain.episode.interactor.GetChaptersByMangaId
+import tachiyomi.domain.episode.interactor.GetEpisodesByAnimeId
 import tachiyomi.domain.history.interactor.GetHistory
 import tachiyomi.domain.track.interactor.InsertTrack
 import tachiyomi.i18n.MR
@@ -28,13 +28,13 @@ import java.time.ZoneOffset
 class AddTracks(
     private val insertTrack: InsertTrack,
     private val refreshTracks: RefreshTracks,
-    private val getChaptersByMangaId: GetChaptersByMangaId,
+    private val getEpisodesByAnimeId: GetEpisodesByAnimeId,
     private val trackerManager: TrackerManager,
 ) {
 
     suspend fun bind(tracker: Tracker, item: Track, mangaId: Long) = withNonCancellableContext {
         withIOContext {
-            val allChapters = getChaptersByMangaId.await(mangaId)
+            val allChapters = getEpisodesByAnimeId.await(mangaId)
             val hasReadChapters = allChapters.any { it.read }
             tracker.bind(item, hasReadChapters)
 

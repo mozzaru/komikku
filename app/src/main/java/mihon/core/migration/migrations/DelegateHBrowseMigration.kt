@@ -7,21 +7,21 @@ import mihon.core.migration.MigrateUtils
 import mihon.core.migration.Migration
 import mihon.core.migration.MigrationContext
 import tachiyomi.core.common.util.lang.withIOContext
-import tachiyomi.domain.anime.interactor.GetMangaBySource
-import tachiyomi.domain.anime.model.MangaUpdate
+import tachiyomi.domain.anime.interactor.GetAnimeBySource
+import tachiyomi.domain.anime.model.AnimeUpdate
 
 class DelegateHBrowseMigration : Migration {
     override val version: Float = 4f
 
     override suspend fun invoke(migrationContext: MigrationContext): Boolean = withIOContext {
-        val getMangaBySource = migrationContext.get<GetMangaBySource>() ?: return@withIOContext false
+        val getAnimeBySource = migrationContext.get<GetAnimeBySource>() ?: return@withIOContext false
         val updateAnime = migrationContext.get<UpdateAnime>() ?: return@withIOContext false
         MigrateUtils.updateSourceId(migrationContext, HBROWSE_SOURCE_ID, HBROWSE_OLD_ID)
 
         // Migrate BHrowse URLs
-        val hBrowseManga = getMangaBySource.await(HBROWSE_SOURCE_ID)
+        val hBrowseManga = getAnimeBySource.await(HBROWSE_SOURCE_ID)
         val mangaUpdates = hBrowseManga.map {
-            MangaUpdate(it.id, url = it.url + "/c00001/")
+            AnimeUpdate(it.id, url = it.url + "/c00001/")
         }
         updateAnime.awaitAll(mangaUpdates)
         return@withIOContext true

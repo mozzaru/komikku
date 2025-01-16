@@ -1,13 +1,13 @@
 package eu.kanade.tachiyomi.ui.library
 
-import tachiyomi.domain.library.model.LibraryManga
+import tachiyomi.domain.library.model.LibraryAnime
 import tachiyomi.domain.source.model.Source
 import tachiyomi.domain.source.service.SourceManager
 import uy.kohesive.injekt.Injekt
 import uy.kohesive.injekt.api.get
 
 data class LibraryItem(
-    val libraryManga: LibraryManga,
+    val libraryAnime: LibraryAnime,
     val downloadCount: Long = -1,
     val unreadCount: Long = -1,
     val isLocal: Boolean = false,
@@ -25,15 +25,15 @@ data class LibraryItem(
     //  * @return true if the manga matches the query, false otherwise.
     //  */
     // fun matches(constraint: String): Boolean {
-    //     val sourceName by lazy { sourceManager.getOrStub(libraryManga.manga.source).getNameForMangaInfo() }
-    //     return libraryManga.manga.title.contains(constraint, true) ||
-    //         (libraryManga.manga.author?.contains(constraint, true) ?: false) ||
-    //         (libraryManga.manga.artist?.contains(constraint, true) ?: false) ||
-    //         (libraryManga.manga.description?.contains(constraint, true) ?: false) ||
+    //     val sourceName by lazy { sourceManager.getOrStub(libraryAnime.manga.source).getNameForMangaInfo() }
+    //     return libraryAnime.manga.title.contains(constraint, true) ||
+    //         (libraryAnime.manga.author?.contains(constraint, true) ?: false) ||
+    //         (libraryAnime.manga.artist?.contains(constraint, true) ?: false) ||
+    //         (libraryAnime.manga.description?.contains(constraint, true) ?: false) ||
     //         constraint.split(",").map { it.trim() }.all { subconstraint ->
     //             checkNegatableConstraint(subconstraint) {
     //                 sourceName.contains(it, true) ||
-    //                     (libraryManga.manga.genre?.any { genre -> genre.equals(it, true) } ?: false)
+    //                     (libraryAnime.manga.genre?.any { genre -> genre.equals(it, true) } ?: false)
     //             }
     //         }
     // }

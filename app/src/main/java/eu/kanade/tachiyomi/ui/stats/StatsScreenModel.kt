@@ -17,10 +17,10 @@ import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.flow.update
-import tachiyomi.domain.anime.interactor.GetLibraryManga
-import tachiyomi.domain.anime.interactor.GetReadMangaNotInLibraryView
-import tachiyomi.domain.history.interactor.GetTotalReadDuration
-import tachiyomi.domain.library.model.LibraryManga
+import tachiyomi.domain.anime.interactor.GetLibraryAnime
+import tachiyomi.domain.anime.interactor.GetSeenAnimeNotInLibraryView
+import tachiyomi.domain.history.interactor.GetTotalWatchDuration
+import tachiyomi.domain.library.model.LibraryAnime
 import tachiyomi.domain.library.service.LibraryPreferences
 import tachiyomi.domain.library.service.LibraryPreferences.Companion.MANGA_HAS_UNREAD
 import tachiyomi.domain.library.service.LibraryPreferences.Companion.MANGA_NON_COMPLETED
@@ -33,13 +33,13 @@ import uy.kohesive.injekt.api.get
 
 class StatsScreenModel(
     private val downloadManager: DownloadManager = Injekt.get(),
-    private val getLibraryManga: GetLibraryManga = Injekt.get(),
-    private val getTotalReadDuration: GetTotalReadDuration = Injekt.get(),
+    private val getLibraryAnime: GetLibraryAnime = Injekt.get(),
+    private val getTotalWatchDuration: GetTotalWatchDuration = Injekt.get(),
     private val getTracks: GetTracks = Injekt.get(),
     private val preferences: LibraryPreferences = Injekt.get(),
     private val trackerManager: TrackerManager = Injekt.get(),
     // SY -->
-    private val getReadMangaNotInLibraryView: GetReadMangaNotInLibraryView = Injekt.get(),
+    private val getSeenAnimeNotInLibraryView: GetSeenAnimeNotInLibraryView = Injekt.get(),
     // SY <--
 ) : StateScreenModel<StatsScreenState>(StatsScreenState.Loading) {
 
@@ -54,8 +54,8 @@ class StatsScreenModel(
         // SY -->
         _allRead.onEach { allRead ->
             mutableState.update { StatsScreenState.Loading }
-            val libraryManga = getLibraryManga.await() + if (allRead) {
-                getReadMangaNotInLibraryView.await()
+            val libraryManga = getLibraryAnime.await() + if (allRead) {
+                getSeenAnimeNotInLibraryView.await()
             } else {
                 emptyList()
             }
@@ -73,7 +73,7 @@ class StatsScreenModel(
                 completedMangaCount = distinctLibraryManga.count {
                     it.manga.status.toInt() == SManga.COMPLETED && it.unreadCount == 0L
                 },
-                totalReadDuration = getTotalReadDuration.await(),
+                totalReadDuration = getTotalWatchDuration.await(),
             )
 
             val titlesStatData = StatsData.Titles(
@@ -107,17 +107,17 @@ class StatsScreenModel(
         // SY <--
     }
 
-    private fun getGlobalUpdateItemCount(libraryManga: List<LibraryManga>): Int {
+    private fun getGlobalUpdateItemCount(libraryAnime: List<LibraryAnime>): Int {
         val includedCategories = preferences.updateCategories().get().map { it.toLong() }
         val includedManga = if (includedCategories.isNotEmpty()) {
-            libraryManga.filter { it.category in includedCategories }
+            libraryAnime.filter { it.category in includedCategories }
         } else {
-            libraryManga
+            libraryAnime
         }
 
         val excludedCategories = preferences.updateCategoriesExclude().get().map { it.toLong() }
         val excludedMangaIds = if (excludedCategories.isNotEmpty()) {
-            libraryManga.fastMapNotNull { manga ->
+            libraryAnime.fastMapNotNull { manga ->
                 manga.id.takeIf { manga.category in excludedCategories }
             }
         } else {
@@ -135,9 +135,9 @@ class StatsScreenModel(
             }
     }
 
-    private suspend fun getMangaTrackMap(libraryManga: List<LibraryManga>): Map<Long, List<Track>> {
+    private suspend fun getMangaTrackMap(libraryAnime: List<LibraryAnime>): Map<Long, List<Track>> {
         val loggedInTrackerIds = loggedInTrackers.map { it.id }.toHashSet()
-        return libraryManga.associate { manga ->
+        return libraryAnime.associate { manga ->
             val tracks = getTracks.await(manga.id)
                 .fastFilter { it.trackerId in loggedInTrackerIds }
 

@@ -110,7 +110,7 @@ import tachiyomi.core.common.util.system.logcat
 import tachiyomi.domain.UnsortedPreferences
 import tachiyomi.domain.anime.model.Manga
 import tachiyomi.domain.episode.model.Chapter
-import tachiyomi.domain.source.interactor.GetRemoteManga
+import tachiyomi.domain.source.interactor.GetRemoteAnime
 import tachiyomi.domain.source.model.StubSource
 import tachiyomi.domain.source.service.SourceManager
 import tachiyomi.i18n.MR
@@ -372,13 +372,13 @@ class AnimeScreen(
             },
             onRelatedMangaClick = {
                 scope.launchIO {
-                    val manga = screenModel.networkToLocalManga.getLocal(it)
+                    val manga = screenModel.networkToLocalAnime.getLocal(it)
                     navigator.push(AnimeScreen(manga.id, true))
                 }
             },
             onRelatedMangaLongClick = {
                 scope.launchIO {
-                    val manga = screenModel.networkToLocalManga.getLocal(it)
+                    val manga = screenModel.networkToLocalAnime.getLocal(it)
                     bulkFavoriteScreenModel.addRemoveManga(manga, haptic)
                 }
             },
@@ -389,7 +389,7 @@ class AnimeScreen(
                         // source of an recommending entry (to search again)
                         smartSearchConfig != null -> SmartSearchScreen(successState.source.id, smartSearchConfig)
                         screenModel.useNewSourceNavigation -> SourceFeedScreen(successState.source.id)
-                        else -> BrowseSourceScreen(successState.source.id, GetRemoteManga.QUERY_POPULAR)
+                        else -> BrowseSourceScreen(successState.source.id, GetRemoteAnime.QUERY_POPULAR)
                     }
                     when (screen) {
                         // When doing a migrate/recommend => replace previous screen to perform search again.

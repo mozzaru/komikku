@@ -1,17 +1,17 @@
 package tachiyomi.domain.anime.interactor
 
 import exh.metadata.sql.models.SearchMetadata
-import tachiyomi.domain.anime.repository.MangaMetadataRepository
+import tachiyomi.domain.anime.repository.AnimeMetadataRepository
 
 class GetSearchMetadata(
-    private val mangaMetadataRepository: MangaMetadataRepository,
+    private val animeMetadataRepository: AnimeMetadataRepository,
 ) {
 
     suspend fun await(mangaId: Long): SearchMetadata? {
-        return mangaMetadataRepository.getMetadataById(mangaId)
+        return animeMetadataRepository.getMetadataById(mangaId)
     }
 
     suspend fun await(): List<SearchMetadata> {
-        return mangaMetadataRepository.getSearchMetadata()
+        return animeMetadataRepository.getSearchMetadata()
     }
 }

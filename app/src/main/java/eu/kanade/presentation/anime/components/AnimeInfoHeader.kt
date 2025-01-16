@@ -104,7 +104,7 @@ import uy.kohesive.injekt.api.get
 import java.time.Instant
 import java.time.temporal.ChronoUnit
 import kotlin.math.roundToInt
-import tachiyomi.domain.anime.model.MangaCover as DomainMangaCover
+import tachiyomi.domain.anime.model.AnimeCover as DomainMangaCover
 
 private val whitespaceLineRegex = Regex("[\\r\\n]{2,}", setOf(RegexOption.MULTILINE))
 

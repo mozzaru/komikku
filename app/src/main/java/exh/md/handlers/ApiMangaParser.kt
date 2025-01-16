@@ -15,8 +15,8 @@ import exh.metadata.metadata.base.RaisedTag
 import exh.util.capitalize
 import exh.util.floor
 import exh.util.nullIfEmpty
+import tachiyomi.domain.anime.interactor.GetAnime
 import tachiyomi.domain.anime.interactor.GetFlatMetadataById
-import tachiyomi.domain.anime.interactor.GetManga
 import tachiyomi.domain.anime.interactor.InsertFlatMetadata
 import uy.kohesive.injekt.injectLazy
 import java.util.Locale
@@ -24,7 +24,7 @@ import java.util.Locale
 class ApiMangaParser(
     private val lang: String,
 ) {
-    private val getManga: GetManga by injectLazy()
+    private val getAnime: GetAnime by injectLazy()
     private val insertFlatMetadata: InsertFlatMetadata by injectLazy()
     private val getFlatMetadataById: GetFlatMetadataById by injectLazy()
 
@@ -45,7 +45,7 @@ class ApiMangaParser(
         coverQuality: String,
         altTitlesInDesc: Boolean,
     ): SManga {
-        val mangaId = getManga.await(manga.url, sourceId)?.id
+        val mangaId = getAnime.await(manga.url, sourceId)?.id
         val metadata = if (mangaId != null) {
             val flatMetadata = getFlatMetadataById.await(mangaId)
             flatMetadata?.raise(metaClass) ?: newMetaInstance()

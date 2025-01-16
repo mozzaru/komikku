@@ -31,13 +31,13 @@ import tachiyomi.core.common.i18n.stringResource
 import tachiyomi.core.common.util.lang.withIOContext
 import tachiyomi.core.common.util.lang.withUIContext
 import tachiyomi.domain.UnsortedPreferences
-import tachiyomi.domain.anime.interactor.GetLibraryManga
-import tachiyomi.domain.anime.interactor.GetManga
+import tachiyomi.domain.anime.interactor.GetAnime
+import tachiyomi.domain.anime.interactor.GetLibraryAnime
 import tachiyomi.domain.anime.model.FavoriteEntry
 import tachiyomi.domain.anime.model.Manga
 import tachiyomi.domain.category.interactor.CreateCategoryWithName
 import tachiyomi.domain.category.interactor.GetCategories
-import tachiyomi.domain.category.interactor.SetMangaCategories
+import tachiyomi.domain.category.interactor.SetAnimeCategories
 import tachiyomi.domain.category.interactor.UpdateCategory
 import tachiyomi.domain.category.model.Category
 import tachiyomi.domain.category.model.CategoryUpdate
@@ -50,11 +50,11 @@ import kotlin.time.Duration.Companion.seconds
 
 // TODO only apply database changes after sync
 class FavoritesSyncHelper(val context: Context) {
-    private val getLibraryManga: GetLibraryManga by injectLazy()
+    private val getLibraryAnime: GetLibraryAnime by injectLazy()
     private val getCategories: GetCategories by injectLazy()
-    private val getManga: GetManga by injectLazy()
+    private val getAnime: GetAnime by injectLazy()
     private val updateAnime: UpdateAnime by injectLazy()
-    private val setMangaCategories: SetMangaCategories by injectLazy()
+    private val setAnimeCategories: SetAnimeCategories by injectLazy()
     private val createCategoryWithName: CreateCategoryWithName by injectLazy()
     private val updateCategory: UpdateCategory by injectLazy()
 
@@ -98,7 +98,7 @@ class FavoritesSyncHelper(val context: Context) {
 
         // Validate library state
         status.value = FavoritesSyncStatus.Processing.VerifyingLibrary
-        val libraryManga = getLibraryManga.await()
+        val libraryManga = getLibraryAnime.await()
         val seenManga = HashSet<Long>(libraryManga.size)
         libraryManga.forEach { (manga) ->
             if (!manga.isEhBasedManga()) return@forEach
@@ -352,7 +352,7 @@ class FavoritesSyncHelper(val context: Context) {
                 EXH_SOURCE_ID,
                 EH_SOURCE_ID,
             ).forEach {
-                val manga = getManga.await(url, it)
+                val manga = getAnime.await(url, it)
 
                 if (manga?.favorite == true) {
                     updateAnime.awaitUpdateFavorite(manga.id, false)
@@ -363,7 +363,7 @@ class FavoritesSyncHelper(val context: Context) {
 
         // Can't do too many DB OPs in one go
         removedManga.forEach {
-            setMangaCategories.await(it.id, emptyList())
+            setAnimeCategories.await(it.id, emptyList())
         }
 
         val insertedMangaCategories = mutableListOf<Pair<Long, Manga>>()
@@ -424,7 +424,7 @@ class FavoritesSyncHelper(val context: Context) {
 
         // Can't do too many DB OPs in one go
         insertedMangaCategories.forEach { (category, manga) ->
-            setMangaCategories.await(manga.id, listOf(category))
+            setAnimeCategories.await(manga.id, listOf(category))
         }
     }
 

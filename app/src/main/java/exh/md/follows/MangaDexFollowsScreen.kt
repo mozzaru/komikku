@@ -126,7 +126,7 @@ class MangaDexFollowsScreen(private val sourceId: Long) : Screen() {
                 onMangaClick = {
                     // KMK -->
                     scope.launchIO {
-                        val manga = screenModel.networkToLocalManga.getLocal(it)
+                        val manga = screenModel.networkToLocalAnime.getLocal(it)
                         if (bulkFavoriteState.selectionMode) {
                             bulkFavoriteScreenModel.toggleSelection(manga)
                         } else {
@@ -138,7 +138,7 @@ class MangaDexFollowsScreen(private val sourceId: Long) : Screen() {
                 onMangaLongClick = {
                     // KMK -->
                     scope.launchIO {
-                        val manga = screenModel.networkToLocalManga.getLocal(it)
+                        val manga = screenModel.networkToLocalAnime.getLocal(it)
                         if (bulkFavoriteState.selectionMode) {
                             navigator.push(AnimeScreen(manga.id, true))
                         } else {

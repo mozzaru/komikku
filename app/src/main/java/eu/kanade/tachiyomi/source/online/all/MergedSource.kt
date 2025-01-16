@@ -18,27 +18,27 @@ import kotlinx.coroutines.awaitAll
 import kotlinx.coroutines.supervisorScope
 import kotlinx.coroutines.sync.Semaphore
 import kotlinx.coroutines.sync.withPermit
-import mihon.domain.episode.interactor.FilterChaptersForDownload
+import mihon.domain.episode.interactor.FilterEpisodesForDownload
 import okhttp3.Response
 import tachiyomi.core.common.util.lang.withIOContext
-import tachiyomi.domain.anime.interactor.GetManga
+import tachiyomi.domain.anime.interactor.GetAnime
 import tachiyomi.domain.anime.interactor.GetMergedReferencesById
-import tachiyomi.domain.anime.interactor.NetworkToLocalManga
+import tachiyomi.domain.anime.interactor.NetworkToLocalAnime
 import tachiyomi.domain.anime.model.Manga
-import tachiyomi.domain.anime.model.MergedMangaReference
+import tachiyomi.domain.anime.model.MergedAnimeReference
 import tachiyomi.domain.episode.model.Chapter
 import tachiyomi.domain.source.service.SourceManager
 import uy.kohesive.injekt.injectLazy
 
 class MergedSource : HttpSource() {
-    private val getManga: GetManga by injectLazy()
+    private val getAnime: GetAnime by injectLazy()
     private val getMergedReferencesById: GetMergedReferencesById by injectLazy()
     private val syncEpisodesWithSource: SyncEpisodesWithSource by injectLazy()
-    private val networkToLocalManga: NetworkToLocalManga by injectLazy()
+    private val networkToLocalAnime: NetworkToLocalAnime by injectLazy()
     private val updateAnime: UpdateAnime by injectLazy()
     private val sourceManager: SourceManager by injectLazy()
     private val downloadManager: DownloadManager by injectLazy()
-    private val filterChaptersForDownload: FilterChaptersForDownload by injectLazy()
+    private val filterEpisodesForDownload: FilterEpisodesForDownload by injectLazy()
 
     override val id: Long = MERGED_SOURCE_ID
 
@@ -83,7 +83,7 @@ class MergedSource : HttpSource() {
 
     override suspend fun getMangaDetails(manga: SManga): SManga {
         return withIOContext {
-            val mergedManga = requireNotNull(getManga.await(manga.url, id)) { "merged manga not in db" }
+            val mergedManga = requireNotNull(getAnime.await(manga.url, id)) { "merged manga not in db" }
             val mangaReferences = getMergedReferencesById.await(mergedManga.id)
                 .apply {
                     require(isNotEmpty()) { "Manga references are empty, info unavailable, merge is likely corrupted" }
@@ -95,7 +95,7 @@ class MergedSource : HttpSource() {
             val mangaInfoReference = mangaReferences.firstOrNull { it.isInfoManga }
                 ?: mangaReferences.firstOrNull { it.mangaId != it.mergeId }
             val dbManga = mangaInfoReference?.run {
-                getManga.await(mangaUrl, mangaSourceId)?.toSManga()
+                getAnime.await(mangaUrl, mangaSourceId)?.toSManga()
             }
             (dbManga ?: mergedManga.toSManga()).copy(
                 url = manga.url,
@@ -120,7 +120,7 @@ class MergedSource : HttpSource() {
         var exception: Exception? = null
         return supervisorScope {
             mangaReferences
-                .groupBy(MergedMangaReference::mangaSourceId)
+                .groupBy(MergedAnimeReference::mangaSourceId)
                 .minus(MERGED_SOURCE_ID)
                 .map { (_, values) ->
                     async {
@@ -134,7 +134,7 @@ class MergedSource : HttpSource() {
                                             syncEpisodesWithSource.await(chapterList, loadedManga, source)
 
                                         if (downloadChapters && reference.downloadChapters) {
-                                            val chaptersToDownload = filterChaptersForDownload.await(manga, results)
+                                            val chaptersToDownload = filterEpisodesForDownload.await(manga, results)
                                             if (chaptersToDownload.isNotEmpty()) {
                                                 downloadManager.downloadChapters(
                                                     loadedManga,
@@ -162,23 +162,23 @@ class MergedSource : HttpSource() {
         }
     }
 
-    suspend fun MergedMangaReference.load(): LoadedMangaSource {
-        var manga = getManga.await(mangaUrl, mangaSourceId)
+    suspend fun MergedAnimeReference.load(): LoadedMangaSource {
+        var manga = getAnime.await(mangaUrl, mangaSourceId)
         val source = sourceManager.getOrStub(manga?.source ?: mangaSourceId)
         if (manga == null) {
-            val newManga = networkToLocalManga.await(
+            val newManga = networkToLocalAnime.await(
                 Manga.create().copy(
                     source = mangaSourceId,
                     url = mangaUrl,
                 ),
             )
             updateAnime.awaitUpdateFromSource(newManga, source.getMangaDetails(newManga.toSManga()), false)
-            manga = getManga.await(newManga.id)!!
+            manga = getAnime.await(newManga.id)!!
         }
         return LoadedMangaSource(source, manga, this)
     }
 
-    data class LoadedMangaSource(val source: Source, val manga: Manga?, val reference: MergedMangaReference)
+    data class LoadedMangaSource(val source: Source, val manga: Manga?, val reference: MergedAnimeReference)
 
     override val lang = "all"
     override val supportsLatest = false

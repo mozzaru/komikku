@@ -122,7 +122,7 @@ class MangaDexSimilarScreen(val mangaId: Long, val sourceId: Long) : Screen() {
                 onMangaClick = {
                     // KMK -->
                     scope.launchIO {
-                        val manga = screenModel.networkToLocalManga.getLocal(it)
+                        val manga = screenModel.networkToLocalAnime.getLocal(it)
                         if (bulkFavoriteState.selectionMode) {
                             bulkFavoriteScreenModel.toggleSelection(manga)
                         } else {
@@ -134,7 +134,7 @@ class MangaDexSimilarScreen(val mangaId: Long, val sourceId: Long) : Screen() {
                 onMangaLongClick = {
                     // KMK -->
                     scope.launchIO {
-                        val manga = screenModel.networkToLocalManga.getLocal(it)
+                        val manga = screenModel.networkToLocalAnime.getLocal(it)
                         if (!bulkFavoriteState.selectionMode) {
                             bulkFavoriteScreenModel.addRemoveManga(manga, haptic)
                         } else {

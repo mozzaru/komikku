@@ -39,7 +39,7 @@ import eu.kanade.tachiyomi.ui.reader.model.ChapterTransition
 import eu.kanade.tachiyomi.ui.reader.model.ReaderChapter
 import kotlinx.collections.immutable.persistentMapOf
 import tachiyomi.domain.episode.model.Chapter
-import tachiyomi.domain.episode.service.calculateChapterGap
+import tachiyomi.domain.episode.service.calculateEpisodeGap
 import tachiyomi.i18n.MR
 import tachiyomi.presentation.core.i18n.pluralStringResource
 import tachiyomi.presentation.core.i18n.stringResource
@@ -65,7 +65,7 @@ fun ChapterTransition(
                     bottomChapter = currChapter,
                     bottomChapterDownloaded = currChapterDownloaded,
                     fallbackLabel = stringResource(MR.strings.transition_no_previous),
-                    chapterGap = calculateChapterGap(currChapter, goingToChapter),
+                    chapterGap = calculateEpisodeGap(currChapter, goingToChapter),
                 )
             }
             is ChapterTransition.Next -> {
@@ -77,7 +77,7 @@ fun ChapterTransition(
                     bottomChapter = goingToChapter,
                     bottomChapterDownloaded = goingToChapterDownloaded,
                     fallbackLabel = stringResource(MR.strings.transition_no_next),
-                    chapterGap = calculateChapterGap(goingToChapter, currChapter),
+                    chapterGap = calculateEpisodeGap(goingToChapter, currChapter),
                 )
             }
         }

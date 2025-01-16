@@ -16,7 +16,7 @@ internal class HistoryWithRelationsProvider : PreviewParameterProvider<HistoryWi
         chapterNumber = 10.2,
         readAt = Date(1697247357L),
         readDuration = 123L,
-        coverData = tachiyomi.domain.anime.model.MangaCover(
+        coverData = tachiyomi.domain.anime.model.AnimeCover(
             animeId = 3L,
             sourceId = 4L,
             isAnimeFavorite = false,
@@ -35,7 +35,7 @@ internal class HistoryWithRelationsProvider : PreviewParameterProvider<HistoryWi
         chapterNumber = 10.2,
         readAt = null,
         readDuration = 123L,
-        coverData = tachiyomi.domain.anime.model.MangaCover(
+        coverData = tachiyomi.domain.anime.model.AnimeCover(
             animeId = 3L,
             sourceId = 4L,
             isAnimeFavorite = false,
@@ -54,7 +54,7 @@ internal class HistoryWithRelationsProvider : PreviewParameterProvider<HistoryWi
         chapterNumber = -2.0,
         readAt = Date(1697247357L),
         readDuration = 123L,
-        coverData = tachiyomi.domain.anime.model.MangaCover(
+        coverData = tachiyomi.domain.anime.model.AnimeCover(
             animeId = 3L,
             sourceId = 4L,
             isAnimeFavorite = false,
