@@ -106,7 +106,7 @@ class SmartSearchEngine(
             cleanedTitle = removeTextInBrackets(preTitle, false)
         }
 
-        // Strip chapter reference RU
+        // Strip episode reference RU
         cleanedTitle = cleanedTitle.replace(chapterRefCyrillicRegexp, " ").trim()
 
         // Strip non-special characters

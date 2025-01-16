@@ -1278,7 +1278,7 @@ class LibraryScreenModel(
     }
 
     // SY -->
-    /** Returns first unread chapter of a manga */
+    /** Returns first unread episode of a manga */
     suspend fun getFirstUnread(manga: Manga): Chapter? {
         return getNextEpisodes.await(manga.id).firstOrNull()
     }

@@ -33,7 +33,7 @@ import tachiyomi.core.common.util.system.ImageUtil
 import tachiyomi.core.common.util.system.logcat
 
 /**
- * Holder of the webtoon reader for a single page of a chapter.
+ * Holder of the webtoon reader for a single page of a episode.
  *
  * @param frame the root view for this holder.
  * @param viewer the webtoon viewer.
@@ -70,7 +70,7 @@ class WebtoonPageHolder(
         get() = viewer.recycler.height
 
     /**
-     * Page of a chapter.
+     * Page of a episode.
      */
     private var page: ReaderPage? = null
 

@@ -510,7 +510,7 @@ class ReaderActivity : BaseActivity() {
                 fullscreen = isFullscreen,
 
                 mangaTitle = state.manga?.title,
-                chapterTitle = state.currentChapter?.chapter?.name,
+                chapterTitle = state.currentChapter?.episode?.name,
                 navigateUp = onBackPressedDispatcher::onBackPressed,
                 onClickTopAppBar = ::openMangaScreen,
                 // bookmarked = state.bookmarked,
@@ -1067,7 +1067,7 @@ class ReaderActivity : BaseActivity() {
     /**
      * Called from the presenter whenever a new [viewerChapters] have been set. It delegates the
      * method to the current viewer, but also set the subtitle on the toolbar, and
-     * hides or disables the reader prev/next buttons if there's a prev or next chapter
+     * hides or disables the reader prev/next buttons if there's a prev or next episode
      */
     @SuppressLint("RestrictedApi")
     private fun setChapters(viewerChapters: ViewerChapters) {
@@ -1076,7 +1076,7 @@ class ReaderActivity : BaseActivity() {
         val state = viewModel.state.value
         if (state.indexChapterToShift != null && state.indexPageToShift != null) {
             viewerChapters.currChapter.pages?.find {
-                it.index == state.indexPageToShift && it.chapter.chapter.id == state.indexChapterToShift
+                it.index == state.indexPageToShift && it.chapter.episode.id == state.indexChapterToShift
             }?.let {
                 (viewModel.state.value.viewer as? PagerViewer)?.updateShifting(it)
             }
@@ -1104,7 +1104,7 @@ class ReaderActivity : BaseActivity() {
     }
 
     /**
-     * Called from the presenter if the initial load couldn't load the pages of the chapter. In
+     * Called from the presenter if the initial load couldn't load the pages of the episode. In
      * this case the activity is closed and a toast is shown to the user.
      */
     private fun setInitialChapterError(error: Throwable) {
@@ -1114,10 +1114,10 @@ class ReaderActivity : BaseActivity() {
     }
 
     /**
-     * Called from the presenter whenever it's loading the next or previous chapter. It shows or
+     * Called from the presenter whenever it's loading the next or previous episode. It shows or
      * dismisses a non-cancellable dialog to prevent user interaction according to the value of
      * [show]. This is only used when the next/previous buttons on the toolbar are clicked; the
-     * other cases are handled with chapter transitions on the viewers and chapter preloading.
+     * other cases are handled with episode transitions on the viewers and episode preloading.
      */
     private fun setProgressDialog(show: Boolean) {
         if (show) {
@@ -1139,7 +1139,7 @@ class ReaderActivity : BaseActivity() {
     }
 
     /**
-     * Tells the presenter to load the next chapter and mark it as active. The progress dialog
+     * Tells the presenter to load the next episode and mark it as active. The progress dialog
      * should be automatically shown.
      */
     private fun loadNextChapter() {
@@ -1150,7 +1150,7 @@ class ReaderActivity : BaseActivity() {
     }
 
     /**
-     * Tells the presenter to load the previous chapter and mark it as active. The progress dialog
+     * Tells the presenter to load the previous episode and mark it as active. The progress dialog
      * should be automatically shown.
      */
     private fun loadPreviousChapter() {
@@ -1195,7 +1195,7 @@ class ReaderActivity : BaseActivity() {
 
     /**
      * Called from the viewer when the given [chapter] should be preloaded. It should be called when
-     * the viewer is reaching the beginning or end of a chapter or the transition page is active.
+     * the viewer is reaching the beginning or end of a episode or the transition page is active.
      */
     fun requestPreloadChapter(chapter: ReaderChapter) {
         lifecycleScope.launchIO { viewModel.preload(chapter) }
@@ -1233,7 +1233,7 @@ class ReaderActivity : BaseActivity() {
      */
     fun onShareImageResult(uri: Uri, page: ReaderPage /* SY --> */, secondPage: ReaderPage? = null /* SY <-- */) {
         val manga = viewModel.manga ?: return
-        val chapter = page.chapter.chapter
+        val chapter = page.chapter.episode
 
         // SY -->
         val text = if (secondPage != null) {

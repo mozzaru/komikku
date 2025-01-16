@@ -25,9 +25,9 @@ import java.io.File
 import java.io.IOException
 
 /**
- * Class used to create chapter cache
- * For each image in a chapter a file is created
- * For each chapter a Json list is created and converted to a file.
+ * Class used to create episode cache
+ * For each image in a episode a file is created
+ * For each episode a Json list is created and converted to a file.
  * The files are in format *md5key*.0
  *
  * @param context the application context.
@@ -91,11 +91,11 @@ class ChapterCache(
     /**
      * Get page list from cache.
      *
-     * @param chapter the chapter.
+     * @param chapter the episode.
      * @return the list of pages.
      */
     fun getPageListFromCache(chapter: Chapter): List<Page> {
-        // Get the key for the chapter.
+        // Get the key for the episode.
         val key = DiskUtil.hashKeyForDisk(getKey(chapter))
 
         // Convert JSON string to list of objects. Throws an exception if snapshot is null
@@ -107,7 +107,7 @@ class ChapterCache(
     /**
      * Add page list to disk cache.
      *
-     * @param chapter the chapter.
+     * @param chapter the episode.
      * @param pages list of pages.
      */
     fun putPageListToCache(chapter: Chapter, pages: List<Page>) {
@@ -122,7 +122,7 @@ class ChapterCache(
             val key = DiskUtil.hashKeyForDisk(getKey(chapter))
             editor = diskCache.edit(key) ?: return
 
-            // Write chapter urls to cache.
+            // Write episode urls to cache.
             editor.newOutputStream(0).sink().buffer().use {
                 it.write(cachedValue.toByteArray())
                 it.flush()

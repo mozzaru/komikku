@@ -6,7 +6,7 @@ import tachiyomi.domain.episode.service.calculateEpisodeGap as domainCalculateCh
 
 fun calculateChapterGap(higherReaderChapter: ReaderChapter?, lowerReaderChapter: ReaderChapter?): Int {
     return domainCalculateChapterGap(
-        higherReaderChapter?.chapter?.toDomainChapter(),
-        lowerReaderChapter?.chapter?.toDomainChapter(),
+        higherReaderChapter?.episode?.toDomainChapter(),
+        lowerReaderChapter?.episode?.toDomainChapter(),
     )
 }

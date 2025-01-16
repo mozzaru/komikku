@@ -22,7 +22,7 @@ import tachiyomi.source.local.LocalSource
 import tachiyomi.source.local.io.Format
 
 /**
- * Loader used to retrieve the [PageLoader] for a given chapter.
+ * Loader used to retrieve the [PageLoader] for a given episode.
  */
 class ChapterLoader(
     private val context: Context,
@@ -39,7 +39,7 @@ class ChapterLoader(
 ) {
 
     /**
-     * Assigns the chapter's page loader and loads the its pages. Returns immediately if the chapter
+     * Assigns the episode's page loader and loads the its pages. Returns immediately if the episode
      * is already loaded.
      */
     suspend fun loadChapter(chapter: ReaderChapter /* SY --> */, page: Int? = null/* SY <-- */) {
@@ -49,7 +49,7 @@ class ChapterLoader(
 
         chapter.state = ReaderChapter.State.Loading
         withIOContext {
-            logcat { "Loading pages for ${chapter.chapter.name}" }
+            logcat { "Loading pages for ${chapter.episode.name}" }
             try {
                 val loader = getPageLoader(chapter)
                 chapter.pageLoader = loader
@@ -61,15 +61,15 @@ class ChapterLoader(
                     throw Exception(context.stringResource(MR.strings.page_list_empty_error))
                 }
 
-                // If the chapter is partially read, set the starting page to the last the user read
+                // If the episode is partially read, set the starting page to the last the user read
                 // otherwise use the requested page.
-                if (!chapter.chapter.read /* --> EH */ ||
+                if (!chapter.episode.read /* --> EH */ ||
                     readerPrefs
                         .preserveReadingPosition()
                         .get() ||
                     page != null // <-- EH
                 ) {
-                    chapter.requestedPage = /* SY --> */ page ?: /* SY <-- */ chapter.chapter.last_page_read
+                    chapter.requestedPage = /* SY --> */ page ?: /* SY <-- */ chapter.episode.last_page_read
                 }
 
                 chapter.state = ReaderChapter.State.Loaded(pages)
@@ -91,7 +91,7 @@ class ChapterLoader(
      * Returns the page loader to use for this [chapter].
      */
     private fun getPageLoader(chapter: ReaderChapter): PageLoader {
-        val dbChapter = chapter.chapter
+        val dbChapter = chapter.episode
         val isDownloaded = downloadManager.isChapterDownloaded(
             chapterName = dbChapter.name,
             chapterScanlator = dbChapter.scanlator, /* SY --> */
@@ -103,14 +103,14 @@ class ChapterLoader(
             // SY -->
             source is MergedSource -> {
                 val mangaReference = mergedReferences.firstOrNull {
-                    it.mangaId == chapter.chapter.manga_id
+                    it.mangaId == chapter.episode.manga_id
                 } ?: error("Merge reference null")
                 val source = sourceManager.get(mangaReference.mangaSourceId)
                     ?: error("Source ${mangaReference.mangaSourceId} was null")
-                val manga = mergedManga[chapter.chapter.manga_id] ?: error("Manga for merged chapter was null")
+                val manga = mergedManga[chapter.episode.manga_id] ?: error("Manga for merged episode was null")
                 val isMergedMangaDownloaded = downloadManager.isChapterDownloaded(
-                    chapterName = chapter.chapter.name,
-                    chapterScanlator = chapter.chapter.scanlator,
+                    chapterName = chapter.episode.name,
+                    chapterScanlator = chapter.episode.scanlator,
                     mangaTitle = manga.ogTitle,
                     sourceId = manga.source,
                     skipCache = true,
@@ -124,7 +124,7 @@ class ChapterLoader(
                         downloadProvider = downloadProvider,
                     )
                     source is HttpSource -> HttpPageLoader(chapter, source)
-                    source is LocalSource -> source.getFormat(chapter.chapter).let { format ->
+                    source is LocalSource -> source.getFormat(chapter.episode).let { format ->
                         when (format) {
                             is Format.Directory -> DirectoryPageLoader(format.file)
                             is Format.Archive -> ArchivePageLoader(format.file.archiveReader(context))
@@ -142,7 +142,7 @@ class ChapterLoader(
                 downloadManager,
                 downloadProvider,
             )
-            source is LocalSource -> source.getFormat(chapter.chapter).let { format ->
+            source is LocalSource -> source.getFormat(chapter.episode).let { format ->
                 when (format) {
                     is Format.Directory -> DirectoryPageLoader(format.file)
                     is Format.Archive -> ArchivePageLoader(format.file.archiveReader(context))

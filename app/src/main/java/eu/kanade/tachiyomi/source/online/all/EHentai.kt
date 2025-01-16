@@ -373,7 +373,7 @@ class EHentai(
             }
         }
         val newDisplay = doc.select("#gnd a")
-        // Build chapter for root gallery
+        // Build episode for root gallery
         val location = doc.location()
         val self = SChapter(
             url = EHentaiSearchMetadata.normalizeUrl(location),

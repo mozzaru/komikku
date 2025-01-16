@@ -51,8 +51,8 @@ fun ChapterTransition(
     currChapterDownloaded: Boolean,
     goingToChapterDownloaded: Boolean,
 ) {
-    val currChapter = transition.from.chapter.toDomainChapter()
-    val goingToChapter = transition.to?.chapter?.toDomainChapter()
+    val currChapter = transition.from.episode.toDomainChapter()
+    val goingToChapter = transition.to?.episode?.toDomainChapter()
 
     ProvideTextStyle(MaterialTheme.typography.bodyMedium) {
         when (transition) {
@@ -283,18 +283,18 @@ private fun previewChapter(name: String, scanlator: String, chapterNumber: Doubl
     scanlator = scanlator,
     chapterNumber = chapterNumber,
 )
-private val FakeChapter = previewChapter(
-    name = "Vol.1, Ch.1 - Fake Chapter Title",
+private val FakeEpisode = previewChapter(
+    name = "Vol.1, Ch.1 - Fake Episode Title",
     scanlator = "Scanlator Name",
     chapterNumber = 1.0,
 )
-private val FakeGapChapter = previewChapter(
-    name = "Vol.5, Ch.44 - Fake Gap Chapter Title",
+private val FakeGapEpisode = previewChapter(
+    name = "Vol.5, Ch.44 - Fake Gap Episode Title",
     scanlator = "Scanlator Name",
     chapterNumber = 44.0,
 )
-private val FakeChapterLongTitle = previewChapter(
-    name = "Vol.1, Ch.0 - The Mundane Musings of a Metafictional Manga: A Chapter About a Chapter, Featuring" +
+private val FakeEpisodeLongTitle = previewChapter(
+    name = "Vol.1, Ch.0 - The Mundane Musings of a Metafictional Manga: A Episode About a Episode, Featuring" +
         " an Absurdly Long Title and a Surprisingly Normal Day in the Lives of Our Heroes, as They Grapple with the " +
         "Daily Challenges of Existence, from Paying Rent to Finding Love, All While Navigating the Strange World of " +
         "Fictional Realities and Reality-Bending Fiction, Where the Fourth Wall is Always in Danger of Being Broken " +
@@ -309,7 +309,7 @@ private fun TransitionTextPreview() {
     TachiyomiPreviewTheme {
         Surface(modifier = Modifier.padding(48.dp)) {
             ChapterTransition(
-                transition = ChapterTransition.Next(ReaderChapter(FakeChapter), ReaderChapter(FakeChapter)),
+                transition = ChapterTransition.Next(ReaderChapter(FakeEpisode), ReaderChapter(FakeEpisode)),
                 currChapterDownloaded = false,
                 goingToChapterDownloaded = true,
             )
@@ -323,7 +323,7 @@ private fun TransitionTextLongTitlePreview() {
     TachiyomiPreviewTheme {
         Surface(modifier = Modifier.padding(48.dp)) {
             ChapterTransition(
-                transition = ChapterTransition.Next(ReaderChapter(FakeChapterLongTitle), ReaderChapter(FakeChapter)),
+                transition = ChapterTransition.Next(ReaderChapter(FakeEpisodeLongTitle), ReaderChapter(FakeEpisode)),
                 currChapterDownloaded = true,
                 goingToChapterDownloaded = true,
             )
@@ -337,7 +337,7 @@ private fun TransitionTextWithGapPreview() {
     TachiyomiPreviewTheme {
         Surface(modifier = Modifier.padding(48.dp)) {
             ChapterTransition(
-                transition = ChapterTransition.Next(ReaderChapter(FakeChapter), ReaderChapter(FakeGapChapter)),
+                transition = ChapterTransition.Next(ReaderChapter(FakeEpisode), ReaderChapter(FakeGapEpisode)),
                 currChapterDownloaded = true,
                 goingToChapterDownloaded = false,
             )
@@ -351,7 +351,7 @@ private fun TransitionTextNoNextPreview() {
     TachiyomiPreviewTheme {
         Surface(modifier = Modifier.padding(48.dp)) {
             ChapterTransition(
-                transition = ChapterTransition.Next(ReaderChapter(FakeChapter), null),
+                transition = ChapterTransition.Next(ReaderChapter(FakeEpisode), null),
                 currChapterDownloaded = true,
                 goingToChapterDownloaded = false,
             )
@@ -365,7 +365,7 @@ private fun TransitionTextNoPreviousPreview() {
     TachiyomiPreviewTheme {
         Surface(modifier = Modifier.padding(48.dp)) {
             ChapterTransition(
-                transition = ChapterTransition.Prev(ReaderChapter(FakeChapter), null),
+                transition = ChapterTransition.Prev(ReaderChapter(FakeEpisode), null),
                 currChapterDownloaded = true,
                 goingToChapterDownloaded = false,
             )

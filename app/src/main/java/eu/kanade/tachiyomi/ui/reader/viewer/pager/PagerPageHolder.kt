@@ -32,7 +32,7 @@ import tachiyomi.decoder.ImageDecoder
 import kotlin.math.max
 
 /**
- * View of the ViewPager that contains a page of a chapter.
+ * View of the ViewPager that contains a page of a episode.
  */
 @SuppressLint("ViewConstructor")
 class PagerPageHolder(

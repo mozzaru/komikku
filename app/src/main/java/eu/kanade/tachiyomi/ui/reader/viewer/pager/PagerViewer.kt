@@ -64,7 +64,7 @@ abstract class PagerViewer(
     )
 
     /**
-     * Currently active item. It can be a chapter page or a chapter transition.
+     * Currently active item. It can be a episode page or a episode transition.
      */
     /* [EXH] private */
     var currentPage: ReaderItem? = null
@@ -234,9 +234,9 @@ abstract class PagerViewer(
         currentPage ?: return true
 
         // Allow preload for
-        // 1. Going to next chapter from chapter transition
-        // 2. Going between pages of same chapter
-        // 3. Next chapter page
+        // 1. Going to next episode from episode transition
+        // 2. Going between pages of same episode
+        // 3. Next episode page
         return when (page.chapter) {
             (currentPage as? ChapterTransition.Next)?.to -> true
             (currentPage as? ReaderPage)?.chapter -> true
@@ -247,7 +247,7 @@ abstract class PagerViewer(
 
     /**
      * Called when a [ReaderPage] is marked as active. It notifies the
-     * activity of the change and requests the preload of the next chapter if this is the last page.
+     * activity of the change and requests the preload of the next episode if this is the last page.
      */
     private fun onReaderPageSelected(page: ReaderPage, allowPreload: Boolean, forward: Boolean, hasExtraPage: Boolean) {
         val pages = page.chapter.pages ?: return
@@ -262,23 +262,23 @@ abstract class PagerViewer(
             return
         }
 
-        // Preload next chapter once we're within the last 5 pages of the current chapter
+        // Preload next episode once we're within the last 5 pages of the current episode
         val inPreloadRange = pages.size - page.number < 5
         if (inPreloadRange && allowPreload && page.chapter == adapter.currentChapter) {
-            logcat { "Request preload next chapter because we're at page ${page.number} of ${pages.size}" }
+            logcat { "Request preload next episode because we're at page ${page.number} of ${pages.size}" }
             adapter.nextTransition?.to?.let(activity::requestPreloadChapter)
         }
     }
 
     /**
      * Called when a [ChapterTransition] is marked as active. It request the
-     * preload of the destination chapter of the transition.
+     * preload of the destination episode of the transition.
      */
     private fun onTransitionSelected(transition: ChapterTransition) {
         logcat { "onTransitionSelected: $transition" }
         val toChapter = transition.to
         if (toChapter != null) {
-            logcat { "Request preload destination chapter because we're on the transition" }
+            logcat { "Request preload destination episode because we're on the transition" }
             activity.requestPreloadChapter(toChapter)
         } else if (transition is ChapterTransition.Next) {
             // No more chapters, show menu because the user is probably going to close the reader
@@ -307,7 +307,7 @@ abstract class PagerViewer(
                 adapter.joinedItems.getOrNull(pager.currentItem)?.first is ChapterTransition
         adapter.setChapters(chapters, forceTransition)
 
-        // Layout the pager once a chapter is being set
+        // Layout the pager once a episode is being set
         if (pager.isGone) {
             logcat { "Pager first layout" }
             val pages = chapters.currChapter.pages ?: return
@@ -485,7 +485,7 @@ abstract class PagerViewer(
     // SY -->
     fun setChaptersDoubleShift(chapters: ViewerChapters) {
         // Remove Listener since we're about to change the size of the items
-        // If we don't the size change could put us on a new chapter
+        // If we don't the size change could put us on a new episode
         pager.removeOnPageChangeListener(pagerListener)
         setChaptersInternal(chapters)
         pager.addOnPageChangeListener(pagerListener)

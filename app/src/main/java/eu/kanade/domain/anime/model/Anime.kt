@@ -102,7 +102,7 @@ fun Manga.hasCustomCover(coverCache: CoverCache = Injekt.get()): Boolean {
 }
 
 /**
- * Creates a ComicInfo instance based on the manga and chapter metadata.
+ * Creates a ComicInfo instance based on the manga and episode metadata.
  */
 fun getComicInfo(
     manga: Manga,

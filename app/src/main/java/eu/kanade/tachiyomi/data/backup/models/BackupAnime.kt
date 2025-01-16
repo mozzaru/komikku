@@ -7,7 +7,7 @@ import tachiyomi.domain.anime.model.Manga
 
 @Suppress("DEPRECATION")
 @Serializable
-data class BackupManga(
+data class BackupAnime(
     // in 1.x some of these values have different names
     @ProtoNumber(1) var source: Long,
     // url is called key in 1.x
@@ -26,7 +26,7 @@ data class BackupManga(
     @ProtoNumber(13) var dateAdded: Long = 0,
     @ProtoNumber(14) var viewer: Int = 0, // Replaced by viewer_flags
     // @ProtoNumber(15) val flags: Int = 0, 1.x value, not used in 0.x
-    @ProtoNumber(16) var chapters: List<BackupChapter> = emptyList(),
+    @ProtoNumber(16) var chapters: List<BackupEpisode> = emptyList(),
     @ProtoNumber(17) var categories: List<Long> = emptyList(),
     @ProtoNumber(18) var tracking: List<BackupTracking> = emptyList(),
     // Bump by 100 for values that are not saved/implemented in 1.x but are used in 0.x
@@ -58,25 +58,25 @@ data class BackupManga(
 ) {
     fun getMangaImpl(): Manga {
         return Manga.create().copy(
-            url = this@BackupManga.url,
+            url = this@BackupAnime.url,
             // SY -->
-            ogTitle = this@BackupManga.title,
-            ogArtist = this@BackupManga.artist,
-            ogAuthor = this@BackupManga.author,
-            ogThumbnailUrl = this@BackupManga.thumbnailUrl,
-            ogDescription = this@BackupManga.description,
-            ogGenre = this@BackupManga.genre,
-            ogStatus = this@BackupManga.status.toLong(),
+            ogTitle = this@BackupAnime.title,
+            ogArtist = this@BackupAnime.artist,
+            ogAuthor = this@BackupAnime.author,
+            ogThumbnailUrl = this@BackupAnime.thumbnailUrl,
+            ogDescription = this@BackupAnime.description,
+            ogGenre = this@BackupAnime.genre,
+            ogStatus = this@BackupAnime.status.toLong(),
             // SY <--
-            favorite = this@BackupManga.favorite,
-            source = this@BackupManga.source,
-            dateAdded = this@BackupManga.dateAdded,
-            viewerFlags = (this@BackupManga.viewer_flags ?: this@BackupManga.viewer).toLong(),
-            chapterFlags = this@BackupManga.chapterFlags.toLong(),
-            updateStrategy = this@BackupManga.updateStrategy,
-            lastModifiedAt = this@BackupManga.lastModifiedAt,
-            favoriteModifiedAt = this@BackupManga.favoriteModifiedAt,
-            version = this@BackupManga.version,
+            favorite = this@BackupAnime.favorite,
+            source = this@BackupAnime.source,
+            dateAdded = this@BackupAnime.dateAdded,
+            viewerFlags = (this@BackupAnime.viewer_flags ?: this@BackupAnime.viewer).toLong(),
+            chapterFlags = this@BackupAnime.chapterFlags.toLong(),
+            updateStrategy = this@BackupAnime.updateStrategy,
+            lastModifiedAt = this@BackupAnime.lastModifiedAt,
+            favoriteModifiedAt = this@BackupAnime.favoriteModifiedAt,
+            version = this@BackupAnime.version,
         )
     }
 }

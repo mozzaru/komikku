@@ -26,7 +26,7 @@ class DownloadPendingDeleter(
     private val preferences = context.getSharedPreferences("chapters_to_delete", Context.MODE_PRIVATE)
 
     /**
-     * Last added chapter, used to avoid decoding from the preference too often.
+     * Last added episode, used to avoid decoding from the preference too often.
      */
     private var lastAddedEntry: Entry? = null
 
@@ -52,7 +52,7 @@ class DownloadPendingDeleter(
         } else {
             val existingEntry = preferences.getString(manga.id.toString(), null)
             if (existingEntry != null) {
-                // Existing entry found on preferences, decode json and add the new chapter
+                // Existing entry found on preferences, decode json and add the new episode
                 val savedEntry = json.decodeFromString<Entry>(existingEntry)
 
                 // Append new chapters
@@ -109,7 +109,7 @@ class DownloadPendingDeleter(
     }
 
     /**
-     * Returns a copy of chapter entries ensuring no duplicates by chapter id.
+     * Returns a copy of episode entries ensuring no duplicates by episode id.
      */
     private fun List<ChapterEntry>.addUniqueById(chapters: List<Chapter>): List<ChapterEntry> {
         val newList = toMutableList()
@@ -127,7 +127,7 @@ class DownloadPendingDeleter(
     private fun Manga.toEntry() = MangaEntry(id, url, /* SY --> */ ogTitle /* SY <-- */, source)
 
     /**
-     * Returns a chapter entry from a chapter model.
+     * Returns a episode entry from a episode model.
      */
     private fun Chapter.toEntry() = ChapterEntry(id, url, name, scanlator)
 
@@ -144,7 +144,7 @@ class DownloadPendingDeleter(
     )
 
     /**
-     * Returns a chapter model from a chapter entry.
+     * Returns a episode model from a episode entry.
      */
     private fun ChapterEntry.toModel() = Chapter.create().copy(
         id = id,
@@ -163,7 +163,7 @@ class DownloadPendingDeleter(
     )
 
     /**
-     * Class used to save an entry for a chapter into preferences.
+     * Class used to save an entry for a episode into preferences.
      */
     @Serializable
     private data class ChapterEntry(

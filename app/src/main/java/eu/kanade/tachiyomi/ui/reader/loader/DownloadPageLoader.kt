@@ -15,7 +15,7 @@ import tachiyomi.domain.anime.model.Manga
 import uy.kohesive.injekt.injectLazy
 
 /**
- * Loader used to load a chapter from the downloaded chapters.
+ * Loader used to load a episode from the downloaded chapters.
  */
 internal class DownloadPageLoader(
     private val chapter: ReaderChapter,
@@ -32,7 +32,7 @@ internal class DownloadPageLoader(
     override var isLocal: Boolean = true
 
     override suspend fun getPages(): List<ReaderPage> {
-        val dbChapter = chapter.chapter
+        val dbChapter = chapter.episode
         val chapterPath = downloadProvider.findChapterDir(dbChapter.name, dbChapter.scanlator, /* SY --> */ manga.ogTitle /* SY <-- */, source)
         return if (chapterPath?.isFile == true) {
             getPagesFromArchive(chapterPath)
@@ -52,7 +52,7 @@ internal class DownloadPageLoader(
     }
 
     private fun getPagesFromDirectory(): List<ReaderPage> {
-        val pages = downloadManager.buildPageList(source, manga, chapter.chapter.toDomainChapter()!!)
+        val pages = downloadManager.buildPageList(source, manga, chapter.episode.toDomainChapter()!!)
         return pages.map { page ->
             ReaderPage(page.index, page.url, page.imageUrl) {
                 context.contentResolver.openInputStream(page.uri ?: Uri.EMPTY)!!

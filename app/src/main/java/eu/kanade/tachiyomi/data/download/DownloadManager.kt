@@ -33,7 +33,7 @@ import uy.kohesive.injekt.Injekt
 import uy.kohesive.injekt.api.get
 
 /**
- * This class is used to manage chapter downloads in the application. It must be instantiated once
+ * This class is used to manage episode downloads in the application. It must be instantiated once
  * and retrieved through dependency injection. You can use this class to queue new chapters or query
  * downloaded chapters.
  */
@@ -100,10 +100,10 @@ class DownloadManager(
     }
 
     /**
-     * Returns the download from queue if the chapter is queued for download
-     * else it will return null which means that the chapter is not queued for download
+     * Returns the download from queue if the episode is queued for download
+     * else it will return null which means that the episode is not queued for download
      *
-     * @param chapterId the chapter to check.
+     * @param chapterId the episode to check.
      */
     fun getQueuedDownloadOrNull(chapterId: Long): Download? {
         return queueState.value.find { it.chapter.id == chapterId }
@@ -156,12 +156,12 @@ class DownloadManager(
     }
 
     /**
-     * Builds the page list of a downloaded chapter.
+     * Builds the page list of a downloaded episode.
      *
-     * @param source the source of the chapter.
-     * @param manga the manga of the chapter.
-     * @param chapter the downloaded chapter.
-     * @return the list of pages from the chapter.
+     * @param source the source of the episode.
+     * @param manga the manga of the episode.
+     * @param chapter the downloaded episode.
+     * @return the list of pages from the episode.
      */
     fun buildPageList(source: Source, manga: Manga, chapter: Chapter): List<Page> {
         val chapterDir = provider.findChapterDir(
@@ -184,12 +184,12 @@ class DownloadManager(
     }
 
     /**
-     * Returns true if the chapter is downloaded.
+     * Returns true if the episode is downloaded.
      *
-     * @param chapterName the name of the chapter to query.
-     * @param chapterScanlator scanlator of the chapter to query
+     * @param chapterName the name of the episode to query.
+     * @param chapterScanlator scanlator of the episode to query
      * @param mangaTitle the title of the manga to query.
-     * @param sourceId the id of the source of the chapter.
+     * @param sourceId the id of the source of the episode.
      * @param skipCache whether to skip the directory cache and check in the filesystem.
      */
     fun isChapterDownloaded(
@@ -410,18 +410,18 @@ class DownloadManager(
     }
 
     /**
-     * Renames an already downloaded chapter
+     * Renames an already downloaded episode
      *
      * @param source the source of the manga.
-     * @param manga the manga of the chapter.
-     * @param oldChapter the existing chapter with the old name.
-     * @param newChapter the target chapter with the new name.
+     * @param manga the manga of the episode.
+     * @param oldChapter the existing episode with the old name.
+     * @param newChapter the target episode with the new name.
      */
     suspend fun renameChapter(source: Source, manga: Manga, oldChapter: Chapter, newChapter: Chapter) {
         val oldNames = provider.getValidChapterDirNames(oldChapter.name, oldChapter.scanlator)
         val mangaDir = provider.getMangaDir(/* SY --> */ manga.ogTitle /* SY <-- */, source)
 
-        // Assume there's only 1 version of the chapter name formats present
+        // Assume there's only 1 version of the episode name formats present
         val oldDownload = oldNames.asSequence()
             .mapNotNull { mangaDir.findFile(it) }
             .firstOrNull() ?: return
@@ -437,7 +437,7 @@ class DownloadManager(
             cache.removeChapter(oldChapter, manga)
             cache.addChapter(newName, mangaDir, manga)
         } else {
-            logcat(LogPriority.ERROR) { "Could not rename downloaded chapter: ${oldNames.joinToString()}" }
+            logcat(LogPriority.ERROR) { "Could not rename downloaded episode: ${oldNames.joinToString()}" }
         }
     }
 
@@ -469,7 +469,7 @@ class DownloadManager(
 
         return if (!downloadPreferences.removeBookmarkedChapters().get() &&
             // KMK -->
-            // if manually deleting single chapter then will allow deleting bookmark chapter
+            // if manually deleting single episode then will allow deleting bookmark episode
             (chapters.size > 1 || !ignoreCategoryExclusion)
             // KMK <--
         ) {

@@ -48,11 +48,11 @@ class SyncEpisodeProgressWithTrack(
 
         /**
          * Chapters to update to follow tracker: only continuous incremental chapters
-         * any abnormal chapter number will stop it from updating read status further.
-         * Some mangas has name such as Volume 2 Chapter 1 which will corrupt the order
+         * any abnormal episode number will stop it from updating read status further.
+         * Some mangas has name such as Volume 2 Episode 1 which will corrupt the order
          * if we sort by chapterNumber.
          */
-        val chapterUpdates = dbChapters
+        val episodeUpdates = dbChapters
             .takeWhile { chapter ->
                 lastCheckChapter = checkingChapter
                 checkingChapter = chapter.chapterNumber
@@ -64,7 +64,7 @@ class SyncEpisodeProgressWithTrack(
 
         // only take into account continuous reading
         val localLastRead = sortedChapters.takeWhile { it.read }.lastOrNull()?.chapterNumber ?: 0F
-        // Tracker will update to latest read chapter
+        // Tracker will update to latest read episode
         val lastRead = max(remoteTrack.lastChapterRead, localLastRead.toDouble())
         val updatedTrack = remoteTrack.copy(lastChapterRead = lastRead)
 
@@ -77,11 +77,11 @@ class SyncEpisodeProgressWithTrack(
             }
             // KMK -->
             // Always update local chapters following Tracker even past chapters
-            if (chapterUpdates.isNotEmpty() &&
+            if (episodeUpdates.isNotEmpty() &&
                 trackPreferences.autoSyncProgressFromTrackers().get() &&
                 !tracker.hasNotStartedReading(remoteTrack.status)
             ) {
-                updateEpisode.awaitAll(chapterUpdates)
+                updateEpisode.awaitAll(episodeUpdates)
                 return lastRead.toInt()
             }
             // KMK <--

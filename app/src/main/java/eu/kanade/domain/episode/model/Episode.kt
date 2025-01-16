@@ -1,9 +1,9 @@
 package eu.kanade.domain.episode.model
 
-import eu.kanade.tachiyomi.data.database.models.ChapterImpl
+import eu.kanade.tachiyomi.data.database.models.EpisodeImpl
 import eu.kanade.tachiyomi.source.model.SChapter
 import tachiyomi.domain.episode.model.Chapter
-import eu.kanade.tachiyomi.data.database.models.Chapter as DbChapter
+import eu.kanade.tachiyomi.data.database.models.Episode as DbChapter
 
 // TODO: Remove when all deps are migrated
 fun Chapter.toSChapter(): SChapter {
@@ -26,7 +26,7 @@ fun Chapter.copyFromSChapter(sChapter: SChapter): Chapter {
     )
 }
 
-fun Chapter.toDbChapter(): DbChapter = ChapterImpl().also {
+fun Chapter.toDbChapter(): DbChapter = EpisodeImpl().also {
     it.id = id
     it.manga_id = mangaId
     it.url = url

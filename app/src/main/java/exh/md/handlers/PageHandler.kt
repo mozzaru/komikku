@@ -42,7 +42,7 @@ class PageHandler(
                         chapterResponse.data.attributes.externalUrl,
                         dataSaver = dataSaver,
                     )
-                    /*chapter.scanlator.equals("comikey", true) -> comikeyHandler.fetchPageList(
+                    /*episode.scanlator.equals("comikey", true) -> comikeyHandler.fetchPageList(
                         chapterResponse.data.attributes.externalUrl
                     )*/
                     chapter.scanlator.equals("bilibili comics", true) -> bilibiliHandler.fetchPageList(

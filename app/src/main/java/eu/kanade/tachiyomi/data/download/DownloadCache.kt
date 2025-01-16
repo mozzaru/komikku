@@ -133,12 +133,12 @@ class DownloadCache(
     }
 
     /**
-     * Returns true if the chapter is downloaded.
+     * Returns true if the episode is downloaded.
      *
-     * @param chapterName the name of the chapter to query.
-     * @param chapterScanlator scanlator of the chapter to query
+     * @param chapterName the name of the episode to query.
+     * @param chapterScanlator scanlator of the episode to query
      * @param mangaTitle the title of the manga to query.
-     * @param sourceId the id of the source of the chapter.
+     * @param sourceId the id of the source of the episode.
      * @param skipCache whether to skip the directory cache and check in the filesystem.
      */
     fun isChapterDownloaded(
@@ -204,11 +204,11 @@ class DownloadCache(
     }
 
     /**
-     * Adds a chapter that has just been download to this cache.
+     * Adds a episode that has just been download to this cache.
      *
-     * @param chapterDirName the downloaded chapter's directory name.
+     * @param chapterDirName the downloaded episode's directory name.
      * @param mangaUniFile the directory of the manga.
-     * @param manga the manga of the chapter.
+     * @param manga the manga of the episode.
      */
     suspend fun addChapter(chapterDirName: String, mangaUniFile: UniFile, manga: Manga) {
         rootDownloadsDirMutex.withLock {
@@ -229,7 +229,7 @@ class DownloadCache(
                 sourceDir.mangaDirs += mangaDirName to mangaDir
             }
 
-            // Save the chapter directory
+            // Save the episode directory
             mangaDir.chapterDirs += chapterDirName
         }
 
@@ -237,10 +237,10 @@ class DownloadCache(
     }
 
     /**
-     * Removes a chapter that has been deleted from this cache.
+     * Removes a episode that has been deleted from this cache.
      *
-     * @param chapter the chapter to remove.
-     * @param manga the manga of the chapter.
+     * @param chapter the episode to remove.
+     * @param manga the manga of the episode.
      */
     suspend fun removeChapter(chapter: Chapter, manga: Manga) {
         rootDownloadsDirMutex.withLock {
@@ -278,8 +278,8 @@ class DownloadCache(
     /**
      * Removes a list of chapters that have been deleted from this cache.
      *
-     * @param chapters the list of chapter to remove.
-     * @param manga the manga of the chapter.
+     * @param chapters the list of episode to remove.
+     * @param manga the manga of the episode.
      */
     suspend fun removeChapters(chapters: List<Chapter>, manga: Manga) {
         rootDownloadsDirMutex.withLock {

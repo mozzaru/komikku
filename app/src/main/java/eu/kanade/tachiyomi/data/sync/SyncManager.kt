@@ -6,11 +6,11 @@ import eu.kanade.domain.sync.SyncPreferences
 import eu.kanade.tachiyomi.data.backup.create.BackupCreator
 import eu.kanade.tachiyomi.data.backup.create.BackupOptions
 import eu.kanade.tachiyomi.data.backup.models.Backup
-import eu.kanade.tachiyomi.data.backup.models.BackupChapter
-import eu.kanade.tachiyomi.data.backup.models.BackupManga
+import eu.kanade.tachiyomi.data.backup.models.BackupAnime
+import eu.kanade.tachiyomi.data.backup.models.BackupEpisode
 import eu.kanade.tachiyomi.data.backup.restore.BackupRestoreJob
 import eu.kanade.tachiyomi.data.backup.restore.RestoreOptions
-import eu.kanade.tachiyomi.data.backup.restore.restorers.MangaRestorer
+import eu.kanade.tachiyomi.data.backup.restore.restorers.AnimeRestorer
 import eu.kanade.tachiyomi.data.sync.service.GoogleDriveSyncService
 import eu.kanade.tachiyomi.data.sync.service.SyncData
 import eu.kanade.tachiyomi.data.sync.service.SyncYomiSyncService
@@ -49,7 +49,7 @@ class SyncManager(
 ) {
     private val backupCreator: BackupCreator = BackupCreator(context, false)
     private val notifier: SyncNotifier = SyncNotifier(context)
-    private val mangaRestorer: MangaRestorer = MangaRestorer()
+    private val animeRestorer: AnimeRestorer = AnimeRestorer()
 
     enum class SyncService(val value: Int) {
         NONE(0),
@@ -99,7 +99,7 @@ class SyncManager(
         logcat(LogPriority.DEBUG) { "Begin create backup" }
         val backupManga = backupCreator.backupMangas(databaseManga, backupOptions)
         val backup = Backup(
-            backupManga = backupManga,
+            backupAnime = backupManga,
             backupCategories = backupCreator.backupCategories(backupOptions),
             backupSources = backupCreator.backupSources(backupManga),
             backupPreferences = backupCreator.backupAppPreferences(backupOptions),
@@ -160,7 +160,7 @@ class SyncManager(
         }
 
         // Stop the sync early if the remote backup is null or empty
-        if (remoteBackup.backupManga.isEmpty()) {
+        if (remoteBackup.backupAnime.isEmpty()) {
             notifier.showSyncError("No data found on remote server.")
             return
         }
@@ -177,7 +177,7 @@ class SyncManager(
         updateNonFavorites(nonFavorites)
 
         val newSyncData = backup.copy(
-            backupManga = filteredFavorites,
+            backupAnime = filteredFavorites,
             backupCategories = remoteBackup.backupCategories,
             backupSources = remoteBackup.backupSources,
             backupPreferences = remoteBackup.backupPreferences,
@@ -249,7 +249,7 @@ class SyncManager(
         return handler.awaitList { mangasQueries.getMangasWithFavoriteTimestamp(::mapManga) }
     }
 
-    private suspend fun isMangaDifferent(localManga: Manga, remoteManga: BackupManga): Boolean {
+    private suspend fun isMangaDifferent(localManga: Manga, remoteManga: BackupAnime): Boolean {
         val localChapters = handler.await { chaptersQueries.getChaptersByMangaId(localManga.id, 0).executeAsList() }
         val localCategories = getCategories.await(localManga.id).map { it.order }
 
@@ -268,7 +268,7 @@ class SyncManager(
         return false
     }
 
-    private fun areChaptersDifferent(localChapters: List<Chapters>, remoteChapters: List<BackupChapter>): Boolean {
+    private fun areChaptersDifferent(localChapters: List<Chapters>, remoteChapters: List<BackupEpisode>): Boolean {
         val localChapterMap = localChapters.associateBy { it.url }
         val remoteChapterMap = remoteChapters.associateBy { it.url }
 
@@ -279,7 +279,7 @@ class SyncManager(
         for ((url, localChapter) in localChapterMap) {
             val remoteChapter = remoteChapterMap[url]
 
-            // If a matching remote chapter doesn't exist, or the version numbers are different, consider them different
+            // If a matching remote episode doesn't exist, or the version numbers are different, consider them different
             if (remoteChapter == null || localChapter.version != remoteChapter.version) {
                 return true
             }
@@ -295,9 +295,9 @@ class SyncManager(
      * @return a Pair of lists, where the first list contains different favorite manga
      * and the second list contains non-favorite manga.
      */
-    private suspend fun filterFavoritesAndNonFavorites(backup: Backup): Pair<List<BackupManga>, List<BackupManga>> {
-        val favorites = mutableListOf<BackupManga>()
-        val nonFavorites = mutableListOf<BackupManga>()
+    private suspend fun filterFavoritesAndNonFavorites(backup: Backup): Pair<List<BackupAnime>, List<BackupAnime>> {
+        val favorites = mutableListOf<BackupAnime>()
+        val nonFavorites = mutableListOf<BackupAnime>()
         val logTag = "filterFavoritesAndNonFavorites"
 
         val elapsedTimeMillis = measureTimeMillis {
@@ -308,7 +308,7 @@ class SyncManager(
 
             logcat(LogPriority.DEBUG, logTag) { "Starting to filter favorites and non-favorites from backup data." }
 
-            backup.backupManga.forEach { remoteManga ->
+            backup.backupAnime.forEach { remoteManga ->
                 val compositeKey = Triple(remoteManga.source, remoteManga.url, remoteManga.title)
                 val localManga = localMangaMap[compositeKey]
                 when {
@@ -342,9 +342,9 @@ class SyncManager(
 
     /**
      * Updates the non-favorite manga in the local database with their favorite status from the backup.
-     * @param nonFavorites the list of non-favorite BackupManga objects from the backup.
+     * @param nonFavorites the list of non-favorite BackupAnime objects from the backup.
      */
-    private suspend fun updateNonFavorites(nonFavorites: List<BackupManga>) {
+    private suspend fun updateNonFavorites(nonFavorites: List<BackupAnime>) {
         val localMangaList = getAllMangaFromDB()
 
         val localMangaMap = localMangaList.associateBy { Triple(it.source, it.url, it.title) }
@@ -354,7 +354,7 @@ class SyncManager(
             localMangaMap[key]?.let { localManga ->
                 if (localManga.favorite != nonFavorite.favorite) {
                     val updatedManga = localManga.copy(favorite = nonFavorite.favorite)
-                    mangaRestorer.updateManga(updatedManga)
+                    animeRestorer.updateManga(updatedManga)
                 }
             }
         }

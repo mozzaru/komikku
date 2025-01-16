@@ -188,10 +188,10 @@ fun AnimeScreen(
     onMarkPreviousAsReadClicked: (Chapter) -> Unit,
     onMultiDeleteClicked: (List<Chapter>) -> Unit,
 
-    // For chapter swipe
+    // For episode swipe
     onChapterSwipe: (EpisodeList.Item, LibraryPreferences.ChapterSwipeAction) -> Unit,
 
-    // Chapter selection
+    // Episode selection
     onChapterSelected: (EpisodeList.Item, Boolean, Boolean, Boolean) -> Unit,
     onAllChapterSelected: (Boolean) -> Unit,
     onInvertSelection: () -> Unit,
@@ -386,10 +386,10 @@ private fun AnimeScreenSmallImpl(
     onMarkPreviousAsReadClicked: (Chapter) -> Unit,
     onMultiDeleteClicked: (List<Chapter>) -> Unit,
 
-    // For chapter swipe
+    // For episode swipe
     onChapterSwipe: (EpisodeList.Item, LibraryPreferences.ChapterSwipeAction) -> Unit,
 
-    // Chapter selection
+    // Episode selection
     onChapterSelected: (EpisodeList.Item, Boolean, Boolean, Boolean) -> Unit,
     onAllChapterSelected: (Boolean) -> Unit,
     onInvertSelection: () -> Unit,
@@ -844,7 +844,7 @@ private fun AnimeScreenLargeImpl(
     // For swipe actions
     onChapterSwipe: (EpisodeList.Item, LibraryPreferences.ChapterSwipeAction) -> Unit,
 
-    // Chapter selection
+    // Episode selection
     onChapterSelected: (EpisodeList.Item, Boolean, Boolean, Boolean) -> Unit,
     onAllChapterSelected: (Boolean) -> Unit,
     onInvertSelection: () -> Unit,
@@ -1286,7 +1286,7 @@ private fun LazyListScope.sharedEpisodeItems(
                 // KMK: using hashcode to prevent edge-cases where the missing count might duplicate,
                 // especially on merged manga
                 is EpisodeList.MissingCount -> "missing-count-${item.hashCode()}"
-                is EpisodeList.Item -> "chapter-${item.id}"
+                is EpisodeList.Item -> "episode-${item.id}"
             }
         },
         contentType = { AnimeScreenItem.CHAPTER },

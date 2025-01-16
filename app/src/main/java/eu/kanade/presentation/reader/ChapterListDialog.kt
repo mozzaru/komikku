@@ -59,7 +59,7 @@ fun ChapterListDialog(
         ) {
             items(
                 items = chapters,
-                key = { "chapter-list-${it.chapter.id}" },
+                key = { "episode-list-${it.chapter.id}" },
             ) { chapterItem ->
                 val activeDownload = downloadQueueState.find { it.chapter.id == chapterItem.chapter.id }
                 val progress = activeDownload?.let {

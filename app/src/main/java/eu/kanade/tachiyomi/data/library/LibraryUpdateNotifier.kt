@@ -249,7 +249,7 @@ class LibraryUpdateNotifier(
             setGroupAlertBehavior(NotificationCompat.GROUP_ALERT_SUMMARY)
             priority = NotificationCompat.PRIORITY_HIGH
 
-            // Open first chapter on tap
+            // Open first episode on tap
             setContentIntent(NotificationReceiver.openChapterPendingActivity(context, manga, chapters.first()))
             setAutoCancel(true)
 
@@ -316,26 +316,26 @@ class LibraryUpdateNotifier(
             .toSet()
 
         return when (displayableChapterNumbers.size) {
-            // No sensible chapter numbers to show (i.e. no chapters have parsed chapter number)
+            // No sensible episode numbers to show (i.e. no chapters have parsed episode number)
             0 -> {
-                // "1 new chapter" or "5 new chapters"
+                // "1 new episode" or "5 new chapters"
                 context.pluralStringResource(
                     MR.plurals.notification_chapters_generic,
                     chapters.size,
                     chapters.size,
                 )
             }
-            // Only 1 chapter has a parsed chapter number
+            // Only 1 episode has a parsed episode number
             1 -> {
                 val remaining = chapters.size - displayableChapterNumbers.size
                 if (remaining == 0) {
-                    // "Chapter 2.5"
+                    // "Episode 2.5"
                     context.stringResource(
                         MR.strings.notification_chapters_single,
                         displayableChapterNumbers.first(),
                     )
                 } else {
-                    // "Chapter 2.5 and 10 more"
+                    // "Episode 2.5 and 10 more"
                     context.stringResource(
                         MR.strings.notification_chapters_single_and_more,
                         displayableChapterNumbers.first(),
@@ -343,7 +343,7 @@ class LibraryUpdateNotifier(
                     )
                 }
             }
-            // Everything else (i.e. multiple parsed chapter numbers)
+            // Everything else (i.e. multiple parsed episode numbers)
             else -> {
                 val shouldTruncate = displayableChapterNumbers.size > NOTIF_MAX_CHAPTERS
                 if (shouldTruncate) {

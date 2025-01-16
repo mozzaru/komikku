@@ -2,7 +2,7 @@
 
 package eu.kanade.tachiyomi.data.database.models
 
-class ChapterImpl : Chapter {
+class EpisodeImpl : Episode {
 
     override var id: Long? = null
 
@@ -36,9 +36,9 @@ class ChapterImpl : Chapter {
         if (this === other) return true
         if (other == null || javaClass != other.javaClass) return false
 
-        val chapter = other as Chapter
-        if (url != chapter.url) return false
-        return id == chapter.id
+        val episode = other as Episode
+        if (url != episode.url) return false
+        return id == episode.id
     }
 
     override fun hashCode(): Int {

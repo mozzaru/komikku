@@ -83,7 +83,7 @@ class WebtoonViewer(
     )
 
     /**
-     * Currently active item. It can be a chapter page or a chapter transition.
+     * Currently active item. It can be a episode page or a episode transition.
      */
     /* [EXH] private */
     var currentPage: Any? = null
@@ -193,8 +193,8 @@ class WebtoonViewer(
         val nextChapter = (nextItem as? ChapterTransition.Next)?.to ?: (nextItem as? ReaderPage)?.chapter
 
         // Allow preload for
-        // 1. Going between pages of same chapter
-        // 2. Next chapter page
+        // 1. Going between pages of same episode
+        // 2. Next episode page
         return when (page.chapter) {
             (currentPage as? ReaderPage)?.chapter -> true
             nextChapter -> true
@@ -219,21 +219,21 @@ class WebtoonViewer(
 
     /**
      * Called from the RecyclerView listener when a [page] is marked as active. It notifies the
-     * activity of the change and requests the preload of the next chapter if this is the last page.
+     * activity of the change and requests the preload of the next episode if this is the last page.
      */
     private fun onPageSelected(page: ReaderPage, allowPreload: Boolean) {
         val pages = page.chapter.pages ?: return
         logcat { "onPageSelected: ${page.number}/${pages.size}" }
         activity.onPageSelected(page)
 
-        // Preload next chapter once we're within the last 5 pages of the current chapter
+        // Preload next episode once we're within the last 5 pages of the current episode
         val inPreloadRange = pages.size - page.number < 5
         if (inPreloadRange && allowPreload && page.chapter == adapter.currentChapter) {
-            logcat { "Request preload next chapter because we're at page ${page.number} of ${pages.size}" }
+            logcat { "Request preload next episode because we're at page ${page.number} of ${pages.size}" }
             val nextItem = adapter.items.getOrNull(adapter.items.size - 1)
             val transitionChapter = (nextItem as? ChapterTransition.Next)?.to ?: (nextItem as?ReaderPage)?.chapter
             if (transitionChapter != null) {
-                logcat { "Requesting to preload chapter ${transitionChapter.chapter.chapter_number}" }
+                logcat { "Requesting to preload episode ${transitionChapter.episode.chapter_number}" }
                 activity.requestPreloadChapter(transitionChapter)
             }
         }
@@ -241,13 +241,13 @@ class WebtoonViewer(
 
     /**
      * Called from the RecyclerView listener when a [transition] is marked as active. It request the
-     * preload of the destination chapter of the transition.
+     * preload of the destination episode of the transition.
      */
     private fun onTransitionSelected(transition: ChapterTransition) {
         logcat { "onTransitionSelected: $transition" }
         val toChapter = transition.to
         if (toChapter != null) {
-            logcat { "Request preload destination chapter because we're on the transition" }
+            logcat { "Request preload destination episode because we're on the transition" }
             activity.requestPreloadChapter(toChapter)
         }
     }

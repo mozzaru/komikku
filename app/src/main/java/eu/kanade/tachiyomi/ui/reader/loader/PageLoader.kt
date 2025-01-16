@@ -18,7 +18,7 @@ abstract class PageLoader {
     abstract var isLocal: Boolean
 
     /**
-     * Returns the list of pages of a chapter.
+     * Returns the list of pages of a episode.
      */
     abstract suspend fun getPages(): List<ReaderPage>
 

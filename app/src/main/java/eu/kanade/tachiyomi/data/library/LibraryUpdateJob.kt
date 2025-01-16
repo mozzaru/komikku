@@ -171,7 +171,7 @@ class LibraryUpdateJob(private val context: Context, workerParams: WorkerParamet
 
         val target = inputData.getString(KEY_TARGET)?.let { Target.valueOf(it) } ?: Target.CHAPTERS
 
-        // If this is a chapter update, set the last update time to now
+        // If this is a episode update, set the last update time to now
         if (target == Target.CHAPTERS) {
             libraryPreferences.lastUpdatedTimestamp().set(Instant.now().toEpochMilli())
         }

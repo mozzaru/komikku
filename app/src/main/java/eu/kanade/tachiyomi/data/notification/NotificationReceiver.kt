@@ -150,7 +150,7 @@ class NotificationReceiver : BroadcastReceiver() {
      *
      * @param context context of application
      * @param mangaId id of manga
-     * @param chapterId id of chapter
+     * @param chapterId id of episode
      */
     private fun openChapter(context: Context, mangaId: Long, chapterId: Long) {
         val manga = runBlocking { getAnime.await(mangaId) }
@@ -204,7 +204,7 @@ class NotificationReceiver : BroadcastReceiver() {
     /**
      * Method called when user wants to mark manga chapters as read
      *
-     * @param chapterUrls URLs of chapter to mark as read
+     * @param chapterUrls URLs of episode to mark as read
      * @param mangaId id of manga
      */
     private fun markAsRead(chapterUrls: Array<String>, mangaId: Long) {
@@ -233,7 +233,7 @@ class NotificationReceiver : BroadcastReceiver() {
     /**
      * Method called when user wants to download chapters
      *
-     * @param chapterUrls URLs of chapter to download
+     * @param chapterUrls URLs of episode to download
      * @param mangaId id of manga
      */
     private fun downloadChapters(chapterUrls: Array<String>, mangaId: Long) {
@@ -280,7 +280,7 @@ class NotificationReceiver : BroadcastReceiver() {
         private const val EXTRA_CHAPTER_URL = "$ID.$NAME.EXTRA_CHAPTER_URL"
 
         /**
-         * Returns a [PendingIntent] that resumes the download of a chapter
+         * Returns a [PendingIntent] that resumes the download of a episode
          *
          * @param context context of application
          * @return [PendingIntent]
@@ -411,11 +411,11 @@ class NotificationReceiver : BroadcastReceiver() {
         }
 
         /**
-         * Returns [PendingIntent] that starts a reader activity containing chapter.
+         * Returns [PendingIntent] that starts a reader activity containing episode.
          *
          * @param context context of application
-         * @param manga manga of chapter
-         * @param chapter chapter that needs to be opened
+         * @param manga manga of episode
+         * @param chapter episode that needs to be opened
          */
         internal fun openChapterPendingActivity(context: Context, manga: Manga, chapter: Chapter): PendingIntent {
             val newIntent = ReaderActivity.newIntent(context, manga.id, chapter.id)
@@ -431,7 +431,7 @@ class NotificationReceiver : BroadcastReceiver() {
          * Returns [PendingIntent] that opens the manga info controller.
          *
          * @param context context of application
-         * @param manga manga of chapter
+         * @param manga manga of episode
          */
         internal fun openChapterPendingActivity(context: Context, manga: Manga, groupId: Int): PendingIntent {
             val newIntent =
@@ -449,10 +449,10 @@ class NotificationReceiver : BroadcastReceiver() {
         }
 
         /**
-         * Returns [PendingIntent] that marks a chapter as read and deletes it if preferred
+         * Returns [PendingIntent] that marks a episode as read and deletes it if preferred
          *
          * @param context context of application
-         * @param manga manga of chapter
+         * @param manga manga of episode
          */
         internal fun markAsReadPendingBroadcast(
             context: Context,
@@ -479,7 +479,7 @@ class NotificationReceiver : BroadcastReceiver() {
          * Returns [PendingIntent] that downloads chapters
          *
          * @param context context of application
-         * @param manga manga of chapter
+         * @param manga manga of episode
          */
         internal fun downloadChaptersPendingBroadcast(
             context: Context,

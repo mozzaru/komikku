@@ -92,7 +92,7 @@ fun TrackInfoDialogHome(
                     chapters = "${item.track.lastChapterRead.toInt()}".let {
                         val totalChapters = item.track.totalChapters
                         if (totalChapters > 0) {
-                            // Add known total chapter count
+                            // Add known total episode count
                             "$it / $totalChapters"
                         } else {
                             it

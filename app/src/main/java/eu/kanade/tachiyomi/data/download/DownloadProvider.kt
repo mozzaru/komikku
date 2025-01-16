@@ -17,7 +17,7 @@ import uy.kohesive.injekt.api.get
 
 /**
  * This class is used to provide the directories where the downloads should be saved.
- * It uses the following path scheme: /<root downloads dir>/<source name>/<manga>/<chapter>
+ * It uses the following path scheme: /<root downloads dir>/<source name>/<manga>/<episode>
  *
  * @param context the application context.
  */
@@ -73,12 +73,12 @@ class DownloadProvider(
     }
 
     /**
-     * Returns the download directory for a chapter if it exists.
+     * Returns the download directory for a episode if it exists.
      *
-     * @param chapterName the name of the chapter to query.
-     * @param chapterScanlator scanlator of the chapter to query
+     * @param chapterName the name of the episode to query.
+     * @param chapterScanlator scanlator of the episode to query
      * @param mangaTitle the title of the manga to query.
-     * @param source the source of the chapter.
+     * @param source the source of the episode.
      */
     fun findChapterDir(chapterName: String, chapterScanlator: String?, mangaTitle: String, source: Source): UniFile? {
         val mangaDir = findMangaDir(mangaTitle, source)
@@ -91,8 +91,8 @@ class DownloadProvider(
      * Returns a list of downloaded directories for the chapters that exist.
      *
      * @param chapters the chapters to query.
-     * @param manga the manga of the chapter.
-     * @param source the source of the chapter.
+     * @param manga the manga of the episode.
+     * @param source the source of the episode.
      */
     fun findChapterDirs(chapters: List<Chapter>, manga: Manga, source: Source): Pair<UniFile?, List<UniFile>> {
         val mangaDir = findMangaDir(/* SY --> */ manga.ogTitle /* SY <-- */, source) ?: return null to emptyList()
@@ -108,8 +108,8 @@ class DownloadProvider(
      * Returns a list of all files in manga directory
      *
      * @param chapters the chapters to query.
-     * @param manga the manga of the chapter.
-     * @param source the source of the chapter.
+     * @param manga the manga of the episode.
+     * @param source the source of the episode.
      */
     fun findUnmatchedChapterDirs(
         chapters: List<Chapter>,
@@ -147,10 +147,10 @@ class DownloadProvider(
     }
 
     /**
-     * Returns the chapter directory name for a chapter.
+     * Returns the episode directory name for a episode.
      *
-     * @param chapterName the name of the chapter to query.
-     * @param chapterScanlator scanlator of the chapter to query
+     * @param chapterName the name of the episode to query.
+     * @param chapterScanlator scanlator of the episode to query
      */
     fun getChapterDirName(chapterName: String, chapterScanlator: String?): String {
         val newChapterName = sanitizeChapterName(chapterName)
@@ -163,13 +163,13 @@ class DownloadProvider(
     }
 
     /**
-     * Return the new name for the chapter (in case it's empty or blank)
+     * Return the new name for the episode (in case it's empty or blank)
      *
-     * @param chapterName the name of the chapter
+     * @param chapterName the name of the episode
      */
     private fun sanitizeChapterName(chapterName: String): String {
         return chapterName.ifBlank {
-            "Chapter"
+            "Episode"
         }
     }
 
@@ -179,10 +179,10 @@ class DownloadProvider(
     }
 
     /**
-     * Returns valid downloaded chapter directory names.
+     * Returns valid downloaded episode directory names.
      *
-     * @param chapterName the name of the chapter to query.
-     * @param chapterScanlator scanlator of the chapter to query
+     * @param chapterName the name of the episode to query.
+     * @param chapterScanlator scanlator of the episode to query
      */
     fun getValidChapterDirNames(chapterName: String, chapterScanlator: String?): List<String> {
         val chapterDirName = getChapterDirName(chapterName, chapterScanlator)

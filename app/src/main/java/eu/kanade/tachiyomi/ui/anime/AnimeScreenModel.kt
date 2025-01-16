@@ -317,7 +317,7 @@ class AnimeScreenModel(
                                     )
                                 }
                             } catch (e: Exception) {
-                                logcat(LogPriority.ERROR, e) { "Error loading accepted chapter chain" }
+                                logcat(LogPriority.ERROR, e) { "Error loading accepted episode chain" }
                             }
                         }
                     }
@@ -1223,7 +1223,7 @@ class AnimeScreenModel(
     }
 
     /**
-     * Returns the next unread chapter or null if everything is read.
+     * Returns the next unread episode or null if everything is read.
      */
     fun getNextUnreadChapter(): Chapter? {
         val successState = successState ?: return null
@@ -1331,7 +1331,7 @@ class AnimeScreenModel(
     }
 
     /**
-     * Mark the selected chapter list as read/unread.
+     * Mark the selected episode list as read/unread.
      * @param chapters the list of selected chapters.
      * @param read whether to mark chapters as read or unread.
      */
@@ -1409,7 +1409,7 @@ class AnimeScreenModel(
     }
 
     /**
-     * Deletes the given list of chapter.
+     * Deletes the given list of episode.
      *
      * @param chapters the list of chapters to delete.
      */

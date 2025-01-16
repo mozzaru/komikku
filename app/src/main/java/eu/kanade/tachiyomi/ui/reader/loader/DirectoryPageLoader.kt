@@ -7,7 +7,7 @@ import eu.kanade.tachiyomi.util.lang.compareToCaseInsensitiveNaturalOrder
 import tachiyomi.core.common.util.system.ImageUtil
 
 /**
- * Loader used to load a chapter from a directory given on [file].
+ * Loader used to load a episode from a directory given on [file].
  */
 internal class DirectoryPageLoader(val file: UniFile) : PageLoader() {
 

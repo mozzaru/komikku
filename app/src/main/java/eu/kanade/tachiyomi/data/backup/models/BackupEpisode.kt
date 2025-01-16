@@ -5,7 +5,7 @@ import kotlinx.serialization.protobuf.ProtoNumber
 import tachiyomi.domain.episode.model.Chapter
 
 @Serializable
-data class BackupChapter(
+data class BackupEpisode(
     // in 1.x some of these values have different names
     // url is called key in 1.x
     @ProtoNumber(1) var url: String,
@@ -25,23 +25,23 @@ data class BackupChapter(
 ) {
     fun toChapterImpl(): Chapter {
         return Chapter.create().copy(
-            url = this@BackupChapter.url,
-            name = this@BackupChapter.name,
-            chapterNumber = this@BackupChapter.chapterNumber.toDouble(),
-            scanlator = this@BackupChapter.scanlator,
-            read = this@BackupChapter.read,
-            bookmark = this@BackupChapter.bookmark,
-            lastPageRead = this@BackupChapter.lastPageRead,
-            dateFetch = this@BackupChapter.dateFetch,
-            dateUpload = this@BackupChapter.dateUpload,
-            sourceOrder = this@BackupChapter.sourceOrder,
-            lastModifiedAt = this@BackupChapter.lastModifiedAt,
-            version = this@BackupChapter.version,
+            url = this@BackupEpisode.url,
+            name = this@BackupEpisode.name,
+            chapterNumber = this@BackupEpisode.chapterNumber.toDouble(),
+            scanlator = this@BackupEpisode.scanlator,
+            read = this@BackupEpisode.read,
+            bookmark = this@BackupEpisode.bookmark,
+            lastPageRead = this@BackupEpisode.lastPageRead,
+            dateFetch = this@BackupEpisode.dateFetch,
+            dateUpload = this@BackupEpisode.dateUpload,
+            sourceOrder = this@BackupEpisode.sourceOrder,
+            lastModifiedAt = this@BackupEpisode.lastModifiedAt,
+            version = this@BackupEpisode.version,
         )
     }
 }
 
-val backupChapterMapper = {
+val backupEpisodeMapper = {
         _: Long,
         _: Long,
         url: String,
@@ -58,7 +58,7 @@ val backupChapterMapper = {
         version: Long,
         _: Long,
     ->
-    BackupChapter(
+    BackupEpisode(
         url = url,
         name = name,
         chapterNumber = chapterNumber.toFloat(),

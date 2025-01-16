@@ -22,7 +22,7 @@ import tachiyomi.core.common.i18n.stringResource
 import tachiyomi.i18n.MR
 
 /**
- * Holder of the webtoon viewer that contains a chapter transition.
+ * Holder of the webtoon viewer that contains a episode transition.
  */
 class WebtoonTransitionHolder(
     val layout: LinearLayout,
@@ -86,7 +86,7 @@ class WebtoonTransitionHolder(
     }
 
     /**
-     * Observes the status of the page list of the next/previous chapter. Whenever there's a new
+     * Observes the status of the page list of the next/previous episode. Whenever there's a new
      * state, the pages container is cleaned up before setting the new state.
      */
     private fun observeStatus(chapter: ReaderChapter, transition: ChapterTransition) {

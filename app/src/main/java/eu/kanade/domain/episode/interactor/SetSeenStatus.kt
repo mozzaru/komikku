@@ -41,13 +41,13 @@ class SetSeenStatus(
      *
      * Called from:
      *  - [LibraryScreenModel]: Manually select mangas & mark as read
-     *  - [AnimeScreenModel.markChaptersRead]: Manually select chapters & mark as read or swipe chapter as read
+     *  - [AnimeScreenModel.markChaptersRead]: Manually select chapters & mark as read or swipe episode as read
      *  - [UpdatesScreenModel.markUpdatesRead]: Manually select chapters & mark as read
-     *  - [LibraryUpdateJob.updateChapterList]: when a manga is updated and has new chapter but already read,
-     *  it will mark that new **duplicated** chapter as read & delete downloading/downloaded -> should be treat as
+     *  - [LibraryUpdateJob.updateChapterList]: when a manga is updated and has new episode but already read,
+     *  it will mark that new **duplicated** episode as read & delete downloading/downloaded -> should be treat as
      *  automatically ~ no auto delete
-     *  - [ReaderViewModel.updateChapterProgress]: mark **duplicated** chapter as read after finish reading -> should be
-     *  treated as not manually mark as read so not auto-delete (there are cases where chapter number is mistaken by volume number)
+     *  - [ReaderViewModel.updateChapterProgress]: mark **duplicated** episode as read after finish reading -> should be
+     *  treated as not manually mark as read so not auto-delete (there are cases where episode number is mistaken by volume number)
      */
     suspend fun await(
         read: Boolean,

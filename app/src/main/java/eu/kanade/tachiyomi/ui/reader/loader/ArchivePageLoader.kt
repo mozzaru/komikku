@@ -19,7 +19,7 @@ import uy.kohesive.injekt.injectLazy
 import java.io.File
 
 /**
- * Loader used to load a chapter from an archive file.
+ * Loader used to load a episode from an archive file.
  */
 internal class ArchivePageLoader(private val reader: ArchiveReader) : PageLoader() {
     // SY -->

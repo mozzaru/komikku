@@ -14,7 +14,7 @@ import coil3.request.Options
 import com.hippo.unifile.UniFile
 import eu.kanade.domain.ui.UiPreferences
 import eu.kanade.tachiyomi.data.cache.CoverCache
-import eu.kanade.tachiyomi.data.coil.MangaCoverFetcher.Companion.USE_CUSTOM_COVER_KEY
+import eu.kanade.tachiyomi.data.coil.AnimeCoverFetcher.Companion.USE_CUSTOM_COVER_KEY
 import eu.kanade.tachiyomi.network.await
 import eu.kanade.tachiyomi.source.online.HttpSource
 import kotlinx.coroutines.CoroutineScope
@@ -53,7 +53,7 @@ import java.io.IOException
  * Available request parameter:
  * - [USE_CUSTOM_COVER_KEY]: Use custom cover if set by user, default is true
  */
-class MangaCoverFetcher(
+class AnimeCoverFetcher(
     // KMK -->
     private val animeCover: AnimeCover,
     private val url: String? = animeCover.url,
@@ -336,7 +336,7 @@ class MangaCoverFetcher(
 
     // KMK -->
     /**
-     * [setRatioAndColorsInScope] is called whenever a cover is loaded with [MangaCoverFetcher.fetch]
+     * [setRatioAndColorsInScope] is called whenever a cover is loaded with [AnimeCoverFetcher.fetch]
      *
      * @param bufferedSource if not null then it will load bitmap from [BufferedSource], regardless of [ogFile]
      * @param ogFile if not null then it will load bitmap from [File]. If it's null then it will try to load bitmap
@@ -352,7 +352,7 @@ class MangaCoverFetcher(
     ) {
         if (!preloadLibraryColor) return
         scope.launch {
-            MangaCoverMetadata.setRatioAndColors(animeCover, bufferedSource, ogFile, onlyFavorite, force)
+            AnimeCoverMetadata.setRatioAndColors(animeCover, bufferedSource, ogFile, onlyFavorite, force)
         }
     }
     // KMK <--
@@ -371,7 +371,7 @@ class MangaCoverFetcher(
         private val sourceManager: SourceManager by injectLazy()
 
         override fun create(data: Manga, options: Options, imageLoader: ImageLoader): Fetcher {
-            return MangaCoverFetcher(
+            return AnimeCoverFetcher(
                 // KMK -->
                 // url = data.thumbnailUrl,
                 animeCover = data.asMangaCover(),
@@ -396,7 +396,7 @@ class MangaCoverFetcher(
         private val sourceManager: SourceManager by injectLazy()
 
         override fun create(data: AnimeCover, options: Options, imageLoader: ImageLoader): Fetcher {
-            return MangaCoverFetcher(
+            return AnimeCoverFetcher(
                 // KMK -->
                 // url = data.url,
                 animeCover = data,

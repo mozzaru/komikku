@@ -174,7 +174,7 @@ class ApiMangaParser(
          return serializer.data.chapters.asSequence()
              .filter { langs.contains(it.language) }
              .filter {
-                 it.chapter?.let { chapterNumber ->
+                 it.episode?.let { chapterNumber ->
                      if (chapterNumber.toDoubleOrNull() == null) {
                          return@filter false
                      }
@@ -184,9 +184,9 @@ class ApiMangaParser(
              }.toList()
      }*/
 
-    /*private fun isOneShot(chapter: ChapterSerializer, finalChapterNumber: String): Boolean {
-        return chapter.title.equals("oneshot", true) ||
-            ((chapter.chapter.isNullOrEmpty() || chapter.chapter == "0") && MdUtil.validOneShotFinalChapters.contains(finalChapterNumber))
+    /*private fun isOneShot(episode: ChapterSerializer, finalChapterNumber: String): Boolean {
+        return episode.title.equals("oneshot", true) ||
+            ((episode.episode.isNullOrEmpty() || episode.episode == "0") && MdUtil.validOneShotFinalChapters.contains(finalChapterNumber))
     }*/
 
     private fun parseStatus(status: String?) = when (status) {
@@ -219,19 +219,19 @@ class ApiMangaParser(
         val attributes = networkChapter.attributes
         val key = MdUtil.chapterSuffix + networkChapter.id
         val chapterName = StringBuilder()
-        // Build chapter name
+        // Build episode name
 
         if (attributes.volume != null) {
             val vol = "Vol." + attributes.volume
             chapterName.appends(vol)
             // todo
-            // chapter.vol = vol
+            // episode.vol = vol
         }
 
         if (attributes.chapter.isNullOrBlank().not()) {
             val chp = "Ch.${attributes.chapter}"
             chapterName.appends(chp)
-            // chapter.chapter_txt = chp
+            // episode.chapter_txt = chp
         }
 
         if (!attributes.title.isNullOrBlank()) {
@@ -241,14 +241,14 @@ class ApiMangaParser(
             chapterName.append(attributes.title)
         }
 
-        // if volume, chapter and title is empty its a oneshot
+        // if volume, episode and title is empty its a oneshot
         if (chapterName.isEmpty()) {
             chapterName.append("Oneshot")
         }
         /*if ((status == 2 || status == 3)) {
             if (finalChapterNumber != null) {
                 if ((isOneShot(networkChapter, finalChapterNumber) && totalChapterCount == 1) ||
-                    networkChapter.chapter == finalChapterNumber && finalChapterNumber.toIntOrNull() != 0
+                    networkChapter.episode == finalChapterNumber && finalChapterNumber.toIntOrNull() != 0
                 ) {
                     chapterName.add("[END]")
                 }
@@ -276,9 +276,9 @@ class ApiMangaParser(
 
         val scanlator = MdUtil.getScanlatorString(scanlatorName)
 
-        // chapter.mangadex_chapter_id = MdUtil.getChapterId(chapter.url)
+        // episode.mangadex_chapter_id = MdUtil.getChapterId(episode.url)
 
-        // chapter.language = MdLang.fromIsoCode(attributes.translatedLanguage)?.prettyPrint ?: ""
+        // episode.language = MdLang.fromIsoCode(attributes.translatedLanguage)?.prettyPrint ?: ""
 
         return SChapter(
             url = key,

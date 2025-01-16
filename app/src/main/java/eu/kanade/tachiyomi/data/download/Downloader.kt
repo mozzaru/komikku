@@ -271,7 +271,7 @@ class Downloader(
     }
 
     /**
-     * Creates a download object for every chapter and adds them to the downloads queue.
+     * Creates a download object for every episode and adds them to the downloads queue.
      *
      * @param manga the manga of the chapters to download.
      * @param chapters the list of chapters to download.
@@ -322,9 +322,9 @@ class Downloader(
     }
 
     /**
-     * Downloads a chapter.
+     * Downloads a episode.
      *
-     * @param download the chapter to be downloaded.
+     * @param download the episode to be downloaded.
      */
     private suspend fun downloadChapter(download: Download) {
         val mangaDir: UniFile
@@ -604,7 +604,7 @@ class Downloader(
             return false
         }
 
-        // Ensure that the chapter folder has all the pages
+        // Ensure that the episode folder has all the pages
         val downloadedImagesCount = tmpDir.listFiles().orEmpty().count {
             val fileName = it.name.orEmpty()
             when {
@@ -619,7 +619,7 @@ class Downloader(
     }
 
     /**
-     * Archive the chapter pages as a CBZ.
+     * Archive the episode pages as a CBZ.
      */
     private fun archiveChapter(
         mangaDir: UniFile,
@@ -631,7 +631,7 @@ class Downloader(
         // SY <--
 
         val zip = mangaDir.createFile("$dirname.cbz$TMP_DIR_SUFFIX")
-        if (zip?.isFile != true) throw Exception("Failed to create CBZ file for downloaded chapter")
+        if (zip?.isFile != true) throw Exception("Failed to create CBZ file for downloaded episode")
         ZipWriter(context, zip, /* SY --> */ encrypt /* SY <-- */).use { writer ->
             tmpDir.listFiles()?.forEach { file ->
                 writer.write(file)

@@ -142,7 +142,7 @@ class DownloadStore(
  * Class used for download serialization
  *
  * @param mangaId the id of the manga.
- * @param chapterId the id of the chapter.
+ * @param chapterId the id of the episode.
  * @param order the order of the download in the queue.
  */
 @Serializable

@@ -92,7 +92,7 @@ class SyncEpisodesWithSource(
                 chapter = chapter.copyFromSChapter(sChapter)
             }
 
-            // Recognize chapter number for the chapter.
+            // Recognize episode number for the episode.
             val chapterNumber = EpisodeRecognition.parseChapterNumber(
                 manga.title,
                 chapter.name,
@@ -225,7 +225,7 @@ class SyncEpisodesWithSource(
         updateAnime.awaitUpdateFetchInterval(manga, now, fetchWindow)
 
         // Set this manga as updated since chapters were changed
-        // Note that last_update actually represents last time the chapter list changed at all
+        // Note that last_update actually represents last time the episode list changed at all
         updateAnime.awaitUpdateLastUpdate(manga.id)
 
         val reAddedUrls = reAdded.map { it.url }.toHashSet()

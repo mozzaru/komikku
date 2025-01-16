@@ -77,17 +77,17 @@ internal class HttpPageLoader(
     override var isLocal: Boolean = false
 
     /**
-     * Returns the page list for a chapter. It tries to return the page list from the local cache,
+     * Returns the page list for a episode. It tries to return the page list from the local cache,
      * otherwise fallbacks to network.
      */
     override suspend fun getPages(): List<ReaderPage> {
         val pages = try {
-            chapterCache.getPageListFromCache(chapter.chapter.toDomainChapter()!!)
+            chapterCache.getPageListFromCache(chapter.episode.toDomainChapter()!!)
         } catch (e: Throwable) {
             if (e is CancellationException) {
                 throw e
             }
-            source.getPageList(chapter.chapter)
+            source.getPageList(chapter.episode)
         }
         // SY -->
         val rp = pages.mapIndexed { index, page ->
@@ -171,7 +171,7 @@ internal class HttpPageLoader(
                 try {
                     // Convert to pages without reader information
                     val pagesToSave = pages.map { Page(it.index, it.url, it.imageUrl) }
-                    chapterCache.putPageListToCache(chapter.chapter.toDomainChapter()!!, pagesToSave)
+                    chapterCache.putPageListToCache(chapter.episode.toDomainChapter()!!, pagesToSave)
                 } catch (e: Throwable) {
                     if (e is CancellationException) {
                         throw e
@@ -204,7 +204,7 @@ internal class HttpPageLoader(
 
     /**
      * Loads the page, retrieving the image URL and downloading the image if necessary.
-     * Downloaded images are stored in the chapter cache.
+     * Downloaded images are stored in the episode cache.
      *
      * @param page the page whose source image has to be downloaded.
      */
