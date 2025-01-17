@@ -154,7 +154,7 @@ actual class LocalSource(
 
     // SY -->
     fun updateMangaInfo(manga: SManga) {
-        val mangaDirFiles = fileSystem.getFilesInMangaDirectory(manga.url)
+        val mangaDirFiles = fileSystem.getFilesInAnimeDirectory(manga.url)
         val existingFile = mangaDirFiles
             .firstOrNull { it.name == COMIC_INFO_FILE }
         val comicInfoArchiveFile = mangaDirFiles.firstOrNull { it.name == COMIC_INFO_ARCHIVE }
@@ -182,7 +182,7 @@ actual class LocalSource(
             manga.getComicInfo()
         }
 
-        fileSystem.getMangaDirectory(manga.url)?.let {
+        fileSystem.getAnimeDirectory(manga.url)?.let {
             copyComicInfoFile(
                 xml.encodeToString(ComicInfo.serializer(), newComicInfo).byteInputStream(),
                 it,
@@ -200,7 +200,7 @@ actual class LocalSource(
 
         // Augment manga details based on metadata files
         try {
-            val mangaDir = fileSystem.getMangaDirectory(manga.url) ?: error("${manga.url} is not a valid directory")
+            val mangaDir = fileSystem.getAnimeDirectory(manga.url) ?: error("${manga.url} is not a valid directory")
             val mangaDirFiles = mangaDir.listFiles().orEmpty()
 
             val comicInfoFile = mangaDirFiles
@@ -326,7 +326,7 @@ actual class LocalSource(
 
     // Chapters
     override suspend fun getChapterList(manga: SManga): List<SChapter> = withIOContext {
-        val chapters = fileSystem.getFilesInMangaDirectory(manga.url)
+        val chapters = fileSystem.getFilesInAnimeDirectory(manga.url)
             // Only keep supported formats
             .filter { it.isDirectory || Archive.isSupported(it) || it.extension.equals("epub", true) }
             .map { chapterFile ->
