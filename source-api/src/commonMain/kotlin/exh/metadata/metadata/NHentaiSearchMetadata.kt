@@ -1,7 +1,7 @@
 package exh.metadata.metadata
 
 import android.content.Context
-import eu.kanade.tachiyomi.animesource.model.SManga
+import eu.kanade.tachiyomi.animesource.model.SAnime
 import eu.kanade.tachiyomi.animesource.model.copy
 import exh.metadata.MetadataUtil
 import kotlinx.serialization.Serializable
@@ -45,7 +45,7 @@ class NHentaiSearchMetadata : RaisedSearchMetadata() {
 
     var preferredTitle: Int? = null
 
-    override fun createMangaInfo(manga: SManga): SManga {
+    override fun createMangaInfo(manga: SAnime): SAnime {
         val key = nhId?.let { nhIdToPath(it) }
 
         val cover = if (mediaId != null) {
@@ -75,12 +75,12 @@ class NHentaiSearchMetadata : RaisedSearchMetadata() {
 
         // Try to automatically identify if it is ongoing, we try not to be too lenient here to avoid making mistakes
         // We default to completed
-        var status = SManga.COMPLETED
+        var status = SAnime.COMPLETED
         englishTitle?.let { t ->
             MetadataUtil.ONGOING_SUFFIX.find {
                 t.endsWith(it, ignoreCase = true)
             }?.let {
-                status = SManga.ONGOING
+                status = SAnime.ONGOING
             }
         }
 

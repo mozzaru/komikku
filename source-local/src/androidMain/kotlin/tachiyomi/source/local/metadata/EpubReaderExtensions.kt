@@ -1,7 +1,7 @@
 package tachiyomi.source.local.metadata
 
-import eu.kanade.tachiyomi.animesource.model.SChapter
-import eu.kanade.tachiyomi.animesource.model.SManga
+import eu.kanade.tachiyomi.animesource.model.SEpisode
+import eu.kanade.tachiyomi.animesource.model.SAnime
 import mihon.core.archive.EpubReader
 import java.text.ParseException
 import java.text.SimpleDateFormat
@@ -10,7 +10,7 @@ import java.util.Locale
 /**
  * Fills manga and chapter metadata using this epub file's metadata.
  */
-fun EpubReader.fillMetadata(manga: SManga, chapter: SChapter) {
+fun EpubReader.fillMetadata(manga: SAnime, chapter: SEpisode) {
     val ref = getPackageHref()
     val doc = getPackageDocument(ref)
 

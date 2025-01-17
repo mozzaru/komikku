@@ -11,7 +11,7 @@ import eu.kanade.tachiyomi.data.library.LibraryUpdateNotifier
 import eu.kanade.tachiyomi.data.notification.NotificationHandler
 import eu.kanade.tachiyomi.animesource.UnmeteredSource
 import eu.kanade.tachiyomi.animesource.model.Page
-import eu.kanade.tachiyomi.animesource.online.HttpSource
+import eu.kanade.tachiyomi.animesource.online.AnimeHttpSource
 import eu.kanade.tachiyomi.util.storage.DiskUtil
 import eu.kanade.tachiyomi.util.storage.DiskUtil.NOMEDIA_FILE
 import eu.kanade.tachiyomi.util.storage.saveTo
@@ -280,7 +280,7 @@ class Downloader(
     fun queueChapters(manga: Manga, episodes: List<Episode>, autoStart: Boolean) {
         if (episodes.isEmpty()) return
 
-        val source = sourceManager.get(manga.source) as? HttpSource ?: return
+        val source = sourceManager.get(manga.source) as? AnimeHttpSource ?: return
         val wasEmpty = queueState.value.isEmpty()
         val chaptersToQueue = episodes.asSequence()
             // Filter out those already downloaded.
@@ -356,7 +356,7 @@ class Downloader(
             // If the page list already exists, start from the file
             val pageList = download.pages ?: run {
                 // Otherwise, pull page list from network and add them to download object
-                val pages = download.source.getPageList(download.episode.toSChapter())
+                val pages = download.source.getVideoList(download.episode.toSChapter())
 
                 if (pages.isEmpty()) {
                     throw Exception(context.stringResource(MR.strings.page_list_empty_error))
@@ -497,7 +497,7 @@ class Downloader(
      */
     private suspend fun downloadImage(
         page: Page,
-        source: HttpSource,
+        source: AnimeHttpSource,
         tmpDir: UniFile,
         filename: String,
         dataSaver: DataSaver,
@@ -648,14 +648,14 @@ class Downloader(
         dir: UniFile,
         manga: Manga,
         episode: Episode,
-        source: HttpSource,
+        source: AnimeHttpSource,
     ) {
         val categories = getCategories.await(manga.id).map { it.name.trim() }.takeUnless { it.isEmpty() }
         val urls = getTracks.await(manga.id)
             .mapNotNull { track ->
                 track.remoteUrl.takeUnless { url -> url.isBlank() }?.trim()
             }
-            .plus(source.getChapterUrl(episode.toSChapter()).trim())
+            .plus(source.getEpisodeUrl(episode.toSChapter()).trim())
             .distinct()
 
         val comicInfo = getComicInfo(

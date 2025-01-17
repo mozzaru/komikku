@@ -3,7 +3,7 @@ package eu.kanade.tachiyomi.data.download
 import android.content.Context
 import com.hippo.unifile.UniFile
 import eu.kanade.tachiyomi.data.download.model.Download
-import eu.kanade.tachiyomi.animesource.Source
+import eu.kanade.tachiyomi.animesource.AnimeSource
 import eu.kanade.tachiyomi.animesource.model.Page
 import eu.kanade.tachiyomi.util.storage.DiskUtil
 import exh.log.xLogE
@@ -163,7 +163,7 @@ class DownloadManager(
      * @param episode the downloaded episode.
      * @return the list of pages from the episode.
      */
-    fun buildPageList(source: Source, manga: Manga, episode: Episode): List<Page> {
+    fun buildPageList(source: AnimeSource, manga: Manga, episode: Episode): List<Page> {
         val chapterDir = provider.findChapterDir(
             episode.name,
             episode.scanlator,
@@ -232,7 +232,7 @@ class DownloadManager(
     fun deleteChapters(
         episodes: List<Episode>,
         manga: Manga,
-        source: Source,
+        source: AnimeSource,
         // KMK -->
         /** Ignore categories exclusion */
         ignoreCategoryExclusion: Boolean = false,
@@ -270,7 +270,7 @@ class DownloadManager(
      * @param source the source of the manga.
      * @param removeQueued whether to also remove queued downloads.
      */
-    fun deleteManga(manga: Manga, source: Source, removeQueued: Boolean = true) {
+    fun deleteManga(manga: Manga, source: AnimeSource, removeQueued: Boolean = true) {
         launchIO {
             if (removeQueued) {
                 downloader.removeFromQueue(manga)
@@ -308,7 +308,7 @@ class DownloadManager(
     /**
      * return the list of all manga folders
      */
-    fun getMangaFolders(source: Source): List<UniFile> {
+    fun getMangaFolders(source: AnimeSource): List<UniFile> {
         return provider.findSourceDir(source)?.listFiles()?.toList().orEmpty()
     }
 
@@ -322,7 +322,7 @@ class DownloadManager(
     suspend fun cleanupChapters(
         allEpisodes: List<Episode>,
         manga: Manga,
-        source: Source,
+        source: AnimeSource,
         removeRead: Boolean,
         removeNonFavorite: Boolean,
     ): Int {
@@ -389,7 +389,7 @@ class DownloadManager(
      * @param oldSource the old source.
      * @param newSource the new source.
      */
-    fun renameSource(oldSource: Source, newSource: Source) {
+    fun renameSource(oldSource: AnimeSource, newSource: AnimeSource) {
         val oldFolder = provider.findSourceDir(oldSource) ?: return
         val newName = provider.getSourceDirName(newSource)
 
@@ -417,7 +417,7 @@ class DownloadManager(
      * @param oldEpisode the existing episode with the old name.
      * @param newEpisode the target episode with the new name.
      */
-    suspend fun renameChapter(source: Source, manga: Manga, oldEpisode: Episode, newEpisode: Episode) {
+    suspend fun renameChapter(source: AnimeSource, manga: Manga, oldEpisode: Episode, newEpisode: Episode) {
         val oldNames = provider.getValidChapterDirNames(oldEpisode.name, oldEpisode.scanlator)
         val mangaDir = provider.getMangaDir(/* SY --> */ manga.ogTitle /* SY <-- */, source)
 

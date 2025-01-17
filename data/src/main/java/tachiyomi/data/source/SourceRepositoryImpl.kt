@@ -1,9 +1,9 @@
 package tachiyomi.data.source
 
-import eu.kanade.tachiyomi.animesource.CatalogueSource
-import eu.kanade.tachiyomi.animesource.Source
-import eu.kanade.tachiyomi.animesource.model.FilterList
-import eu.kanade.tachiyomi.animesource.online.HttpSource
+import eu.kanade.tachiyomi.animesource.AnimeCatalogueSource
+import eu.kanade.tachiyomi.animesource.AnimeSource
+import eu.kanade.tachiyomi.animesource.model.AnimeFilterList
+import eu.kanade.tachiyomi.animesource.online.AnimeHttpSource
 import exh.source.MERGED_SOURCE_ID
 import exh.source.isEhBasedSource
 import kotlinx.coroutines.flow.Flow
@@ -35,7 +35,7 @@ class SourceRepositoryImpl(
     override fun getOnlineSources(): Flow<List<DomainSource>> {
         return sourceManager.catalogueSources.map { sources ->
             sources
-                .filterIsInstance<HttpSource>()
+                .filterIsInstance<AnimeHttpSource>()
                 .map(::mapSourceToDomainSource)
         }
     }
@@ -76,9 +76,9 @@ class SourceRepositoryImpl(
     override fun search(
         sourceId: Long,
         query: String,
-        filterList: FilterList,
+        filterList: AnimeFilterList,
     ): SourcePagingSourceType {
-        val source = sourceManager.get(sourceId) as CatalogueSource
+        val source = sourceManager.get(sourceId) as AnimeCatalogueSource
         // SY -->
         if (source.isEhBasedSource()) {
             return EHentaiSearchPagingSource(source, query, filterList)
@@ -88,7 +88,7 @@ class SourceRepositoryImpl(
     }
 
     override fun getPopular(sourceId: Long): SourcePagingSourceType {
-        val source = sourceManager.get(sourceId) as CatalogueSource
+        val source = sourceManager.get(sourceId) as AnimeCatalogueSource
         // SY -->
         if (source.isEhBasedSource()) {
             return EHentaiPopularPagingSource(source)
@@ -98,7 +98,7 @@ class SourceRepositoryImpl(
     }
 
     override fun getLatest(sourceId: Long): SourcePagingSourceType {
-        val source = sourceManager.get(sourceId) as CatalogueSource
+        val source = sourceManager.get(sourceId) as AnimeCatalogueSource
         // SY -->
         if (source.isEhBasedSource()) {
             return EHentaiLatestPagingSource(source)
@@ -107,7 +107,7 @@ class SourceRepositoryImpl(
         return SourceLatestPagingSource(source)
     }
 
-    private fun mapSourceToDomainSource(source: Source): DomainSource = DomainSource(
+    private fun mapSourceToDomainSource(source: AnimeSource): DomainSource = DomainSource(
         id = source.id,
         lang = source.lang,
         name = source.name,

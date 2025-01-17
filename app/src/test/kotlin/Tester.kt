@@ -1,6 +1,6 @@
 
 import eu.kanade.tachiyomi.data.backup.models.Backup
-import eu.kanade.tachiyomi.animesource.model.SManga
+import eu.kanade.tachiyomi.animesource.model.SAnime
 import eu.kanade.tachiyomi.source.online.all.EHentai
 import exh.favorites.LocalFavoritesStorage
 import exh.metadata.metadata.EHentaiSearchMetadata
@@ -143,18 +143,18 @@ class Tester {
             listOf(
                 EHentai.ParsedManga(
                     0,
-                    SManga("/g/gid/token", "a"),
+                    SAnime("/g/gid/token", "a"),
                     EHentaiSearchMetadata(),
                 ),
                 EHentai.ParsedManga(
                     0,
-                    SManga("/g/gid2/token2", "a"),
+                    SAnime("/g/gid2/token2", "a"),
                     EHentaiSearchMetadata(),
                 ),
                 // added on remote
                 EHentai.ParsedManga(
                     0,
-                    SManga("/g/gid5/token5", "a"),
+                    SAnime("/g/gid5/token5", "a"),
                     EHentaiSearchMetadata(),
                 ),
             ),

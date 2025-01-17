@@ -6,21 +6,21 @@ import android.net.Uri
 import eu.kanade.tachiyomi.network.GET
 import eu.kanade.tachiyomi.network.awaitSuccess
 import eu.kanade.tachiyomi.network.newCachelessCallWithProgress
-import eu.kanade.tachiyomi.animesource.PagePreviewInfo
-import eu.kanade.tachiyomi.animesource.PagePreviewPage
-import eu.kanade.tachiyomi.animesource.PagePreviewSource
-import eu.kanade.tachiyomi.animesource.model.FilterList
-import eu.kanade.tachiyomi.animesource.model.MangasPage
-import eu.kanade.tachiyomi.animesource.model.SChapter
-import eu.kanade.tachiyomi.animesource.model.SManga
-import eu.kanade.tachiyomi.animesource.online.HttpSource
+import eu.kanade.tachiyomi.animesource.ThumbnailPreviewInfo
+import eu.kanade.tachiyomi.animesource.ThumbnailPreviewImage
+import eu.kanade.tachiyomi.animesource.ThumbnailPreviewSource
+import eu.kanade.tachiyomi.animesource.model.AnimeFilterList
+import eu.kanade.tachiyomi.animesource.model.AnimesPage
+import eu.kanade.tachiyomi.animesource.model.SEpisode
+import eu.kanade.tachiyomi.animesource.model.SAnime
+import eu.kanade.tachiyomi.animesource.online.AnimeHttpSource
 import eu.kanade.tachiyomi.animesource.online.MetadataSource
 import eu.kanade.tachiyomi.animesource.online.NamespaceSource
 import eu.kanade.tachiyomi.animesource.online.UrlImportableSource
 import exh.metadata.metadata.NHentaiSearchMetadata
 import exh.metadata.metadata.RaisedSearchMetadata
 import exh.metadata.metadata.base.RaisedTag
-import exh.source.DelegatedHttpSource
+import exh.source.DelegatedAnimeHttpSource
 import exh.source.NHENTAI_SOURCE_ID
 import exh.util.trimOrNull
 import exh.util.urlImportFetchSearchManga
@@ -31,12 +31,12 @@ import kotlinx.serialization.json.Json
 import okhttp3.CacheControl
 import okhttp3.Response
 
-class NHentai(delegate: HttpSource, val context: Context) :
-    DelegatedHttpSource(delegate),
+class NHentai(delegate: AnimeHttpSource, val context: Context) :
+    DelegatedAnimeHttpSource(delegate),
     MetadataSource<NHentaiSearchMetadata, Response>,
     UrlImportableSource,
     NamespaceSource,
-    PagePreviewSource {
+    ThumbnailPreviewSource {
     override val metaClass = NHentaiSearchMetadata::class
     override fun newMetaInstance() = NHentaiSearchMetadata()
     override val lang = delegate.lang
@@ -52,22 +52,22 @@ class NHentai(delegate: HttpSource, val context: Context) :
         }
 
     // Support direct URL importing
-    @Deprecated("Use the non-RxJava API instead", replaceWith = ReplaceWith("getSearchManga"))
-    override fun fetchSearchManga(page: Int, query: String, filters: FilterList) =
+    @Deprecated("Use the non-RxJava API instead", replaceWith = ReplaceWith("getSearchAnime"))
+    override fun fetchSearchAnime(page: Int, query: String, filters: AnimeFilterList) =
         urlImportFetchSearchManga(context, query) {
             @Suppress("DEPRECATION")
-            super<DelegatedHttpSource>.fetchSearchManga(page, query, filters)
+            super<DelegatedAnimeHttpSource>.fetchSearchAnime(page, query, filters)
         }
 
-    override suspend fun getSearchManga(page: Int, query: String, filters: FilterList): MangasPage {
+    override suspend fun getSearchAnime(page: Int, query: String, filters: AnimeFilterList): AnimesPage {
         return urlImportFetchSearchMangaSuspend(context, query) {
-            super<DelegatedHttpSource>.getSearchManga(page, query, filters)
+            super<DelegatedAnimeHttpSource>.getSearchAnime(page, query, filters)
         }
     }
 
-    override suspend fun getMangaDetails(manga: SManga): SManga {
-        val response = client.newCall(mangaDetailsRequest(manga)).awaitSuccess()
-        return parseToManga(manga, response)
+    override suspend fun getAnimeDetails(anime: SAnime): SAnime {
+        val response = client.newCall(animeDetailsRequest(anime)).awaitSuccess()
+        return parseToManga(anime, response)
     }
 
     override suspend fun parseIntoMetadata(metadata: NHentaiSearchMetadata, input: Response) {
@@ -192,14 +192,14 @@ class NHentai(delegate: HttpSource, val context: Context) :
         return "$baseUrl/g/${uri.pathSegments[1]}/"
     }
 
-    override suspend fun getPagePreviewList(manga: SManga, chapters: List<SChapter>, page: Int): PagePreviewPage {
-        val metadata = fetchOrLoadMetadata(manga.id()) {
-            client.newCall(mangaDetailsRequest(manga)).awaitSuccess()
+    override suspend fun getThumbnailPreviewList(anime: SAnime, episodes: List<SEpisode>, page: Int): ThumbnailPreviewImage {
+        val metadata = fetchOrLoadMetadata(anime.id()) {
+            client.newCall(animeDetailsRequest(anime)).awaitSuccess()
         }
-        return PagePreviewPage(
+        return ThumbnailPreviewImage(
             page,
             metadata.pageImageTypes.mapIndexed { index, s ->
-                PagePreviewInfo(
+                ThumbnailPreviewInfo(
                     index + 1,
                     imageUrl = thumbnailUrlFromType(
                         metadata.mediaId!!,
@@ -227,7 +227,7 @@ class NHentai(delegate: HttpSource, val context: Context) :
         "https://t$mediaServer.nhentai.net/galleries/$mediaId/${page}t.$it"
     }
 
-    override suspend fun fetchPreviewImage(page: PagePreviewInfo, cacheControl: CacheControl?): Response {
+    override suspend fun fetchPreviewImage(page: ThumbnailPreviewInfo, cacheControl: CacheControl?): Response {
         return client.newCachelessCallWithProgress(
             if (cacheControl != null) {
                 GET(page.imageUrl, cache = cacheControl)

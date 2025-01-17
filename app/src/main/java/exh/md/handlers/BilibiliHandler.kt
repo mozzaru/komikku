@@ -5,7 +5,7 @@ import eu.kanade.tachiyomi.network.awaitSuccess
 import eu.kanade.tachiyomi.network.interceptor.rateLimit
 import eu.kanade.tachiyomi.network.parseAs
 import eu.kanade.tachiyomi.animesource.model.Page
-import eu.kanade.tachiyomi.animesource.model.SChapter
+import eu.kanade.tachiyomi.animesource.model.SEpisode
 import exh.log.xLogD
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
@@ -48,7 +48,7 @@ class BilibiliHandler(currentClient: OkHttpClient) {
             val mangaUrl = getMangaUrl(externalUrl)
             val chapters = getChapterList(mangaUrl)
             val chapter = chapters
-                .find { it.chapter_number == chapterNumber.toFloatOrNull() }
+                .find { it.episode_number == chapterNumber.toFloatOrNull() }
                 ?: throw Exception("Unknown episode $chapterNumber")
             chapter.url
         }
@@ -95,12 +95,12 @@ class BilibiliHandler(currentClient: OkHttpClient) {
         )
     }
 
-    suspend fun getChapterList(mangaUrl: String): List<SChapter> {
+    suspend fun getChapterList(mangaUrl: String): List<SEpisode> {
         val response = client.newCall(mangaDetailsApiRequest(mangaUrl)).awaitSuccess()
         return chapterListParse(response)
     }
 
-    fun chapterListParse(response: Response): List<SChapter> {
+    fun chapterListParse(response: Response): List<SEpisode> {
         val result = with(json) { response.parseAs<BilibiliResultDto<BilibiliComicDto>>() }
 
         if (result.code != 0) {
@@ -112,7 +112,7 @@ class BilibiliHandler(currentClient: OkHttpClient) {
             .map { ep -> chapterFromObject(ep, result.data.id) }
     }
 
-    private fun chapterFromObject(episode: BilibiliEpisodeDto, comicId: Int): SChapter = SChapter(
+    private fun chapterFromObject(episode: BilibiliEpisodeDto, comicId: Int): SEpisode = SEpisode(
         url = "/mc$comicId/${episode.id}",
         name = "Ep. " + episode.order.toString().removeSuffix(".0") + " - " + episode.title,
         chapter_number = episode.order,

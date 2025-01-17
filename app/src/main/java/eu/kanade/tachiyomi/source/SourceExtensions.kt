@@ -1,16 +1,16 @@
 package eu.kanade.tachiyomi.source
 
 import eu.kanade.domain.source.service.SourcePreferences
-import eu.kanade.tachiyomi.animesource.Source
+import eu.kanade.tachiyomi.animesource.AnimeSource
 import tachiyomi.domain.source.model.StubSource
 import tachiyomi.presentation.core.icons.FlagEmoji
 import tachiyomi.source.local.isLocal
 import uy.kohesive.injekt.Injekt
 import uy.kohesive.injekt.api.get
 
-fun Source.getNameForMangaInfo(
+fun AnimeSource.getNameForMangaInfo(
     // SY -->
-    mergeSources: List<Source>? = null,
+    mergeSources: List<AnimeSource>? = null,
     // SY <--
 ): String {
     val preferences = Injekt.get<SourcePreferences>()
@@ -45,7 +45,7 @@ fun Source.getNameForMangaInfo(
 
 // SY -->
 private fun getMergedSourcesString(
-    mergeSources: List<Source>,
+    mergeSources: List<AnimeSource>,
     enabledLangs: List<String>,
     onlyName: Boolean,
 ): String {
@@ -77,4 +77,4 @@ private fun getMergedSourcesString(
 }
 // SY <--
 
-fun Source.isLocalOrStub(): Boolean = isLocal() || this is StubSource
+fun AnimeSource.isLocalOrStub(): Boolean = isLocal() || this is StubSource

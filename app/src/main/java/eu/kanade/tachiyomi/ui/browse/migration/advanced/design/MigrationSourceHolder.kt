@@ -6,7 +6,7 @@ import eu.davidea.viewholders.FlexibleViewHolder
 import eu.kanade.tachiyomi.databinding.MigrationSourceItemBinding
 import eu.kanade.tachiyomi.extension.ExtensionManager
 import eu.kanade.tachiyomi.source.getNameForMangaInfo
-import eu.kanade.tachiyomi.animesource.online.HttpSource
+import eu.kanade.tachiyomi.animesource.online.AnimeHttpSource
 import uy.kohesive.injekt.Injekt
 import uy.kohesive.injekt.api.get
 
@@ -17,7 +17,7 @@ class MigrationSourceHolder(view: View, val adapter: MigrationSourceAdapter) :
         setDragHandleView(binding.reorder)
     }
 
-    fun bind(source: HttpSource, sourceEnabled: Boolean) {
+    fun bind(source: AnimeHttpSource, sourceEnabled: Boolean) {
         // Set capitalized title.
         val sourceName =
             // KMK -->

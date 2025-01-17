@@ -33,8 +33,8 @@ import eu.kanade.tachiyomi.data.notification.Notifications
 import eu.kanade.tachiyomi.data.sync.SyncDataJob
 import eu.kanade.tachiyomi.data.track.TrackStatus
 import eu.kanade.tachiyomi.data.track.TrackerManager
-import eu.kanade.tachiyomi.animesource.model.SManga
-import eu.kanade.tachiyomi.animesource.model.UpdateStrategy
+import eu.kanade.tachiyomi.animesource.model.SAnime
+import eu.kanade.tachiyomi.animesource.model.AnimeUpdateStrategy
 import eu.kanade.tachiyomi.source.online.all.MergedSource
 import eu.kanade.tachiyomi.util.prepUpdateCover
 import eu.kanade.tachiyomi.util.system.isConnectedToWifi
@@ -305,7 +305,7 @@ class LibraryUpdateJob(private val context: Context, workerParams: WorkerParamet
             // SY <--
             .filter {
                 when {
-                    it.manga.updateStrategy != UpdateStrategy.ALWAYS_UPDATE -> {
+                    it.manga.updateStrategy != AnimeUpdateStrategy.ALWAYS_UPDATE -> {
                         skippedUpdates.add(
                             it.manga to
                                 context.stringResource(MR.strings.skipped_reason_not_always_update),
@@ -313,7 +313,7 @@ class LibraryUpdateJob(private val context: Context, workerParams: WorkerParamet
                         false
                     }
 
-                    MANGA_NON_COMPLETED in restrictions && it.manga.status.toInt() == SManga.COMPLETED -> {
+                    MANGA_NON_COMPLETED in restrictions && it.manga.status.toInt() == SAnime.COMPLETED -> {
                         skippedUpdates.add(it.manga to context.stringResource(MR.strings.skipped_reason_completed))
                         false
                     }
@@ -540,7 +540,7 @@ class LibraryUpdateJob(private val context: Context, workerParams: WorkerParamet
 
         // Update manga metadata if needed
         if (libraryPreferences.autoUpdateMetadata().get()) {
-            val networkManga = source.getMangaDetails(manga.toSManga())
+            val networkManga = source.getAnimeDetails(manga.toSManga())
             updateAnime.awaitUpdateFromSource(manga, networkManga, manualFetch = false, coverCache)
         }
 
@@ -548,7 +548,7 @@ class LibraryUpdateJob(private val context: Context, workerParams: WorkerParamet
             return source.fetchChaptersAndSync(manga, false)
         }
 
-        val chapters = source.getChapterList(manga.toSManga())
+        val chapters = source.getEpisodeList(manga.toSManga())
 
         // Get manga from database to account for if it was removed during the update and
         // to get latest data so it doesn't get overwritten later on
@@ -579,7 +579,7 @@ class LibraryUpdateJob(private val context: Context, workerParams: WorkerParamet
                                 ) {
                                     val source = sourceManager.get(manga.source) ?: return@withUpdateNotification
                                     try {
-                                        val networkManga = source.getMangaDetails(manga.toSManga())
+                                        val networkManga = source.getAnimeDetails(manga.toSManga())
                                         val updatedManga = manga.prepUpdateCover(
                                             coverCache,
                                             networkManga,

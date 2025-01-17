@@ -2,7 +2,7 @@ package exh.ui.smartsearch
 
 import cafe.adriel.voyager.core.model.StateScreenModel
 import cafe.adriel.voyager.core.model.screenModelScope
-import eu.kanade.tachiyomi.animesource.CatalogueSource
+import eu.kanade.tachiyomi.animesource.AnimeCatalogueSource
 import eu.kanade.tachiyomi.ui.browse.source.SourcesScreen
 import exh.smartsearch.SmartSearchEngine
 import kotlinx.coroutines.CancellationException
@@ -21,7 +21,7 @@ class SmartSearchScreenModel(
 ) : StateScreenModel<SmartSearchScreenModel.SearchResults?>(null) {
     private val smartSearchEngine = SmartSearchEngine()
 
-    val source = sourceManager.get(sourceId) as CatalogueSource
+    val source = sourceManager.get(sourceId) as AnimeCatalogueSource
 
     init {
         screenModelScope.launchIO {

@@ -26,7 +26,7 @@ import eu.kanade.presentation.components.ChipBorder
 import eu.kanade.presentation.components.SuggestionChip
 import eu.kanade.presentation.components.SuggestionChipDefaults
 import eu.kanade.presentation.theme.TachiyomiPreviewTheme
-import eu.kanade.tachiyomi.animesource.Source
+import eu.kanade.tachiyomi.animesource.AnimeSource
 import eu.kanade.tachiyomi.source.online.all.EHentai
 import exh.metadata.metadata.EHentaiSearchMetadata
 import exh.metadata.metadata.RaisedSearchMetadata
@@ -50,7 +50,7 @@ value class SearchMetadataChips(
     val tags: Map<String, List<DisplayTag>>,
 ) {
     companion object {
-        operator fun invoke(meta: RaisedSearchMetadata?, source: Source, tags: List<String>?): SearchMetadataChips? {
+        operator fun invoke(meta: RaisedSearchMetadata?, source: AnimeSource, tags: List<String>?): SearchMetadataChips? {
             return if (meta != null) {
                 SearchMetadataChips(
                     meta.tags

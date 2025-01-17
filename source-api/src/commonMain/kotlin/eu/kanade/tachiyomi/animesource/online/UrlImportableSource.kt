@@ -1,11 +1,11 @@
 package eu.kanade.tachiyomi.animesource.online
 
 import android.net.Uri
-import eu.kanade.tachiyomi.animesource.Source
+import eu.kanade.tachiyomi.animesource.AnimeSource
 import java.net.URI
 import java.net.URISyntaxException
 
-interface UrlImportableSource : Source {
+interface UrlImportableSource : AnimeSource {
     val matchingHosts: List<String>
 
     fun matchesUri(uri: Uri): Boolean {

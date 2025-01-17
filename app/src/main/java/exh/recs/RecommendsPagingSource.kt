@@ -6,9 +6,9 @@ import eu.kanade.tachiyomi.network.NetworkHelper
 import eu.kanade.tachiyomi.network.POST
 import eu.kanade.tachiyomi.network.awaitSuccess
 import eu.kanade.tachiyomi.network.parseAs
-import eu.kanade.tachiyomi.animesource.CatalogueSource
-import eu.kanade.tachiyomi.animesource.model.MangasPage
-import eu.kanade.tachiyomi.animesource.model.SManga
+import eu.kanade.tachiyomi.animesource.AnimeCatalogueSource
+import eu.kanade.tachiyomi.animesource.model.AnimesPage
+import eu.kanade.tachiyomi.animesource.model.SAnime
 import exh.util.MangaType
 import exh.util.mangaType
 import kotlinx.serialization.json.Json
@@ -40,13 +40,13 @@ abstract class API(val endpoint: String) {
     }
     val json by injectLazy<Json>()
 
-    abstract suspend fun getRecsBySearch(search: String): List<SManga>
+    abstract suspend fun getRecsBySearch(search: String): List<SAnime>
 
-    abstract suspend fun getRecsById(id: String): List<SManga>
+    abstract suspend fun getRecsById(id: String): List<SAnime>
 }
 
 class MyAnimeList : API("https://api.jikan.moe/v4/") {
-    override suspend fun getRecsById(id: String): List<SManga> {
+    override suspend fun getRecsById(id: String): List<SAnime> {
         val apiUrl = endpoint.toHttpUrl()
             .newBuilder()
             .addPathSegment("manga")
@@ -59,7 +59,7 @@ class MyAnimeList : API("https://api.jikan.moe/v4/") {
             .map { it.jsonObject["entry"]!!.jsonObject }
             .map { rec ->
                 logcat { "MYANIMELIST > RECOMMENDATION: " + rec["title"]!!.jsonPrimitive.content }
-                SManga(
+                SAnime(
                     title = rec["title"]!!.jsonPrimitive.content,
                     url = rec["url"]!!.jsonPrimitive.content,
                     thumbnail_url = rec["images"]
@@ -83,7 +83,7 @@ class MyAnimeList : API("https://api.jikan.moe/v4/") {
                 ?.contentOrNull
     }
 
-    override suspend fun getRecsBySearch(search: String): List<SManga> {
+    override suspend fun getRecsBySearch(search: String): List<SAnime> {
         val url = endpoint.toHttpUrl()
             .newBuilder()
             .addPathSegment("manga")
@@ -134,7 +134,7 @@ class Anilist : API("https://graphql.anilist.co/") {
         variables: JsonObject,
         queryParam: String? = null,
         filter: List<JsonElement>.() -> List<JsonElement> = { this },
-    ): List<SManga> {
+    ): List<SAnime> {
         val payload = buildJsonObject {
             put("query", query)
             put("variables", variables)
@@ -157,7 +157,7 @@ class Anilist : API("https://graphql.anilist.co/") {
             val rec = it.jsonObject["node"]!!.jsonObject["mediaRecommendation"]!!.jsonObject
             val recTitle = getTitle(rec)
             logcat { "ANILIST > RECOMMENDATION: $recTitle" }
-            SManga(
+            SAnime(
                 title = recTitle,
                 thumbnail_url = rec["coverImage"]!!.jsonObject["large"]!!.jsonPrimitive.content,
                 initialized = true,
@@ -166,7 +166,7 @@ class Anilist : API("https://graphql.anilist.co/") {
         }
     }
 
-    override suspend fun getRecsById(id: String): List<SManga> {
+    override suspend fun getRecsById(id: String): List<SAnime> {
         val query =
             """
             |query Recommendations(${'$'}id: Int!) {
@@ -206,7 +206,7 @@ class Anilist : API("https://graphql.anilist.co/") {
         )
     }
 
-    override suspend fun getRecsBySearch(search: String): List<SManga> {
+    override suspend fun getRecsBySearch(search: String): List<SAnime> {
         val query =
             """
             |query Recommendations(${'$'}search: String!) {
@@ -263,7 +263,7 @@ class Anilist : API("https://graphql.anilist.co/") {
 }
 
 open class RecommendsPagingSource(
-    source: CatalogueSource,
+    source: AnimeCatalogueSource,
     private val manga: Manga,
     private val smart: Boolean = true,
     private var preferredApi: API = API.MYANIMELIST,
@@ -271,7 +271,7 @@ open class RecommendsPagingSource(
     val trackerManager: TrackerManager by injectLazy()
     val getTracks: GetTracks by injectLazy()
 
-    override suspend fun requestNextPage(currentPage: Int): MangasPage {
+    override suspend fun requestNextPage(currentPage: Int): AnimesPage {
         if (smart) preferredApi = if (manga.mangaType() != MangaType.TYPE_MANGA) API.ANILIST else preferredApi
 
         val apiList = API_MAP.toList().sortedByDescending { it.first == preferredApi }
@@ -298,7 +298,7 @@ open class RecommendsPagingSource(
             }
         } ?: throw NoResultsException()
 
-        return MangasPage(recs, false)
+        return AnimesPage(recs, false)
     }
 
     companion object {

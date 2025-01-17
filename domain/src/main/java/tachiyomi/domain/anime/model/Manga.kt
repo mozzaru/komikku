@@ -1,7 +1,7 @@
 package tachiyomi.domain.anime.model
 
 import androidx.compose.runtime.Immutable
-import eu.kanade.tachiyomi.animesource.model.UpdateStrategy
+import eu.kanade.tachiyomi.animesource.model.AnimeUpdateStrategy
 import tachiyomi.core.common.preference.TriState
 import tachiyomi.domain.anime.interactor.GetCustomAnimeInfo
 import uy.kohesive.injekt.injectLazy
@@ -30,7 +30,7 @@ data class Manga(
     val ogGenre: List<String>?,
     val ogStatus: Long,
     // SY <--
-    val updateStrategy: UpdateStrategy,
+    val updateStrategy: AnimeUpdateStrategy,
     val initialized: Boolean,
     val lastModifiedAt: Long,
     val favoriteModifiedAt: Long?,
@@ -70,7 +70,7 @@ data class Manga(
         get() = nextUpdate
             /* KMK -->
             Always predict release date even for Completed entries
-            .takeIf { status != SManga.COMPLETED.toLong() }?
+            .takeIf { status != SAnime.COMPLETED.toLong() }?
              KMK <-- */
             .let { Instant.ofEpochMilli(it) }
 
@@ -160,7 +160,7 @@ data class Manga(
             ogGenre = null,
             ogStatus = 0L,
             // SY <--
-            updateStrategy = UpdateStrategy.ALWAYS_UPDATE,
+            updateStrategy = AnimeUpdateStrategy.ALWAYS_UPDATE,
             initialized = false,
             lastModifiedAt = 0L,
             favoriteModifiedAt = null,

@@ -1,7 +1,7 @@
 package eu.kanade.tachiyomi.animesource.online
 
-import eu.kanade.tachiyomi.animesource.CatalogueSource
-import eu.kanade.tachiyomi.animesource.model.SManga
+import eu.kanade.tachiyomi.animesource.AnimeCatalogueSource
+import eu.kanade.tachiyomi.animesource.model.SAnime
 import exh.metadata.metadata.RaisedSearchMetadata
 import exh.metadata.metadata.base.FlatMetadata
 import rx.Completable
@@ -15,7 +15,7 @@ import kotlin.reflect.KClass
 /**
  * LEWD!
  */
-interface MetadataSource<M : RaisedSearchMetadata, I> : CatalogueSource {
+interface MetadataSource<M : RaisedSearchMetadata, I> : AnimeCatalogueSource {
     interface GetMangaId {
         suspend fun awaitId(url: String, sourceId: Long): Long?
     }
@@ -51,11 +51,11 @@ interface MetadataSource<M : RaisedSearchMetadata, I> : CatalogueSource {
      */
     @Suppress("DeprecatedCallableAddReplaceWith")
     @Deprecated("Use the MangaInfo variant")
-    fun parseToMangaCompletable(manga: SManga, input: I): Completable = runAsObservable {
+    fun parseToMangaCompletable(manga: SAnime, input: I): Completable = runAsObservable {
         parseToManga(manga, input)
     }.toCompletable()
 
-    suspend fun parseToManga(manga: SManga, input: I): SManga {
+    suspend fun parseToManga(manga: SAnime, input: I): SAnime {
         val mangaId = manga.id()
         val metadata = if (mangaId != null) {
             val flatMetadata = getFlatMetadataById.await(mangaId)
@@ -113,5 +113,5 @@ interface MetadataSource<M : RaisedSearchMetadata, I> : CatalogueSource {
         }
     }
 
-    suspend fun SManga.id() = getMangaId.awaitId(url, id)
+    suspend fun SAnime.id() = getMangaId.awaitId(url, id)
 }

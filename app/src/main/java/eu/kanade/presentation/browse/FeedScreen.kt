@@ -36,7 +36,7 @@ import eu.kanade.presentation.browse.components.GlobalSearchLoadingResultItem
 import eu.kanade.presentation.browse.components.GlobalSearchResultItem
 import eu.kanade.presentation.browse.components.SourceIcon
 import eu.kanade.presentation.components.SourcesSearchBox
-import eu.kanade.tachiyomi.animesource.CatalogueSource
+import eu.kanade.tachiyomi.animesource.AnimeCatalogueSource
 import eu.kanade.tachiyomi.source.getNameForMangaInfo
 import eu.kanade.tachiyomi.ui.browse.feed.FeedScreenState
 import kotlinx.collections.immutable.ImmutableList
@@ -62,7 +62,7 @@ import kotlin.time.Duration.Companion.seconds
 data class FeedItemUI(
     val feed: FeedSavedSearch,
     val savedSearch: SavedSearch?,
-    val source: CatalogueSource?,
+    val source: AnimeCatalogueSource?,
     val title: String,
     val subtitle: String,
     val results: List<Manga>?,
@@ -72,8 +72,8 @@ data class FeedItemUI(
 fun FeedScreen(
     state: FeedScreenState,
     contentPadding: PaddingValues,
-    onClickSavedSearch: (SavedSearch, CatalogueSource) -> Unit,
-    onClickSource: (CatalogueSource) -> Unit,
+    onClickSavedSearch: (SavedSearch, AnimeCatalogueSource) -> Unit,
+    onClickSource: (AnimeCatalogueSource) -> Unit,
     // KMK -->
     onLongClickFeed: (FeedItemUI, Boolean, Boolean) -> Unit,
     // KMK <--
@@ -189,9 +189,9 @@ fun FeedItem(
 
 @Composable
 fun FeedAddDialog(
-    sources: ImmutableList<CatalogueSource>,
+    sources: ImmutableList<AnimeCatalogueSource>,
     onDismiss: () -> Unit,
-    onClickAdd: (CatalogueSource?) -> Unit,
+    onClickAdd: (AnimeCatalogueSource?) -> Unit,
 ) {
     // KMK -->
     var query by remember { mutableStateOf("") }
@@ -251,10 +251,10 @@ fun FeedAddDialog(
 
 @Composable
 fun FeedAddSearchDialog(
-    source: CatalogueSource,
+    source: AnimeCatalogueSource,
     savedSearches: ImmutableList<SavedSearch?>,
     onDismiss: () -> Unit,
-    onClickAdd: (CatalogueSource, SavedSearch?) -> Unit,
+    onClickAdd: (AnimeCatalogueSource, SavedSearch?) -> Unit,
 ) {
     var selected by remember { mutableStateOf<Int?>(null) }
     AlertDialog(

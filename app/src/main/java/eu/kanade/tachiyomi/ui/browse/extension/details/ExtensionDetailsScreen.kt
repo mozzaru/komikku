@@ -10,7 +10,7 @@ import cafe.adriel.voyager.navigator.LocalNavigator
 import cafe.adriel.voyager.navigator.currentOrThrow
 import eu.kanade.presentation.browse.ExtensionDetailsScreen
 import eu.kanade.presentation.util.Screen
-import eu.kanade.tachiyomi.animesource.online.HttpSource
+import eu.kanade.tachiyomi.animesource.online.AnimeHttpSource
 import eu.kanade.tachiyomi.ui.webview.WebViewScreen
 import kotlinx.coroutines.flow.collectLatest
 import tachiyomi.presentation.core.screens.LoadingScreen
@@ -40,7 +40,7 @@ data class ExtensionDetailsScreen(
             state = state,
             onClickSourcePreferences = { navigator.push(SourcePreferencesScreen(it)) },
             // KMK -->
-            onOpenWebView = if (source != null && source is HttpSource) {
+            onOpenWebView = if (source != null && source is AnimeHttpSource) {
                 {
                     navigator.push(
                         WebViewScreen(

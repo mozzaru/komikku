@@ -1,6 +1,6 @@
 package exh.md.similar
 
-import eu.kanade.tachiyomi.animesource.model.FilterList
+import eu.kanade.tachiyomi.animesource.model.AnimeFilterList
 import eu.kanade.tachiyomi.source.online.all.MangaDex
 import eu.kanade.tachiyomi.ui.browse.source.browse.BrowseSourceScreenModel
 import exh.metadata.metadata.RaisedSearchMetadata
@@ -23,7 +23,7 @@ class MangaDexSimilarScreenModel(
 
     val manga: Manga = runBlocking { getAnime.await(mangaId) }!!
 
-    override fun createSourcePagingSource(query: String, filters: FilterList): SourcePagingSourceType {
+    override fun createSourcePagingSource(query: String, filters: AnimeFilterList): SourcePagingSourceType {
         return MangaDexSimilarPagingSource(manga, source.getMainSource() as MangaDex)
     }
 

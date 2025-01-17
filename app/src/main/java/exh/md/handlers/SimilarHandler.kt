@@ -1,7 +1,7 @@
 package exh.md.handlers
 
-import eu.kanade.tachiyomi.animesource.model.MetadataMangasPage
-import eu.kanade.tachiyomi.animesource.model.SManga
+import eu.kanade.tachiyomi.animesource.model.MetadataAnimesPage
+import eu.kanade.tachiyomi.animesource.model.SAnime
 import exh.md.dto.RelationListDto
 import exh.md.dto.SimilarMangaDto
 import exh.md.service.MangaDexService
@@ -17,14 +17,14 @@ class SimilarHandler(
     private val similarService: SimilarService,
 ) {
 
-    suspend fun getSimilar(manga: SManga): MetadataMangasPage {
+    suspend fun getSimilar(manga: SAnime): MetadataAnimesPage {
         val similarDto = withIOContext { similarService.getSimilarManga(MdUtil.getMangaId(manga.url)) }
         return similarDtoToMangaListPage(similarDto)
     }
 
     private suspend fun similarDtoToMangaListPage(
         similarMangaDto: SimilarMangaDto,
-    ): MetadataMangasPage {
+    ): MetadataAnimesPage {
         val ids = similarMangaDto.matches.map {
             it.id
         }
@@ -33,7 +33,7 @@ class SimilarHandler(
             MdUtil.createMangaEntry(it, lang)
         }
 
-        return MetadataMangasPage(
+        return MetadataAnimesPage(
             mangaList, false,
             List(mangaList.size) {
                 MangaDexSearchMetadata().also { it.relation = MangaDexRelation.SIMILAR }
@@ -41,14 +41,14 @@ class SimilarHandler(
         )
     }
 
-    suspend fun getRelated(manga: SManga): MetadataMangasPage {
+    suspend fun getRelated(manga: SAnime): MetadataAnimesPage {
         val relatedListDto = withIOContext { service.relatedManga(MdUtil.getMangaId(manga.url)) }
         return relatedDtoToMangaListPage(relatedListDto)
     }
 
     private suspend fun relatedDtoToMangaListPage(
         relatedListDto: RelationListDto,
-    ): MetadataMangasPage {
+    ): MetadataAnimesPage {
         val ids = relatedListDto.data
             .mapNotNull { it.relationships.firstOrNull() }
             .map { it.id }
@@ -57,8 +57,8 @@ class SimilarHandler(
             MdUtil.createMangaEntry(it, lang)
         }
 
-        return MetadataMangasPage(
-            mangas = mangaList,
+        return MetadataAnimesPage(
+            animes = mangaList,
             hasNextPage = false,
             mangasMetadata = mangaList.map { manga ->
                 MangaDexSearchMetadata().also {

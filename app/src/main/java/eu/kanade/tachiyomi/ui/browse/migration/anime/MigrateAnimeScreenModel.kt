@@ -4,7 +4,7 @@ import androidx.compose.runtime.Immutable
 import cafe.adriel.voyager.core.model.StateScreenModel
 import cafe.adriel.voyager.core.model.screenModelScope
 import eu.kanade.core.util.addOrRemove
-import eu.kanade.tachiyomi.animesource.Source
+import eu.kanade.tachiyomi.animesource.AnimeSource
 import kotlinx.collections.immutable.ImmutableList
 import kotlinx.collections.immutable.persistentListOf
 import kotlinx.collections.immutable.toImmutableList
@@ -171,7 +171,7 @@ class MigrateAnimeScreenModel(
 
     @Immutable
     data class State(
-        val source: Source? = null,
+        val source: AnimeSource? = null,
         private val titleList: ImmutableList<MigrateAnimeItem>? = null,
     ) {
         // KMK -->

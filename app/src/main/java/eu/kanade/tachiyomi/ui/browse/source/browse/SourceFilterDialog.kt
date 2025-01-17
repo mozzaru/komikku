@@ -20,8 +20,8 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import eu.kanade.presentation.components.AdaptiveSheet
-import eu.kanade.tachiyomi.animesource.model.Filter
-import eu.kanade.tachiyomi.animesource.model.FilterList
+import eu.kanade.tachiyomi.animesource.model.AnimeFilter
+import eu.kanade.tachiyomi.animesource.model.AnimeFilterList
 import kotlinx.collections.immutable.ImmutableList
 import kotlinx.collections.immutable.toImmutableList
 import tachiyomi.core.common.preference.TriState
@@ -40,10 +40,10 @@ import tachiyomi.presentation.core.i18n.stringResource
 @Composable
 fun SourceFilterDialog(
     onDismissRequest: () -> Unit,
-    filters: FilterList,
+    filters: AnimeFilterList,
     onReset: () -> Unit,
     onFilter: () -> Unit,
-    onUpdate: (FilterList) -> Unit,
+    onUpdate: (AnimeFilterList) -> Unit,
     // SY -->
     startExpanded: Boolean,
     savedSearches: ImmutableList<EXHSavedSearch>,
@@ -130,10 +130,10 @@ fun SourceFilterDialog(
 }
 
 @Composable
-private fun FilterItem(filter: Filter<*>, onUpdate: () -> Unit/* SY --> */, startExpanded: Boolean /* SY <-- */) {
+private fun FilterItem(filter: AnimeFilter<*>, onUpdate: () -> Unit/* SY --> */, startExpanded: Boolean /* SY <-- */) {
     when (filter) {
         // SY -->
-        is Filter.AutoComplete -> {
+        is AnimeFilter.AutoComplete -> {
             AutoCompleteItem(
                 name = filter.name,
                 state = filter.state.toImmutableList(),
@@ -147,13 +147,13 @@ private fun FilterItem(filter: Filter<*>, onUpdate: () -> Unit/* SY --> */, star
             }
         }
         // SY <--
-        is Filter.Header -> {
+        is AnimeFilter.Header -> {
             HeadingItem(filter.name)
         }
-        is Filter.Separator -> {
+        is AnimeFilter.Separator -> {
             HorizontalDivider()
         }
-        is Filter.CheckBox -> {
+        is AnimeFilter.CheckBox -> {
             CheckboxItem(
                 label = filter.name,
                 checked = filter.state,
@@ -162,7 +162,7 @@ private fun FilterItem(filter: Filter<*>, onUpdate: () -> Unit/* SY --> */, star
                 onUpdate()
             }
         }
-        is Filter.TriState -> {
+        is AnimeFilter.TriState -> {
             TriStateItem(
                 label = filter.name,
                 state = filter.state.toTriStateFilter(),
@@ -171,7 +171,7 @@ private fun FilterItem(filter: Filter<*>, onUpdate: () -> Unit/* SY --> */, star
                 onUpdate()
             }
         }
-        is Filter.Text -> {
+        is AnimeFilter.Text -> {
             TextItem(
                 label = filter.name,
                 value = filter.state,
@@ -180,7 +180,7 @@ private fun FilterItem(filter: Filter<*>, onUpdate: () -> Unit/* SY --> */, star
                 onUpdate()
             }
         }
-        is Filter.Select<*> -> {
+        is AnimeFilter.Select<*> -> {
             SelectItem(
                 label = filter.name,
                 options = filter.values,
@@ -190,7 +190,7 @@ private fun FilterItem(filter: Filter<*>, onUpdate: () -> Unit/* SY --> */, star
                 onUpdate()
             }
         }
-        is Filter.Sort -> {
+        is AnimeFilter.Sort -> {
             CollapsibleBox(
                 heading = filter.name,
                 // SY -->
@@ -209,7 +209,7 @@ private fun FilterItem(filter: Filter<*>, onUpdate: () -> Unit/* SY --> */, star
                             } else {
                                 filter.state!!.ascending
                             }
-                            filter.state = Filter.Sort.Selection(
+                            filter.state = AnimeFilter.Sort.Selection(
                                 index = index,
                                 ascending = ascending,
                             )
@@ -219,7 +219,7 @@ private fun FilterItem(filter: Filter<*>, onUpdate: () -> Unit/* SY --> */, star
                 }
             }
         }
-        is Filter.Group<*> -> {
+        is AnimeFilter.Group<*> -> {
             CollapsibleBox(
                 heading = filter.name,
                 // SY -->
@@ -228,7 +228,7 @@ private fun FilterItem(filter: Filter<*>, onUpdate: () -> Unit/* SY --> */, star
             ) {
                 Column {
                     filter.state
-                        .filterIsInstance<Filter<*>>()
+                        .filterIsInstance<AnimeFilter<*>>()
                         .map { FilterItem(filter = it, onUpdate = onUpdate /* SY --> */, startExpanded /* SY <-- */) }
                 }
             }
@@ -238,17 +238,17 @@ private fun FilterItem(filter: Filter<*>, onUpdate: () -> Unit/* SY --> */, star
 
 private fun Int.toTriStateFilter(): TriState {
     return when (this) {
-        Filter.TriState.STATE_IGNORE -> TriState.DISABLED
-        Filter.TriState.STATE_INCLUDE -> TriState.ENABLED_IS
-        Filter.TriState.STATE_EXCLUDE -> TriState.ENABLED_NOT
+        AnimeFilter.TriState.STATE_IGNORE -> TriState.DISABLED
+        AnimeFilter.TriState.STATE_INCLUDE -> TriState.ENABLED_IS
+        AnimeFilter.TriState.STATE_EXCLUDE -> TriState.ENABLED_NOT
         else -> throw IllegalStateException("Unknown TriState state: $this")
     }
 }
 
 private fun TriState.toTriStateInt(): Int {
     return when (this) {
-        TriState.DISABLED -> Filter.TriState.STATE_IGNORE
-        TriState.ENABLED_IS -> Filter.TriState.STATE_INCLUDE
-        TriState.ENABLED_NOT -> Filter.TriState.STATE_EXCLUDE
+        TriState.DISABLED -> AnimeFilter.TriState.STATE_IGNORE
+        TriState.ENABLED_IS -> AnimeFilter.TriState.STATE_INCLUDE
+        TriState.ENABLED_NOT -> AnimeFilter.TriState.STATE_EXCLUDE
     }
 }

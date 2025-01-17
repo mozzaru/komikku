@@ -1,5 +1,5 @@
 package eu.kanade.tachiyomi.animesource.online
 
-import eu.kanade.tachiyomi.animesource.Source
+import eu.kanade.tachiyomi.animesource.AnimeSource
 
-interface NamespaceSource : Source
+interface NamespaceSource : AnimeSource

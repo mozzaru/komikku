@@ -26,9 +26,9 @@ import eu.kanade.presentation.browse.components.FeedSortAlphabeticallyDialog
 import eu.kanade.presentation.browse.components.SourceFeedAddDialog
 import eu.kanade.presentation.browse.components.SourceFeedDeleteDialog
 import eu.kanade.presentation.util.Screen
-import eu.kanade.tachiyomi.animesource.Source
+import eu.kanade.tachiyomi.animesource.AnimeSource
 import eu.kanade.tachiyomi.source.isLocalOrStub
-import eu.kanade.tachiyomi.animesource.online.HttpSource
+import eu.kanade.tachiyomi.animesource.online.AnimeHttpSource
 import eu.kanade.tachiyomi.ui.anime.AnimeScreen
 import eu.kanade.tachiyomi.ui.browse.AddDuplicateAnimeDialog
 import eu.kanade.tachiyomi.ui.browse.AllowDuplicateDialog
@@ -146,7 +146,7 @@ class SourceFeedScreen(val sourceId: Long) : Screen() {
                     // KMK -->
                     navigateUp = { navigator.pop() },
                     onWebViewClick = {
-                        val source = screenModel.source as HttpSource
+                        val source = screenModel.source as AnimeHttpSource
                         navigator.push(
                             WebViewScreen(
                                 url = source.baseUrl,
@@ -154,7 +154,7 @@ class SourceFeedScreen(val sourceId: Long) : Screen() {
                                 sourceId = source.id,
                             ),
                         )
-                    }.takeIf { screenModel.source is HttpSource },
+                    }.takeIf { screenModel.source is AnimeHttpSource },
                     onSourceSettingClick = {
                         val dummy = ModelSource(
                             sourceId,
@@ -342,28 +342,28 @@ class SourceFeedScreen(val sourceId: Long) : Screen() {
         // KMK <--
     }
 
-    private fun onLatestClick(navigator: Navigator, source: Source) {
+    private fun onLatestClick(navigator: Navigator, source: AnimeSource) {
         // KMK -->
         // navigator.replace(BrowseSourceScreen(source.id, GetRemoteAnime.QUERY_LATEST))
         navigator.push(BrowseSourceScreen(source.id, GetRemoteAnime.QUERY_LATEST))
         // KMK <--
     }
 
-    private fun onBrowseClick(navigator: Navigator, source: Source) {
+    private fun onBrowseClick(navigator: Navigator, source: AnimeSource) {
         // KMK -->
         // navigator.replace(BrowseSourceScreen(source.id, GetRemoteAnime.QUERY_POPULAR))
         navigator.push(BrowseSourceScreen(source.id, GetRemoteAnime.QUERY_POPULAR))
         // KMK <--
     }
 
-    private fun onSavedSearchClick(navigator: Navigator, source: Source, savedSearch: SavedSearch) {
+    private fun onSavedSearchClick(navigator: Navigator, source: AnimeSource, savedSearch: SavedSearch) {
         // KMK -->
         // navigator.replace(BrowseSourceScreen(source.id, listingQuery = null, savedSearch = savedSearch.id))
         navigator.push(BrowseSourceScreen(source.id, listingQuery = null, savedSearch = savedSearch.id))
         // KMK <--
     }
 
-    private fun onSearchClick(navigator: Navigator, source: Source, query: String) {
+    private fun onSearchClick(navigator: Navigator, source: AnimeSource, query: String) {
         onBrowseClick(navigator, source.id, query.nullIfBlank())
     }
 }

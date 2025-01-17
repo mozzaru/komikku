@@ -21,7 +21,7 @@ import eu.kanade.presentation.components.AppBarActions
 import eu.kanade.presentation.components.BulkSelectionToolbar
 import eu.kanade.presentation.components.SearchToolbar
 import eu.kanade.presentation.util.Screen
-import eu.kanade.tachiyomi.animesource.online.HttpSource
+import eu.kanade.tachiyomi.animesource.online.AnimeHttpSource
 import eu.kanade.tachiyomi.ui.anime.AnimeScreen
 import eu.kanade.tachiyomi.ui.browse.AllowDuplicateDialog
 import eu.kanade.tachiyomi.ui.browse.BulkFavoriteScreenModel
@@ -157,7 +157,7 @@ data class SourceSearchScreen(
                 snackbarHostState = snackbarHostState,
                 contentPadding = paddingValues,
                 onWebViewClick = {
-                    val source = screenModel.source as? HttpSource ?: return@BrowseSourceContent
+                    val source = screenModel.source as? AnimeHttpSource ?: return@BrowseSourceContent
                     navigator.push(
                         WebViewScreen(
                             url = source.baseUrl,

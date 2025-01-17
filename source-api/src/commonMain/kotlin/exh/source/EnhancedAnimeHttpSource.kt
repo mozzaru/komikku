@@ -1,36 +1,36 @@
 package exh.source
 
-import eu.kanade.tachiyomi.animesource.model.FilterList
-import eu.kanade.tachiyomi.animesource.model.MangasPage
+import eu.kanade.tachiyomi.animesource.model.AnimeFilterList
+import eu.kanade.tachiyomi.animesource.model.AnimesPage
 import eu.kanade.tachiyomi.animesource.model.Page
-import eu.kanade.tachiyomi.animesource.model.SChapter
-import eu.kanade.tachiyomi.animesource.model.SManga
-import eu.kanade.tachiyomi.animesource.online.HttpSource
+import eu.kanade.tachiyomi.animesource.model.SEpisode
+import eu.kanade.tachiyomi.animesource.model.SAnime
+import eu.kanade.tachiyomi.animesource.online.AnimeHttpSource
 import exh.pref.DelegateSourcePreferences
 import okhttp3.Response
 import uy.kohesive.injekt.Injekt
 import uy.kohesive.injekt.api.get
 
 @Suppress("OverridingDeprecatedMember", "DEPRECATION")
-class EnhancedHttpSource(
-    val originalSource: HttpSource,
-    val enhancedSource: HttpSource,
-) : HttpSource() {
+class EnhancedAnimeHttpSource(
+    val originalSource: AnimeHttpSource,
+    val enhancedSource: AnimeHttpSource,
+) : AnimeHttpSource() {
 
     /**
      * Returns the request for the popular manga given the page.
      *
      * @param page the page number to retrieve.
      */
-    override fun popularMangaRequest(page: Int) =
+    override fun popularAnimeRequest(page: Int) =
         throw UnsupportedOperationException("Should never be called!")
 
     /**
-     * Parses the response from the site and returns a [MangasPage] object.
+     * Parses the response from the site and returns a [AnimesPage] object.
      *
      * @param response the response from the site.
      */
-    override fun popularMangaParse(response: Response) =
+    override fun popularAnimeParse(response: Response) =
         throw UnsupportedOperationException("Should never be called!")
 
     /**
@@ -40,15 +40,15 @@ class EnhancedHttpSource(
      * @param query the search query.
      * @param filters the list of filters to apply.
      */
-    override fun searchMangaRequest(page: Int, query: String, filters: FilterList) =
+    override fun searchAnimeRequest(page: Int, query: String, filters: AnimeFilterList) =
         throw UnsupportedOperationException("Should never be called!")
 
     /**
-     * Parses the response from the site and returns a [MangasPage] object.
+     * Parses the response from the site and returns a [AnimesPage] object.
      *
      * @param response the response from the site.
      */
-    override fun searchMangaParse(response: Response) =
+    override fun searchAnimeParse(response: Response) =
         throw UnsupportedOperationException("Should never be called!")
 
     /**
@@ -60,7 +60,7 @@ class EnhancedHttpSource(
         throw UnsupportedOperationException("Should never be called!")
 
     /**
-     * Parses the response from the site and returns a [MangasPage] object.
+     * Parses the response from the site and returns a [AnimesPage] object.
      *
      * @param response the response from the site.
      */
@@ -72,7 +72,7 @@ class EnhancedHttpSource(
      *
      * @param response the response from the site.
      */
-    override fun mangaDetailsParse(response: Response) =
+    override fun animeDetailsParse(response: Response) =
         throw UnsupportedOperationException("Should never be called!")
 
     /**
@@ -80,15 +80,15 @@ class EnhancedHttpSource(
      *
      * @param response the response from the site.
      */
-    override fun chapterListParse(response: Response) =
+    override fun episodeListParse(response: Response) =
         throw UnsupportedOperationException("Should never be called!")
 
     /**
-     * Parses the response from the site and returns a SChapter Object.
+     * Parses the response from the site and returns a SEpisode Object.
      *
      * @param response the response from the site.
      */
-    override fun chapterPageParse(response: Response) =
+    override fun episodeVideoParse(response: Response) =
         throw UnsupportedOperationException("Should never be called!")
 
     /**
@@ -96,7 +96,7 @@ class EnhancedHttpSource(
      *
      * @param response the response from the site.
      */
-    override fun pageListParse(response: Response) =
+    override fun videoListParse(response: Response) =
         throw UnsupportedOperationException("Should never be called!")
 
     /**
@@ -104,7 +104,7 @@ class EnhancedHttpSource(
      *
      * @param response the response from the site.
      */
-    override fun imageUrlParse(response: Response) =
+    override fun videoUrlParse(response: Response) =
         throw UnsupportedOperationException("Should never be called!")
 
     /**
@@ -157,10 +157,10 @@ class EnhancedHttpSource(
      *
      * @param page the page number to retrieve.
      */
-    @Deprecated("Use the non-RxJava API instead", replaceWith = ReplaceWith("getPopularManga"))
-    override fun fetchPopularManga(page: Int) = source().fetchPopularManga(page)
+    @Deprecated("Use the non-RxJava API instead", replaceWith = ReplaceWith("getPopularAnime"))
+    override fun fetchPopularAnime(page: Int) = source().fetchPopularAnime(page)
 
-    override suspend fun getPopularManga(page: Int) = source().getPopularManga(page)
+    override suspend fun getPopularAnime(page: Int) = source().getPopularAnime(page)
 
     /**
      * Returns an observable containing a page with a list of manga. Normally it's not needed to
@@ -170,12 +170,12 @@ class EnhancedHttpSource(
      * @param query the search query.
      * @param filters the list of filters to apply.
      */
-    @Deprecated("Use the non-RxJava API instead", replaceWith = ReplaceWith("getSearchManga"))
-    override fun fetchSearchManga(page: Int, query: String, filters: FilterList) =
-        source().fetchSearchManga(page, query, filters)
+    @Deprecated("Use the non-RxJava API instead", replaceWith = ReplaceWith("getSearchAnime"))
+    override fun fetchSearchAnime(page: Int, query: String, filters: AnimeFilterList) =
+        source().fetchSearchAnime(page, query, filters)
 
-    override suspend fun getSearchManga(page: Int, query: String, filters: FilterList) =
-        source().getSearchManga(page, query, filters)
+    override suspend fun getSearchAnime(page: Int, query: String, filters: AnimeFilterList) =
+        source().getSearchAnime(page, query, filters)
 
     /**
      * Returns an observable containing a page with a list of latest manga updates.
@@ -191,103 +191,103 @@ class EnhancedHttpSource(
      * Returns an observable with the updated details for a manga. Normally it's not needed to
      * override this method.
      *
-     * @param manga the manga to be updated.
+     * @param anime the manga to be updated.
      */
-    @Deprecated("Use the 1.x API instead", replaceWith = ReplaceWith("getMangaDetails"))
-    override fun fetchMangaDetails(manga: SManga) = source().fetchMangaDetails(manga)
+    @Deprecated("Use the 1.x API instead", replaceWith = ReplaceWith("getAnimeDetails"))
+    override fun fetchAnimeDetails(anime: SAnime) = source().fetchAnimeDetails(anime)
 
     /**
      * [1.x API] Get the updated details for a manga.
      */
-    override suspend fun getMangaDetails(manga: SManga): SManga = source().getMangaDetails(manga)
+    override suspend fun getAnimeDetails(anime: SAnime): SAnime = source().getAnimeDetails(anime)
 
     /**
      * Returns the request for the details of a manga. Override only if it's needed to change the
      * url, send different headers or request method like POST.
      *
-     * @param manga the manga to be updated.
+     * @param anime the manga to be updated.
      */
-    override fun mangaDetailsRequest(manga: SManga) = source().mangaDetailsRequest(manga)
+    override fun animeDetailsRequest(anime: SAnime) = source().animeDetailsRequest(anime)
 
     /**
      * Returns an observable with the updated chapter list for a manga. Normally it's not needed to
      * override this method.  If a manga is licensed an empty chapter list observable is returned
      *
-     * @param manga the manga to look for chapters.
+     * @param anime the manga to look for chapters.
      */
-    @Deprecated("Use the 1.x API instead", replaceWith = ReplaceWith("getChapterList"))
-    override fun fetchChapterList(manga: SManga) = source().fetchChapterList(manga)
+    @Deprecated("Use the 1.x API instead", replaceWith = ReplaceWith("getEpisodeList"))
+    override fun fetchEpisodeList(anime: SAnime) = source().fetchEpisodeList(anime)
 
     /**
      * [1.x API] Get all the available chapters for a manga.
      */
-    override suspend fun getChapterList(manga: SManga): List<SChapter> = source().getChapterList(manga)
+    override suspend fun getEpisodeList(anime: SAnime): List<SEpisode> = source().getEpisodeList(anime)
 
     /**
      * Returns an observable with the page list for a chapter.
      *
-     * @param chapter the chapter whose page list has to be fetched.
+     * @param episode the chapter whose page list has to be fetched.
      */
-    @Deprecated("Use the 1.x API instead", replaceWith = ReplaceWith("getPageList"))
-    override fun fetchPageList(chapter: SChapter) = source().fetchPageList(chapter)
+    @Deprecated("Use the 1.x API instead", replaceWith = ReplaceWith("getVideoList"))
+    override fun fetchVideoList(episode: SEpisode) = source().fetchVideoList(episode)
 
     /**
      * [1.x API] Get the list of pages a chapter has.
      */
-    override suspend fun getPageList(chapter: SChapter): List<Page> = source().getPageList(chapter)
+    override suspend fun getVideoList(episode: SEpisode): List<Page> = source().getVideoList(episode)
 
     /**
      * Returns an observable with the page containing the source url of the image. If there's any
      * error, it will return null instead of throwing an exception.
      *
-     * @param page the page whose source image has to be fetched.
+     * @param video the page whose source image has to be fetched.
      */
     @Deprecated("Use the non-RxJava API instead", replaceWith = ReplaceWith("getImageUrl"))
-    override fun fetchImageUrl(page: Page) = source().fetchImageUrl(page)
+    override fun fetchImageUrl(video: Page) = source().fetchImageUrl(video)
 
-    override suspend fun getImageUrl(page: Page) = source().getImageUrl(page)
+    override suspend fun getImageUrl(video: Page) = source().getImageUrl(video)
 
     /**
      * Returns the response of the source image.
      *
-     * @param page the page whose source image has to be downloaded.
+     * @param video the page whose source image has to be downloaded.
      */
-    override suspend fun getImage(page: Page) = source().getImage(page)
+    override suspend fun getImage(video: Page) = source().getImage(video)
 
     /**
      * Returns the url of the provided manga
      *
      * @since extensions-lib 1.4
-     * @param manga the manga
+     * @param anime the manga
      * @return url of the manga
      */
-    override fun getMangaUrl(manga: SManga) = source().getMangaUrl(manga)
+    override fun getAnimeUrl(anime: SAnime) = source().getAnimeUrl(anime)
 
     /**
      * Returns the url of the provided chapter
      *
      * @since extensions-lib 1.4
-     * @param chapter the chapter
+     * @param episode the chapter
      * @return url of the chapter
      */
-    override fun getChapterUrl(chapter: SChapter) = source().getChapterUrl(chapter)
+    override fun getEpisodeUrl(episode: SEpisode) = source().getEpisodeUrl(episode)
 
     /**
      * Called before inserting a new chapter into database. Use it if you need to override chapter
-     * fields, like the title or the chapter number. Do not change anything to [manga].
+     * fields, like the title or the chapter number. Do not change anything to [anime].
      *
-     * @param chapter the chapter to be added.
-     * @param manga the manga of the chapter.
+     * @param episode the chapter to be added.
+     * @param anime the manga of the chapter.
      */
-    override fun prepareNewChapter(chapter: SChapter, manga: SManga) =
-        source().prepareNewChapter(chapter, manga)
+    override fun prepareNewEpisode(episode: SEpisode, anime: SAnime) =
+        source().prepareNewEpisode(episode, anime)
 
     /**
      * Returns the list of filters for the source.
      */
     override fun getFilterList() = source().getFilterList()
 
-    fun source(): HttpSource {
+    fun source(): AnimeHttpSource {
         return if (Injekt.get<DelegateSourcePreferences>().delegateSources().get()) {
             enhancedSource
         } else {

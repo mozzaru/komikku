@@ -2,11 +2,11 @@
 
 package eu.kanade.tachiyomi.data.database.models
 
-import eu.kanade.tachiyomi.animesource.model.SChapter
+import eu.kanade.tachiyomi.animesource.model.SEpisode
 import java.io.Serializable
 import tachiyomi.domain.episode.model.Episode as DomainChapter
 
-interface Episode : SChapter, Serializable {
+interface Episode : SEpisode, Serializable {
 
     var id: Long?
 
@@ -40,7 +40,7 @@ fun Episode.toDomainChapter(): DomainChapter? {
         url = url,
         name = name,
         dateUpload = date_upload,
-        chapterNumber = chapter_number.toDouble(),
+        chapterNumber = episode_number.toDouble(),
         scanlator = scanlator,
         lastModifiedAt = last_modified,
         version = version,

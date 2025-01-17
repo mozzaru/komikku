@@ -5,7 +5,7 @@ import cafe.adriel.voyager.core.model.screenModelScope
 import eu.davidea.flexibleadapter.FlexibleAdapter
 import eu.kanade.domain.source.service.SourcePreferences
 import eu.kanade.tachiyomi.databinding.PreMigrationListBinding
-import eu.kanade.tachiyomi.animesource.online.HttpSource
+import eu.kanade.tachiyomi.animesource.online.AnimeHttpSource
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
@@ -59,7 +59,7 @@ class PreMigrationScreenModel(
             .mapNotNull { it.toLongOrNull() }
         val sources = sourceManager.getVisibleCatalogueSources()
             .asSequence()
-            .filterIsInstance<HttpSource>()
+            .filterIsInstance<AnimeHttpSource>()
             .filter { it.lang in languages }
             .sortedBy { "(${it.lang}) ${it.name}" }
             .map {

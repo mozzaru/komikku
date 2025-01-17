@@ -6,7 +6,7 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import eu.kanade.presentation.browse.components.GlobalSearchToolbar
 import eu.kanade.presentation.components.BulkSelectionToolbar
-import eu.kanade.tachiyomi.animesource.CatalogueSource
+import eu.kanade.tachiyomi.animesource.AnimeCatalogueSource
 import eu.kanade.tachiyomi.ui.browse.BulkFavoriteScreenModel
 import eu.kanade.tachiyomi.ui.browse.source.globalsearch.SearchItemResult
 import eu.kanade.tachiyomi.ui.browse.source.globalsearch.SearchScreenModel
@@ -24,7 +24,7 @@ fun MigrateSearchScreen(
     onChangeSearchFilter: (SourceFilter) -> Unit,
     onToggleResults: () -> Unit,
     getManga: @Composable (Manga) -> State<Manga>,
-    onClickSource: (CatalogueSource) -> Unit,
+    onClickSource: (AnimeCatalogueSource) -> Unit,
     onClickItem: (Manga) -> Unit,
     onLongClickItem: (Manga) -> Unit,
     // KMK -->

@@ -10,7 +10,7 @@ import eu.kanade.domain.anime.model.toSManga
 import eu.kanade.domain.episode.interactor.SyncEpisodesWithSource
 import eu.kanade.tachiyomi.data.cache.CoverCache
 import eu.kanade.tachiyomi.data.download.DownloadManager
-import eu.kanade.tachiyomi.animesource.CatalogueSource
+import eu.kanade.tachiyomi.animesource.AnimeCatalogueSource
 import eu.kanade.tachiyomi.source.getNameForMangaInfo
 import eu.kanade.tachiyomi.source.online.all.EHentai
 import eu.kanade.tachiyomi.ui.browse.migration.MigrationFlags
@@ -157,7 +157,7 @@ class MigrationListScreenModel(
 
     fun getMigrationSources() = preferences.migrationSources().get().split("/").mapNotNull {
         val value = it.toLongOrNull() ?: return@mapNotNull null
-        sourceManager.get(value) as? CatalogueSource
+        sourceManager.get(value) as? AnimeCatalogueSource
     }
 
     private suspend fun runMigrations(mangas: List<MigratingAnime>) {
@@ -194,12 +194,12 @@ class MigrationListScreenModel(
                             is MigrationType.MangaSingle -> if (migration.toManga != null) {
                                 val localManga = getAnime.await(migration.toManga)
                                 if (localManga != null) {
-                                    val source = sourceManager.get(localManga.source) as? CatalogueSource
+                                    val source = sourceManager.get(localManga.source) as? AnimeCatalogueSource
                                     if (source != null) {
                                         val chapters = if (source is EHentai) {
                                             source.getChapterList(localManga.toSManga(), throttleManager::throttle)
                                         } else {
-                                            source.getChapterList(localManga.toSManga())
+                                            source.getEpisodeList(localManga.toSManga())
                                         }
                                         try {
                                             syncEpisodesWithSource.await(chapters, localManga, source)
@@ -234,7 +234,7 @@ class MigrationListScreenModel(
                                                 val chapters = if (source is EHentai) {
                                                     source.getChapterList(localManga.toSManga(), throttleManager::throttle)
                                                 } else {
-                                                    source.getChapterList(localManga.toSManga())
+                                                    source.getEpisodeList(localManga.toSManga())
                                                 }
 
                                                 try {
@@ -272,7 +272,7 @@ class MigrationListScreenModel(
                                             if (source is EHentai) {
                                                 source.getChapterList(localManga.toSManga(), throttleManager::throttle)
                                             } else {
-                                                source.getChapterList(localManga.toSManga())
+                                                source.getEpisodeList(localManga.toSManga())
                                             }
                                         } catch (e: Exception) {
                                             this@MigrationListScreenModel.logcat(LogPriority.ERROR, e)
@@ -306,7 +306,7 @@ class MigrationListScreenModel(
 
                 if (result != null && result.thumbnailUrl == null) {
                     try {
-                        val newManga = sourceManager.getOrStub(result.source).getMangaDetails(result.toSManga())
+                        val newManga = sourceManager.getOrStub(result.source).getAnimeDetails(result.toSManga())
                         updateAnime.awaitUpdateFromSource(result, newManga, true)
                     } catch (e: CancellationException) {
                         // Ignore cancellations
@@ -466,7 +466,7 @@ class MigrationListScreenModel(
                 val localManga = networkToLocalAnime.await(manga)
                 try {
                     val source = sourceManager.get(manga.source)!!
-                    val chapters = source.getChapterList(localManga.toSManga())
+                    val chapters = source.getEpisodeList(localManga.toSManga())
                     syncEpisodesWithSource.await(chapters, localManga, source)
                 } catch (e: Exception) {
                     return@async null
@@ -476,7 +476,7 @@ class MigrationListScreenModel(
 
             if (result != null) {
                 try {
-                    val newManga = sourceManager.getOrStub(result.source).getMangaDetails(result.toSManga())
+                    val newManga = sourceManager.getOrStub(result.source).getAnimeDetails(result.toSManga())
                     updateAnime.awaitUpdateFromSource(result, newManga, true)
                 } catch (e: CancellationException) {
                     // Ignore cancellations

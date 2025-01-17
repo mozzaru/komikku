@@ -4,7 +4,7 @@ import eu.kanade.domain.source.service.SourcePreferences
 import eu.kanade.tachiyomi.data.cache.ChapterCache
 import eu.kanade.tachiyomi.data.database.models.toDomainChapter
 import eu.kanade.tachiyomi.animesource.model.Page
-import eu.kanade.tachiyomi.animesource.online.HttpSource
+import eu.kanade.tachiyomi.animesource.online.AnimeHttpSource
 import eu.kanade.tachiyomi.ui.reader.model.ReaderChapter
 import eu.kanade.tachiyomi.ui.reader.model.ReaderPage
 import eu.kanade.tachiyomi.ui.reader.setting.ReaderPreferences
@@ -35,7 +35,7 @@ import kotlin.math.min
 @OptIn(DelicateCoroutinesApi::class)
 internal class HttpPageLoader(
     private val chapter: ReaderChapter,
-    private val source: HttpSource,
+    private val source: AnimeHttpSource,
     private val chapterCache: ChapterCache = Injekt.get(),
     // SY -->
     private val readerPreferences: ReaderPreferences = Injekt.get(),
@@ -87,7 +87,7 @@ internal class HttpPageLoader(
             if (e is CancellationException) {
                 throw e
             }
-            source.getPageList(chapter.episode)
+            source.getVideoList(chapter.episode)
         }
         // SY -->
         val rp = pages.mapIndexed { index, page ->

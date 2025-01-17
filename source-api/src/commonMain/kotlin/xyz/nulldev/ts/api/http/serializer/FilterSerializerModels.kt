@@ -1,6 +1,6 @@
 package xyz.nulldev.ts.api.http.serializer
 
-import eu.kanade.tachiyomi.animesource.model.Filter
+import eu.kanade.tachiyomi.animesource.model.AnimeFilter
 import kotlinx.serialization.json.JsonNull
 import kotlinx.serialization.json.JsonObject
 import kotlinx.serialization.json.JsonObjectBuilder
@@ -16,7 +16,7 @@ import kotlinx.serialization.json.putJsonArray
 import kotlin.reflect.KClass
 import kotlin.reflect.KProperty1
 
-interface Serializer<in T : Filter<out Any?>> {
+interface Serializer<in T : AnimeFilter<out Any?>> {
     fun JsonObjectBuilder.serialize(filter: T) {}
     fun deserialize(json: JsonObject, filter: T) {}
 
@@ -30,12 +30,12 @@ interface Serializer<in T : Filter<out Any?>> {
     val clazz: KClass<in T>
 }
 
-class HeaderSerializer(override val serializer: FilterSerializer) : Serializer<Filter.Header> {
+class HeaderSerializer(override val serializer: FilterSerializer) : Serializer<AnimeFilter.Header> {
     override val type = "HEADER"
-    override val clazz = Filter.Header::class
+    override val clazz = AnimeFilter.Header::class
 
     override fun mappings() = listOf(
-        Pair(NAME, Filter.Header::name),
+        Pair(NAME, AnimeFilter.Header::name),
     )
 
     companion object {
@@ -43,12 +43,12 @@ class HeaderSerializer(override val serializer: FilterSerializer) : Serializer<F
     }
 }
 
-class SeparatorSerializer(override val serializer: FilterSerializer) : Serializer<Filter.Separator> {
+class SeparatorSerializer(override val serializer: FilterSerializer) : Serializer<AnimeFilter.Separator> {
     override val type = "SEPARATOR"
-    override val clazz = Filter.Separator::class
+    override val clazz = AnimeFilter.Separator::class
 
     override fun mappings() = listOf(
-        Pair(NAME, Filter.Separator::name),
+        Pair(NAME, AnimeFilter.Separator::name),
     )
 
     companion object {
@@ -56,11 +56,11 @@ class SeparatorSerializer(override val serializer: FilterSerializer) : Serialize
     }
 }
 
-class SelectSerializer(override val serializer: FilterSerializer) : Serializer<Filter.Select<Any>> {
+class SelectSerializer(override val serializer: FilterSerializer) : Serializer<AnimeFilter.Select<Any>> {
     override val type = "SELECT"
-    override val clazz = Filter.Select::class
+    override val clazz = AnimeFilter.Select::class
 
-    override fun JsonObjectBuilder.serialize(filter: Filter.Select<Any>) {
+    override fun JsonObjectBuilder.serialize(filter: AnimeFilter.Select<Any>) {
         // Serialize values to JSON
         putJsonArray(VALUES) {
             filter.values.map {
@@ -70,8 +70,8 @@ class SelectSerializer(override val serializer: FilterSerializer) : Serializer<F
     }
 
     override fun mappings() = listOf(
-        Pair(NAME, Filter.Select<Any>::name),
-        Pair(STATE, Filter.Select<Any>::state),
+        Pair(NAME, AnimeFilter.Select<Any>::name),
+        Pair(STATE, AnimeFilter.Select<Any>::state),
     )
 
     companion object {
@@ -81,13 +81,13 @@ class SelectSerializer(override val serializer: FilterSerializer) : Serializer<F
     }
 }
 
-class TextSerializer(override val serializer: FilterSerializer) : Serializer<Filter.Text> {
+class TextSerializer(override val serializer: FilterSerializer) : Serializer<AnimeFilter.Text> {
     override val type = "TEXT"
-    override val clazz = Filter.Text::class
+    override val clazz = AnimeFilter.Text::class
 
     override fun mappings() = listOf(
-        Pair(NAME, Filter.Text::name),
-        Pair(STATE, Filter.Text::state),
+        Pair(NAME, AnimeFilter.Text::name),
+        Pair(STATE, AnimeFilter.Text::state),
     )
 
     companion object {
@@ -96,13 +96,13 @@ class TextSerializer(override val serializer: FilterSerializer) : Serializer<Fil
     }
 }
 
-class CheckboxSerializer(override val serializer: FilterSerializer) : Serializer<Filter.CheckBox> {
+class CheckboxSerializer(override val serializer: FilterSerializer) : Serializer<AnimeFilter.CheckBox> {
     override val type = "CHECKBOX"
-    override val clazz = Filter.CheckBox::class
+    override val clazz = AnimeFilter.CheckBox::class
 
     override fun mappings() = listOf(
-        Pair(NAME, Filter.CheckBox::name),
-        Pair(STATE, Filter.CheckBox::state),
+        Pair(NAME, AnimeFilter.CheckBox::name),
+        Pair(STATE, AnimeFilter.CheckBox::state),
     )
 
     companion object {
@@ -111,13 +111,13 @@ class CheckboxSerializer(override val serializer: FilterSerializer) : Serializer
     }
 }
 
-class TriStateSerializer(override val serializer: FilterSerializer) : Serializer<Filter.TriState> {
+class TriStateSerializer(override val serializer: FilterSerializer) : Serializer<AnimeFilter.TriState> {
     override val type = "TRISTATE"
-    override val clazz = Filter.TriState::class
+    override val clazz = AnimeFilter.TriState::class
 
     override fun mappings() = listOf(
-        Pair(NAME, Filter.TriState::name),
-        Pair(STATE, Filter.TriState::state),
+        Pair(NAME, AnimeFilter.TriState::name),
+        Pair(STATE, AnimeFilter.TriState::state),
     )
 
     companion object {
@@ -126,17 +126,17 @@ class TriStateSerializer(override val serializer: FilterSerializer) : Serializer
     }
 }
 
-class GroupSerializer(override val serializer: FilterSerializer) : Serializer<Filter.Group<Any?>> {
+class GroupSerializer(override val serializer: FilterSerializer) : Serializer<AnimeFilter.Group<Any?>> {
     override val type = "GROUP"
-    override val clazz = Filter.Group::class
+    override val clazz = AnimeFilter.Group::class
 
-    override fun JsonObjectBuilder.serialize(filter: Filter.Group<Any?>) {
+    override fun JsonObjectBuilder.serialize(filter: AnimeFilter.Group<Any?>) {
         putJsonArray(STATE) {
             filter.state.forEach {
                 add(
-                    if (it is Filter<*>) {
+                    if (it is AnimeFilter<*>) {
                         @Suppress("UNCHECKED_CAST")
-                        serializer.serialize(it as Filter<Any?>)
+                        serializer.serialize(it as AnimeFilter<Any?>)
                     } else {
                         JsonNull
                     },
@@ -145,17 +145,17 @@ class GroupSerializer(override val serializer: FilterSerializer) : Serializer<Fi
         }
     }
 
-    override fun deserialize(json: JsonObject, filter: Filter.Group<Any?>) {
+    override fun deserialize(json: JsonObject, filter: AnimeFilter.Group<Any?>) {
         json[STATE]!!.jsonArray.forEachIndexed { index, jsonElement ->
             if (jsonElement !is JsonNull) {
                 @Suppress("UNCHECKED_CAST")
-                serializer.deserialize(filter.state[index] as Filter<Any?>, jsonElement.jsonObject)
+                serializer.deserialize(filter.state[index] as AnimeFilter<Any?>, jsonElement.jsonObject)
             }
         }
     }
 
     override fun mappings() = listOf(
-        Pair(NAME, Filter.Group<Any?>::name),
+        Pair(NAME, AnimeFilter.Group<Any?>::name),
     )
 
     companion object {
@@ -164,11 +164,11 @@ class GroupSerializer(override val serializer: FilterSerializer) : Serializer<Fi
     }
 }
 
-class SortSerializer(override val serializer: FilterSerializer) : Serializer<Filter.Sort> {
+class SortSerializer(override val serializer: FilterSerializer) : Serializer<AnimeFilter.Sort> {
     override val type = "SORT"
-    override val clazz = Filter.Sort::class
+    override val clazz = AnimeFilter.Sort::class
 
-    override fun JsonObjectBuilder.serialize(filter: Filter.Sort) {
+    override fun JsonObjectBuilder.serialize(filter: AnimeFilter.Sort) {
         // Serialize values
         putJsonArray(VALUES) {
             filter.values.forEach { add(it) }
@@ -185,10 +185,10 @@ class SortSerializer(override val serializer: FilterSerializer) : Serializer<Fil
         )
     }
 
-    override fun deserialize(json: JsonObject, filter: Filter.Sort) {
+    override fun deserialize(json: JsonObject, filter: AnimeFilter.Sort) {
         // Deserialize state
         filter.state = (json[STATE] as? JsonObject)?.let {
-            Filter.Sort.Selection(
+            AnimeFilter.Sort.Selection(
                 it[STATE_INDEX]!!.jsonPrimitive.int,
                 it[STATE_ASCENDING]!!.jsonPrimitive.boolean,
             )
@@ -196,7 +196,7 @@ class SortSerializer(override val serializer: FilterSerializer) : Serializer<Fil
     }
 
     override fun mappings() = listOf(
-        Pair(NAME, Filter.Sort::name),
+        Pair(NAME, AnimeFilter.Sort::name),
     )
 
     companion object {
@@ -209,18 +209,18 @@ class SortSerializer(override val serializer: FilterSerializer) : Serializer<Fil
     }
 }
 
-class AutoCompleteSerializer(override val serializer: FilterSerializer) : Serializer<Filter.AutoComplete> {
+class AutoCompleteSerializer(override val serializer: FilterSerializer) : Serializer<AnimeFilter.AutoComplete> {
     override val type = "AUTOCOMPLETE"
-    override val clazz = Filter.AutoComplete::class
+    override val clazz = AnimeFilter.AutoComplete::class
 
-    override fun JsonObjectBuilder.serialize(filter: Filter.AutoComplete) {
+    override fun JsonObjectBuilder.serialize(filter: AnimeFilter.AutoComplete) {
         // Serialize values to JSON
         putJsonArray(STATE) {
             filter.state.forEach { add(it) }
         }
     }
 
-    override fun deserialize(json: JsonObject, filter: Filter.AutoComplete) {
+    override fun deserialize(json: JsonObject, filter: AnimeFilter.AutoComplete) {
         // Deserialize state
         filter.state = json[STATE]!!.jsonArray.map {
             it.jsonPrimitive.content
@@ -228,7 +228,7 @@ class AutoCompleteSerializer(override val serializer: FilterSerializer) : Serial
     }
 
     override fun mappings() = listOf(
-        Pair(NAME, Filter.AutoComplete::name),
+        Pair(NAME, AnimeFilter.AutoComplete::name),
     )
 
     companion object {

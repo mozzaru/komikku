@@ -6,7 +6,7 @@ import com.hippo.unifile.UniFile
 import eu.kanade.tachiyomi.data.database.models.toDomainChapter
 import eu.kanade.tachiyomi.data.download.DownloadManager
 import eu.kanade.tachiyomi.data.download.DownloadProvider
-import eu.kanade.tachiyomi.animesource.Source
+import eu.kanade.tachiyomi.animesource.AnimeSource
 import eu.kanade.tachiyomi.animesource.model.Page
 import eu.kanade.tachiyomi.ui.reader.model.ReaderChapter
 import eu.kanade.tachiyomi.ui.reader.model.ReaderPage
@@ -20,7 +20,7 @@ import uy.kohesive.injekt.injectLazy
 internal class DownloadPageLoader(
     private val chapter: ReaderChapter,
     private val manga: Manga,
-    private val source: Source,
+    private val source: AnimeSource,
     private val downloadManager: DownloadManager,
     private val downloadProvider: DownloadProvider,
 ) : PageLoader() {

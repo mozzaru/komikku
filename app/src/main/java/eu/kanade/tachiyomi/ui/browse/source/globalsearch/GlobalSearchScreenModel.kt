@@ -1,6 +1,6 @@
 package eu.kanade.tachiyomi.ui.browse.source.globalsearch
 
-import eu.kanade.tachiyomi.animesource.CatalogueSource
+import eu.kanade.tachiyomi.animesource.AnimeCatalogueSource
 
 class GlobalSearchScreenModel(
     initialQuery: String = "",
@@ -22,7 +22,7 @@ class GlobalSearchScreenModel(
         // KMK <--
     }
 
-    override fun getEnabledSources(): List<CatalogueSource> {
+    override fun getEnabledSources(): List<AnimeCatalogueSource> {
         return super.getEnabledSources()
             .filter { state.value.sourceFilter != SourceFilter.PinnedOnly || "${it.id}" in pinnedSources }
     }

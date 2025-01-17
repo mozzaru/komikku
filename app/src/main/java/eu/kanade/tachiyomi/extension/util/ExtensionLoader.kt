@@ -10,9 +10,9 @@ import eu.kanade.domain.extension.interactor.TrustExtension
 import eu.kanade.domain.source.service.SourcePreferences
 import eu.kanade.tachiyomi.extension.model.Extension
 import eu.kanade.tachiyomi.extension.model.LoadResult
-import eu.kanade.tachiyomi.animesource.CatalogueSource
-import eu.kanade.tachiyomi.animesource.Source
-import eu.kanade.tachiyomi.animesource.SourceFactory
+import eu.kanade.tachiyomi.animesource.AnimeCatalogueSource
+import eu.kanade.tachiyomi.animesource.AnimeSource
+import eu.kanade.tachiyomi.animesource.AnimeSourceFactory
 import eu.kanade.tachiyomi.util.lang.Hash
 import eu.kanade.tachiyomi.util.storage.copyAndSetReadOnlyTo
 import eu.kanade.tachiyomi.util.system.ChildFirstPathClassLoader
@@ -329,8 +329,8 @@ internal object ExtensionLoader {
             .flatMap {
                 try {
                     when (val obj = Class.forName(it, false, classLoader).getDeclaredConstructor().newInstance()) {
-                        is Source -> listOf(obj)
-                        is SourceFactory -> obj.createSources()
+                        is AnimeSource -> listOf(obj)
+                        is AnimeSourceFactory -> obj.createSources()
                         else -> throw Exception("Unknown source class type: ${obj.javaClass}")
                     }
                 } catch (e: Throwable) {
@@ -339,7 +339,7 @@ internal object ExtensionLoader {
                 }
             }
 
-        val langs = sources.filterIsInstance<CatalogueSource>()
+        val langs = sources.filterIsInstance<AnimeCatalogueSource>()
             .map { it.lang }
             .toSet()
         val lang = when (langs.size) {

@@ -2,8 +2,8 @@ package exh.md.handlers
 
 import eu.kanade.tachiyomi.data.database.models.Track
 import eu.kanade.tachiyomi.data.track.TrackerManager
-import eu.kanade.tachiyomi.animesource.model.MetadataMangasPage
-import eu.kanade.tachiyomi.animesource.model.SManga
+import eu.kanade.tachiyomi.animesource.model.MetadataAnimesPage
+import eu.kanade.tachiyomi.animesource.model.SAnime
 import exh.md.dto.MangaDataDto
 import exh.md.dto.PersonalRatingDto
 import exh.md.dto.ReadingStatusDto
@@ -25,19 +25,19 @@ class FollowsHandler(
     /**
      * fetch follows page
      */
-    suspend fun fetchFollows(page: Int): MetadataMangasPage {
+    suspend fun fetchFollows(page: Int): MetadataAnimesPage {
         return withIOContext {
             val follows = service.userFollowList(MdUtil.mangaLimit * page)
 
             if (follows.data.isEmpty()) {
-                return@withIOContext MetadataMangasPage(emptyList(), false, emptyList())
+                return@withIOContext MetadataAnimesPage(emptyList(), false, emptyList())
             }
 
             val hasMoreResults = follows.limit + follows.offset under follows.total
             val statusListResponse = service.readingStatusAllManga()
             val results = followsParseMangaPage(follows.data, statusListResponse.statuses)
 
-            MetadataMangasPage(results.map { it.first }, hasMoreResults, results.map { it.second })
+            MetadataAnimesPage(results.map { it.first }, hasMoreResults, results.map { it.second })
         }
     }
 
@@ -48,8 +48,8 @@ class FollowsHandler(
     private fun followsParseMangaPage(
         response: List<MangaDataDto>,
         statuses: Map<String, String?>,
-    ): List<Pair<SManga, MangaDexSearchMetadata>> {
-        val comparator = compareBy<Pair<SManga, MangaDexSearchMetadata>> { it.second.followStatus }
+    ): List<Pair<SAnime, MangaDexSearchMetadata>> {
+        val comparator = compareBy<Pair<SAnime, MangaDexSearchMetadata>> { it.second.followStatus }
             .thenBy { it.first.title }
 
         return response.map {
@@ -129,7 +129,7 @@ class FollowsHandler(
     /**
      * fetch all manga from all possible pages
      */
-    suspend fun fetchAllFollows(): List<Pair<SManga, MangaDexSearchMetadata>> {
+    suspend fun fetchAllFollows(): List<Pair<SAnime, MangaDexSearchMetadata>> {
         return withIOContext {
             val results = async {
                 mdListCall {

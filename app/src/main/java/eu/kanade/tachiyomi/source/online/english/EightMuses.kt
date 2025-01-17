@@ -4,24 +4,24 @@ import android.content.Context
 import android.net.Uri
 import androidx.core.net.toUri
 import eu.kanade.tachiyomi.network.awaitSuccess
-import eu.kanade.tachiyomi.animesource.model.FilterList
-import eu.kanade.tachiyomi.animesource.model.MangasPage
-import eu.kanade.tachiyomi.animesource.model.SManga
-import eu.kanade.tachiyomi.animesource.online.HttpSource
+import eu.kanade.tachiyomi.animesource.model.AnimeFilterList
+import eu.kanade.tachiyomi.animesource.model.AnimesPage
+import eu.kanade.tachiyomi.animesource.model.SAnime
+import eu.kanade.tachiyomi.animesource.online.AnimeHttpSource
 import eu.kanade.tachiyomi.animesource.online.MetadataSource
 import eu.kanade.tachiyomi.animesource.online.NamespaceSource
 import eu.kanade.tachiyomi.animesource.online.UrlImportableSource
 import eu.kanade.tachiyomi.util.asJsoup
 import exh.metadata.metadata.EightMusesSearchMetadata
 import exh.metadata.metadata.base.RaisedTag
-import exh.source.DelegatedHttpSource
+import exh.source.DelegatedAnimeHttpSource
 import exh.util.urlImportFetchSearchManga
 import exh.util.urlImportFetchSearchMangaSuspend
 import org.jsoup.nodes.Document
 import org.jsoup.nodes.Element
 
-class EightMuses(delegate: HttpSource, val context: Context) :
-    DelegatedHttpSource(delegate),
+class EightMuses(delegate: AnimeHttpSource, val context: Context) :
+    DelegatedAnimeHttpSource(delegate),
     MetadataSource<EightMusesSearchMetadata, Document>,
     UrlImportableSource,
     NamespaceSource {
@@ -30,22 +30,22 @@ class EightMuses(delegate: HttpSource, val context: Context) :
     override val lang = "en"
 
     // Support direct URL importing
-    @Deprecated("Use the non-RxJava API instead", replaceWith = ReplaceWith("getSearchManga"))
-    override fun fetchSearchManga(page: Int, query: String, filters: FilterList) =
+    @Deprecated("Use the non-RxJava API instead", replaceWith = ReplaceWith("getSearchAnime"))
+    override fun fetchSearchAnime(page: Int, query: String, filters: AnimeFilterList) =
         urlImportFetchSearchManga(context, query) {
             @Suppress("DEPRECATION")
-            super<DelegatedHttpSource>.fetchSearchManga(page, query, filters)
+            super<DelegatedAnimeHttpSource>.fetchSearchAnime(page, query, filters)
         }
 
-    override suspend fun getSearchManga(page: Int, query: String, filters: FilterList): MangasPage {
+    override suspend fun getSearchAnime(page: Int, query: String, filters: AnimeFilterList): AnimesPage {
         return urlImportFetchSearchMangaSuspend(context, query) {
-            super<DelegatedHttpSource>.getSearchManga(page, query, filters)
+            super<DelegatedAnimeHttpSource>.getSearchAnime(page, query, filters)
         }
     }
 
-    override suspend fun getMangaDetails(manga: SManga): SManga {
-        val response = client.newCall(mangaDetailsRequest(manga)).awaitSuccess()
-        return parseToManga(manga, response.asJsoup())
+    override suspend fun getAnimeDetails(anime: SAnime): SAnime {
+        val response = client.newCall(animeDetailsRequest(anime)).awaitSuccess()
+        return parseToManga(anime, response.asJsoup())
     }
 
     data class SelfContents(val albums: List<Element>, val images: List<Element>)

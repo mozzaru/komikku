@@ -3,7 +3,7 @@ package eu.kanade.tachiyomi.data.cache
 import android.content.Context
 import android.text.format.Formatter
 import com.jakewharton.disklrucache.DiskLruCache
-import eu.kanade.tachiyomi.animesource.PagePreviewPage
+import eu.kanade.tachiyomi.animesource.ThumbnailPreviewImage
 import eu.kanade.tachiyomi.util.storage.DiskUtil
 import eu.kanade.tachiyomi.util.storage.saveTo
 import kotlinx.serialization.encodeToString
@@ -82,7 +82,7 @@ class PagePreviewCache(private val context: Context) {
      * @param manga the manga.
      * @return the list of pages.
      */
-    fun getPageListFromCache(manga: Manga, chapterIds: List<Long>, page: Int): PagePreviewPage {
+    fun getPageListFromCache(manga: Manga, chapterIds: List<Long>, page: Int): ThumbnailPreviewImage {
         // Get the key for the manga.
         val key = DiskUtil.hashKeyForDisk(getKey(manga, chapterIds, page))
 
@@ -98,7 +98,7 @@ class PagePreviewCache(private val context: Context) {
      * @param manga the manga.
      * @param pages list of pages.
      */
-    fun putPageListToCache(manga: Manga, chapterIds: List<Long>, pages: PagePreviewPage) {
+    fun putPageListToCache(manga: Manga, chapterIds: List<Long>, pages: ThumbnailPreviewImage) {
         // Convert list of pages to json string.
         val cachedValue = json.encodeToString(pages)
 

@@ -1,8 +1,8 @@
 package exh.md.handlers
 
 import eu.kanade.tachiyomi.data.database.models.Track
-import eu.kanade.tachiyomi.animesource.model.SChapter
-import eu.kanade.tachiyomi.animesource.model.SManga
+import eu.kanade.tachiyomi.animesource.model.SEpisode
+import eu.kanade.tachiyomi.animesource.model.SAnime
 import exh.md.dto.ChapterDataDto
 import exh.md.service.MangaDexService
 import exh.md.utils.MdConstants
@@ -24,12 +24,12 @@ class MangaHandler(
     private val followsHandler: FollowsHandler,
 ) {
     suspend fun getMangaDetails(
-        manga: SManga,
+        manga: SAnime,
         sourceId: Long,
         coverQuality: String,
         tryUsingFirstVolumeCover: Boolean,
         altTitlesInDesc: Boolean,
-    ): SManga {
+    ): SAnime {
         return coroutineScope {
             val mangaId = MdUtil.getMangaId(manga.url)
             val response = async(Dispatchers.IO) { service.viewManga(mangaId) }
@@ -59,21 +59,21 @@ class MangaHandler(
         }
     }
 
-    fun fetchMangaDetailsObservable(manga: SManga, sourceId: Long, coverQuality: String, tryUsingFirstVolumeCover: Boolean, altTitlesInDesc: Boolean): Observable<SManga> {
+    fun fetchMangaDetailsObservable(manga: SAnime, sourceId: Long, coverQuality: String, tryUsingFirstVolumeCover: Boolean, altTitlesInDesc: Boolean): Observable<SAnime> {
         return runAsObservable {
             getMangaDetails(manga, sourceId, coverQuality, tryUsingFirstVolumeCover, altTitlesInDesc)
         }
     }
 
     fun fetchChapterListObservable(
-        manga: SManga,
+        manga: SAnime,
         blockedGroups: String,
         blockedUploaders: String,
-    ): Observable<List<SChapter>> = runAsObservable {
+    ): Observable<List<SEpisode>> = runAsObservable {
         getChapterList(manga, blockedGroups, blockedUploaders)
     }
 
-    suspend fun getChapterList(manga: SManga, blockedGroups: String, blockedUploaders: String): List<SChapter> {
+    suspend fun getChapterList(manga: SAnime, blockedGroups: String, blockedUploaders: String): List<SEpisode> {
         return withIOContext {
             val results = mdListCall {
                 service.viewChapters(
@@ -134,7 +134,7 @@ class MangaHandler(
         coverQuality: String,
         tryUsingFirstVolumeCover: Boolean,
         altTitlesInDesc: Boolean,
-    ): SManga? {
+    ): SAnime? {
         return withIOContext {
             val mangaId = MdUtil.getMangaId(track.tracking_url)
             val response = service.viewManga(mangaId)
@@ -144,7 +144,7 @@ class MangaHandler(
                 null
             }
             apiMangaParser.parseToManga(
-                SManga.create().apply {
+                SAnime.create().apply {
                     url = track.tracking_url
                 },
                 sourceId,
@@ -158,7 +158,7 @@ class MangaHandler(
         }
     }
 
-    private suspend fun getSimpleChapters(manga: SManga): List<String> {
+    private suspend fun getSimpleChapters(manga: SAnime): List<String> {
         return runCatching { service.aggregateChapters(MdUtil.getMangaId(manga.url), lang) }
             .onFailure {
                 if (it is CancellationException) throw it

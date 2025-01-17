@@ -2,7 +2,7 @@ package eu.kanade.domain.anime.model
 
 import eu.kanade.domain.base.BasePreferences
 import eu.kanade.tachiyomi.data.cache.CoverCache
-import eu.kanade.tachiyomi.animesource.model.SManga
+import eu.kanade.tachiyomi.animesource.model.SAnime
 import eu.kanade.tachiyomi.ui.reader.setting.ReaderOrientation
 import eu.kanade.tachiyomi.ui.reader.setting.ReadingMode
 import mihon.core.archive.CbzCrypto
@@ -39,7 +39,7 @@ fun Manga.forceDownloaded(): Boolean {
     return favorite && Injekt.get<BasePreferences>().downloadedOnly().get()
 }
 
-fun Manga.toSManga(): SManga = SManga.create().also {
+fun Manga.toSManga(): SAnime = SAnime.create().also {
     it.url = url
     it.title = title
     it.artist = artist
@@ -51,7 +51,7 @@ fun Manga.toSManga(): SManga = SManga.create().also {
     it.initialized = initialized
 }
 
-fun Manga.copyFrom(other: SManga): Manga {
+fun Manga.copyFrom(other: SAnime): Manga {
     // SY -->
     val author = other.author ?: ogAuthor
     val artist = other.artist ?: ogArtist
@@ -79,7 +79,7 @@ fun Manga.copyFrom(other: SManga): Manga {
     )
 }
 
-fun SManga.toDomainManga(sourceId: Long): Manga {
+fun SAnime.toDomainManga(sourceId: Long): Manga {
     return Manga.create().copy(
         url = url,
         // SY -->

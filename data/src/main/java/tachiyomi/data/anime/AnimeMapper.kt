@@ -1,6 +1,6 @@
 package tachiyomi.data.anime
 
-import eu.kanade.tachiyomi.animesource.model.UpdateStrategy
+import eu.kanade.tachiyomi.animesource.model.AnimeUpdateStrategy
 import tachiyomi.domain.anime.model.Manga
 import tachiyomi.domain.library.model.LibraryAnime
 import tachiyomi.view.LibraryView
@@ -29,7 +29,7 @@ object AnimeMapper {
         @Suppress("UNUSED_PARAMETER")
         filteredScanlators: String?,
         // SY <--
-        updateStrategy: UpdateStrategy,
+        updateStrategy: AnimeUpdateStrategy,
         calculateInterval: Long,
         lastModifiedAt: Long,
         favoriteModifiedAt: Long?,
@@ -87,7 +87,7 @@ object AnimeMapper {
         @Suppress("UNUSED_PARAMETER")
         filteredScanlators: String?,
         // SY <--
-        updateStrategy: UpdateStrategy,
+        updateStrategy: AnimeUpdateStrategy,
         calculateInterval: Long,
         lastModifiedAt: Long,
         favoriteModifiedAt: Long?,

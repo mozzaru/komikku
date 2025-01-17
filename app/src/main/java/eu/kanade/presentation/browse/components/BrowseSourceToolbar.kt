@@ -18,8 +18,8 @@ import eu.kanade.presentation.components.AppBarTitle
 import eu.kanade.presentation.components.DropdownMenu
 import eu.kanade.presentation.components.RadioMenuItem
 import eu.kanade.presentation.components.SearchToolbar
-import eu.kanade.tachiyomi.animesource.ConfigurableSource
-import eu.kanade.tachiyomi.animesource.Source
+import eu.kanade.tachiyomi.animesource.ConfigurableAnimeSource
+import eu.kanade.tachiyomi.animesource.AnimeSource
 import eu.kanade.tachiyomi.ui.browse.bulkSelectionButton
 import exh.source.anyIs
 import kotlinx.collections.immutable.persistentListOf
@@ -33,7 +33,7 @@ import tachiyomi.source.local.LocalSource
 fun BrowseSourceToolbar(
     searchQuery: String?,
     onSearchQueryChange: (String?) -> Unit,
-    source: Source?,
+    source: AnimeSource?,
     displayMode: LibraryDisplayMode?,
     onDisplayModeChange: (LibraryDisplayMode) -> Unit,
     navigateUp: () -> Unit,
@@ -50,7 +50,7 @@ fun BrowseSourceToolbar(
     // Avoid capturing unstable source in actions lambda
     val title = source?.name
     val isLocalSource = source is LocalSource
-    val isConfigurableSource = source?.anyIs<ConfigurableSource>() == true
+    val isConfigurableSource = source?.anyIs<ConfigurableAnimeSource>() == true
 
     var selectingDisplayMode by remember { mutableStateOf(false) }
 

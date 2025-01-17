@@ -9,7 +9,7 @@ import eu.kanade.domain.anime.model.toDomainManga
 import eu.kanade.domain.source.service.SourcePreferences
 import eu.kanade.presentation.util.ioCoroutineScope
 import eu.kanade.tachiyomi.extension.ExtensionManager
-import eu.kanade.tachiyomi.animesource.CatalogueSource
+import eu.kanade.tachiyomi.animesource.AnimeCatalogueSource
 import kotlinx.collections.immutable.PersistentMap
 import kotlinx.collections.immutable.mutate
 import kotlinx.collections.immutable.persistentMapOf
@@ -55,8 +55,8 @@ abstract class SearchScreenModel(
 
     protected var extensionFilter: String? = null
 
-    private val sortComparator = { map: Map<CatalogueSource, SearchItemResult> ->
-        compareBy<CatalogueSource>(
+    private val sortComparator = { map: Map<AnimeCatalogueSource, SearchItemResult> ->
+        compareBy<AnimeCatalogueSource>(
             { (map[it] as? SearchItemResult.Success)?.isEmpty ?: true },
             { "${it.id}" !in pinnedSources },
             { "${it.name.lowercase()} (${it.lang})" },
@@ -91,7 +91,7 @@ abstract class SearchScreenModel(
         }
     }
 
-    open fun getEnabledSources(): List<CatalogueSource> {
+    open fun getEnabledSources(): List<AnimeCatalogueSource> {
         return sourceManager.getVisibleCatalogueSources()
             .filter { it.lang in enabledLanguages && "${it.id}" !in disabledSources }
             .sortedWith(
@@ -112,7 +112,7 @@ abstract class SearchScreenModel(
     }
     // KMK <--
 
-    private fun getSelectedSources(): List<CatalogueSource> {
+    private fun getSelectedSources(): List<AnimeCatalogueSource> {
         val enabledSources = getEnabledSources()
 
         val filter = extensionFilter
@@ -124,7 +124,7 @@ abstract class SearchScreenModel(
         val filteredSourceIds = extensionManager.installedExtensionsFlow.value
             .filter { it.pkgName == filter }
             .flatMap { it.sources }
-            .filterIsInstance<CatalogueSource>()
+            .filterIsInstance<AnimeCatalogueSource>()
             .map { it.id }
         return enabledSources.filter { it.id in filteredSourceIds }
         // SY <--
@@ -184,10 +184,10 @@ abstract class SearchScreenModel(
 
                     try {
                         val page = withContext(coroutineDispatcher) {
-                            source.getSearchManga(1, query, source.getFilterList())
+                            source.getSearchAnime(1, query, source.getFilterList())
                         }
 
-                        val titles = page.mangas.map {
+                        val titles = page.animes.map {
                             // KMK -->
                             it.toDomainManga(source.id)
                             // KMK <--
@@ -207,7 +207,7 @@ abstract class SearchScreenModel(
         }
     }
 
-    private fun updateItems(items: PersistentMap<CatalogueSource, SearchItemResult>) {
+    private fun updateItems(items: PersistentMap<AnimeCatalogueSource, SearchItemResult>) {
         mutableState.update {
             it.copy(
                 items = items
@@ -217,7 +217,7 @@ abstract class SearchScreenModel(
         }
     }
 
-    private fun updateItem(source: CatalogueSource, result: SearchItemResult) {
+    private fun updateItem(source: AnimeCatalogueSource, result: SearchItemResult) {
         val newItems = state.value.items.mutate {
             it[source] = result
         }
@@ -230,7 +230,7 @@ abstract class SearchScreenModel(
         val searchQuery: String? = null,
         val sourceFilter: SourceFilter = SourceFilter.PinnedOnly,
         val onlyShowHasResults: Boolean = false,
-        val items: PersistentMap<CatalogueSource, SearchItemResult> = persistentMapOf(),
+        val items: PersistentMap<AnimeCatalogueSource, SearchItemResult> = persistentMapOf(),
     ) {
         val progress: Int = items.count { it.value !is SearchItemResult.Loading }
         val total: Int = items.size

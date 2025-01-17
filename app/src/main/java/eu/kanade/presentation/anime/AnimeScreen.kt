@@ -86,7 +86,7 @@ import eu.kanade.presentation.browse.RelatedAnimeTitle
 import eu.kanade.presentation.components.relativeDateText
 import eu.kanade.presentation.util.formatEpisodeNumber
 import eu.kanade.tachiyomi.data.download.model.Download
-import eu.kanade.tachiyomi.animesource.Source
+import eu.kanade.tachiyomi.animesource.AnimeSource
 import eu.kanade.tachiyomi.source.getNameForMangaInfo
 import eu.kanade.tachiyomi.animesource.online.MetadataSource
 import eu.kanade.tachiyomi.source.online.all.EHentai
@@ -1391,7 +1391,7 @@ typealias MetadataDescriptionComposable = @Composable (
 ) -> Unit
 
 @Composable
-fun metadataDescription(source: Source): MetadataDescriptionComposable? {
+fun metadataDescription(source: AnimeSource): MetadataDescriptionComposable? {
     val metadataSource = remember(source.id) { source.getMainSource<MetadataSource<*, *>>() }
     return remember(metadataSource) {
         when (metadataSource) {

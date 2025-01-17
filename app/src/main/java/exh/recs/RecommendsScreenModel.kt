@@ -1,7 +1,7 @@
 package exh.recs
 
-import eu.kanade.tachiyomi.animesource.CatalogueSource
-import eu.kanade.tachiyomi.animesource.model.FilterList
+import eu.kanade.tachiyomi.animesource.AnimeCatalogueSource
+import eu.kanade.tachiyomi.animesource.model.AnimeFilterList
 import eu.kanade.tachiyomi.ui.browse.source.browse.BrowseSourceScreenModel
 import kotlinx.coroutines.runBlocking
 import tachiyomi.domain.anime.interactor.GetAnime
@@ -17,7 +17,7 @@ class RecommendsScreenModel(
 
     val manga = runBlocking { getAnime.await(mangaId) }!!
 
-    override fun createSourcePagingSource(query: String, filters: FilterList): SourcePagingSourceType {
-        return RecommendsPagingSource(source as CatalogueSource, manga)
+    override fun createSourcePagingSource(query: String, filters: AnimeFilterList): SourcePagingSourceType {
+        return RecommendsPagingSource(source as AnimeCatalogueSource, manga)
     }
 }

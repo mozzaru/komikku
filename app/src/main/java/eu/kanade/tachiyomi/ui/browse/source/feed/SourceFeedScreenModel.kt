@@ -13,8 +13,8 @@ import eu.kanade.domain.anime.model.toDomainManga
 import eu.kanade.domain.source.interactor.GetExhSavedSearch
 import eu.kanade.domain.ui.UiPreferences
 import eu.kanade.presentation.browse.SourceFeedUI
-import eu.kanade.tachiyomi.animesource.CatalogueSource
-import eu.kanade.tachiyomi.animesource.model.FilterList
+import eu.kanade.tachiyomi.animesource.AnimeCatalogueSource
+import eu.kanade.tachiyomi.animesource.model.AnimeFilterList
 import eu.kanade.tachiyomi.source.online.all.MangaDex
 import eu.kanade.tachiyomi.ui.browse.feed.MaxFeedItems
 import exh.source.getMainSource
@@ -89,13 +89,13 @@ open class SourceFeedScreenModel(
         // KMK -->
         screenModelScope.launch {
             var retry = 10
-            while (source !is CatalogueSource && retry-- > 0) {
+            while (source !is AnimeCatalogueSource && retry-- > 0) {
                 // Sometime source is late to load, so we need to wait a bit
                 delay(100)
                 source = sourceManager.getOrStub(sourceId)
             }
             val source = source
-            if (source !is CatalogueSource) return@launch
+            if (source !is AnimeCatalogueSource) return@launch
             // KMK <--
 
             setFilters(source.getFilterList())
@@ -119,7 +119,7 @@ open class SourceFeedScreenModel(
     // KMK-->
     fun resetFilters() {
         val source = source
-        if (source !is CatalogueSource) return
+        if (source !is AnimeCatalogueSource) return
 
         setFilters(source.getFilterList())
 
@@ -127,7 +127,7 @@ open class SourceFeedScreenModel(
     }
     // KMK <--
 
-    fun setFilters(filters: FilterList) {
+    fun setFilters(filters: AnimeFilterList) {
         mutableState.update { it.copy(filters = filters) }
     }
 
@@ -189,7 +189,7 @@ open class SourceFeedScreenModel(
         // KMK -->
         val source = source
         // KMK <--
-        if (source !is CatalogueSource) return persistentListOf()
+        if (source !is AnimeCatalogueSource) return persistentListOf()
         val savedSearches = getSavedSearchBySourceIdFeed.await(source.id)
             .associateBy { it.id }
 
@@ -214,22 +214,22 @@ open class SourceFeedScreenModel(
         // KMK -->
         val source = source
         // KMK <--
-        if (source !is CatalogueSource) return
+        if (source !is AnimeCatalogueSource) return
         screenModelScope.launch {
             feedSavedSearch.map { sourceFeed ->
                 async {
                     val page = try {
                         withContext(coroutineDispatcher) {
                             when (sourceFeed) {
-                                is SourceFeedUI.Browse -> source.getPopularManga(1)
+                                is SourceFeedUI.Browse -> source.getPopularAnime(1)
                                 is SourceFeedUI.Latest -> source.getLatestUpdates(1)
-                                is SourceFeedUI.SourceSavedSearch -> source.getSearchManga(
+                                is SourceFeedUI.SourceSavedSearch -> source.getSearchAnime(
                                     page = 1,
                                     query = sourceFeed.savedSearch.query.orEmpty(),
                                     filters = getFilterList(sourceFeed.savedSearch, source),
                                 )
                             }
-                        }.mangas
+                        }.animes
                     } catch (e: Exception) {
                         emptyList()
                     }
@@ -256,8 +256,8 @@ open class SourceFeedScreenModel(
 
     private val filterSerializer = FilterSerializer()
 
-    private fun getFilterList(savedSearch: SavedSearch, source: CatalogueSource): FilterList {
-        val filters = savedSearch.filtersJson ?: return FilterList()
+    private fun getFilterList(savedSearch: SavedSearch, source: AnimeCatalogueSource): AnimeFilterList {
+        val filters = savedSearch.filtersJson ?: return AnimeFilterList()
         return runCatching {
             val originalFilters = source.getFilterList()
             filterSerializer.deserialize(
@@ -265,7 +265,7 @@ open class SourceFeedScreenModel(
                 json = Json.decodeFromString(filters),
             )
             originalFilters
-        }.getOrElse { FilterList() }
+        }.getOrElse { AnimeFilterList() }
     }
 
     @Composable
@@ -291,7 +291,7 @@ open class SourceFeedScreenModel(
     // KMK <--
 
     private suspend fun loadSearches() =
-        getExhSavedSearch.await(source.id, (source as CatalogueSource)::getFilterList)
+        getExhSavedSearch.await(source.id, (source as AnimeCatalogueSource)::getFilterList)
             .sortedWith(compareBy(String.CASE_INSENSITIVE_ORDER, EXHSavedSearch::name))
             .toImmutableList()
 
@@ -299,7 +299,7 @@ open class SourceFeedScreenModel(
         // KMK -->
         val source = source
         // KMK <--
-        if (source !is CatalogueSource) return
+        if (source !is AnimeCatalogueSource) return
         screenModelScope.launchIO {
             val allDefault = state.value.filters == source.getFilterList()
             dismissDialog()
@@ -328,7 +328,7 @@ open class SourceFeedScreenModel(
         // KMK -->
         val source = source
         // KMK <--
-        if (source !is CatalogueSource) return
+        if (source !is AnimeCatalogueSource) return
         screenModelScope.launchIO {
             // KMK -->
             val search = getExhSavedSearch.awaitOne(loadedSearch.id, source::getFilterList) ?: loadedSearch
@@ -450,7 +450,7 @@ open class SourceFeedScreenModel(
 data class SourceFeedState(
     val searchQuery: String? = null,
     val items: ImmutableList<SourceFeedUI> = persistentListOf(),
-    val filters: FilterList = FilterList(),
+    val filters: AnimeFilterList = AnimeFilterList(),
     val savedSearches: ImmutableList<EXHSavedSearch> = persistentListOf(),
     val dialog: SourceFeedScreenModel.Dialog? = null,
 ) {

@@ -1,11 +1,11 @@
 package eu.kanade.tachiyomi.source
 
 import android.content.Context
-import eu.kanade.tachiyomi.animesource.CatalogueSource
-import eu.kanade.tachiyomi.animesource.Source
+import eu.kanade.tachiyomi.animesource.AnimeCatalogueSource
+import eu.kanade.tachiyomi.animesource.AnimeSource
 import eu.kanade.tachiyomi.data.download.DownloadManager
 import eu.kanade.tachiyomi.extension.ExtensionManager
-import eu.kanade.tachiyomi.animesource.online.HttpSource
+import eu.kanade.tachiyomi.animesource.online.AnimeHttpSource
 import eu.kanade.tachiyomi.source.online.all.EHentai
 import eu.kanade.tachiyomi.source.online.all.MangaDex
 import eu.kanade.tachiyomi.source.online.all.MergedSource
@@ -16,11 +16,11 @@ import eu.kanade.tachiyomi.source.online.english.Pururin
 import eu.kanade.tachiyomi.source.online.english.Tsumino
 import exh.log.xLogD
 import exh.source.BlacklistedSources
-import exh.source.DelegatedHttpSource
+import exh.source.DelegatedAnimeHttpSource
 import exh.source.EH_SOURCE_ID
 import exh.source.EIGHTMUSES_SOURCE_ID
 import exh.source.EXH_SOURCE_ID
-import exh.source.EnhancedHttpSource
+import exh.source.EnhancedAnimeHttpSource
 import exh.source.HBROWSE_SOURCE_ID
 import exh.source.MERGED_SOURCE_ID
 import exh.source.PURURIN_SOURCE_ID
@@ -62,12 +62,12 @@ class AndroidSourceManager(
 
     private val scope = CoroutineScope(Job() + Dispatchers.IO)
 
-    private val sourcesMapFlow = MutableStateFlow(ConcurrentHashMap<Long, Source>())
+    private val sourcesMapFlow = MutableStateFlow(ConcurrentHashMap<Long, AnimeSource>())
 
     private val stubSourcesMap = ConcurrentHashMap<Long, StubSource>()
 
-    override val catalogueSources: Flow<List<CatalogueSource>> = sourcesMapFlow.map {
-        it.values.filterIsInstance<CatalogueSource>()
+    override val catalogueSources: Flow<List<AnimeCatalogueSource>> = sourcesMapFlow.map {
+        it.values.filterIsInstance<AnimeCatalogueSource>()
     }
 
     // SY -->
@@ -83,7 +83,7 @@ class AndroidSourceManager(
                 }
                 // SY <--
                 .collectLatest { (extensions, enableExhentai) ->
-                    val mutableMap = ConcurrentHashMap<Long, Source>(
+                    val mutableMap = ConcurrentHashMap<Long, AnimeSource>(
                         mapOf(
                             LocalSource.ID to LocalSource(
                                 context,
@@ -125,7 +125,7 @@ class AndroidSourceManager(
         }
     }
 
-    private fun Source.toInternalSource(): Source? {
+    private fun AnimeSource.toInternalSource(): AnimeSource? {
         // EXH -->
         val sourceQName = this::class.qualifiedName
         val factories = DELEGATED_SOURCES.entries
@@ -141,9 +141,9 @@ class AndroidSourceManager(
         } else {
             null
         }
-        val newSource = if (this is HttpSource && delegate != null) {
+        val newSource = if (this is AnimeHttpSource && delegate != null) {
             xLogD("Delegating source: %s -> %s!", sourceQName, delegate.newSourceClass.qualifiedName)
-            val enhancedSource = EnhancedHttpSource(
+            val enhancedSource = EnhancedAnimeHttpSource(
                 this,
                 delegate.newSourceClass.constructors.find { it.parameters.size == 2 }!!.call(this, context),
             )
@@ -152,7 +152,7 @@ class AndroidSourceManager(
                 enhancedSource.originalSource.name,
                 enhancedSource.originalSource.id,
                 enhancedSource.originalSource::class.qualifiedName ?: delegate.originalSourceQualifiedClassName,
-                (enhancedSource.enhancedSource as DelegatedHttpSource)::class,
+                (enhancedSource.enhancedSource as DelegatedAnimeHttpSource)::class,
                 delegate.factory,
             )
             enhancedSource
@@ -165,7 +165,7 @@ class AndroidSourceManager(
                 "Removing blacklisted source: (id: %s, name: %s, lang: %s)!",
                 id,
                 name,
-                (this as? CatalogueSource)?.lang,
+                (this as? AnimeCatalogueSource)?.lang,
             )
             null
         } else {
@@ -174,19 +174,19 @@ class AndroidSourceManager(
         // EXH <--
     }
 
-    override fun get(sourceKey: Long): Source? {
+    override fun get(sourceKey: Long): AnimeSource? {
         return sourcesMapFlow.value[sourceKey]
     }
 
-    override fun getOrStub(sourceKey: Long): Source {
+    override fun getOrStub(sourceKey: Long): AnimeSource {
         return sourcesMapFlow.value[sourceKey] ?: stubSourcesMap.getOrPut(sourceKey) {
             runBlocking { createStubSource(sourceKey) }
         }
     }
 
-    override fun getOnlineSources() = sourcesMapFlow.value.values.filterIsInstance<HttpSource>()
+    override fun getOnlineSources() = sourcesMapFlow.value.values.filterIsInstance<AnimeHttpSource>()
 
-    override fun getCatalogueSources() = sourcesMapFlow.value.values.filterIsInstance<CatalogueSource>()
+    override fun getCatalogueSources() = sourcesMapFlow.value.values.filterIsInstance<AnimeCatalogueSource>()
 
     override fun getStubSources(): List<StubSource> {
         val onlineSourceIds = getOnlineSources().map { it.id }
@@ -195,21 +195,21 @@ class AndroidSourceManager(
 
     // SY -->
     override fun getVisibleOnlineSources() = sourcesMapFlow.value.values
-        .filterIsInstance<HttpSource>()
+        .filterIsInstance<AnimeHttpSource>()
         .filter {
             it.id !in BlacklistedSources.HIDDEN_SOURCES
         }
 
     override fun getVisibleCatalogueSources() = sourcesMapFlow.value.values
-        .filterIsInstance<CatalogueSource>()
+        .filterIsInstance<AnimeCatalogueSource>()
         .filter {
             it.id !in BlacklistedSources.HIDDEN_SOURCES
         }
 
     fun getDelegatedCatalogueSources() = sourcesMapFlow.value.values
-        .filterIsInstance<EnhancedHttpSource>()
+        .filterIsInstance<EnhancedAnimeHttpSource>()
         .mapNotNull { enhancedHttpSource ->
-            enhancedHttpSource.enhancedSource as? DelegatedHttpSource
+            enhancedHttpSource.enhancedSource as? DelegatedAnimeHttpSource
         }
     // SY <--
 
@@ -286,7 +286,7 @@ class AndroidSourceManager(
             val sourceName: String,
             val sourceId: Long,
             val originalSourceQualifiedClassName: String,
-            val newSourceClass: KClass<out DelegatedHttpSource>,
+            val newSourceClass: KClass<out DelegatedAnimeHttpSource>,
             val factory: Boolean = false,
         )
     }

@@ -8,8 +8,8 @@ import eu.kanade.tachiyomi.data.database.models.Track
 import eu.kanade.tachiyomi.data.track.BaseTracker
 import eu.kanade.tachiyomi.data.track.model.TrackMangaMetadata
 import eu.kanade.tachiyomi.data.track.model.TrackSearch
-import eu.kanade.tachiyomi.animesource.model.FilterList
-import eu.kanade.tachiyomi.animesource.model.SManga
+import eu.kanade.tachiyomi.animesource.model.AnimeFilterList
+import eu.kanade.tachiyomi.animesource.model.SAnime
 import exh.md.network.MangaDexAuthInterceptor
 import exh.md.utils.FollowStatus
 import exh.md.utils.MdUtil
@@ -130,7 +130,7 @@ class MdList(id: Long) : BaseTracker(id, "MDList") {
             val mdex = mdex ?: throw MangaDexNotFoundException()
             val remoteTrack = mdex.fetchTrackingInfo(track.tracking_url)
             track.copyPersonalFrom(remoteTrack)
-            /*if (track.total_chapters == 0 && mangaMetadata.status == SManga.COMPLETED) {
+            /*if (track.total_chapters == 0 && mangaMetadata.status == SAnime.COMPLETED) {
                 track.total_chapters = mangaMetadata.maxChapterNumber ?: 0
             }*/
             track
@@ -149,16 +149,16 @@ class MdList(id: Long) : BaseTracker(id, "MDList") {
     override suspend fun search(query: String): List<TrackSearch> {
         return withIOContext {
             val mdex = mdex ?: throw MangaDexNotFoundException()
-            mdex.getSearchManga(1, query, FilterList())
-                .mangas
+            mdex.getSearchAnime(1, query, AnimeFilterList())
+                .animes
                 .map {
-                    toTrackSearch(mdex.getMangaDetails(it))
+                    toTrackSearch(mdex.getAnimeDetails(it))
                 }
                 .distinct()
         }
     }
 
-    private fun toTrackSearch(mangaInfo: SManga): TrackSearch = TrackSearch.create(id).apply {
+    private fun toTrackSearch(mangaInfo: SAnime): TrackSearch = TrackSearch.create(id).apply {
         tracking_url = MdUtil.baseUrl + mangaInfo.url
         title = mangaInfo.title
         cover_url = mangaInfo.thumbnail_url.orEmpty()

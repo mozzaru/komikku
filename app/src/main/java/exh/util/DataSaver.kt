@@ -4,9 +4,9 @@ import eu.kanade.domain.source.service.SourcePreferences
 import eu.kanade.domain.source.service.SourcePreferences.DataSaver.BANDWIDTH_HERO
 import eu.kanade.domain.source.service.SourcePreferences.DataSaver.NONE
 import eu.kanade.domain.source.service.SourcePreferences.DataSaver.WSRV_NL
-import eu.kanade.tachiyomi.animesource.Source
+import eu.kanade.tachiyomi.animesource.AnimeSource
 import eu.kanade.tachiyomi.animesource.model.Page
-import eu.kanade.tachiyomi.animesource.online.HttpSource
+import eu.kanade.tachiyomi.animesource.online.AnimeHttpSource
 import okhttp3.Response
 import tachiyomi.core.common.preference.Preference
 
@@ -21,7 +21,7 @@ interface DataSaver {
             }
         }
 
-        suspend fun HttpSource.getImage(page: Page, dataSaver: DataSaver): Response {
+        suspend fun AnimeHttpSource.getImage(page: Page, dataSaver: DataSaver): Response {
             val imageUrl = page.imageUrl ?: return getImage(page)
             page.imageUrl = dataSaver.compress(imageUrl)
             return try {
@@ -33,7 +33,7 @@ interface DataSaver {
     }
 }
 
-fun DataSaver(source: Source, preferences: SourcePreferences): DataSaver {
+fun DataSaver(source: AnimeSource, preferences: SourcePreferences): DataSaver {
     val dataSaver = preferences.dataSaver().get()
     if (dataSaver != NONE && source.id.toString() in preferences.dataSaverExcludedSources().get()) {
         return DataSaver.NoOp

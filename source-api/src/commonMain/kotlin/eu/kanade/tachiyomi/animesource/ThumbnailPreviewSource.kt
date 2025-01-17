@@ -1,8 +1,8 @@
 package eu.kanade.tachiyomi.animesource
 
+import eu.kanade.tachiyomi.animesource.model.SAnime
+import eu.kanade.tachiyomi.animesource.model.SEpisode
 import eu.kanade.tachiyomi.network.ProgressListener
-import eu.kanade.tachiyomi.animesource.model.SChapter
-import eu.kanade.tachiyomi.animesource.model.SManga
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.serialization.Serializable
@@ -10,23 +10,23 @@ import kotlinx.serialization.Transient
 import okhttp3.CacheControl
 import okhttp3.Response
 
-interface PagePreviewSource : Source {
+interface ThumbnailPreviewSource : AnimeSource {
 
-    suspend fun getPagePreviewList(manga: SManga, chapters: List<SChapter>, page: Int): PagePreviewPage
+    suspend fun getThumbnailPreviewList(anime: SAnime, episodes: List<SEpisode>, page: Int): ThumbnailPreviewImage
 
-    suspend fun fetchPreviewImage(page: PagePreviewInfo, cacheControl: CacheControl? = null): Response
+    suspend fun fetchPreviewImage(page: ThumbnailPreviewInfo, cacheControl: CacheControl? = null): Response
 }
 
 @Serializable
-data class PagePreviewPage(
+data class ThumbnailPreviewImage(
     val page: Int,
-    val pagePreviews: List<PagePreviewInfo>,
+    val thumbnailPreviews: List<ThumbnailPreviewInfo>,
     val hasNextPage: Boolean,
     val pagePreviewPages: Int?,
 )
 
 @Serializable
-data class PagePreviewInfo(
+data class ThumbnailPreviewInfo(
     val index: Int,
     val imageUrl: String,
     @Transient

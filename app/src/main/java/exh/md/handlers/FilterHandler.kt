@@ -1,11 +1,11 @@
 package exh.md.handlers
 
-import eu.kanade.tachiyomi.animesource.model.Filter
-import eu.kanade.tachiyomi.animesource.model.FilterList
+import eu.kanade.tachiyomi.animesource.model.AnimeFilter
+import eu.kanade.tachiyomi.animesource.model.AnimeFilterList
 import java.util.Locale
 
 class FilterHandler {
-    internal fun getMDFilterList(): FilterList {
+    internal fun getMDFilterList(): AnimeFilterList {
         val filters = mutableListOf(
             OriginalLanguageList(getOriginalLanguage()),
             DemographicList(getDemographics()),
@@ -20,12 +20,12 @@ class FilterHandler {
             filters.add(2, ContentRatingList(getContentRating()))
         }
 
-        return FilterList(list = filters.toList())
+        return AnimeFilterList(list = filters.toList())
     }
 
-    private class Demographic(name: String) : Filter.CheckBox(name)
+    private class Demographic(name: String) : AnimeFilter.CheckBox(name)
     private class DemographicList(demographics: List<Demographic>) :
-        Filter.Group<Demographic>("Publication Demographic", demographics)
+        AnimeFilter.Group<Demographic>("Publication Demographic", demographics)
 
     private fun getDemographics() = listOf(
         Demographic("None"),
@@ -35,9 +35,9 @@ class FilterHandler {
         Demographic("Josei"),
     )
 
-    private class Status(name: String) : Filter.CheckBox(name)
+    private class Status(name: String) : AnimeFilter.CheckBox(name)
     private class StatusList(status: List<Status>) :
-        Filter.Group<Status>("Status", status)
+        AnimeFilter.Group<Status>("Status", status)
 
     private fun getStatus() = listOf(
         Status("Ongoing"),
@@ -46,9 +46,9 @@ class FilterHandler {
         Status("Abandoned"),
     )
 
-    private class ContentRating(name: String) : Filter.CheckBox(name)
+    private class ContentRating(name: String) : AnimeFilter.CheckBox(name)
     private class ContentRatingList(contentRating: List<ContentRating>) :
-        Filter.Group<ContentRating>("Content Rating", contentRating)
+        AnimeFilter.Group<ContentRating>("Content Rating", contentRating)
 
     private fun getContentRating() = listOf(
         ContentRating("Safe"),
@@ -57,9 +57,9 @@ class FilterHandler {
         ContentRating("Pornographic"),
     )
 
-    private class OriginalLanguage(name: String, val isoCode: String) : Filter.CheckBox(name)
+    private class OriginalLanguage(name: String, val isoCode: String) : AnimeFilter.CheckBox(name)
     private class OriginalLanguageList(originalLanguage: List<OriginalLanguage>) :
-        Filter.Group<OriginalLanguage>("Original language", originalLanguage)
+        AnimeFilter.Group<OriginalLanguage>("Original language", originalLanguage)
 
     private fun getOriginalLanguage() = listOf(
         OriginalLanguage("Japanese (Manga)", "ja"),
@@ -67,8 +67,8 @@ class FilterHandler {
         OriginalLanguage("Korean (Manhwa)", "ko"),
     )
 
-    internal class Tag(val id: String, name: String) : Filter.TriState(name)
-    private class TagList(tags: List<Tag>) : Filter.Group<Tag>("Tags", tags)
+    internal class Tag(val id: String, name: String) : AnimeFilter.TriState(name)
+    private class TagList(tags: List<Tag>) : AnimeFilter.Group<Tag>("Tags", tags)
 
     internal fun getTags() = listOf(
         Tag("391b0423-d847-456f-aff0-8b0cfc03066b", "Action"),
@@ -151,10 +151,10 @@ class FilterHandler {
     )
 
     private class TagInclusionMode :
-        Filter.Select<String>("Included tags mode", arrayOf("And", "Or"), 0)
+        AnimeFilter.Select<String>("Included tags mode", arrayOf("And", "Or"), 0)
 
     private class TagExclusionMode :
-        Filter.Select<String>("Excluded tags mode", arrayOf("And", "Or"), 1)
+        AnimeFilter.Select<String>("Excluded tags mode", arrayOf("And", "Or"), 1)
 
     val sortableList = listOf(
         Pair("Number of follows", ""),
@@ -162,9 +162,9 @@ class FilterHandler {
         Pair("Updated at", "updatedAt"),
     )
 
-    class SortFilter(sortables: Array<String>) : Filter.Sort("Sort", sortables, Selection(0, false))
+    class SortFilter(sortables: Array<String>) : AnimeFilter.Sort("Sort", sortables, Selection(0, false))
 
-    fun getQueryMap(filters: FilterList): Map<String, Any> {
+    fun getQueryMap(filters: AnimeFilterList): Map<String, Any> {
         val queryMap = mutableMapOf<String, Any>()
 
         val originalLanguageList = mutableListOf<String>() // originalLanguage[]

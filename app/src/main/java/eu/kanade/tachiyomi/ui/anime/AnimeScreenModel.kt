@@ -56,10 +56,10 @@ import eu.kanade.tachiyomi.data.track.EnhancedTracker
 import eu.kanade.tachiyomi.data.track.TrackerManager
 import eu.kanade.tachiyomi.data.track.mdlist.MdList
 import eu.kanade.tachiyomi.network.HttpException
-import eu.kanade.tachiyomi.animesource.PagePreviewSource
-import eu.kanade.tachiyomi.animesource.Source
+import eu.kanade.tachiyomi.animesource.ThumbnailPreviewSource
+import eu.kanade.tachiyomi.animesource.AnimeSource
 import eu.kanade.tachiyomi.source.getNameForMangaInfo
-import eu.kanade.tachiyomi.animesource.model.SManga
+import eu.kanade.tachiyomi.animesource.model.SAnime
 import eu.kanade.tachiyomi.animesource.online.MetadataSource
 import eu.kanade.tachiyomi.source.online.all.MergedSource
 import eu.kanade.tachiyomi.ui.anime.RelatedAnime.Companion.isLoading
@@ -227,7 +227,7 @@ class AnimeScreenModel(
     val manga: Manga?
         get() = successState?.manga
 
-    val source: Source?
+    val source: AnimeSource?
         get() = successState?.source
 
     private val isFavorited: Boolean
@@ -464,7 +464,7 @@ class AnimeScreenModel(
                     showMergeWithAnother = smartSearched,
                     mergedData = mergedData,
                     meta = raiseMetadata(meta, source),
-                    pagePreviewsState = if (source.getMainSource() is PagePreviewSource) {
+                    pagePreviewsState = if (source.getMainSource() is ThumbnailPreviewSource) {
                         getPagePreviews(manga, source)
                         PagePreviewState.Loading
                     } else {
@@ -604,7 +604,7 @@ class AnimeScreenModel(
         val state = successState ?: return
         try {
             withIOContext {
-                val networkManga = state.source.getMangaDetails(state.manga.toSManga())
+                val networkManga = state.source.getAnimeDetails(state.manga.toSManga())
                 updateAnime.awaitUpdateFromSource(state.manga, networkManga, manualFetch)
             }
         } catch (e: Throwable) {
@@ -619,7 +619,7 @@ class AnimeScreenModel(
     }
 
     // SY -->
-    private fun raiseMetadata(flatMetadata: FlatMetadata?, source: Source): RaisedSearchMetadata? {
+    private fun raiseMetadata(flatMetadata: FlatMetadata?, source: AnimeSource): RaisedSearchMetadata? {
         return if (flatMetadata != null) {
             val metaClass = source.getMainSource<MetadataSource<*, *>>()?.metaClass
             if (metaClass != null) flatMetadata.raise(metaClass) else null
@@ -1052,7 +1052,7 @@ class AnimeScreenModel(
     }
 
     // SY -->
-    private fun getPagePreviews(manga: Manga, source: Source) {
+    private fun getPagePreviews(manga: Manga, source: AnimeSource) {
         screenModelScope.launchIO {
             when (val result = getPagePreviews.await(manga, source, 1)) {
                 is GetPagePreviews.Result.Error -> updateSuccessState {
@@ -1079,7 +1079,7 @@ class AnimeScreenModel(
                 // SY -->
                 if (state.source !is MergedSource) {
                     // SY <--
-                    val chapters = state.source.getChapterList(state.manga.toSManga())
+                    val chapters = state.source.getEpisodeList(state.manga.toSManga())
 
                     val newChapters = syncEpisodesWithSource.await(
                         chapters,
@@ -1147,7 +1147,7 @@ class AnimeScreenModel(
 
         try {
             if (state.source !is StubSource && relatedMangasEnabled) {
-                state.source.getRelatedMangaList(state.manga.toSManga(), { e -> exceptionHandler(e) }) { pair, _ ->
+                state.source.getRelatedAnimeList(state.manga.toSManga(), { e -> exceptionHandler(e) }) { pair, _ ->
                     /* Push found related mangas into collection */
                     val relatedAnime = RelatedAnime.Success.fromPair(pair) { mangaList ->
                         mangaList.map {
@@ -1795,7 +1795,7 @@ class AnimeScreenModel(
         @Immutable
         data class Success(
             val manga: Manga,
-            val source: Source,
+            val source: AnimeSource,
             val isFromSource: Boolean,
             val chapters: List<EpisodeList.Item>,
             val availableScanlators: ImmutableSet<String>,
@@ -1912,7 +1912,7 @@ class AnimeScreenModel(
 data class MergedMangaData(
     val references: List<MergedAnimeReference>,
     val manga: Map<Long, Manga>,
-    val sources: List<Source>,
+    val sources: List<AnimeSource>,
 )
 // SY <--
 
@@ -1962,8 +1962,8 @@ sealed interface RelatedAnime {
 
         companion object {
             suspend fun fromPair(
-                pair: Pair<String, List<SManga>>,
-                toManga: suspend (mangaList: List<SManga>) -> List<Manga>,
+                pair: Pair<String, List<SAnime>>,
+                toManga: suspend (mangaList: List<SAnime>) -> List<Manga>,
             ) = Success(pair.first, toManga(pair.second))
         }
     }

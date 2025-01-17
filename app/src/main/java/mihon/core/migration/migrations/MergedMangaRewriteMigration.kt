@@ -1,7 +1,7 @@
 package mihon.core.migration.migrations
 
 import eu.kanade.domain.anime.interactor.UpdateAnime
-import eu.kanade.tachiyomi.animesource.Source
+import eu.kanade.tachiyomi.animesource.AnimeSource
 import exh.source.MERGED_SOURCE_ID
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
@@ -186,5 +186,5 @@ class MergedMangaRewriteMigration : Migration {
         }
     }
 
-    private data class LoadedMangaSource(val source: Source, val manga: Manga)
+    private data class LoadedMangaSource(val source: AnimeSource, val manga: Manga)
 }

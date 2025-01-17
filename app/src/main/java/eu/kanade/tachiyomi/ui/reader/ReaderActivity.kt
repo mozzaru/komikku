@@ -84,7 +84,7 @@ import eu.kanade.tachiyomi.data.notification.NotificationReceiver
 import eu.kanade.tachiyomi.data.notification.Notifications
 import eu.kanade.tachiyomi.databinding.ReaderActivityBinding
 import eu.kanade.tachiyomi.animesource.model.Page
-import eu.kanade.tachiyomi.animesource.online.HttpSource
+import eu.kanade.tachiyomi.animesource.online.AnimeHttpSource
 import eu.kanade.tachiyomi.ui.base.activity.BaseActivity
 import eu.kanade.tachiyomi.ui.main.MainActivity
 import eu.kanade.tachiyomi.ui.reader.ReaderViewModel.SetAsCoverResult.AddToLibraryFirst
@@ -441,7 +441,7 @@ class ReaderActivity : BaseActivity() {
                 return
             }
 
-            val isHttpSource = viewModel.getSource() is HttpSource
+            val isHttpSource = viewModel.getSource() is AnimeHttpSource
             val isFullscreen by readerPreferences.fullscreen().collectAsState()
             val flashOnPageChange by readerPreferences.flashOnPageChange().collectAsState()
 

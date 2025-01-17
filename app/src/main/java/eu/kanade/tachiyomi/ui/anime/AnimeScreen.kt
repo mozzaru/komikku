@@ -58,10 +58,10 @@ import eu.kanade.presentation.theme.TachiyomiTheme
 import eu.kanade.presentation.util.AssistContentScreen
 import eu.kanade.presentation.util.Screen
 import eu.kanade.presentation.util.isTabletUi
-import eu.kanade.tachiyomi.animesource.CatalogueSource
-import eu.kanade.tachiyomi.animesource.Source
+import eu.kanade.tachiyomi.animesource.AnimeCatalogueSource
+import eu.kanade.tachiyomi.animesource.AnimeSource
 import eu.kanade.tachiyomi.source.isLocalOrStub
-import eu.kanade.tachiyomi.animesource.online.HttpSource
+import eu.kanade.tachiyomi.animesource.online.AnimeHttpSource
 import eu.kanade.tachiyomi.ui.anime.merged.EditMergedSettingsDialog
 import eu.kanade.tachiyomi.ui.anime.track.TrackInfoDialogHomeScreen
 import eu.kanade.tachiyomi.ui.browse.AddDuplicateAnimeDialog
@@ -233,7 +233,7 @@ class AnimeScreen(
     ) {
         // KMK <--
         val haptic = LocalHapticFeedback.current
-        val isHttpSource = remember { successState.source is HttpSource }
+        val isHttpSource = remember { successState.source is AnimeHttpSource }
 
         LaunchedEffect(successState.manga, screenModel.source) {
             if (isHttpSource) {
@@ -595,19 +595,19 @@ class AnimeScreen(
     }
 
     @Suppress("LocalVariableName")
-    private fun getMangaUrl(manga_: Manga?, source_: Source?): String? {
+    private fun getMangaUrl(manga_: Manga?, source_: AnimeSource?): String? {
         val manga = manga_ ?: return null
-        val source = source_ as? HttpSource ?: return null
+        val source = source_ as? AnimeHttpSource ?: return null
 
         return try {
-            source.getMangaUrl(manga.toSManga())
+            source.getAnimeUrl(manga.toSManga())
         } catch (e: Exception) {
             null
         }
     }
 
     @Suppress("LocalVariableName")
-    private fun openMangaInWebView(navigator: Navigator, manga_: Manga?, source_: Source?) {
+    private fun openMangaInWebView(navigator: Navigator, manga_: Manga?, source_: AnimeSource?) {
         getMangaUrl(manga_, source_)?.let { url ->
             navigator.push(
                 WebViewScreen(
@@ -620,7 +620,7 @@ class AnimeScreen(
     }
 
     @Suppress("LocalVariableName")
-    private fun shareManga(context: Context, manga_: Manga?, source_: Source?) {
+    private fun shareManga(context: Context, manga_: Manga?, source_: AnimeSource?) {
         try {
             getMangaUrl(manga_, source_)?.let { url ->
                 val intent = url.toUri().toShareIntent(context, type = "text/plain")
@@ -696,7 +696,7 @@ class AnimeScreen(
      *
      * @param genreName the search genre to the parent controller
      */
-    private suspend fun performGenreSearch(navigator: Navigator, genreName: String, source: Source) {
+    private suspend fun performGenreSearch(navigator: Navigator, genreName: String, source: AnimeSource) {
         if (navigator.size < 2) {
             return
         }
@@ -705,7 +705,7 @@ class AnimeScreen(
         var idx = navigator.size - 2
         while (idx >= 0) {
             previousController = navigator.items[idx--]
-            if (previousController is BrowseSourceScreen && source is HttpSource) {
+            if (previousController is BrowseSourceScreen && source is AnimeHttpSource) {
                 // KMK -->
                 // navigator.pop()
                 navigator.popUntil { navigator.size == idx + 2 }
@@ -714,7 +714,7 @@ class AnimeScreen(
                 return
             }
             // KMK -->
-            if (previousController is SourceFeedScreen && source is HttpSource) {
+            if (previousController is SourceFeedScreen && source is AnimeHttpSource) {
                 navigator.popUntil { navigator.size == idx + 2 }
                 navigator.push(BrowseSourceScreen(previousController.sourceId, ""))
                 previousController = navigator.lastItem as BrowseSourceScreen
@@ -730,10 +730,10 @@ class AnimeScreen(
      * Copy Manga URL to Clipboard
      */
     @Suppress("LocalVariableName")
-    private fun copyMangaUrl(context: Context, manga_: Manga?, source_: Source?) {
+    private fun copyMangaUrl(context: Context, manga_: Manga?, source_: AnimeSource?) {
         val manga = manga_ ?: return
-        val source = source_ as? HttpSource ?: return
-        val url = source.getMangaUrl(manga.toSManga())
+        val source = source_ as? AnimeHttpSource ?: return
+        val url = source.getAnimeUrl(manga.toSManga())
         context.copyToClipboard(url, url)
     }
 
@@ -773,7 +773,7 @@ class AnimeScreen(
                 -1,
             ) { dialog, index ->
                 dialog.dismiss()
-                openMangaInWebView(navigator, mergedManga[index], sources[index] as? HttpSource)
+                openMangaInWebView(navigator, mergedManga[index], sources[index] as? AnimeHttpSource)
             }
             .setNegativeButton(MR.strings.action_cancel.getString(context), null)
             .show()
@@ -832,7 +832,7 @@ class AnimeScreen(
     // EXH <--
 
     // AZ -->
-    private fun openRecommends(context: Context, navigator: Navigator, source: Source?, manga: Manga) {
+    private fun openRecommends(context: Context, navigator: Navigator, source: AnimeSource?, manga: Manga) {
         source ?: return
         if (source.isMdBasedSource() && Injekt.get<DelegateSourcePreferences>().delegateSources().get()) {
             MaterialAlertDialogBuilder(context)
@@ -851,7 +851,7 @@ class AnimeScreen(
                     }
                 }
                 .show()
-        } else if (source is CatalogueSource) {
+        } else if (source is AnimeCatalogueSource) {
             navigator.push(RecommendsScreen(manga.id, source.id))
         }
     }

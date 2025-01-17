@@ -97,7 +97,7 @@ object DebugFunctions {
                     EH_SOURCE_ID -> eh
                     EXH_SOURCE_ID -> ex
                     else -> return@forEach
-                }?.getMangaDetails(manga.toSManga()) ?: return@forEach
+                }?.getAnimeDetails(manga.toSManga()) ?: return@forEach
 
                 updateAnime.awaitUpdateFromSource(manga, networkManga, true)
             }
@@ -217,8 +217,8 @@ object DebugFunctions {
 
     /*fun copyEHentaiSavedSearchesToExhentai() {
         runBlocking {
-            val source = sourceManager.get(EH_SOURCE_ID) as? CatalogueSource ?: return@runBlocking
-            val newSource = sourceManager.get(EXH_SOURCE_ID) as? CatalogueSource ?: return@runBlocking
+            val source = sourceManager.get(EH_SOURCE_ID) as? AnimeCatalogueSource ?: return@runBlocking
+            val newSource = sourceManager.get(EXH_SOURCE_ID) as? AnimeCatalogueSource ?: return@runBlocking
             val savedSearches = prefs.savedSearches().get().mapNotNull {
                 try {
                     val id = it.substringBefore(':').toLong()
@@ -256,8 +256,8 @@ object DebugFunctions {
 
     fun copyExhentaiSavedSearchesToEHentai() {
         runBlocking {
-            val source = sourceManager.get(EXH_SOURCE_ID) as? CatalogueSource ?: return@runBlocking
-            val newSource = sourceManager.get(EH_SOURCE_ID) as? CatalogueSource ?: return@runBlocking
+            val source = sourceManager.get(EXH_SOURCE_ID) as? AnimeCatalogueSource ?: return@runBlocking
+            val newSource = sourceManager.get(EH_SOURCE_ID) as? AnimeCatalogueSource ?: return@runBlocking
             val savedSearches = prefs.savedSearches().get().mapNotNull {
                 try {
                     val id = it.substringBefore(':').toLong()

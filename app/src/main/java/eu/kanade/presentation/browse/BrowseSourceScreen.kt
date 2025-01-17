@@ -22,7 +22,7 @@ import eu.kanade.presentation.browse.components.BrowseSourceEHentaiList
 import eu.kanade.presentation.browse.components.BrowseSourceList
 import eu.kanade.presentation.components.AppBar
 import eu.kanade.presentation.util.formattedMessage
-import eu.kanade.tachiyomi.animesource.Source
+import eu.kanade.tachiyomi.animesource.AnimeSource
 import exh.metadata.metadata.RaisedSearchMetadata
 import exh.source.isEhBasedSource
 import kotlinx.collections.immutable.persistentListOf
@@ -42,7 +42,7 @@ import tachiyomi.source.local.LocalSource
 
 @Composable
 fun BrowseSourceContent(
-    source: Source?,
+    source: AnimeSource?,
     mangaList: LazyPagingItems<StateFlow</* SY --> */Pair<Manga, RaisedSearchMetadata?>/* SY <-- */>>,
     columns: GridCells,
     // SY -->

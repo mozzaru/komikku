@@ -32,9 +32,9 @@ import eu.kanade.tachiyomi.data.download.DownloadCache
 import eu.kanade.tachiyomi.data.download.DownloadManager
 import eu.kanade.tachiyomi.data.track.TrackStatus
 import eu.kanade.tachiyomi.data.track.TrackerManager
-import eu.kanade.tachiyomi.animesource.Source
-import eu.kanade.tachiyomi.animesource.model.SManga
-import eu.kanade.tachiyomi.animesource.online.HttpSource
+import eu.kanade.tachiyomi.animesource.AnimeSource
+import eu.kanade.tachiyomi.animesource.model.SAnime
+import eu.kanade.tachiyomi.animesource.online.AnimeHttpSource
 import eu.kanade.tachiyomi.source.online.all.MergedSource
 import eu.kanade.tachiyomi.util.episode.getNextUnseen
 import eu.kanade.tachiyomi.util.removeCovers
@@ -344,7 +344,7 @@ class LibraryScreenModel(
         }
 
         val filterFnCompleted: (LibraryItem) -> Boolean = {
-            applyFilter(filterCompleted) { it.libraryAnime.manga.status.toInt() == SManga.COMPLETED }
+            applyFilter(filterCompleted) { it.libraryAnime.manga.status.toInt() == SAnime.COMPLETED }
         }
 
         val filterFnIntervalCustom: (LibraryItem) -> Boolean = {
@@ -884,7 +884,7 @@ class LibraryScreenModel(
 
             if (deleteChapters) {
                 mangaToDelete.forEach { manga ->
-                    val source = sourceManager.get(manga.source) as? HttpSource
+                    val source = sourceManager.get(manga.source) as? AnimeHttpSource
                     if (source != null) {
                         if (source is MergedSource) {
                             val mergedMangas = getMergedAnimeById.await(manga.id)
@@ -893,7 +893,7 @@ class LibraryScreenModel(
                             }.map { sourceManager.getOrStub(it.source) }
                             mergedMangas.forEach merge@{ mergedManga ->
                                 val mergedSource =
-                                    sources.firstOrNull { mergedManga.source == it.id } as? HttpSource ?: return@merge
+                                    sources.firstOrNull { mergedManga.source == it.id } as? AnimeHttpSource ?: return@merge
                                 downloadManager.deleteManga(mergedManga, mergedSource)
                             }
                         } else {
@@ -958,12 +958,12 @@ class LibraryScreenModel(
     ): String {
         return when (groupType) {
             LibraryGroup.BY_STATUS -> when (category?.id) {
-                SManga.ONGOING.toLong() -> context.stringResource(MR.strings.ongoing)
-                SManga.LICENSED.toLong() -> context.stringResource(MR.strings.licensed)
-                SManga.CANCELLED.toLong() -> context.stringResource(MR.strings.cancelled)
-                SManga.ON_HIATUS.toLong() -> context.stringResource(MR.strings.on_hiatus)
-                SManga.PUBLISHING_FINISHED.toLong() -> context.stringResource(MR.strings.publishing_finished)
-                SManga.COMPLETED.toLong() -> context.stringResource(MR.strings.completed)
+                SAnime.ONGOING.toLong() -> context.stringResource(MR.strings.ongoing)
+                SAnime.LICENSED.toLong() -> context.stringResource(MR.strings.licensed)
+                SAnime.CANCELLED.toLong() -> context.stringResource(MR.strings.cancelled)
+                SAnime.ON_HIATUS.toLong() -> context.stringResource(MR.strings.on_hiatus)
+                SAnime.PUBLISHING_FINISHED.toLong() -> context.stringResource(MR.strings.publishing_finished)
+                SAnime.COMPLETED.toLong() -> context.stringResource(MR.strings.completed)
                 else -> context.stringResource(MR.strings.unknown)
             }
             LibraryGroup.BY_SOURCE -> if (category?.id == LocalSource.ID) {
@@ -1041,7 +1041,7 @@ class LibraryScreenModel(
         queries: List<QueryComponent>,
         libraryAnime: LibraryAnime,
         tracks: List<Track>?,
-        source: Source?,
+        source: AnimeSource?,
         checkGenre: Boolean = true,
         searchTags: List<SearchTag>? = null,
         searchTitles: List<SearchTitle>? = null,
@@ -1349,21 +1349,21 @@ class LibraryScreenModel(
                     Category(
                         id = it.key + 1,
                         name = when (it.key) {
-                            SManga.ONGOING.toLong() -> context.stringResource(MR.strings.ongoing)
-                            SManga.LICENSED.toLong() -> context.stringResource(MR.strings.licensed)
-                            SManga.CANCELLED.toLong() -> context.stringResource(MR.strings.cancelled)
-                            SManga.ON_HIATUS.toLong() -> context.stringResource(MR.strings.on_hiatus)
-                            SManga.PUBLISHING_FINISHED.toLong() -> context.stringResource(MR.strings.publishing_finished)
-                            SManga.COMPLETED.toLong() -> context.stringResource(MR.strings.completed)
+                            SAnime.ONGOING.toLong() -> context.stringResource(MR.strings.ongoing)
+                            SAnime.LICENSED.toLong() -> context.stringResource(MR.strings.licensed)
+                            SAnime.CANCELLED.toLong() -> context.stringResource(MR.strings.cancelled)
+                            SAnime.ON_HIATUS.toLong() -> context.stringResource(MR.strings.on_hiatus)
+                            SAnime.PUBLISHING_FINISHED.toLong() -> context.stringResource(MR.strings.publishing_finished)
+                            SAnime.COMPLETED.toLong() -> context.stringResource(MR.strings.completed)
                             else -> context.stringResource(MR.strings.unknown)
                         },
                         order = when (it.key) {
-                            SManga.ONGOING.toLong() -> 1
-                            SManga.LICENSED.toLong() -> 2
-                            SManga.CANCELLED.toLong() -> 3
-                            SManga.ON_HIATUS.toLong() -> 4
-                            SManga.PUBLISHING_FINISHED.toLong() -> 5
-                            SManga.COMPLETED.toLong() -> 6
+                            SAnime.ONGOING.toLong() -> 1
+                            SAnime.LICENSED.toLong() -> 2
+                            SAnime.CANCELLED.toLong() -> 3
+                            SAnime.ON_HIATUS.toLong() -> 4
+                            SAnime.PUBLISHING_FINISHED.toLong() -> 5
+                            SAnime.COMPLETED.toLong() -> 6
                             else -> 7
                         },
                         flags = 0,

@@ -48,8 +48,8 @@ import eu.kanade.presentation.category.components.ChangeCategoryDialog
 import eu.kanade.presentation.components.BulkSelectionToolbar
 import eu.kanade.presentation.util.AssistContentScreen
 import eu.kanade.presentation.util.Screen
-import eu.kanade.tachiyomi.animesource.CatalogueSource
-import eu.kanade.tachiyomi.animesource.online.HttpSource
+import eu.kanade.tachiyomi.animesource.AnimeCatalogueSource
+import eu.kanade.tachiyomi.animesource.online.AnimeHttpSource
 import eu.kanade.tachiyomi.ui.anime.AnimeScreen
 import eu.kanade.tachiyomi.ui.browse.AllowDuplicateDialog
 import eu.kanade.tachiyomi.ui.browse.BulkFavoriteScreenModel
@@ -148,7 +148,7 @@ data class BrowseSourceScreen(
 
         val onHelpClick = { uriHandler.openUri(LocalSource.HELP_URL) }
         val onWebViewClick = f@{
-            val source = screenModel.source as? HttpSource ?: return@f
+            val source = screenModel.source as? AnimeHttpSource ?: return@f
             navigator.push(
                 WebViewScreen(
                     url = source.baseUrl,
@@ -168,7 +168,7 @@ data class BrowseSourceScreen(
         // KMK <--
 
         LaunchedEffect(screenModel.source) {
-            assistUrl = (screenModel.source as? HttpSource)?.baseUrl
+            assistUrl = (screenModel.source as? AnimeHttpSource)?.baseUrl
         }
 
         // KMK -->
@@ -247,7 +247,7 @@ data class BrowseSourceScreen(
                                 Text(text = stringResource(MR.strings.popular))
                             },
                         )
-                        if ((screenModel.source as CatalogueSource).supportsLatest) {
+                        if ((screenModel.source as AnimeCatalogueSource).supportsLatest) {
                             FilterChip(
                                 selected = state.listing == Listing.Latest,
                                 onClick = {

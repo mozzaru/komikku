@@ -2,7 +2,7 @@ package eu.kanade.tachiyomi.data.download
 
 import android.content.Context
 import com.hippo.unifile.UniFile
-import eu.kanade.tachiyomi.animesource.Source
+import eu.kanade.tachiyomi.animesource.AnimeSource
 import eu.kanade.tachiyomi.util.storage.DiskUtil
 import logcat.LogPriority
 import tachiyomi.core.common.i18n.stringResource
@@ -35,7 +35,7 @@ class DownloadProvider(
      * @param mangaTitle the title of the manga to query.
      * @param source the source of the manga.
      */
-    internal fun getMangaDir(mangaTitle: String, source: Source): UniFile {
+    internal fun getMangaDir(mangaTitle: String, source: AnimeSource): UniFile {
         try {
             return downloadsDir!!
                 .createDirectory(getSourceDirName(source))!!
@@ -57,7 +57,7 @@ class DownloadProvider(
      *
      * @param source the source to query.
      */
-    fun findSourceDir(source: Source): UniFile? {
+    fun findSourceDir(source: AnimeSource): UniFile? {
         return downloadsDir?.findFile(getSourceDirName(source))
     }
 
@@ -67,7 +67,7 @@ class DownloadProvider(
      * @param mangaTitle the title of the manga to query.
      * @param source the source of the manga.
      */
-    fun findMangaDir(mangaTitle: String, source: Source): UniFile? {
+    fun findMangaDir(mangaTitle: String, source: AnimeSource): UniFile? {
         val sourceDir = findSourceDir(source)
         return sourceDir?.findFile(getMangaDirName(mangaTitle))
     }
@@ -80,7 +80,7 @@ class DownloadProvider(
      * @param mangaTitle the title of the manga to query.
      * @param source the source of the episode.
      */
-    fun findChapterDir(chapterName: String, chapterScanlator: String?, mangaTitle: String, source: Source): UniFile? {
+    fun findChapterDir(chapterName: String, chapterScanlator: String?, mangaTitle: String, source: AnimeSource): UniFile? {
         val mangaDir = findMangaDir(mangaTitle, source)
         return getValidChapterDirNames(chapterName, chapterScanlator).asSequence()
             .mapNotNull { mangaDir?.findFile(it) }
@@ -94,7 +94,7 @@ class DownloadProvider(
      * @param manga the manga of the episode.
      * @param source the source of the episode.
      */
-    fun findChapterDirs(episodes: List<Episode>, manga: Manga, source: Source): Pair<UniFile?, List<UniFile>> {
+    fun findChapterDirs(episodes: List<Episode>, manga: Manga, source: AnimeSource): Pair<UniFile?, List<UniFile>> {
         val mangaDir = findMangaDir(/* SY --> */ manga.ogTitle /* SY <-- */, source) ?: return null to emptyList()
         return mangaDir to episodes.mapNotNull { chapter ->
             getValidChapterDirNames(chapter.name, chapter.scanlator).asSequence()
@@ -114,7 +114,7 @@ class DownloadProvider(
     fun findUnmatchedChapterDirs(
         episodes: List<Episode>,
         manga: Manga,
-        source: Source,
+        source: AnimeSource,
     ): List<UniFile> {
         val mangaDir = findMangaDir(/* SY --> */ manga.ogTitle /* SY <-- */, source) ?: return emptyList()
         return mangaDir.listFiles().orEmpty().asList().filter {
@@ -133,7 +133,7 @@ class DownloadProvider(
      *
      * @param source the source to query.
      */
-    fun getSourceDirName(source: Source): String {
+    fun getSourceDirName(source: AnimeSource): String {
         return DiskUtil.buildValidFilename(source.toString())
     }
 

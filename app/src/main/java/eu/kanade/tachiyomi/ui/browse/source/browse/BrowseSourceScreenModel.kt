@@ -24,8 +24,8 @@ import eu.kanade.domain.track.interactor.AddTracks
 import eu.kanade.domain.ui.UiPreferences
 import eu.kanade.presentation.util.ioCoroutineScope
 import eu.kanade.tachiyomi.data.cache.CoverCache
-import eu.kanade.tachiyomi.animesource.CatalogueSource
-import eu.kanade.tachiyomi.animesource.model.FilterList
+import eu.kanade.tachiyomi.animesource.AnimeCatalogueSource
+import eu.kanade.tachiyomi.animesource.model.AnimeFilterList
 import eu.kanade.tachiyomi.animesource.online.MetadataSource
 import eu.kanade.tachiyomi.source.online.all.MangaDex
 import eu.kanade.tachiyomi.util.removeCovers
@@ -82,7 +82,7 @@ import uy.kohesive.injekt.Injekt
 import uy.kohesive.injekt.api.get
 import xyz.nulldev.ts.api.http.serializer.FilterSerializer
 import java.time.Instant
-import eu.kanade.tachiyomi.animesource.model.Filter as SourceModelFilter
+import eu.kanade.tachiyomi.animesource.model.AnimeFilter as SourceModelFilter
 
 open class BrowseSourceScreenModel(
     private val sourceId: Long,
@@ -134,13 +134,13 @@ open class BrowseSourceScreenModel(
         // KMK -->
         screenModelScope.launch {
             var retry = 10
-            while (source !is CatalogueSource && retry-- > 0) {
+            while (source !is AnimeCatalogueSource && retry-- > 0) {
                 // Sometime source is late to load, so we need to wait a bit
                 delay(100)
                 source = sourceManager.getOrStub(sourceId)
             }
             val source = source
-            if (source !is CatalogueSource) return@launch
+            if (source !is AnimeCatalogueSource) return@launch
             // KMK <--
 
             screenModelScope.launchIO {
@@ -259,7 +259,7 @@ open class BrowseSourceScreenModel(
         // KMK -->
         val source = source
         // KMK <--
-        if (source !is CatalogueSource) return
+        if (source !is AnimeCatalogueSource) return
 
         // KMK -->
         setFilters(source.getFilterList())
@@ -272,8 +272,8 @@ open class BrowseSourceScreenModel(
         mutableState.update { it.copy(listing = listing, toolbarQuery = null) }
     }
 
-    fun setFilters(filters: FilterList) {
-        if (source !is CatalogueSource) return
+    fun setFilters(filters: AnimeFilterList) {
+        if (source !is AnimeCatalogueSource) return
 
         mutableState.update {
             it.copy(
@@ -284,7 +284,7 @@ open class BrowseSourceScreenModel(
 
     fun search(
         query: String? = null,
-        filters: FilterList? = null,
+        filters: AnimeFilterList? = null,
         // KMK -->
         savedSearchId: Long? = null,
         // KMK <--
@@ -293,7 +293,7 @@ open class BrowseSourceScreenModel(
         val source = source
         // KMK <--
 
-        if (source !is CatalogueSource) return
+        if (source !is AnimeCatalogueSource) return
         // SY -->
         if (filters != null && filters !== state.value.filters) {
             // KMK -->
@@ -323,7 +323,7 @@ open class BrowseSourceScreenModel(
         val source = source
         // KMK <--
 
-        if (source !is CatalogueSource) return
+        if (source !is AnimeCatalogueSource) return
 
         val defaultFilters = source.getFilterList()
         var genreExists = false
@@ -429,7 +429,7 @@ open class BrowseSourceScreenModel(
     }
 
     // SY -->
-    open fun createSourcePagingSource(query: String, filters: FilterList): SourcePagingSourceType {
+    open fun createSourcePagingSource(query: String, filters: AnimeFilterList): SourcePagingSourceType {
         return getRemoteAnime.subscribe(sourceId, query, filters)
     }
     // SY <--
@@ -475,12 +475,12 @@ open class BrowseSourceScreenModel(
         mutableState.update { it.copy(toolbarQuery = query) }
     }
 
-    sealed class Listing(open val query: String?, open val filters: FilterList) {
-        data object Popular : Listing(query = GetRemoteAnime.QUERY_POPULAR, filters = FilterList())
-        data object Latest : Listing(query = GetRemoteAnime.QUERY_LATEST, filters = FilterList())
+    sealed class Listing(open val query: String?, open val filters: AnimeFilterList) {
+        data object Popular : Listing(query = GetRemoteAnime.QUERY_POPULAR, filters = AnimeFilterList())
+        data object Latest : Listing(query = GetRemoteAnime.QUERY_LATEST, filters = AnimeFilterList())
         data class Search(
             override val query: String?,
-            override val filters: FilterList,
+            override val filters: AnimeFilterList,
             // KMK -->
             val savedSearchId: Long? = null,
             // KMK <--
@@ -491,7 +491,7 @@ open class BrowseSourceScreenModel(
                 return when (query) {
                     GetRemoteAnime.QUERY_POPULAR -> Popular
                     GetRemoteAnime.QUERY_LATEST -> Latest
-                    else -> Search(query = query, filters = FilterList()) // filters are filled in later
+                    else -> Search(query = query, filters = AnimeFilterList()) // filters are filled in later
                 }
             }
         }
@@ -516,7 +516,7 @@ open class BrowseSourceScreenModel(
     @Immutable
     data class State(
         val listing: Listing,
-        val filters: FilterList = FilterList(),
+        val filters: AnimeFilterList = AnimeFilterList(),
         val toolbarQuery: String? = null,
         val dialog: Dialog? = null,
         // SY -->
@@ -530,7 +530,7 @@ open class BrowseSourceScreenModel(
     // KMK -->
     private fun reloadSavedSearches() {
         screenModelScope.launchIO {
-            getExhSavedSearch.await(source.id, (source as CatalogueSource)::getFilterList)
+            getExhSavedSearch.await(source.id, (source as AnimeCatalogueSource)::getFilterList)
                 .sortedWith(compareBy(String.CASE_INSENSITIVE_ORDER, EXHSavedSearch::name))
                 .let { savedSearches ->
                     mutableState.update { it.copy(savedSearches = savedSearches.toImmutableList()) }
@@ -562,7 +562,7 @@ open class BrowseSourceScreenModel(
             // KMK -->
             val source = source
             // KMK <--
-            if (source !is CatalogueSource) return@launchIO
+            if (source !is AnimeCatalogueSource) return@launchIO
 
             // KMK -->
             val search = getExhSavedSearch.awaitOne(loadedSearch.id, source::getFilterList) ?: loadedSearch
@@ -610,7 +610,7 @@ open class BrowseSourceScreenModel(
         // KMK -->
         val source = source
         // KMK <--
-        if (source !is CatalogueSource) return
+        if (source !is AnimeCatalogueSource) return
         screenModelScope.launchNonCancellable {
             val query = state.value.toolbarQuery?.takeUnless {
                 it.isBlank() || it == GetRemoteAnime.QUERY_POPULAR || it == GetRemoteAnime.QUERY_LATEST

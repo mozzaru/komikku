@@ -1,9 +1,9 @@
 package exh.smartsearch
 
 import eu.kanade.domain.anime.model.toDomainManga
-import eu.kanade.tachiyomi.animesource.CatalogueSource
-import eu.kanade.tachiyomi.animesource.model.FilterList
-import eu.kanade.tachiyomi.animesource.model.SManga
+import eu.kanade.tachiyomi.animesource.AnimeCatalogueSource
+import eu.kanade.tachiyomi.animesource.model.AnimeFilterList
+import eu.kanade.tachiyomi.animesource.model.SAnime
 import info.debatty.java.stringsimilarity.NormalizedLevenshtein
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.async
@@ -16,7 +16,7 @@ class SmartSearchEngine(
 ) {
     private val normalizedLevenshtein = NormalizedLevenshtein()
 
-    suspend fun smartSearch(source: CatalogueSource, title: String): Manga? {
+    suspend fun smartSearch(source: AnimeCatalogueSource, title: String): Manga? {
         val cleanedTitle = cleanSmartSearchTitle(title)
 
         val queries = getSmartSearchQueries(cleanedTitle)
@@ -30,9 +30,9 @@ class SmartSearchEngine(
                         query
                     }
 
-                    val searchResults = source.getSearchManga(1, builtQuery, FilterList())
+                    val searchResults = source.getSearchAnime(1, builtQuery, AnimeFilterList())
 
-                    searchResults.mangas.map {
+                    searchResults.animes.map {
                         val cleanedMangaTitle = cleanSmartSearchTitle(it.originalTitle)
                         val normalizedDistance = normalizedLevenshtein.similarity(cleanedTitle, cleanedMangaTitle)
                         SearchEntry(it, normalizedDistance)
@@ -46,20 +46,20 @@ class SmartSearchEngine(
         return eligibleManga.maxByOrNull { it.dist }?.manga?.toDomainManga(source.id)
     }
 
-    suspend fun normalSearch(source: CatalogueSource, title: String): Manga? {
+    suspend fun normalSearch(source: AnimeCatalogueSource, title: String): Manga? {
         val eligibleManga = supervisorScope {
             val searchQuery = if (extraSearchParams != null) {
                 "$title ${extraSearchParams.trim()}"
             } else {
                 title
             }
-            val searchResults = source.getSearchManga(1, searchQuery, FilterList())
+            val searchResults = source.getSearchAnime(1, searchQuery, AnimeFilterList())
 
-            if (searchResults.mangas.size == 1) {
-                return@supervisorScope listOf(SearchEntry(searchResults.mangas.first(), 0.0))
+            if (searchResults.animes.size == 1) {
+                return@supervisorScope listOf(SearchEntry(searchResults.animes.first(), 0.0))
             }
 
-            searchResults.mangas.map {
+            searchResults.animes.map {
                 val normalizedDistance = normalizedLevenshtein.similarity(title, it.originalTitle)
                 SearchEntry(it, normalizedDistance)
             }.filter { (_, normalizedDistance) ->
@@ -181,4 +181,4 @@ class SmartSearchEngine(
     }
 }
 
-data class SearchEntry(val manga: SManga, val dist: Double)
+data class SearchEntry(val manga: SAnime, val dist: Double)

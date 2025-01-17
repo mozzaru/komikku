@@ -3,7 +3,7 @@ package eu.kanade.domain.anime.interactor
 import eu.kanade.domain.anime.model.hasCustomCover
 import eu.kanade.tachiyomi.data.cache.CoverCache
 import eu.kanade.tachiyomi.data.download.DownloadManager
-import eu.kanade.tachiyomi.animesource.model.SManga
+import eu.kanade.tachiyomi.animesource.model.SAnime
 import tachiyomi.domain.anime.interactor.FetchInterval
 import tachiyomi.domain.anime.model.AnimeUpdate
 import tachiyomi.domain.anime.model.Manga
@@ -29,7 +29,7 @@ class UpdateAnime(
 
     suspend fun awaitUpdateFromSource(
         localManga: Manga,
-        remoteManga: SManga,
+        remoteManga: SAnime,
         manualFetch: Boolean,
         coverCache: CoverCache = Injekt.get(),
         // SY -->

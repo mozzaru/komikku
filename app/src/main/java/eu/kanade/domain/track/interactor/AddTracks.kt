@@ -7,7 +7,7 @@ import eu.kanade.tachiyomi.data.database.models.Track
 import eu.kanade.tachiyomi.data.track.EnhancedTracker
 import eu.kanade.tachiyomi.data.track.Tracker
 import eu.kanade.tachiyomi.data.track.TrackerManager
-import eu.kanade.tachiyomi.animesource.Source
+import eu.kanade.tachiyomi.animesource.AnimeSource
 import eu.kanade.tachiyomi.util.lang.convertEpochMillisZone
 import eu.kanade.tachiyomi.util.system.toast
 import logcat.LogPriority
@@ -99,7 +99,7 @@ class AddTracks(
         }
     }
 
-    suspend fun bindEnhancedTrackers(manga: Manga, source: Source) = withNonCancellableContext {
+    suspend fun bindEnhancedTrackers(manga: Manga, source: AnimeSource) = withNonCancellableContext {
         withIOContext {
             trackerManager.loggedInTrackers()
                 .filterIsInstance<EnhancedTracker>()

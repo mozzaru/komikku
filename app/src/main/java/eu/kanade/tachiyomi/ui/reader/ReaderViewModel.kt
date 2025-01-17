@@ -27,7 +27,7 @@ import eu.kanade.tachiyomi.data.saver.ImageSaver
 import eu.kanade.tachiyomi.data.saver.Location
 import eu.kanade.tachiyomi.data.sync.SyncDataJob
 import eu.kanade.tachiyomi.animesource.model.Page
-import eu.kanade.tachiyomi.animesource.online.HttpSource
+import eu.kanade.tachiyomi.animesource.online.AnimeHttpSource
 import eu.kanade.tachiyomi.animesource.online.MetadataSource
 import eu.kanade.tachiyomi.source.online.all.MergedSource
 import eu.kanade.tachiyomi.ui.reader.chapter.ReaderChapterItem
@@ -700,12 +700,12 @@ class ReaderViewModel @JvmOverloads constructor(
                 // SY <--
                 readerChapter.episode.read = true
                 // SY -->
-                if (readerChapter.episode.chapter_number >= 0 && readerPreferences.markReadDupe().get()) {
+                if (readerChapter.episode.episode_number >= 0 && readerPreferences.markReadDupe().get()) {
                     getEpisodesByAnimeId.await(manga!!.id).sortedByDescending { it.sourceOrder }
                         .filter {
                             it.id != readerChapter.episode.id &&
                                 !it.read &&
-                                it.chapterNumber.toFloat() == readerChapter.episode.chapter_number
+                                it.chapterNumber.toFloat() == readerChapter.episode.episode_number
                         }
                         .ifEmpty { null }
                         ?.also {
@@ -808,14 +808,14 @@ class ReaderViewModel @JvmOverloads constructor(
         return state.value.currentChapter
     }
 
-    fun getSource() = manga?.source?.let { sourceManager.getOrStub(it) } as? HttpSource
+    fun getSource() = manga?.source?.let { sourceManager.getOrStub(it) } as? AnimeHttpSource
 
     fun getChapterUrl(): String? {
         val sChapter = getCurrentChapter()?.episode ?: return null
         val source = getSource() ?: return null
 
         return try {
-            source.getChapterUrl(sChapter)
+            source.getEpisodeUrl(sChapter)
         } catch (e: Exception) {
             logcat(LogPriority.ERROR, e)
             null
@@ -1292,7 +1292,7 @@ class ReaderViewModel @JvmOverloads constructor(
         val context = Injekt.get<Application>()
 
         viewModelScope.launchNonCancellable {
-            trackEpisode.await(context, manga.id, readerChapter.episode.chapter_number.toDouble())
+            trackEpisode.await(context, manga.id, readerChapter.episode.episode_number.toDouble())
         }
     }
 

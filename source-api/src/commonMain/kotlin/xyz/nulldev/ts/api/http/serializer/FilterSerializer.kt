@@ -1,7 +1,7 @@
 package xyz.nulldev.ts.api.http.serializer
 
-import eu.kanade.tachiyomi.animesource.model.Filter
-import eu.kanade.tachiyomi.animesource.model.FilterList
+import eu.kanade.tachiyomi.animesource.model.AnimeFilter
+import eu.kanade.tachiyomi.animesource.model.AnimeFilterList
 import kotlinx.serialization.json.JsonArray
 import kotlinx.serialization.json.JsonObject
 import kotlinx.serialization.json.boolean
@@ -36,15 +36,15 @@ class FilterSerializer {
         SortSerializer(this),
     )
 
-    fun serialize(filters: FilterList) = buildJsonArray {
-        filters.filterIsInstance<Filter<Any?>>().forEach {
+    fun serialize(filters: AnimeFilterList) = buildJsonArray {
+        filters.filterIsInstance<AnimeFilter<Any?>>().forEach {
             add(serialize(it))
         }
     }
 
-    fun serialize(filter: Filter<Any?>): JsonObject {
+    fun serialize(filter: AnimeFilter<Any?>): JsonObject {
         return serializers
-            .filterIsInstance<Serializer<Filter<Any?>>>()
+            .filterIsInstance<Serializer<AnimeFilter<Any?>>>()
             .firstOrNull {
                 filter::class.isSubclassOf(it.clazz)
             }?.let { serializer ->
@@ -67,11 +67,11 @@ class FilterSerializer {
 
                     put(TYPE, serializer.type)
                 }
-            } ?: throw IllegalArgumentException("Cannot serialize this Filter object!")
+            } ?: throw IllegalArgumentException("Cannot serialize this AnimeFilter object!")
     }
 
-    fun deserialize(filters: FilterList, json: JsonArray) {
-        filters.filterIsInstance<Filter<Any?>>().zip(json).forEach { (filter, obj) ->
+    fun deserialize(filters: AnimeFilterList, json: JsonArray) {
+        filters.filterIsInstance<AnimeFilter<Any?>>().zip(json).forEach { (filter, obj) ->
             // KMK -->
             try {
                 // KMK <--
@@ -84,9 +84,9 @@ class FilterSerializer {
         }
     }
 
-    fun deserialize(filter: Filter<Any?>, json: JsonObject) {
+    fun deserialize(filter: AnimeFilter<Any?>, json: JsonObject) {
         val serializer = serializers
-            .filterIsInstance<Serializer<Filter<Any?>>>()
+            .filterIsInstance<Serializer<AnimeFilter<Any?>>>()
             .firstOrNull {
                 it.type == json[TYPE]!!.jsonPrimitive.content
             } ?: throw IllegalArgumentException("Cannot deserialize this type!")
@@ -110,7 +110,7 @@ class FilterSerializer {
                     else -> throw IllegalArgumentException("Cannot deserialize this type!")
                 }
                 @Suppress("UNCHECKED_CAST")
-                (it.second as KMutableProperty1<in Filter<Any?>, in Any?>).set(filter, res)
+                (it.second as KMutableProperty1<in AnimeFilter<Any?>, in Any?>).set(filter, res)
             }
         }
     }

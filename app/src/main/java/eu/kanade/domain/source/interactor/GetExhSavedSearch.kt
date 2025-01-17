@@ -1,6 +1,6 @@
 package eu.kanade.domain.source.interactor
 
-import eu.kanade.tachiyomi.animesource.model.FilterList
+import eu.kanade.tachiyomi.animesource.model.AnimeFilterList
 import exh.log.xLogE
 import exh.util.nullIfBlank
 import kotlinx.coroutines.Dispatchers
@@ -22,26 +22,26 @@ class GetExhSavedSearch(
     private val filterSerializer: FilterSerializer,
 ) {
 
-    suspend fun awaitOne(savedSearchId: Long, getFilterList: () -> FilterList): EXHSavedSearch? {
+    suspend fun awaitOne(savedSearchId: Long, getFilterList: () -> AnimeFilterList): EXHSavedSearch? {
         val search = getSavedSearchById.awaitOrNull(savedSearchId) ?: return null
         return withIOContext { loadSearch(search, getFilterList) }
     }
 
-    suspend fun await(sourceId: Long, getFilterList: () -> FilterList): List<EXHSavedSearch> {
+    suspend fun await(sourceId: Long, getFilterList: () -> AnimeFilterList): List<EXHSavedSearch> {
         return withIOContext { loadSearches(getSavedSearchBySourceId.await(sourceId), getFilterList) }
     }
 
-    fun subscribe(sourceId: Long, getFilterList: () -> FilterList): Flow<List<EXHSavedSearch>> {
+    fun subscribe(sourceId: Long, getFilterList: () -> AnimeFilterList): Flow<List<EXHSavedSearch>> {
         return getSavedSearchBySourceId.subscribe(sourceId)
             .map { loadSearches(it, getFilterList) }
             .flowOn(Dispatchers.IO)
     }
 
-    private fun loadSearches(searches: List<SavedSearch>, getFilterList: () -> FilterList): List<EXHSavedSearch> {
+    private fun loadSearches(searches: List<SavedSearch>, getFilterList: () -> AnimeFilterList): List<EXHSavedSearch> {
         return searches.map { loadSearch(it, getFilterList) }
     }
 
-    private fun loadSearch(search: SavedSearch, getFilterList: () -> FilterList): EXHSavedSearch {
+    private fun loadSearch(search: SavedSearch, getFilterList: () -> AnimeFilterList): EXHSavedSearch {
         val originalFilters = getFilterList()
         val filters = getFilters(search.filtersJson)
 
@@ -61,7 +61,7 @@ class GetExhSavedSearch(
         }.getOrNull()
     }
 
-    private fun deserializeFilters(filters: JsonArray, originalFilters: FilterList): FilterList? {
+    private fun deserializeFilters(filters: JsonArray, originalFilters: AnimeFilterList): AnimeFilterList? {
         return runCatching {
             filterSerializer.deserialize(originalFilters, filters)
             originalFilters

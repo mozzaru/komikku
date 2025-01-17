@@ -5,7 +5,7 @@ import android.content.Context
 import android.net.Uri
 import com.hippo.unifile.UniFile
 import eu.kanade.tachiyomi.extension.ExtensionManager
-import eu.kanade.tachiyomi.animesource.Source
+import eu.kanade.tachiyomi.animesource.AnimeSource
 import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -318,7 +318,7 @@ class DownloadCache(
         notifyChanges()
     }
 
-    suspend fun removeSource(source: Source) {
+    suspend fun removeSource(source: AnimeSource) {
         rootDownloadsDirMutex.withLock {
             rootDownloadsDir.sourceDirs -= source.id
         }
@@ -371,7 +371,7 @@ class DownloadCache(
 
             // Try to wait until extensions and sources have loaded
             // SY -->
-            var sources = emptyList<Source>()
+            var sources = emptyList<AnimeSource>()
             withTimeoutOrNull(30.seconds) {
                 extensionManager.isInitialized.first { it }
                 sourceManager.isInitialized.first { it }
@@ -439,7 +439,7 @@ class DownloadCache(
         notifyChanges()
     }
 
-    private fun getSources(): List<Source> {
+    private fun getSources(): List<AnimeSource> {
         // SY -->
         return sourceManager.getVisibleOnlineSources() + sourceManager.getStubSources()
         // SY <--

@@ -1,7 +1,7 @@
 package exh.metadata.metadata
 
 import android.content.Context
-import eu.kanade.tachiyomi.animesource.model.SManga
+import eu.kanade.tachiyomi.animesource.model.SAnime
 import exh.metadata.metadata.base.FlatMetadata
 import exh.metadata.metadata.base.RaisedTag
 import exh.metadata.metadata.base.RaisedTitle
@@ -49,12 +49,12 @@ sealed class RaisedSearchMetadata {
         return block(item) to toString(item)
     }
 
-    /*open fun copyTo(manga: SManga) {
+    /*open fun copyTo(manga: SAnime) {
         val infoManga = createMangaInfo(manga.copy())
         manga.copyFrom(infoManga)
     }*/
 
-    abstract fun createMangaInfo(manga: SManga): SManga
+    abstract fun createMangaInfo(manga: SAnime): SAnime
 
     fun tagsToGenreString() = tags.toGenreString()
 

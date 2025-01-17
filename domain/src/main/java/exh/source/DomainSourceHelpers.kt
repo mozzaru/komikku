@@ -1,6 +1,6 @@
 package exh.source
 
-import eu.kanade.tachiyomi.animesource.Source
+import eu.kanade.tachiyomi.animesource.AnimeSource
 import tachiyomi.domain.anime.model.Manga
 
 // Used to speed up isLewdSource
@@ -20,39 +20,39 @@ var LIBRARY_UPDATE_EXCLUDED_SOURCES = listOf(
 fun isMetadataSource(source: Long) = source in 6900..6999 ||
     metadataDelegatedSourceIds.binarySearch(source) >= 0
 
-fun Source.isEhBasedSource() = id == EH_SOURCE_ID || id == EXH_SOURCE_ID
+fun AnimeSource.isEhBasedSource() = id == EH_SOURCE_ID || id == EXH_SOURCE_ID
 
-fun Source.isMdBasedSource() = id in mangaDexSourceIds
+fun AnimeSource.isMdBasedSource() = id in mangaDexSourceIds
 
 fun Manga.isEhBasedManga() = source == EH_SOURCE_ID || source == EXH_SOURCE_ID
 
-fun Source.getMainSource(): Source = if (this is EnhancedHttpSource) {
+fun AnimeSource.getMainSource(): AnimeSource = if (this is EnhancedAnimeHttpSource) {
     this.source()
 } else {
     this
 }
 
 @JvmName("getMainSourceInline")
-inline fun <reified T : Source> Source.getMainSource(): T? = if (this is EnhancedHttpSource) {
+inline fun <reified T : AnimeSource> AnimeSource.getMainSource(): T? = if (this is EnhancedAnimeHttpSource) {
     this.source() as? T
 } else {
     this as? T
 }
 
-fun Source.getOriginalSource(): Source = if (this is EnhancedHttpSource) {
+fun AnimeSource.getOriginalSource(): AnimeSource = if (this is EnhancedAnimeHttpSource) {
     this.originalSource
 } else {
     this
 }
 
-fun Source.getEnhancedSource(): Source = if (this is EnhancedHttpSource) {
+fun AnimeSource.getEnhancedSource(): AnimeSource = if (this is EnhancedAnimeHttpSource) {
     this.enhancedSource
 } else {
     this
 }
 
-inline fun <reified T> Source.anyIs(): Boolean {
-    return if (this is EnhancedHttpSource) {
+inline fun <reified T> AnimeSource.anyIs(): Boolean {
+    return if (this is EnhancedAnimeHttpSource) {
         originalSource is T || enhancedSource is T
     } else {
         this is T

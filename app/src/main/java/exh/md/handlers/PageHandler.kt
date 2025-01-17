@@ -4,9 +4,9 @@ import eu.kanade.domain.track.service.TrackPreferences
 import eu.kanade.tachiyomi.data.track.mdlist.MdList
 import eu.kanade.tachiyomi.network.GET
 import eu.kanade.tachiyomi.network.newCachelessCallWithProgress
-import eu.kanade.tachiyomi.animesource.Source
+import eu.kanade.tachiyomi.animesource.AnimeSource
 import eu.kanade.tachiyomi.animesource.model.Page
-import eu.kanade.tachiyomi.animesource.model.SChapter
+import eu.kanade.tachiyomi.animesource.model.SEpisode
 import exh.log.xLogD
 import exh.md.dto.AtHomeDto
 import exh.md.service.MangaDexService
@@ -32,7 +32,7 @@ class PageHandler(
     private val mdList: MdList,
 ) {
 
-    suspend fun fetchPageList(chapter: SChapter, usePort443Only: Boolean, dataSaver: Boolean, mangadex: Source): List<Page> {
+    suspend fun fetchPageList(chapter: SEpisode, usePort443Only: Boolean, dataSaver: Boolean, mangadex: AnimeSource): List<Page> {
         return withIOContext {
             val chapterResponse = service.viewChapter(MdUtil.getChapterId(chapter.url))
 
@@ -42,7 +42,7 @@ class PageHandler(
                         chapterResponse.data.attributes.externalUrl,
                         dataSaver = dataSaver,
                     )
-                    /*episode.scanlator.equals("comikey", true) -> comikeyHandler.fetchPageList(
+                    /*episode.scanlator.equals("comikey", true) -> comikeyHandler.fetchVideoList(
                         chapterResponse.data.attributes.externalUrl
                     )*/
                     chapter.scanlator.equals("bilibili comics", true) -> bilibiliHandler.fetchPageList(
@@ -78,7 +78,7 @@ class PageHandler(
     }
 
     @Suppress("UNCHECKED_CAST")
-    private fun updateExtensionVariable(mangadex: Source, atHomeRequestUrl: String) {
+    private fun updateExtensionVariable(mangadex: AnimeSource, atHomeRequestUrl: String) {
         val mangadexSuperclass = mangadex::class.superclasses.first()
 
         val helperCallable = mangadexSuperclass.members.find { it.name == "helper" } ?: return

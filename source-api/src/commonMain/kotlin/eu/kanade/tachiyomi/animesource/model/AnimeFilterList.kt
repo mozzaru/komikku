@@ -3,9 +3,9 @@ package eu.kanade.tachiyomi.animesource.model
 import androidx.compose.runtime.Stable
 
 @Stable
-data class FilterList(val list: List<Filter<*>>) : List<Filter<*>> by list {
+data class AnimeFilterList(val list: List<AnimeFilter<*>>) : List<AnimeFilter<*>> by list {
 
-    constructor(vararg fs: Filter<*>) : this(if (fs.isNotEmpty()) fs.asList() else emptyList())
+    constructor(vararg fs: AnimeFilter<*>) : this(if (fs.isNotEmpty()) fs.asList() else emptyList())
 
     override fun equals(other: Any?): Boolean {
         return false

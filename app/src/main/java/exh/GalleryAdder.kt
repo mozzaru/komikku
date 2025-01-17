@@ -144,7 +144,7 @@ class GalleryAdder(
                 )
 
             // Fetch and copy details
-            val newManga = retry(retry) { source.getMangaDetails(manga.toSManga()) }
+            val newManga = retry(retry) { source.getAnimeDetails(manga.toSManga()) }
             updateAnime.awaitUpdateFromSource(manga, newManga, false)
             manga = getAnime.await(manga.id)!!
 
@@ -159,7 +159,7 @@ class GalleryAdder(
                     if (source is EHentai) {
                         source.getChapterList(manga.toSManga(), throttleFunc)
                     } else {
-                        source.getChapterList(manga.toSManga())
+                        source.getEpisodeList(manga.toSManga())
                     }
                 }
 

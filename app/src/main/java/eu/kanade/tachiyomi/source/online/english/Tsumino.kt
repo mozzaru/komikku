@@ -3,10 +3,10 @@ package eu.kanade.tachiyomi.source.online.english
 import android.content.Context
 import android.net.Uri
 import eu.kanade.tachiyomi.network.awaitSuccess
-import eu.kanade.tachiyomi.animesource.model.FilterList
-import eu.kanade.tachiyomi.animesource.model.MangasPage
-import eu.kanade.tachiyomi.animesource.model.SManga
-import eu.kanade.tachiyomi.animesource.online.HttpSource
+import eu.kanade.tachiyomi.animesource.model.AnimeFilterList
+import eu.kanade.tachiyomi.animesource.model.AnimesPage
+import eu.kanade.tachiyomi.animesource.model.SAnime
+import eu.kanade.tachiyomi.animesource.online.AnimeHttpSource
 import eu.kanade.tachiyomi.animesource.online.MetadataSource
 import eu.kanade.tachiyomi.animesource.online.NamespaceSource
 import eu.kanade.tachiyomi.animesource.online.UrlImportableSource
@@ -15,7 +15,7 @@ import exh.metadata.metadata.RaisedSearchMetadata.Companion.TAG_TYPE_VIRTUAL
 import exh.metadata.metadata.TsuminoSearchMetadata
 import exh.metadata.metadata.TsuminoSearchMetadata.Companion.TAG_TYPE_DEFAULT
 import exh.metadata.metadata.base.RaisedTag
-import exh.source.DelegatedHttpSource
+import exh.source.DelegatedAnimeHttpSource
 import exh.util.dropBlank
 import exh.util.trimAll
 import exh.util.urlImportFetchSearchManga
@@ -25,8 +25,8 @@ import rx.Observable
 import java.text.SimpleDateFormat
 import java.util.Locale
 
-class Tsumino(delegate: HttpSource, val context: Context) :
-    DelegatedHttpSource(delegate),
+class Tsumino(delegate: AnimeHttpSource, val context: Context) :
+    DelegatedAnimeHttpSource(delegate),
     MetadataSource<TsuminoSearchMetadata, Document>,
     UrlImportableSource,
     NamespaceSource {
@@ -35,16 +35,16 @@ class Tsumino(delegate: HttpSource, val context: Context) :
     override val lang = "en"
 
     // Support direct URL importing
-    @Deprecated("Use the non-RxJava API instead", replaceWith = ReplaceWith("getSearchManga"))
-    override fun fetchSearchManga(page: Int, query: String, filters: FilterList): Observable<MangasPage> =
+    @Deprecated("Use the non-RxJava API instead", replaceWith = ReplaceWith("getSearchAnime"))
+    override fun fetchSearchAnime(page: Int, query: String, filters: AnimeFilterList): Observable<AnimesPage> =
         urlImportFetchSearchManga(context, query) {
             @Suppress("DEPRECATION")
-            super<DelegatedHttpSource>.fetchSearchManga(page, query, filters)
+            super<DelegatedAnimeHttpSource>.fetchSearchAnime(page, query, filters)
         }
 
-    override suspend fun getSearchManga(page: Int, query: String, filters: FilterList): MangasPage {
+    override suspend fun getSearchAnime(page: Int, query: String, filters: AnimeFilterList): AnimesPage {
         return urlImportFetchSearchMangaSuspend(context, query) {
-            super<DelegatedHttpSource>.getSearchManga(page, query, filters)
+            super<DelegatedAnimeHttpSource>.getSearchAnime(page, query, filters)
         }
     }
 
@@ -56,9 +56,9 @@ class Tsumino(delegate: HttpSource, val context: Context) :
         return "https://tsumino.com/Book/Info/${uri.lastPathSegment}"
     }
 
-    override suspend fun getMangaDetails(manga: SManga): SManga {
-        val response = client.newCall(mangaDetailsRequest(manga)).awaitSuccess()
-        return parseToManga(manga, response.asJsoup())
+    override suspend fun getAnimeDetails(anime: SAnime): SAnime {
+        val response = client.newCall(animeDetailsRequest(anime)).awaitSuccess()
+        return parseToManga(anime, response.asJsoup())
     }
 
     override suspend fun parseIntoMetadata(metadata: TsuminoSearchMetadata, input: Document) {

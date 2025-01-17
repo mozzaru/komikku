@@ -1,8 +1,8 @@
 package eu.kanade.tachiyomi.animesource.online
 
-import eu.kanade.tachiyomi.animesource.Source
+import eu.kanade.tachiyomi.animesource.AnimeSource
 
-interface LoginSource : Source {
+interface LoginSource : AnimeSource {
     val requiresLogin: Boolean
 
     val twoFactorAuth: AuthSupport

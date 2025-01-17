@@ -1,7 +1,7 @@
 package eu.kanade.tachiyomi.animesource.online
 
-import eu.kanade.tachiyomi.animesource.Source
+import eu.kanade.tachiyomi.animesource.AnimeSource
 
-interface RandomMangaSource : Source {
+interface RandomAnimeSource : AnimeSource {
     suspend fun fetchRandomMangaUrl(): String
 }

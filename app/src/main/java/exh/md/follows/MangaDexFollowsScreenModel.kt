@@ -1,6 +1,6 @@
 package exh.md.follows
 
-import eu.kanade.tachiyomi.animesource.model.FilterList
+import eu.kanade.tachiyomi.animesource.model.AnimeFilterList
 import eu.kanade.tachiyomi.source.online.all.MangaDex
 import eu.kanade.tachiyomi.ui.browse.source.browse.BrowseSourceScreenModel
 import exh.metadata.metadata.RaisedSearchMetadata
@@ -13,7 +13,7 @@ import tachiyomi.domain.source.repository.SourcePagingSourceType
 
 class MangaDexFollowsScreenModel(sourceId: Long) : BrowseSourceScreenModel(sourceId, null) {
 
-    override fun createSourcePagingSource(query: String, filters: FilterList): SourcePagingSourceType {
+    override fun createSourcePagingSource(query: String, filters: AnimeFilterList): SourcePagingSourceType {
         return MangaDexFollowsPagingSource(source.getMainSource() as MangaDex)
     }
 

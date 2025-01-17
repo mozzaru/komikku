@@ -1,7 +1,7 @@
 package mihon.domain.upcoming.interactor
 
-import eu.kanade.tachiyomi.animesource.model.SManga
-import eu.kanade.tachiyomi.animesource.model.UpdateStrategy
+import eu.kanade.tachiyomi.animesource.model.SAnime
+import eu.kanade.tachiyomi.animesource.model.AnimeUpdateStrategy
 import kotlinx.coroutines.flow.Flow
 import tachiyomi.domain.anime.interactor.GetLibraryAnime
 import tachiyomi.domain.anime.model.Manga
@@ -25,8 +25,8 @@ class GetUpcomingAnime(
     // KMK <--
 
     private val includedStatuses = setOf(
-        SManga.ONGOING.toLong(),
-        SManga.PUBLISHING_FINISHED.toLong(),
+        SAnime.ONGOING.toLong(),
+        SAnime.PUBLISHING_FINISHED.toLong(),
     )
 
     suspend fun subscribe(): Flow<List<Manga>> {
@@ -61,9 +61,9 @@ class GetUpcomingAnime(
             .distinctBy { it.manga.id }
             .filter {
                 when {
-                    it.manga.updateStrategy != UpdateStrategy.ALWAYS_UPDATE -> false
+                    it.manga.updateStrategy != AnimeUpdateStrategy.ALWAYS_UPDATE -> false
 
-                    MANGA_NON_COMPLETED in restrictions && it.manga.status.toInt() == SManga.COMPLETED -> false
+                    MANGA_NON_COMPLETED in restrictions && it.manga.status.toInt() == SAnime.COMPLETED -> false
 
                     MANGA_HAS_UNREAD in restrictions && it.unreadCount != 0L -> false
 

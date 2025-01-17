@@ -7,11 +7,11 @@ import eu.davidea.flexibleadapter.FlexibleAdapter
 import eu.davidea.flexibleadapter.items.AbstractFlexibleItem
 import eu.davidea.flexibleadapter.items.IFlexible
 import eu.kanade.tachiyomi.R
-import eu.kanade.tachiyomi.animesource.online.HttpSource
+import eu.kanade.tachiyomi.animesource.online.AnimeHttpSource
 import kotlinx.parcelize.Parcelize
 import tachiyomi.domain.source.service.SourceManager
 
-class MigrationSourceItem(val source: HttpSource, var sourceEnabled: Boolean) : AbstractFlexibleItem<MigrationSourceHolder>() {
+class MigrationSourceItem(val source: AnimeHttpSource, var sourceEnabled: Boolean) : AbstractFlexibleItem<MigrationSourceHolder>() {
     override fun getLayoutRes() = R.layout.migration_source_item
 
     override fun createViewHolder(view: View, adapter: FlexibleAdapter<IFlexible<RecyclerView.ViewHolder>>): MigrationSourceHolder {
@@ -63,7 +63,7 @@ class MigrationSourceItem(val source: HttpSource, var sourceEnabled: Boolean) : 
 
     companion object {
         fun fromParcelable(sourceManager: SourceManager, migrationSource: MigrationSource): MigrationSourceItem? {
-            val source = sourceManager.get(migrationSource.sourceId) as? HttpSource ?: return null
+            val source = sourceManager.get(migrationSource.sourceId) as? AnimeHttpSource ?: return null
 
             return MigrationSourceItem(
                 source,

@@ -3,8 +3,8 @@ package eu.kanade.tachiyomi.ui.reader.loader
 import android.content.Context
 import eu.kanade.tachiyomi.data.download.DownloadManager
 import eu.kanade.tachiyomi.data.download.DownloadProvider
-import eu.kanade.tachiyomi.animesource.Source
-import eu.kanade.tachiyomi.animesource.online.HttpSource
+import eu.kanade.tachiyomi.animesource.AnimeSource
+import eu.kanade.tachiyomi.animesource.online.AnimeHttpSource
 import eu.kanade.tachiyomi.source.online.all.MergedSource
 import eu.kanade.tachiyomi.ui.reader.model.ReaderChapter
 import eu.kanade.tachiyomi.ui.reader.setting.ReaderPreferences
@@ -29,7 +29,7 @@ class ChapterLoader(
     private val downloadManager: DownloadManager,
     private val downloadProvider: DownloadProvider,
     private val manga: Manga,
-    private val source: Source,
+    private val source: AnimeSource,
     // SY -->
     private val sourceManager: SourceManager,
     private val readerPrefs: ReaderPreferences,
@@ -123,7 +123,7 @@ class ChapterLoader(
                         downloadManager = downloadManager,
                         downloadProvider = downloadProvider,
                     )
-                    source is HttpSource -> HttpPageLoader(chapter, source)
+                    source is AnimeHttpSource -> HttpPageLoader(chapter, source)
                     source is LocalSource -> source.getFormat(chapter.episode).let { format ->
                         when (format) {
                             is Format.Directory -> DirectoryPageLoader(format.file)
@@ -149,7 +149,7 @@ class ChapterLoader(
                     is Format.Epub -> EpubPageLoader(format.file.epubReader(context))
                 }
             }
-            source is HttpSource -> HttpPageLoader(chapter, source)
+            source is AnimeHttpSource -> HttpPageLoader(chapter, source)
             source is StubSource -> error(context.stringResource(MR.strings.source_not_installed, source.toString()))
             else -> error(context.stringResource(MR.strings.loader_not_implemented_error))
         }

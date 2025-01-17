@@ -4,8 +4,8 @@ import eu.kanade.domain.anime.model.PagePreview
 import eu.kanade.domain.anime.model.toSManga
 import eu.kanade.domain.episode.model.toSChapter
 import eu.kanade.tachiyomi.data.cache.PagePreviewCache
-import eu.kanade.tachiyomi.animesource.PagePreviewSource
-import eu.kanade.tachiyomi.animesource.Source
+import eu.kanade.tachiyomi.animesource.ThumbnailPreviewSource
+import eu.kanade.tachiyomi.animesource.AnimeSource
 import exh.source.getMainSource
 import tachiyomi.domain.anime.model.Manga
 import tachiyomi.domain.episode.interactor.GetEpisodesByAnimeId
@@ -15,21 +15,21 @@ class GetPagePreviews(
     private val getEpisodesByAnimeId: GetEpisodesByAnimeId,
 ) {
 
-    suspend fun await(manga: Manga, source: Source, page: Int): Result {
+    suspend fun await(manga: Manga, source: AnimeSource, page: Int): Result {
         @Suppress("NAME_SHADOWING")
-        val source = source.getMainSource<PagePreviewSource>() ?: return Result.Unused
+        val source = source.getMainSource<ThumbnailPreviewSource>() ?: return Result.Unused
         val chapters = getEpisodesByAnimeId.await(manga.id).sortedByDescending { it.sourceOrder }
         val chapterIds = chapters.map { it.id }
         return try {
             val pagePreviews = try {
                 pagePreviewCache.getPageListFromCache(manga, chapterIds, page)
             } catch (e: Exception) {
-                source.getPagePreviewList(manga.toSManga(), chapters.map { it.toSChapter() }, page).also {
+                source.getThumbnailPreviewList(manga.toSManga(), chapters.map { it.toSChapter() }, page).also {
                     pagePreviewCache.putPageListToCache(manga, chapterIds, it)
                 }
             }
             Result.Success(
-                pagePreviews.pagePreviews.map {
+                pagePreviews.thumbnailPreviews.map {
                     PagePreview(it.index, it.imageUrl, source.id)
                 },
                 pagePreviews.hasNextPage,
