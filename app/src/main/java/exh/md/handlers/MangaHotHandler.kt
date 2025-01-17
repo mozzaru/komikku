@@ -2,7 +2,7 @@ package exh.md.handlers
 
 import eu.kanade.tachiyomi.network.GET
 import eu.kanade.tachiyomi.network.awaitSuccess
-import eu.kanade.tachiyomi.source.model.Page
+import eu.kanade.tachiyomi.animesource.model.Page
 import kotlinx.serialization.json.Json
 import kotlinx.serialization.json.jsonArray
 import kotlinx.serialization.json.jsonObject

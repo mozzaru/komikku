@@ -1,7 +1,7 @@
 package xyz.nulldev.ts.api.http.serializer
 
-import eu.kanade.tachiyomi.source.model.Filter
-import eu.kanade.tachiyomi.source.model.FilterList
+import eu.kanade.tachiyomi.animesource.model.Filter
+import eu.kanade.tachiyomi.animesource.model.FilterList
 import kotlinx.serialization.json.JsonArray
 import kotlinx.serialization.json.JsonObject
 import kotlinx.serialization.json.boolean

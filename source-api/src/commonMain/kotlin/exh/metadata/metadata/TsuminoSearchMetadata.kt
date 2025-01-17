@@ -2,8 +2,8 @@ package exh.metadata.metadata
 
 import android.content.Context
 import androidx.core.net.toUri
-import eu.kanade.tachiyomi.source.model.SManga
-import eu.kanade.tachiyomi.source.model.copy
+import eu.kanade.tachiyomi.animesource.model.SManga
+import eu.kanade.tachiyomi.animesource.model.copy
 import exh.metadata.MetadataUtil
 import exh.util.nullIfEmpty
 import kotlinx.serialization.Serializable

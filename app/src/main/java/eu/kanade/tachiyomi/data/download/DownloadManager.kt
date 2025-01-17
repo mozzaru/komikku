@@ -3,8 +3,8 @@ package eu.kanade.tachiyomi.data.download
 import android.content.Context
 import com.hippo.unifile.UniFile
 import eu.kanade.tachiyomi.data.download.model.Download
-import eu.kanade.tachiyomi.source.Source
-import eu.kanade.tachiyomi.source.model.Page
+import eu.kanade.tachiyomi.animesource.Source
+import eu.kanade.tachiyomi.animesource.model.Page
 import eu.kanade.tachiyomi.util.storage.DiskUtil
 import exh.log.xLogE
 import kotlinx.coroutines.DelicateCoroutinesApi

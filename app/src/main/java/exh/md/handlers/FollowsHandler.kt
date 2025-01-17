@@ -2,8 +2,8 @@ package exh.md.handlers
 
 import eu.kanade.tachiyomi.data.database.models.Track
 import eu.kanade.tachiyomi.data.track.TrackerManager
-import eu.kanade.tachiyomi.source.model.MetadataMangasPage
-import eu.kanade.tachiyomi.source.model.SManga
+import eu.kanade.tachiyomi.animesource.model.MetadataMangasPage
+import eu.kanade.tachiyomi.animesource.model.SManga
 import exh.md.dto.MangaDataDto
 import exh.md.dto.PersonalRatingDto
 import exh.md.dto.ReadingStatusDto

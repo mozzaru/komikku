@@ -1,6 +1,6 @@
 package tachiyomi.data.anime
 
-import eu.kanade.tachiyomi.source.model.UpdateStrategy
+import eu.kanade.tachiyomi.animesource.model.UpdateStrategy
 import tachiyomi.domain.anime.model.Manga
 import tachiyomi.domain.library.model.LibraryAnime
 import tachiyomi.view.LibraryView

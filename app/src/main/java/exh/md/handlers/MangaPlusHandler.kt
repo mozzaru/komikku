@@ -3,7 +3,7 @@ package exh.md.handlers
 import eu.kanade.tachiyomi.network.GET
 import eu.kanade.tachiyomi.network.awaitSuccess
 import eu.kanade.tachiyomi.network.interceptor.rateLimitHost
-import eu.kanade.tachiyomi.source.model.Page
+import eu.kanade.tachiyomi.animesource.model.Page
 import exh.md.dto.MangaPlusPage
 import exh.md.dto.MangaPlusResponse
 import kotlinx.serialization.json.Json

@@ -3,7 +3,7 @@ package exh.ui.metadata
 import cafe.adriel.voyager.core.model.StateScreenModel
 import cafe.adriel.voyager.core.model.screenModelScope
 import eu.kanade.domain.ui.UiPreferences
-import eu.kanade.tachiyomi.source.online.MetadataSource
+import eu.kanade.tachiyomi.animesource.online.MetadataSource
 import exh.metadata.metadata.RaisedSearchMetadata
 import exh.source.getMainSource
 import kotlinx.coroutines.flow.MutableStateFlow

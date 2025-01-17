@@ -6,7 +6,7 @@ import eu.kanade.domain.anime.interactor.UpdateAnime
 import eu.kanade.domain.anime.model.toSManga
 import eu.kanade.domain.episode.interactor.SyncEpisodesWithSource
 import eu.kanade.domain.source.service.SourcePreferences
-import eu.kanade.tachiyomi.source.online.UrlImportableSource
+import eu.kanade.tachiyomi.animesource.online.UrlImportableSource
 import eu.kanade.tachiyomi.source.online.all.EHentai
 import exh.log.xLogStack
 import exh.source.getMainSource

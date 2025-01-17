@@ -1,4 +1,4 @@
-package eu.kanade.tachiyomi.source
+package eu.kanade.tachiyomi.animesource
 
 import android.app.Application
 import android.content.Context

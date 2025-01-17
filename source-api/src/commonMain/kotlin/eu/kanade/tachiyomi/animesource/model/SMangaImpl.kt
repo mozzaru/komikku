@@ -1,6 +1,6 @@
 @file:Suppress("PropertyName")
 
-package eu.kanade.tachiyomi.source.model
+package eu.kanade.tachiyomi.animesource.model
 
 class SMangaImpl : SManga {
 

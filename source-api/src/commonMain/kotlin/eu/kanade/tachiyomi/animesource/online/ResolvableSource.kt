@@ -1,8 +1,8 @@
-package eu.kanade.tachiyomi.source.online
+package eu.kanade.tachiyomi.animesource.online
 
-import eu.kanade.tachiyomi.source.Source
-import eu.kanade.tachiyomi.source.model.SChapter
-import eu.kanade.tachiyomi.source.model.SManga
+import eu.kanade.tachiyomi.animesource.Source
+import eu.kanade.tachiyomi.animesource.model.SChapter
+import eu.kanade.tachiyomi.animesource.model.SManga
 
 /**
  * A source that may handle opening an SManga or SChapter for a given URI.

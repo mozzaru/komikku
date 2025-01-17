@@ -7,9 +7,9 @@ import eu.kanade.domain.episode.model.copyFromSChapter
 import eu.kanade.domain.episode.model.toSChapter
 import eu.kanade.tachiyomi.data.download.DownloadManager
 import eu.kanade.tachiyomi.data.download.DownloadProvider
-import eu.kanade.tachiyomi.source.Source
-import eu.kanade.tachiyomi.source.model.SChapter
-import eu.kanade.tachiyomi.source.online.HttpSource
+import eu.kanade.tachiyomi.animesource.Source
+import eu.kanade.tachiyomi.animesource.model.SChapter
+import eu.kanade.tachiyomi.animesource.online.HttpSource
 import exh.source.isEhBasedManga
 import tachiyomi.data.episode.EpisodeSanitizer
 import tachiyomi.domain.anime.model.Manga

@@ -1,7 +1,7 @@
 package exh.md.handlers
 
-import eu.kanade.tachiyomi.source.model.MetadataMangasPage
-import eu.kanade.tachiyomi.source.model.SManga
+import eu.kanade.tachiyomi.animesource.model.MetadataMangasPage
+import eu.kanade.tachiyomi.animesource.model.SManga
 import exh.md.dto.RelationListDto
 import exh.md.dto.SimilarMangaDto
 import exh.md.service.MangaDexService

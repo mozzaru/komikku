@@ -3,7 +3,7 @@ package eu.kanade.tachiyomi.data.cache
 import android.content.Context
 import android.text.format.Formatter
 import com.jakewharton.disklrucache.DiskLruCache
-import eu.kanade.tachiyomi.source.PagePreviewPage
+import eu.kanade.tachiyomi.animesource.PagePreviewPage
 import eu.kanade.tachiyomi.util.storage.DiskUtil
 import eu.kanade.tachiyomi.util.storage.saveTo
 import kotlinx.serialization.encodeToString

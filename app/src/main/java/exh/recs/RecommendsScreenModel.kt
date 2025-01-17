@@ -1,7 +1,7 @@
 package exh.recs
 
-import eu.kanade.tachiyomi.source.CatalogueSource
-import eu.kanade.tachiyomi.source.model.FilterList
+import eu.kanade.tachiyomi.animesource.CatalogueSource
+import eu.kanade.tachiyomi.animesource.model.FilterList
 import eu.kanade.tachiyomi.ui.browse.source.browse.BrowseSourceScreenModel
 import kotlinx.coroutines.runBlocking
 import tachiyomi.domain.anime.interactor.GetAnime

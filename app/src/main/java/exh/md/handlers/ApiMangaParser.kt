@@ -1,7 +1,7 @@
 package exh.md.handlers
 
-import eu.kanade.tachiyomi.source.model.SChapter
-import eu.kanade.tachiyomi.source.model.SManga
+import eu.kanade.tachiyomi.animesource.model.SChapter
+import eu.kanade.tachiyomi.animesource.model.SManga
 import exh.log.xLogE
 import exh.md.dto.ChapterDataDto
 import exh.md.dto.ChapterDto

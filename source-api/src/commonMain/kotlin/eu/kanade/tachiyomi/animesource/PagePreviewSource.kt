@@ -1,8 +1,8 @@
-package eu.kanade.tachiyomi.source
+package eu.kanade.tachiyomi.animesource
 
 import eu.kanade.tachiyomi.network.ProgressListener
-import eu.kanade.tachiyomi.source.model.SChapter
-import eu.kanade.tachiyomi.source.model.SManga
+import eu.kanade.tachiyomi.animesource.model.SChapter
+import eu.kanade.tachiyomi.animesource.model.SManga
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.serialization.Serializable

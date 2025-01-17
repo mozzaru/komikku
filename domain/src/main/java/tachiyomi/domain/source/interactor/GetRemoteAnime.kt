@@ -1,6 +1,6 @@
 package tachiyomi.domain.source.interactor
 
-import eu.kanade.tachiyomi.source.model.FilterList
+import eu.kanade.tachiyomi.animesource.model.FilterList
 import tachiyomi.domain.source.repository.SourcePagingSourceType
 import tachiyomi.domain.source.repository.SourceRepository
 

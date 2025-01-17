@@ -1,6 +1,6 @@
 package exh.source
 
-import eu.kanade.tachiyomi.source.Source
+import eu.kanade.tachiyomi.animesource.Source
 import tachiyomi.domain.anime.model.Manga
 
 // Used to speed up isLewdSource

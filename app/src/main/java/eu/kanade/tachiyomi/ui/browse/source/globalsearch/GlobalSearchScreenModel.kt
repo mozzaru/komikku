@@ -1,6 +1,6 @@
 package eu.kanade.tachiyomi.ui.browse.source.globalsearch
 
-import eu.kanade.tachiyomi.source.CatalogueSource
+import eu.kanade.tachiyomi.animesource.CatalogueSource
 
 class GlobalSearchScreenModel(
     initialQuery: String = "",

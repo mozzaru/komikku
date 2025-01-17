@@ -4,7 +4,7 @@ import eu.kanade.domain.anime.interactor.UpdateAnime
 import eu.kanade.domain.anime.model.hasCustomCover
 import eu.kanade.domain.anime.model.toSManga
 import eu.kanade.tachiyomi.data.cache.CoverCache
-import eu.kanade.tachiyomi.source.model.SManga
+import eu.kanade.tachiyomi.animesource.model.SManga
 import tachiyomi.domain.anime.model.Manga
 import tachiyomi.source.local.image.LocalCoverManager
 import tachiyomi.source.local.isLocal

@@ -1,6 +1,6 @@
 package tachiyomi.domain.anime.interactor
 
-import eu.kanade.tachiyomi.source.online.MetadataSource
+import eu.kanade.tachiyomi.animesource.online.MetadataSource
 import exh.metadata.metadata.base.FlatMetadata
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.combine

@@ -1,7 +1,7 @@
 package mihon.domain.upcoming.interactor
 
-import eu.kanade.tachiyomi.source.model.SManga
-import eu.kanade.tachiyomi.source.model.UpdateStrategy
+import eu.kanade.tachiyomi.animesource.model.SManga
+import eu.kanade.tachiyomi.animesource.model.UpdateStrategy
 import kotlinx.coroutines.flow.Flow
 import tachiyomi.domain.anime.interactor.GetLibraryAnime
 import tachiyomi.domain.anime.model.Manga

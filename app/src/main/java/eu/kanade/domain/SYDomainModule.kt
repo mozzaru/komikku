@@ -15,7 +15,7 @@ import eu.kanade.domain.source.interactor.GetSourceCategories
 import eu.kanade.domain.source.interactor.RenameSourceCategory
 import eu.kanade.domain.source.interactor.SetSourceCategories
 import eu.kanade.domain.source.interactor.ToggleExcludeFromDataSaver
-import eu.kanade.tachiyomi.source.online.MetadataSource
+import eu.kanade.tachiyomi.animesource.online.MetadataSource
 import exh.search.SearchEngine
 import tachiyomi.data.anime.AnimeMergeRepositoryImpl
 import tachiyomi.data.anime.AnimeMetadataRepositoryImpl

@@ -26,9 +26,9 @@ import eu.kanade.presentation.browse.components.FeedSortAlphabeticallyDialog
 import eu.kanade.presentation.browse.components.SourceFeedAddDialog
 import eu.kanade.presentation.browse.components.SourceFeedDeleteDialog
 import eu.kanade.presentation.util.Screen
-import eu.kanade.tachiyomi.source.Source
+import eu.kanade.tachiyomi.animesource.Source
 import eu.kanade.tachiyomi.source.isLocalOrStub
-import eu.kanade.tachiyomi.source.online.HttpSource
+import eu.kanade.tachiyomi.animesource.online.HttpSource
 import eu.kanade.tachiyomi.ui.anime.AnimeScreen
 import eu.kanade.tachiyomi.ui.browse.AddDuplicateAnimeDialog
 import eu.kanade.tachiyomi.ui.browse.AllowDuplicateDialog

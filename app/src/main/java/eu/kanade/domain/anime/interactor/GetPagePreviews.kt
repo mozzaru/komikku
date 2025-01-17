@@ -4,8 +4,8 @@ import eu.kanade.domain.anime.model.PagePreview
 import eu.kanade.domain.anime.model.toSManga
 import eu.kanade.domain.episode.model.toSChapter
 import eu.kanade.tachiyomi.data.cache.PagePreviewCache
-import eu.kanade.tachiyomi.source.PagePreviewSource
-import eu.kanade.tachiyomi.source.Source
+import eu.kanade.tachiyomi.animesource.PagePreviewSource
+import eu.kanade.tachiyomi.animesource.Source
 import exh.source.getMainSource
 import tachiyomi.domain.anime.model.Manga
 import tachiyomi.domain.episode.interactor.GetEpisodesByAnimeId

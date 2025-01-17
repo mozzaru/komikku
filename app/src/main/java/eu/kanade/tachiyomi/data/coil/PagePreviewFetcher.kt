@@ -11,8 +11,8 @@ import coil3.request.Options
 import eu.kanade.domain.anime.model.PagePreview
 import eu.kanade.tachiyomi.data.cache.PagePreviewCache
 import eu.kanade.tachiyomi.network.await
-import eu.kanade.tachiyomi.source.PagePreviewSource
-import eu.kanade.tachiyomi.source.online.HttpSource
+import eu.kanade.tachiyomi.animesource.PagePreviewSource
+import eu.kanade.tachiyomi.animesource.online.HttpSource
 import logcat.LogPriority
 import okhttp3.CacheControl
 import okhttp3.Call

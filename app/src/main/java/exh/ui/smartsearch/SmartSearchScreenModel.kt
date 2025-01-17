@@ -2,7 +2,7 @@ package exh.ui.smartsearch
 
 import cafe.adriel.voyager.core.model.StateScreenModel
 import cafe.adriel.voyager.core.model.screenModelScope
-import eu.kanade.tachiyomi.source.CatalogueSource
+import eu.kanade.tachiyomi.animesource.CatalogueSource
 import eu.kanade.tachiyomi.ui.browse.source.SourcesScreen
 import exh.smartsearch.SmartSearchEngine
 import kotlinx.coroutines.CancellationException

@@ -21,7 +21,7 @@ import androidx.lifecycle.lifecycleScope
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import eu.kanade.presentation.components.AppBar
 import eu.kanade.tachiyomi.R
-import eu.kanade.tachiyomi.source.online.UrlImportableSource
+import eu.kanade.tachiyomi.animesource.online.UrlImportableSource
 import eu.kanade.tachiyomi.ui.base.activity.BaseActivity
 import eu.kanade.tachiyomi.ui.main.MainActivity
 import eu.kanade.tachiyomi.ui.reader.ReaderActivity

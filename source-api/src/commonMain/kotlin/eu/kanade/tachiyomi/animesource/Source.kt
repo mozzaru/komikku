@@ -1,8 +1,8 @@
-package eu.kanade.tachiyomi.source
+package eu.kanade.tachiyomi.animesource
 
-import eu.kanade.tachiyomi.source.model.Page
-import eu.kanade.tachiyomi.source.model.SChapter
-import eu.kanade.tachiyomi.source.model.SManga
+import eu.kanade.tachiyomi.animesource.model.Page
+import eu.kanade.tachiyomi.animesource.model.SChapter
+import eu.kanade.tachiyomi.animesource.model.SManga
 
 /**
  * A basic interface for creating a source. It could be an online source, a local source, stub source, etc.

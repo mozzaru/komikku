@@ -1,8 +1,8 @@
 package exh.md.similar
 
 import eu.kanade.domain.anime.model.toSManga
-import eu.kanade.tachiyomi.source.model.MangasPage
-import eu.kanade.tachiyomi.source.model.MetadataMangasPage
+import eu.kanade.tachiyomi.animesource.model.MangasPage
+import eu.kanade.tachiyomi.animesource.model.MetadataMangasPage
 import eu.kanade.tachiyomi.source.online.all.MangaDex
 import kotlinx.coroutines.async
 import kotlinx.coroutines.coroutineScope

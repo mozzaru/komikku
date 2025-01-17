@@ -1,6 +1,6 @@
 
 import eu.kanade.tachiyomi.data.backup.models.Backup
-import eu.kanade.tachiyomi.source.model.SManga
+import eu.kanade.tachiyomi.animesource.model.SManga
 import eu.kanade.tachiyomi.source.online.all.EHentai
 import exh.favorites.LocalFavoritesStorage
 import exh.metadata.metadata.EHentaiSearchMetadata

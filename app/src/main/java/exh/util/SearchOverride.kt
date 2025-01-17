@@ -2,8 +2,8 @@ package exh.util
 
 import android.content.Context
 import eu.kanade.domain.anime.model.toSManga
-import eu.kanade.tachiyomi.source.model.MangasPage
-import eu.kanade.tachiyomi.source.online.UrlImportableSource
+import eu.kanade.tachiyomi.animesource.model.MangasPage
+import eu.kanade.tachiyomi.animesource.online.UrlImportableSource
 import exh.GalleryAddEvent
 import exh.GalleryAdder
 import rx.Observable

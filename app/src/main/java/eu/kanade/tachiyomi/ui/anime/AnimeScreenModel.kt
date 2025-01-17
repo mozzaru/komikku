@@ -56,11 +56,11 @@ import eu.kanade.tachiyomi.data.track.EnhancedTracker
 import eu.kanade.tachiyomi.data.track.TrackerManager
 import eu.kanade.tachiyomi.data.track.mdlist.MdList
 import eu.kanade.tachiyomi.network.HttpException
-import eu.kanade.tachiyomi.source.PagePreviewSource
-import eu.kanade.tachiyomi.source.Source
+import eu.kanade.tachiyomi.animesource.PagePreviewSource
+import eu.kanade.tachiyomi.animesource.Source
 import eu.kanade.tachiyomi.source.getNameForMangaInfo
-import eu.kanade.tachiyomi.source.model.SManga
-import eu.kanade.tachiyomi.source.online.MetadataSource
+import eu.kanade.tachiyomi.animesource.model.SManga
+import eu.kanade.tachiyomi.animesource.online.MetadataSource
 import eu.kanade.tachiyomi.source.online.all.MergedSource
 import eu.kanade.tachiyomi.ui.anime.RelatedAnime.Companion.isLoading
 import eu.kanade.tachiyomi.ui.anime.RelatedAnime.Companion.removeDuplicates

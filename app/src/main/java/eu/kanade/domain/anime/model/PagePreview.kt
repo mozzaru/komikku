@@ -1,6 +1,6 @@
 package eu.kanade.domain.anime.model
 
-import eu.kanade.tachiyomi.source.PagePreviewInfo
+import eu.kanade.tachiyomi.animesource.PagePreviewInfo
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.serialization.Serializable

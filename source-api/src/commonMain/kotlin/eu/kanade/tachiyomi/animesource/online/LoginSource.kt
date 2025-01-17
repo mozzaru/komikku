@@ -1,6 +1,6 @@
-package eu.kanade.tachiyomi.source.online
+package eu.kanade.tachiyomi.animesource.online
 
-import eu.kanade.tachiyomi.source.Source
+import eu.kanade.tachiyomi.animesource.Source
 
 interface LoginSource : Source {
     val requiresLogin: Boolean

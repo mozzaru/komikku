@@ -3,7 +3,7 @@ package eu.kanade.domain.anime.interactor
 import eu.kanade.domain.anime.model.hasCustomCover
 import eu.kanade.tachiyomi.data.cache.CoverCache
 import eu.kanade.tachiyomi.data.download.DownloadManager
-import eu.kanade.tachiyomi.source.model.SManga
+import eu.kanade.tachiyomi.animesource.model.SManga
 import tachiyomi.domain.anime.interactor.FetchInterval
 import tachiyomi.domain.anime.model.AnimeUpdate
 import tachiyomi.domain.anime.model.Manga
