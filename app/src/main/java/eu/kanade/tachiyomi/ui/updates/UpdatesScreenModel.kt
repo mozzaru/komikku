@@ -119,7 +119,7 @@ class UpdatesScreenModel(
                     update.chapterName,
                     update.scanlator,
                     // SY -->
-                    update.ogMangaTitle,
+                    update.ogAnimeTitle,
                     // SY <--
                     update.sourceId,
                 )

@@ -72,7 +72,7 @@ class UpdatesRepositoryImpl(
     ): UpdatesWithRelations = UpdatesWithRelations(
         animeId = mangaId,
         // SY -->
-        ogMangaTitle = mangaTitle,
+        ogAnimeTitle = mangaTitle,
         // SY <--
         episodeId = chapterId,
         chapterName = chapterName,
@@ -94,7 +94,7 @@ class UpdatesRepositoryImpl(
     fun mapUpdatesView(updatesView: UpdatesView): UpdatesWithRelations {
         return UpdatesWithRelations(
             animeId = updatesView.mangaId,
-            ogMangaTitle = updatesView.mangaTitle,
+            ogAnimeTitle = updatesView.mangaTitle,
             episodeId = updatesView.chapterId,
             chapterName = updatesView.chapterName,
             scanlator = updatesView.scanlator,

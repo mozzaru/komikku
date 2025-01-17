@@ -31,7 +31,7 @@ class GetTracks(
 
     suspend fun await(mangaIds: List<Long>): Map<Long, List<Track>> {
         return try {
-            trackRepository.getTracksByMangaIds(mangaIds)
+            trackRepository.getTracksByAnimeIds(mangaIds)
                 .groupBy { it.mangaId }
         } catch (e: Exception) {
             logcat(LogPriority.ERROR, e)
@@ -42,7 +42,7 @@ class GetTracks(
 
     suspend fun await(mangaId: Long): List<Track> {
         return try {
-            trackRepository.getTracksByMangaId(mangaId)
+            trackRepository.getTracksByAnimeId(mangaId)
         } catch (e: Exception) {
             logcat(LogPriority.ERROR, e)
             emptyList()

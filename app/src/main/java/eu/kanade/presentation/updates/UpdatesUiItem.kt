@@ -263,7 +263,7 @@ private fun UpdatesUiItem(
                 .weight(1f),
         ) {
             Text(
-                text = update.mangaTitle,
+                text = update.animeTitle,
                 maxLines = 1,
                 style = MaterialTheme.typography.bodyMedium,
                 color = LocalContentColor.current.copy(alpha = textAlpha),
