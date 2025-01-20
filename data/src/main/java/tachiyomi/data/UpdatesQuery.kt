@@ -32,50 +32,50 @@ class UpdatesQuery(val driver: SqlDriver, val after: Long, val limit: Long) : Ex
             null,
             """
             SELECT
-                mangas._id AS mangaId,
-                mangas.title AS mangaTitle,
-                chapters._id AS chapterId,
-                chapters.name AS chapterName,
-                chapters.scanlator,
-                chapters.read,
-                chapters.bookmark,
-                chapters.last_page_read,
-                mangas.source,
-                mangas.favorite,
-                mangas.thumbnail_url AS thumbnailUrl,
-                mangas.cover_last_modified AS coverLastModified,
-                chapters.date_upload AS dateUpload,
-                chapters.date_fetch AS datefetch
-            FROM mangas JOIN chapters
-            ON mangas._id = chapters.manga_id
+                animes._id AS mangaId,
+                animes.title AS mangaTitle,
+                episodes._id AS chapterId,
+                episodes.name AS chapterName,
+                episodes.scanlator,
+                episodes.read,
+                episodes.bookmark,
+                episodes.last_page_read,
+                animes.source,
+                animes.favorite,
+                animes.thumbnail_url AS thumbnailUrl,
+                animes.cover_last_modified AS coverLastModified,
+                episodes.date_upload AS dateUpload,
+                episodes.date_fetch AS datefetch
+            FROM animes JOIN episodes
+            ON animes._id = episodes.manga_id
             WHERE favorite = 1 AND source <> $MERGED_SOURCE_ID
             AND date_fetch > date_added
             AND dateUpload > :after
             UNION
             SELECT
-                mangas._id AS mangaId,
-                mangas.title AS mangaTitle,
-                chapters._id AS chapterId,
-                chapters.name AS chapterName,
-                chapters.scanlator,
-                chapters.read,
-                chapters.bookmark,
-                chapters.last_page_read,
-                mangas.source,
-                mangas.favorite,
-                mangas.thumbnail_url AS thumbnailUrl,
-                mangas.cover_last_modified AS coverLastModified,
-                chapters.date_upload AS dateUpload,
-                chapters.date_fetch AS datefetch
-            FROM mangas
+                animes._id AS mangaId,
+                animes.title AS mangaTitle,
+                episodes._id AS chapterId,
+                episodes.name AS chapterName,
+                episodes.scanlator,
+                episodes.read,
+                episodes.bookmark,
+                episodes.last_page_read,
+                animes.source,
+                animes.favorite,
+                animes.thumbnail_url AS thumbnailUrl,
+                animes.cover_last_modified AS coverLastModified,
+                episodes.date_upload AS dateUpload,
+                episodes.date_fetch AS datefetch
+            FROM animes
             LEFT JOIN (
                 SELECT merged.manga_id,merged.merge_id
                 FROM merged
                 GROUP BY merged.merge_id
             ) as ME
-            ON ME.merge_id = mangas._id
-            JOIN chapters
-            ON ME.manga_id = chapters.manga_id
+            ON ME.merge_id = animes._id
+            JOIN episodes
+            ON ME.manga_id = episodes.manga_id
             WHERE favorite = 1 AND source = $MERGED_SOURCE_ID
             AND date_fetch > date_added
             AND dateUpload > :after

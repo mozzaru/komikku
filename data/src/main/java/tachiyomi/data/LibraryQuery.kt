@@ -62,27 +62,27 @@ class LibraryQuery(
                 coalesce(C.lastRead, 0) AS lastRead,
                 coalesce(C.bookmarkCount, 0) AS bookmarkCount,
                 coalesce(MC.category_id, 0) AS category
-            FROM mangas M
+            FROM animes M
             LEFT JOIN(
                 SELECT
-                    chapters.manga_id,
+                    episodes.manga_id,
                     count(*) AS total,
                     sum(read) AS readCount,
-                    coalesce(max(chapters.date_upload), 0) AS latestUpload,
+                    coalesce(max(episodes.date_upload), 0) AS latestUpload,
                     coalesce(max(history.last_read), 0) AS lastRead,
-                    coalesce(max(chapters.date_fetch), 0) AS fetchedAt,
-                    sum(chapters.bookmark) AS bookmarkCount
-                FROM chapters
+                    coalesce(max(episodes.date_fetch), 0) AS fetchedAt,
+                    sum(episodes.bookmark) AS bookmarkCount
+                FROM episodes
                 LEFT JOIN excluded_scanlators
-                ON chapters.manga_id = excluded_scanlators.manga_id
-                AND chapters.scanlator = excluded_scanlators.scanlator
+                ON episodes.manga_id = excluded_scanlators.manga_id
+                AND episodes.scanlator = excluded_scanlators.scanlator
                 LEFT JOIN history
-                ON chapters._id = history.chapter_id
+                ON episodes._id = history.chapter_id
                 WHERE excluded_scanlators.scanlator IS NULL
-                GROUP BY chapters.manga_id
+                GROUP BY episodes.manga_id
             ) AS C
             ON M._id = C.manga_id
-            LEFT JOIN mangas_categories AS MC
+            LEFT JOIN animes_categories AS MC
             ON MC.manga_id = M._id
             WHERE $condition AND M.source <> $MERGED_SOURCE_ID
             UNION
@@ -95,7 +95,7 @@ class LibraryQuery(
                 coalesce(C.lastRead, 0) AS lastRead,
                 coalesce(C.bookmarkCount, 0) AS bookmarkCount,
                 coalesce(MC.category_id, 0) AS category
-            FROM mangas M
+            FROM animes M
             LEFT JOIN (
                 SELECT merged.manga_id,merged.merge_id
                 FROM merged
@@ -107,23 +107,23 @@ class LibraryQuery(
                     ME.merge_id,
                     count(*) AS total,
                     sum(read) AS readCount,
-                    coalesce(max(chapters.date_upload), 0) AS latestUpload,
+                    coalesce(max(episodes.date_upload), 0) AS latestUpload,
                     coalesce(max(history.last_read), 0) AS lastRead,
-                    coalesce(max(chapters.date_fetch), 0) AS fetchedAt,
-                    sum(chapters.bookmark) AS bookmarkCount
-                FROM chapters
+                    coalesce(max(episodes.date_fetch), 0) AS fetchedAt,
+                    sum(episodes.bookmark) AS bookmarkCount
+                FROM episodes
                 LEFT JOIN excluded_scanlators
-                ON chapters.manga_id = excluded_scanlators.manga_id
-                AND chapters.scanlator = excluded_scanlators.scanlator
+                ON episodes.manga_id = excluded_scanlators.manga_id
+                AND episodes.scanlator = excluded_scanlators.scanlator
                 LEFT JOIN history
-                ON chapters._id = history.chapter_id
+                ON episodes._id = history.chapter_id
                 LEFT JOIN merged as ME
-                ON ME.manga_id = chapters.manga_id
+                ON ME.manga_id = episodes.manga_id
                 WHERE excluded_scanlators.scanlator IS NULL
                 GROUP BY ME.merge_id
             ) AS C
             ON ME.merge_id = C.merge_id
-            LEFT JOIN mangas_categories AS MC
+            LEFT JOIN animes_categories AS MC
             ON MC.manga_id = M._id
             WHERE $condition AND M.source = $MERGED_SOURCE_ID;
             """.trimIndent(),
