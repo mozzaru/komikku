@@ -70,7 +70,7 @@ data class Anime(
         get() = nextUpdate
             /* KMK -->
             Always predict release date even for Completed entries
-            .takeIf { status != SManga.COMPLETED.toLong() }?
+            .takeIf { status != SAnime.COMPLETED.toLong() }?
              KMK <-- */
             .let { Instant.ofEpochMilli(it) }
 

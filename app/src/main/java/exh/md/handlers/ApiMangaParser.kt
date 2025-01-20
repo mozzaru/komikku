@@ -1,7 +1,7 @@
 package exh.md.handlers
 
 import eu.kanade.tachiyomi.source.model.SChapter
-import eu.kanade.tachiyomi.source.model.SManga
+import eu.kanade.tachiyomi.source.model.SAnime
 import exh.log.xLogE
 import exh.md.dto.ChapterDataDto
 import exh.md.dto.ChapterDto
@@ -36,7 +36,7 @@ class ApiMangaParser(
     private fun newMetaInstance() = MangaDexSearchMetadata()
 
     suspend fun parseToManga(
-        manga: SManga,
+        manga: SAnime,
         sourceId: Long,
         input: MangaDto,
         simpleChapters: List<String>,
@@ -44,7 +44,7 @@ class ApiMangaParser(
         coverFileName: String?,
         coverQuality: String,
         altTitlesInDesc: Boolean,
-    ): SManga {
+    ): SAnime {
         val mangaId = getAnime.await(manga.url, sourceId)?.id
         val metadata = if (mangaId != null) {
             val flatMetadata = getFlatMetadataById.await(mangaId)
@@ -128,13 +128,13 @@ class ApiMangaParser(
                 // val filteredChapters = filterChapterForChecking(networkApiManga)
 
                 val tempStatus = parseStatus(mangaAttributesDto.status)
-                val publishedOrCancelled = tempStatus == SManga.PUBLISHING_FINISHED || tempStatus == SManga.CANCELLED
+                val publishedOrCancelled = tempStatus == SAnime.PUBLISHING_FINISHED || tempStatus == SAnime.CANCELLED
                 status = if (
                     mangaAttributesDto.lastChapter != null &&
                     publishedOrCancelled &&
                     mangaAttributesDto.lastChapter in simpleChapters
                 ) {
-                    SManga.COMPLETED
+                    SAnime.COMPLETED
                 } else {
                     tempStatus
                 }
@@ -190,11 +190,11 @@ class ApiMangaParser(
     }*/
 
     private fun parseStatus(status: String?) = when (status) {
-        "ongoing" -> SManga.ONGOING
-        "completed" -> SManga.PUBLISHING_FINISHED
-        "cancelled" -> SManga.CANCELLED
-        "hiatus" -> SManga.ON_HIATUS
-        else -> SManga.UNKNOWN
+        "ongoing" -> SAnime.ONGOING
+        "completed" -> SAnime.PUBLISHING_FINISHED
+        "cancelled" -> SAnime.CANCELLED
+        "hiatus" -> SAnime.ON_HIATUS
+        else -> SAnime.UNKNOWN
     }
 
     fun chapterListParse(chapterListResponse: List<ChapterDataDto>, groupMap: Map<String, String>): List<SChapter> {

@@ -8,7 +8,7 @@ import eu.kanade.tachiyomi.data.track.mdlist.MdList
 import eu.kanade.tachiyomi.data.track.myanimelist.dto.MALOAuth
 import eu.kanade.tachiyomi.network.POST
 import eu.kanade.tachiyomi.source.model.SChapter
-import eu.kanade.tachiyomi.source.model.SManga
+import eu.kanade.tachiyomi.source.model.SAnime
 import eu.kanade.tachiyomi.source.online.all.MangaDex
 import eu.kanade.tachiyomi.util.PkceUtil
 import exh.md.dto.MangaAttributesDto
@@ -113,7 +113,7 @@ class MdUtil {
         }
 
         fun getMissingChapterCount(chapters: List<SChapter>, mangaStatus: Int): String? {
-            if (mangaStatus == SManga.COMPLETED) return null
+            if (mangaStatus == SAnime.COMPLETED) return null
 
             val remove0ChaptersFromCount = chapters.distinctBy {
                 /*if (it.chapter_txt.isNotEmpty()) {
@@ -143,8 +143,8 @@ class MdUtil {
         fun parseDate(dateAsString: String): Long =
             dateFormatter.parse(dateAsString)?.time ?: 0
 
-        fun createMangaEntry(json: MangaDataDto, lang: String): SManga {
-            return SManga(
+        fun createMangaEntry(json: MangaDataDto, lang: String): SAnime {
+            return SAnime(
                 url = buildMangaUrl(json.id),
                 title = getTitleFromManga(json.attributes, lang),
                 thumbnail_url = json.relationships

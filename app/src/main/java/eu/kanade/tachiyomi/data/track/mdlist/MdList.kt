@@ -9,7 +9,7 @@ import eu.kanade.tachiyomi.data.track.BaseTracker
 import eu.kanade.tachiyomi.data.track.model.TrackMangaMetadata
 import eu.kanade.tachiyomi.data.track.model.TrackSearch
 import eu.kanade.tachiyomi.source.model.FilterList
-import eu.kanade.tachiyomi.source.model.SManga
+import eu.kanade.tachiyomi.source.model.SAnime
 import exh.md.network.MangaDexAuthInterceptor
 import exh.md.utils.FollowStatus
 import exh.md.utils.MdUtil
@@ -130,7 +130,7 @@ class MdList(id: Long) : BaseTracker(id, "MDList") {
             val mdex = mdex ?: throw MangaDexNotFoundException()
             val remoteTrack = mdex.fetchTrackingInfo(track.tracking_url)
             track.copyPersonalFrom(remoteTrack)
-            /*if (track.total_chapters == 0 && mangaMetadata.status == SManga.COMPLETED) {
+            /*if (track.total_chapters == 0 && mangaMetadata.status == SAnime.COMPLETED) {
                 track.total_chapters = mangaMetadata.maxChapterNumber ?: 0
             }*/
             track
@@ -158,7 +158,7 @@ class MdList(id: Long) : BaseTracker(id, "MDList") {
         }
     }
 
-    private fun toTrackSearch(mangaInfo: SManga): TrackSearch = TrackSearch.create(id).apply {
+    private fun toTrackSearch(mangaInfo: SAnime): TrackSearch = TrackSearch.create(id).apply {
         tracking_url = MdUtil.baseUrl + mangaInfo.url
         title = mangaInfo.title
         cover_url = mangaInfo.thumbnail_url.orEmpty()

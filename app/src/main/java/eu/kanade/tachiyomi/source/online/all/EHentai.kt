@@ -19,7 +19,7 @@ import eu.kanade.tachiyomi.source.model.MangasPage
 import eu.kanade.tachiyomi.source.model.MetadataMangasPage
 import eu.kanade.tachiyomi.source.model.Page
 import eu.kanade.tachiyomi.source.model.SChapter
-import eu.kanade.tachiyomi.source.model.SManga
+import eu.kanade.tachiyomi.source.model.SAnime
 import eu.kanade.tachiyomi.source.model.copy
 import eu.kanade.tachiyomi.source.online.HttpSource
 import eu.kanade.tachiyomi.source.online.MetadataSource
@@ -123,7 +123,7 @@ class EHentai(
     /**
      * Gallery list entry
      */
-    data class ParsedManga(val fav: Int, val manga: SManga, val metadata: EHentaiSearchMetadata)
+    data class ParsedManga(val fav: Int, val manga: SAnime, val metadata: EHentaiSearchMetadata)
 
     private fun extendedGenericMangaParse(doc: Document) = with(doc) {
         // Parse mangas (supports compact + extended layout)
@@ -145,7 +145,7 @@ class EHentai(
                 fav = FAVORITES_BORDER_HEX_COLORS.indexOf(
                     favElement?.attr("style")?.substring(14, 17),
                 ),
-                manga = SManga.create().apply {
+                manga = SAnime.create().apply {
                     // Get title
                     title = thumbnailElement.attr("title")
                     url = EHentaiSearchMetadata.normalizeUrl(linkElement.attr("href"))
@@ -330,9 +330,9 @@ class EHentai(
         )
     }
 
-    override suspend fun getChapterList(manga: SManga): List<SChapter> = getChapterList(manga) {}
+    override suspend fun getChapterList(manga: SAnime): List<SChapter> = getChapterList(manga) {}
 
-    suspend fun getChapterList(manga: SManga, throttleFunc: suspend () -> Unit): List<SChapter> {
+    suspend fun getChapterList(manga: SAnime, throttleFunc: suspend () -> Unit): List<SChapter> {
         // Pull all the way to the root gallery
         // We can't do this with RxJava or we run into stack overflows on shit like this:
         //   https://exhentai.org/g/1073061/f9345f1c12/
@@ -411,10 +411,10 @@ class EHentai(
 
     @Deprecated("Use the 1.x API instead", replaceWith = ReplaceWith("getChapterList"))
     @Suppress("DEPRECATION")
-    override fun fetchChapterList(manga: SManga) = fetchChapterList(manga) {}
+    override fun fetchChapterList(manga: SAnime) = fetchChapterList(manga) {}
 
     @Deprecated("Use the 1.x API instead", replaceWith = ReplaceWith("getChapterList"))
-    fun fetchChapterList(manga: SManga, throttleFunc: suspend () -> Unit) = runAsObservable {
+    fun fetchChapterList(manga: SAnime, throttleFunc: suspend () -> Unit) = runAsObservable {
         getChapterList(manga, throttleFunc)
     }
 
@@ -611,7 +611,7 @@ class EHentai(
      * @param manga the manga to be updated.
      */
     @Deprecated("Use the 1.x API instead", replaceWith = ReplaceWith("getMangaDetails"))
-    override fun fetchMangaDetails(manga: SManga): Observable<SManga> {
+    override fun fetchMangaDetails(manga: SAnime): Observable<SAnime> {
         return client.newCall(mangaDetailsRequest(manga))
             .asObservableWithAsyncStacktrace()
             .flatMap { (stacktrace, response) ->
@@ -651,7 +651,7 @@ class EHentai(
             }
     }
 
-    override suspend fun getMangaDetails(manga: SManga): SManga {
+    override suspend fun getMangaDetails(manga: SAnime): SAnime {
         val exception = Exception("Async stacktrace")
         val response = client.newCall(mangaDetailsRequest(manga)).await()
         if (response.isSuccessful) {
@@ -1200,7 +1200,7 @@ class EHentai(
     }
 
     override suspend fun getPagePreviewList(
-        manga: SManga,
+        manga: SAnime,
         chapters: List<SChapter>,
         page: Int,
     ): PagePreviewPage {

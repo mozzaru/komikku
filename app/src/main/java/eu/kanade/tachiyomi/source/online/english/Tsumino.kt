@@ -5,7 +5,7 @@ import android.net.Uri
 import eu.kanade.tachiyomi.network.awaitSuccess
 import eu.kanade.tachiyomi.source.model.FilterList
 import eu.kanade.tachiyomi.source.model.MangasPage
-import eu.kanade.tachiyomi.source.model.SManga
+import eu.kanade.tachiyomi.source.model.SAnime
 import eu.kanade.tachiyomi.source.online.HttpSource
 import eu.kanade.tachiyomi.source.online.MetadataSource
 import eu.kanade.tachiyomi.source.online.NamespaceSource
@@ -56,7 +56,7 @@ class Tsumino(delegate: HttpSource, val context: Context) :
         return "https://tsumino.com/Book/Info/${uri.lastPathSegment}"
     }
 
-    override suspend fun getMangaDetails(manga: SManga): SManga {
+    override suspend fun getMangaDetails(manga: SAnime): SAnime {
         val response = client.newCall(mangaDetailsRequest(manga)).awaitSuccess()
         return parseToManga(manga, response.asJsoup())
     }

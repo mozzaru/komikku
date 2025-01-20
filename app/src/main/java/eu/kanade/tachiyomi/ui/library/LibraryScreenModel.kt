@@ -33,7 +33,7 @@ import eu.kanade.tachiyomi.data.download.DownloadManager
 import eu.kanade.tachiyomi.data.track.TrackStatus
 import eu.kanade.tachiyomi.data.track.TrackerManager
 import eu.kanade.tachiyomi.source.Source
-import eu.kanade.tachiyomi.source.model.SManga
+import eu.kanade.tachiyomi.source.model.SAnime
 import eu.kanade.tachiyomi.source.online.HttpSource
 import eu.kanade.tachiyomi.source.online.all.MergedSource
 import eu.kanade.tachiyomi.util.episode.getNextUnseen
@@ -344,7 +344,7 @@ class LibraryScreenModel(
         }
 
         val filterFnCompleted: (LibraryItem) -> Boolean = {
-            applyFilter(filterCompleted) { it.libraryAnime.manga.status.toInt() == SManga.COMPLETED }
+            applyFilter(filterCompleted) { it.libraryAnime.manga.status.toInt() == SAnime.COMPLETED }
         }
 
         val filterFnIntervalCustom: (LibraryItem) -> Boolean = {
@@ -958,12 +958,12 @@ class LibraryScreenModel(
     ): String {
         return when (groupType) {
             LibraryGroup.BY_STATUS -> when (category?.id) {
-                SManga.ONGOING.toLong() -> context.stringResource(MR.strings.ongoing)
-                SManga.LICENSED.toLong() -> context.stringResource(MR.strings.licensed)
-                SManga.CANCELLED.toLong() -> context.stringResource(MR.strings.cancelled)
-                SManga.ON_HIATUS.toLong() -> context.stringResource(MR.strings.on_hiatus)
-                SManga.PUBLISHING_FINISHED.toLong() -> context.stringResource(MR.strings.publishing_finished)
-                SManga.COMPLETED.toLong() -> context.stringResource(MR.strings.completed)
+                SAnime.ONGOING.toLong() -> context.stringResource(MR.strings.ongoing)
+                SAnime.LICENSED.toLong() -> context.stringResource(MR.strings.licensed)
+                SAnime.CANCELLED.toLong() -> context.stringResource(MR.strings.cancelled)
+                SAnime.ON_HIATUS.toLong() -> context.stringResource(MR.strings.on_hiatus)
+                SAnime.PUBLISHING_FINISHED.toLong() -> context.stringResource(MR.strings.publishing_finished)
+                SAnime.COMPLETED.toLong() -> context.stringResource(MR.strings.completed)
                 else -> context.stringResource(MR.strings.unknown)
             }
             LibraryGroup.BY_SOURCE -> if (category?.id == LocalSource.ID) {
@@ -1349,21 +1349,21 @@ class LibraryScreenModel(
                     Category(
                         id = it.key + 1,
                         name = when (it.key) {
-                            SManga.ONGOING.toLong() -> context.stringResource(MR.strings.ongoing)
-                            SManga.LICENSED.toLong() -> context.stringResource(MR.strings.licensed)
-                            SManga.CANCELLED.toLong() -> context.stringResource(MR.strings.cancelled)
-                            SManga.ON_HIATUS.toLong() -> context.stringResource(MR.strings.on_hiatus)
-                            SManga.PUBLISHING_FINISHED.toLong() -> context.stringResource(MR.strings.publishing_finished)
-                            SManga.COMPLETED.toLong() -> context.stringResource(MR.strings.completed)
+                            SAnime.ONGOING.toLong() -> context.stringResource(MR.strings.ongoing)
+                            SAnime.LICENSED.toLong() -> context.stringResource(MR.strings.licensed)
+                            SAnime.CANCELLED.toLong() -> context.stringResource(MR.strings.cancelled)
+                            SAnime.ON_HIATUS.toLong() -> context.stringResource(MR.strings.on_hiatus)
+                            SAnime.PUBLISHING_FINISHED.toLong() -> context.stringResource(MR.strings.publishing_finished)
+                            SAnime.COMPLETED.toLong() -> context.stringResource(MR.strings.completed)
                             else -> context.stringResource(MR.strings.unknown)
                         },
                         order = when (it.key) {
-                            SManga.ONGOING.toLong() -> 1
-                            SManga.LICENSED.toLong() -> 2
-                            SManga.CANCELLED.toLong() -> 3
-                            SManga.ON_HIATUS.toLong() -> 4
-                            SManga.PUBLISHING_FINISHED.toLong() -> 5
-                            SManga.COMPLETED.toLong() -> 6
+                            SAnime.ONGOING.toLong() -> 1
+                            SAnime.LICENSED.toLong() -> 2
+                            SAnime.CANCELLED.toLong() -> 3
+                            SAnime.ON_HIATUS.toLong() -> 4
+                            SAnime.PUBLISHING_FINISHED.toLong() -> 5
+                            SAnime.COMPLETED.toLong() -> 6
                             else -> 7
                         },
                         flags = 0,

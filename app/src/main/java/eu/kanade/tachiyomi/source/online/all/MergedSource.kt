@@ -8,7 +8,7 @@ import eu.kanade.tachiyomi.source.Source
 import eu.kanade.tachiyomi.source.model.FilterList
 import eu.kanade.tachiyomi.source.model.Page
 import eu.kanade.tachiyomi.source.model.SChapter
-import eu.kanade.tachiyomi.source.model.SManga
+import eu.kanade.tachiyomi.source.model.SAnime
 import eu.kanade.tachiyomi.source.model.copy
 import eu.kanade.tachiyomi.source.online.HttpSource
 import exh.source.MERGED_SOURCE_ID
@@ -61,8 +61,8 @@ class MergedSource : HttpSource() {
     override fun imageUrlParse(response: Response) = throw UnsupportedOperationException()
 
     @Deprecated("Use the 1.x API instead", replaceWith = ReplaceWith("getChapterList"))
-    override fun fetchChapterList(manga: SManga) = throw UnsupportedOperationException()
-    override suspend fun getChapterList(manga: SManga) = throw UnsupportedOperationException()
+    override fun fetchChapterList(manga: SAnime) = throw UnsupportedOperationException()
+    override suspend fun getChapterList(manga: SAnime) = throw UnsupportedOperationException()
     override suspend fun getImage(page: Page): Response = throw UnsupportedOperationException()
 
     @Deprecated("Use the non-RxJava API instead", replaceWith = ReplaceWith("getImageUrl"))
@@ -81,7 +81,7 @@ class MergedSource : HttpSource() {
     override fun fetchPopularManga(page: Int) = throw UnsupportedOperationException()
     override suspend fun getPopularManga(page: Int) = throw UnsupportedOperationException()
 
-    override suspend fun getMangaDetails(manga: SManga): SManga {
+    override suspend fun getMangaDetails(manga: SAnime): SAnime {
         return withIOContext {
             val mergedManga = requireNotNull(getAnime.await(manga.url, id)) { "merged manga not in db" }
             val mangaReferences = getMergedReferencesById.await(mergedManga.id)

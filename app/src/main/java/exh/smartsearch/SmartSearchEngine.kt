@@ -3,7 +3,7 @@ package exh.smartsearch
 import eu.kanade.domain.anime.model.toDomainManga
 import eu.kanade.tachiyomi.source.CatalogueSource
 import eu.kanade.tachiyomi.source.model.FilterList
-import eu.kanade.tachiyomi.source.model.SManga
+import eu.kanade.tachiyomi.source.model.SAnime
 import info.debatty.java.stringsimilarity.NormalizedLevenshtein
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.async
@@ -181,4 +181,4 @@ class SmartSearchEngine(
     }
 }
 
-data class SearchEntry(val manga: SManga, val dist: Double)
+data class SearchEntry(val manga: SAnime, val dist: Double)

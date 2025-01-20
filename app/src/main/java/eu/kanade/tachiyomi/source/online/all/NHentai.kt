@@ -12,7 +12,7 @@ import eu.kanade.tachiyomi.source.PagePreviewSource
 import eu.kanade.tachiyomi.source.model.FilterList
 import eu.kanade.tachiyomi.source.model.MangasPage
 import eu.kanade.tachiyomi.source.model.SChapter
-import eu.kanade.tachiyomi.source.model.SManga
+import eu.kanade.tachiyomi.source.model.SAnime
 import eu.kanade.tachiyomi.source.online.HttpSource
 import eu.kanade.tachiyomi.source.online.MetadataSource
 import eu.kanade.tachiyomi.source.online.NamespaceSource
@@ -65,7 +65,7 @@ class NHentai(delegate: HttpSource, val context: Context) :
         }
     }
 
-    override suspend fun getMangaDetails(manga: SManga): SManga {
+    override suspend fun getMangaDetails(manga: SAnime): SAnime {
         val response = client.newCall(mangaDetailsRequest(manga)).awaitSuccess()
         return parseToManga(manga, response)
     }
@@ -192,7 +192,7 @@ class NHentai(delegate: HttpSource, val context: Context) :
         return "$baseUrl/g/${uri.pathSegments[1]}/"
     }
 
-    override suspend fun getPagePreviewList(manga: SManga, chapters: List<SChapter>, page: Int): PagePreviewPage {
+    override suspend fun getPagePreviewList(manga: SAnime, chapters: List<SChapter>, page: Int): PagePreviewPage {
         val metadata = fetchOrLoadMetadata(manga.id()) {
             client.newCall(mangaDetailsRequest(manga)).awaitSuccess()
         }

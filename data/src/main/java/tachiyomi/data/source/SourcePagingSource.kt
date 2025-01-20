@@ -5,7 +5,7 @@ import eu.kanade.tachiyomi.source.CatalogueSource
 import eu.kanade.tachiyomi.source.model.FilterList
 import eu.kanade.tachiyomi.source.model.MangasPage
 import eu.kanade.tachiyomi.source.model.MetadataMangasPage
-import eu.kanade.tachiyomi.source.model.SManga
+import eu.kanade.tachiyomi.source.model.SAnime
 import exh.metadata.metadata.RaisedSearchMetadata
 import tachiyomi.core.common.util.lang.withIOContext
 import tachiyomi.domain.source.repository.SourcePagingSourceType
@@ -37,7 +37,7 @@ abstract class SourcePagingSource(
 
     override suspend fun load(
         params: LoadParams<Long>,
-    ): LoadResult<Long, /*SY --> */ Pair<SManga, RaisedSearchMetadata?>/*SY <-- */> {
+    ): LoadResult<Long, /*SY --> */ Pair<SAnime, RaisedSearchMetadata?>/*SY <-- */> {
         val page = params.key ?: 1
 
         val mangasPage = try {
@@ -59,7 +59,7 @@ abstract class SourcePagingSource(
     open fun getPageLoadResult(
         params: LoadParams<Long>,
         mangasPage: MangasPage,
-    ): LoadResult.Page<Long, /*SY --> */ Pair<SManga, RaisedSearchMetadata?>/*SY <-- */> {
+    ): LoadResult.Page<Long, /*SY --> */ Pair<SAnime, RaisedSearchMetadata?>/*SY <-- */> {
         val page = params.key ?: 1
 
         // SY -->
@@ -82,7 +82,7 @@ abstract class SourcePagingSource(
     // SY <--
 
     override fun getRefreshKey(
-        state: PagingState<Long, /*SY --> */ Pair<SManga, RaisedSearchMetadata?>/*SY <-- */>,
+        state: PagingState<Long, /*SY --> */ Pair<SAnime, RaisedSearchMetadata?>/*SY <-- */>,
     ): Long? {
         return state.anchorPosition?.let { anchorPosition ->
             val anchorPage = state.closestPageToPosition(anchorPosition)

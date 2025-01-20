@@ -33,7 +33,7 @@ import eu.kanade.tachiyomi.data.notification.Notifications
 import eu.kanade.tachiyomi.data.sync.SyncDataJob
 import eu.kanade.tachiyomi.data.track.TrackStatus
 import eu.kanade.tachiyomi.data.track.TrackerManager
-import eu.kanade.tachiyomi.source.model.SManga
+import eu.kanade.tachiyomi.source.model.SAnime
 import eu.kanade.tachiyomi.source.model.UpdateStrategy
 import eu.kanade.tachiyomi.source.online.all.MergedSource
 import eu.kanade.tachiyomi.util.prepUpdateCover
@@ -313,7 +313,7 @@ class LibraryUpdateJob(private val context: Context, workerParams: WorkerParamet
                         false
                     }
 
-                    MANGA_NON_COMPLETED in restrictions && it.manga.status.toInt() == SManga.COMPLETED -> {
+                    MANGA_NON_COMPLETED in restrictions && it.manga.status.toInt() == SAnime.COMPLETED -> {
                         skippedUpdates.add(it.manga to context.stringResource(MR.strings.skipped_reason_completed))
                         false
                     }

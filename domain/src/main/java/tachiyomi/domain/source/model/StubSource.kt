@@ -3,7 +3,7 @@ package tachiyomi.domain.source.model
 import eu.kanade.tachiyomi.source.Source
 import eu.kanade.tachiyomi.source.model.Page
 import eu.kanade.tachiyomi.source.model.SChapter
-import eu.kanade.tachiyomi.source.model.SManga
+import eu.kanade.tachiyomi.source.model.SAnime
 
 class StubSource(
     override val id: Long,
@@ -13,19 +13,19 @@ class StubSource(
 
     private val isInvalid: Boolean = name.isBlank() || lang.isBlank()
 
-    override suspend fun getMangaDetails(manga: SManga): SManga =
+    override suspend fun getMangaDetails(manga: SAnime): SAnime =
         throw SourceNotInstalledException()
 
-    override suspend fun getChapterList(manga: SManga): List<SChapter> =
+    override suspend fun getChapterList(manga: SAnime): List<SChapter> =
         throw SourceNotInstalledException()
     override suspend fun getPageList(chapter: SChapter): List<Page> =
         throw SourceNotInstalledException()
 
     // KMK -->
     override suspend fun getRelatedMangaList(
-        manga: SManga,
+        manga: SAnime,
         exceptionHandler: (Throwable) -> Unit,
-        pushResults: suspend (relatedManga: Pair<String, List<SManga>>, completed: Boolean) -> Unit,
+        pushResults: suspend (relatedManga: Pair<String, List<SAnime>>, completed: Boolean) -> Unit,
     ) = throw SourceNotInstalledException()
     // KMK <--
 

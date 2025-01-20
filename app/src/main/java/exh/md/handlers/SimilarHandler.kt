@@ -1,7 +1,7 @@
 package exh.md.handlers
 
 import eu.kanade.tachiyomi.source.model.MetadataMangasPage
-import eu.kanade.tachiyomi.source.model.SManga
+import eu.kanade.tachiyomi.source.model.SAnime
 import exh.md.dto.RelationListDto
 import exh.md.dto.SimilarMangaDto
 import exh.md.service.MangaDexService
@@ -17,7 +17,7 @@ class SimilarHandler(
     private val similarService: SimilarService,
 ) {
 
-    suspend fun getSimilar(manga: SManga): MetadataMangasPage {
+    suspend fun getSimilar(manga: SAnime): MetadataMangasPage {
         val similarDto = withIOContext { similarService.getSimilarManga(MdUtil.getMangaId(manga.url)) }
         return similarDtoToMangaListPage(similarDto)
     }
@@ -41,7 +41,7 @@ class SimilarHandler(
         )
     }
 
-    suspend fun getRelated(manga: SManga): MetadataMangasPage {
+    suspend fun getRelated(manga: SAnime): MetadataMangasPage {
         val relatedListDto = withIOContext { service.relatedManga(MdUtil.getMangaId(manga.url)) }
         return relatedDtoToMangaListPage(relatedListDto)
     }

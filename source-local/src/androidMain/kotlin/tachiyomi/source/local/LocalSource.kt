@@ -9,7 +9,7 @@ import eu.kanade.tachiyomi.source.model.FilterList
 import eu.kanade.tachiyomi.source.model.MangasPage
 import eu.kanade.tachiyomi.source.model.Page
 import eu.kanade.tachiyomi.source.model.SChapter
-import eu.kanade.tachiyomi.source.model.SManga
+import eu.kanade.tachiyomi.source.model.SAnime
 import eu.kanade.tachiyomi.util.lang.compareToCaseInsensitiveNaturalOrder
 import kotlinx.coroutines.async
 import kotlinx.coroutines.awaitAll
@@ -136,7 +136,7 @@ actual class LocalSource(
         val mangas = mangaDirs
             .map { mangaDir ->
                 async {
-                    SManga.create().apply {
+                    SAnime.create().apply {
                         title = mangaDir.name.orEmpty()
                         url = mangaDir.name.orEmpty()
 
@@ -153,7 +153,7 @@ actual class LocalSource(
     }
 
     // SY -->
-    fun updateMangaInfo(manga: SManga) {
+    fun updateMangaInfo(manga: SAnime) {
         val mangaDirFiles = fileSystem.getFilesInAnimeDirectory(manga.url)
         val existingFile = mangaDirFiles
             .firstOrNull { it.name == COMIC_INFO_FILE }
@@ -193,7 +193,7 @@ actual class LocalSource(
     // SY <--
 
     // Manga details related
-    override suspend fun getMangaDetails(manga: SManga): SManga = withIOContext {
+    override suspend fun getMangaDetails(manga: SAnime): SAnime = withIOContext {
         coverManager.find(manga.url)?.let {
             manga.thumbnail_url = it.uri.toString()
         }
@@ -316,7 +316,7 @@ actual class LocalSource(
         }
     }
 
-    private fun setMangaDetailsFromComicInfoFile(stream: InputStream, manga: SManga) {
+    private fun setMangaDetailsFromComicInfoFile(stream: InputStream, manga: SAnime) {
         val comicInfo = AndroidXmlReader(stream, StandardCharsets.UTF_8.name()).use {
             xml.decodeFromReader<ComicInfo>(it)
         }
@@ -325,7 +325,7 @@ actual class LocalSource(
     }
 
     // Chapters
-    override suspend fun getChapterList(manga: SManga): List<SChapter> = withIOContext {
+    override suspend fun getChapterList(manga: SAnime): List<SChapter> = withIOContext {
         val chapters = fileSystem.getFilesInAnimeDirectory(manga.url)
             // Only keep supported formats
             .filter { it.isDirectory || Archive.isSupported(it) || it.extension.equals("epub", true) }
@@ -386,7 +386,7 @@ actual class LocalSource(
         }
     }
 
-    private fun updateCover(chapter: SChapter, manga: SManga): UniFile? {
+    private fun updateCover(chapter: SChapter, manga: SAnime): UniFile? {
         return try {
             when (val format = getFormat(chapter)) {
                 is Format.Directory -> {

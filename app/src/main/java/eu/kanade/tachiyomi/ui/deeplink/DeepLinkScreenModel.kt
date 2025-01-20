@@ -8,7 +8,7 @@ import eu.kanade.domain.anime.model.toSManga
 import eu.kanade.domain.episode.interactor.SyncEpisodesWithSource
 import eu.kanade.tachiyomi.source.Source
 import eu.kanade.tachiyomi.source.model.SChapter
-import eu.kanade.tachiyomi.source.model.SManga
+import eu.kanade.tachiyomi.source.model.SAnime
 import eu.kanade.tachiyomi.source.online.ResolvableSource
 import eu.kanade.tachiyomi.source.online.UriType
 import kotlinx.coroutines.flow.update
@@ -73,9 +73,9 @@ class DeepLinkScreenModel(
         }
     }
 
-    private suspend fun getMangaFromSManga(sManga: SManga, sourceId: Long): Anime {
-        return getAnimeByUrlAndSourceId.await(sManga.url, sourceId)
-            ?: networkToLocalAnime.await(sManga.toDomainManga(sourceId))
+    private suspend fun getMangaFromSManga(sAnime: SAnime, sourceId: Long): Anime {
+        return getAnimeByUrlAndSourceId.await(sAnime.url, sourceId)
+            ?: networkToLocalAnime.await(sAnime.toDomainManga(sourceId))
     }
 
     sealed interface State {

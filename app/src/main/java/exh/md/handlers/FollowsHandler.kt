@@ -3,7 +3,7 @@ package exh.md.handlers
 import eu.kanade.tachiyomi.data.database.models.Track
 import eu.kanade.tachiyomi.data.track.TrackerManager
 import eu.kanade.tachiyomi.source.model.MetadataMangasPage
-import eu.kanade.tachiyomi.source.model.SManga
+import eu.kanade.tachiyomi.source.model.SAnime
 import exh.md.dto.MangaDataDto
 import exh.md.dto.PersonalRatingDto
 import exh.md.dto.ReadingStatusDto
@@ -48,8 +48,8 @@ class FollowsHandler(
     private fun followsParseMangaPage(
         response: List<MangaDataDto>,
         statuses: Map<String, String?>,
-    ): List<Pair<SManga, MangaDexSearchMetadata>> {
-        val comparator = compareBy<Pair<SManga, MangaDexSearchMetadata>> { it.second.followStatus }
+    ): List<Pair<SAnime, MangaDexSearchMetadata>> {
+        val comparator = compareBy<Pair<SAnime, MangaDexSearchMetadata>> { it.second.followStatus }
             .thenBy { it.first.title }
 
         return response.map {
@@ -129,7 +129,7 @@ class FollowsHandler(
     /**
      * fetch all manga from all possible pages
      */
-    suspend fun fetchAllFollows(): List<Pair<SManga, MangaDexSearchMetadata>> {
+    suspend fun fetchAllFollows(): List<Pair<SAnime, MangaDexSearchMetadata>> {
         return withIOContext {
             val results = async {
                 mdListCall {

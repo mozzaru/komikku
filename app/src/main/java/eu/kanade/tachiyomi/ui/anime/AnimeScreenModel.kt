@@ -59,7 +59,7 @@ import eu.kanade.tachiyomi.network.HttpException
 import eu.kanade.tachiyomi.source.PagePreviewSource
 import eu.kanade.tachiyomi.source.Source
 import eu.kanade.tachiyomi.source.getNameForMangaInfo
-import eu.kanade.tachiyomi.source.model.SManga
+import eu.kanade.tachiyomi.source.model.SAnime
 import eu.kanade.tachiyomi.source.online.MetadataSource
 import eu.kanade.tachiyomi.source.online.all.MergedSource
 import eu.kanade.tachiyomi.ui.anime.RelatedAnime.Companion.isLoading
@@ -1962,8 +1962,8 @@ sealed interface RelatedAnime {
 
         companion object {
             suspend fun fromPair(
-                pair: Pair<String, List<SManga>>,
-                toManga: suspend (mangaList: List<SManga>) -> List<Anime>,
+                pair: Pair<String, List<SAnime>>,
+                toManga: suspend (mangaList: List<SAnime>) -> List<Anime>,
             ) = Success(pair.first, toManga(pair.second))
         }
     }

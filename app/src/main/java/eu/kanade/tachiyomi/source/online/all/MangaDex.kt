@@ -13,7 +13,7 @@ import eu.kanade.tachiyomi.source.model.MangasPage
 import eu.kanade.tachiyomi.source.model.MetadataMangasPage
 import eu.kanade.tachiyomi.source.model.Page
 import eu.kanade.tachiyomi.source.model.SChapter
-import eu.kanade.tachiyomi.source.model.SManga
+import eu.kanade.tachiyomi.source.model.SAnime
 import eu.kanade.tachiyomi.source.online.FollowsSource
 import eu.kanade.tachiyomi.source.online.HttpSource
 import eu.kanade.tachiyomi.source.online.LoginSource
@@ -191,20 +191,20 @@ class MangaDex(delegate: HttpSource, val context: Context) :
     }
 
     @Deprecated("Use the 1.x API instead", replaceWith = ReplaceWith("getMangaDetails"))
-    override fun fetchMangaDetails(manga: SManga): Observable<SManga> {
+    override fun fetchMangaDetails(manga: SAnime): Observable<SAnime> {
         return mangaHandler.fetchMangaDetailsObservable(manga, id, coverQuality(), tryUsingFirstVolumeCover(), altTitlesInDesc())
     }
 
-    override suspend fun getMangaDetails(manga: SManga): SManga {
+    override suspend fun getMangaDetails(manga: SAnime): SAnime {
         return mangaHandler.getMangaDetails(manga, id, coverQuality(), tryUsingFirstVolumeCover(), altTitlesInDesc())
     }
 
     @Deprecated("Use the 1.x API instead", replaceWith = ReplaceWith("getChapterList"))
-    override fun fetchChapterList(manga: SManga): Observable<List<SChapter>> {
+    override fun fetchChapterList(manga: SAnime): Observable<List<SChapter>> {
         return mangaHandler.fetchChapterListObservable(manga, blockedGroups(), blockedUploaders())
     }
 
-    override suspend fun getChapterList(manga: SManga): List<SChapter> {
+    override suspend fun getChapterList(manga: SAnime): List<SChapter> {
         return mangaHandler.getChapterList(manga, blockedGroups(), blockedUploaders())
     }
 
@@ -275,7 +275,7 @@ class MangaDex(delegate: HttpSource, val context: Context) :
         return followsHandler.fetchFollows(page)
     }
 
-    override suspend fun fetchAllFollows(): List<Pair<SManga, MangaDexSearchMetadata>> {
+    override suspend fun fetchAllFollows(): List<Pair<SAnime, MangaDexSearchMetadata>> {
         return followsHandler.fetchAllFollows()
     }
 
@@ -305,15 +305,15 @@ class MangaDex(delegate: HttpSource, val context: Context) :
         return mangaHandler.fetchRandomMangaId()
     }
 
-    suspend fun getMangaSimilar(manga: SManga): MetadataMangasPage {
+    suspend fun getMangaSimilar(manga: SAnime): MetadataMangasPage {
         return similarHandler.getSimilar(manga)
     }
 
-    suspend fun getMangaRelated(manga: SManga): MetadataMangasPage {
+    suspend fun getMangaRelated(manga: SAnime): MetadataMangasPage {
         return similarHandler.getRelated(manga)
     }
 
-    suspend fun getMangaMetadata(track: Track): SManga? {
+    suspend fun getMangaMetadata(track: Track): SAnime? {
         return mangaHandler.getMangaMetadata(track, id, coverQuality(), tryUsingFirstVolumeCover(), altTitlesInDesc())
     }
 
