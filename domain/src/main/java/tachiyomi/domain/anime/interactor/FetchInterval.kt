@@ -1,7 +1,7 @@
 package tachiyomi.domain.anime.interactor
 
-import tachiyomi.domain.anime.model.AnimeUpdate
 import tachiyomi.domain.anime.model.Anime
+import tachiyomi.domain.anime.model.AnimeUpdate
 import tachiyomi.domain.episode.interactor.GetEpisodesByAnimeId
 import tachiyomi.domain.episode.model.Episode
 import java.time.Instant
@@ -14,13 +14,13 @@ class FetchInterval(
     private val getEpisodesByAnimeId: GetEpisodesByAnimeId,
 ) {
 
-    suspend fun toMangaUpdate(
-        manga: Anime,
+    suspend fun toAnimeUpdate(
+        anime: Anime,
         dateTime: ZonedDateTime,
         window: Pair<Long, Long>,
     ): AnimeUpdate {
-        val interval = manga.fetchInterval.takeIf { it < 0 } ?: calculateInterval(
-            episodes = getEpisodesByAnimeId.await(manga.id, applyScanlatorFilter = true),
+        val interval = anime.fetchInterval.takeIf { it < 0 } ?: calculateInterval(
+            episodes = getEpisodesByAnimeId.await(anime.id, applyScanlatorFilter = true),
             zone = dateTime.zone,
         )
         val currentWindow = if (window.first == 0L && window.second == 0L) {
@@ -28,9 +28,9 @@ class FetchInterval(
         } else {
             window
         }
-        val nextUpdate = calculateNextUpdate(manga, interval, dateTime, currentWindow)
+        val nextUpdate = calculateNextUpdate(anime, interval, dateTime, currentWindow)
 
-        return AnimeUpdate(id = manga.id, nextUpdate = nextUpdate, fetchInterval = interval)
+        return AnimeUpdate(id = anime.id, nextUpdate = nextUpdate, fetchInterval = interval)
     }
 
     fun getWindow(dateTime: ZonedDateTime): Pair<Long, Long> {

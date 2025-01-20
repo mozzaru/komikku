@@ -8,8 +8,8 @@ import tachiyomi.data.AndroidDatabaseHandler
 import tachiyomi.data.DatabaseHandler
 import tachiyomi.data.StringListColumnAdapter
 import tachiyomi.data.UpdateStrategyColumnAdapter
-import tachiyomi.domain.anime.model.AnimeUpdate
 import tachiyomi.domain.anime.model.Anime
+import tachiyomi.domain.anime.model.AnimeUpdate
 import tachiyomi.domain.anime.repository.AnimeRepository
 import tachiyomi.domain.library.model.LibraryAnime
 import java.time.LocalDate
@@ -148,9 +148,9 @@ class AnimeRepositoryImpl(
         }
     }
 
-    override suspend fun updateAll(mangaUpdates: List<AnimeUpdate>): Boolean {
+    override suspend fun updateAll(animeUpdates: List<AnimeUpdate>): Boolean {
         return try {
-            partialUpdate(*mangaUpdates.toTypedArray())
+            partialUpdate(*animeUpdates.toTypedArray())
             true
         } catch (e: Exception) {
             logcat(LogPriority.ERROR, e)
@@ -158,9 +158,9 @@ class AnimeRepositoryImpl(
         }
     }
 
-    private suspend fun partialUpdate(vararg mangaUpdates: AnimeUpdate) {
+    private suspend fun partialUpdate(vararg animeUpdates: AnimeUpdate) {
         handler.await(inTransaction = true) {
-            mangaUpdates.forEach { value ->
+            animeUpdates.forEach { value ->
                 animesQueries.update(
                     source = value.source,
                     url = value.url,

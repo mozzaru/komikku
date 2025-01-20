@@ -46,7 +46,7 @@ import tachiyomi.core.common.util.lang.launchNonCancellable
 import tachiyomi.domain.UnsortedPreferences
 import tachiyomi.domain.anime.interactor.GetDuplicateLibraryAnime
 import tachiyomi.domain.anime.model.Anime
-import tachiyomi.domain.anime.model.toMangaUpdate
+import tachiyomi.domain.anime.model.toAnimeUpdate
 import tachiyomi.domain.category.interactor.GetCategories
 import tachiyomi.domain.category.interactor.SetAnimeCategories
 import tachiyomi.domain.category.model.Category
@@ -335,7 +335,7 @@ class BulkFavoriteScreenModel(
                 addTracks.bindEnhancedTrackers(manga, source)
             }
 
-            updateAnime.await(new.toMangaUpdate())
+            updateAnime.await(new.toAnimeUpdate())
         }
     }
 

@@ -42,8 +42,8 @@ import tachiyomi.domain.UnsortedPreferences
 import tachiyomi.domain.anime.interactor.GetAnime
 import tachiyomi.domain.anime.interactor.GetMergedReferencesById
 import tachiyomi.domain.anime.interactor.NetworkToLocalAnime
-import tachiyomi.domain.anime.model.AnimeUpdate
 import tachiyomi.domain.anime.model.Anime
+import tachiyomi.domain.anime.model.AnimeUpdate
 import tachiyomi.domain.category.interactor.GetCategories
 import tachiyomi.domain.category.interactor.SetAnimeCategories
 import tachiyomi.domain.episode.interactor.GetEpisodesByAnimeId
@@ -424,11 +424,11 @@ class MigrationListScreenModel(
             coverCache.setCustomCoverToCache(manga, coverCache.getCustomCoverFile(prevManga.id).inputStream())
         }
 
-        var mangaUpdate = AnimeUpdate(manga.id, favorite = true, dateAdded = System.currentTimeMillis())
-        var prevMangaUpdate: AnimeUpdate? = null
+        var animeUpdate = AnimeUpdate(manga.id, favorite = true, dateAdded = System.currentTimeMillis())
+        var prevAnimeUpdate: AnimeUpdate? = null
         // Update extras
         if (MigrationFlags.hasExtra(flags)) {
-            mangaUpdate = mangaUpdate.copy(
+            animeUpdate = animeUpdate.copy(
                 chapterFlags = prevManga.chapterFlags,
                 viewerFlags = prevManga.viewerFlags,
             )
@@ -442,17 +442,17 @@ class MigrationListScreenModel(
         }
         // Update favorite status
         if (replace) {
-            prevMangaUpdate = AnimeUpdate(
+            prevAnimeUpdate = AnimeUpdate(
                 id = prevManga.id,
                 favorite = false,
                 dateAdded = 0,
             )
-            mangaUpdate = mangaUpdate.copy(
+            animeUpdate = animeUpdate.copy(
                 dateAdded = prevManga.dateAdded,
             )
         }
 
-        updateAnime.awaitAll(listOfNotNull(mangaUpdate, prevMangaUpdate))
+        updateAnime.awaitAll(listOfNotNull(animeUpdate, prevAnimeUpdate))
     }
 
     /** Set a manga picked from manual search to be used as migration target */

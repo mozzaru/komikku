@@ -5,8 +5,8 @@ import eu.kanade.tachiyomi.data.cache.CoverCache
 import eu.kanade.tachiyomi.data.download.DownloadManager
 import eu.kanade.tachiyomi.source.model.SManga
 import tachiyomi.domain.anime.interactor.FetchInterval
-import tachiyomi.domain.anime.model.AnimeUpdate
 import tachiyomi.domain.anime.model.Anime
+import tachiyomi.domain.anime.model.AnimeUpdate
 import tachiyomi.domain.anime.repository.AnimeRepository
 import tachiyomi.source.local.isLocal
 import uy.kohesive.injekt.Injekt
@@ -19,12 +19,12 @@ class UpdateAnime(
     private val fetchInterval: FetchInterval,
 ) {
 
-    suspend fun await(mangaUpdate: AnimeUpdate): Boolean {
-        return animeRepository.update(mangaUpdate)
+    suspend fun await(animeUpdate: AnimeUpdate): Boolean {
+        return animeRepository.update(animeUpdate)
     }
 
-    suspend fun awaitAll(mangaUpdates: List<AnimeUpdate>): Boolean {
-        return animeRepository.updateAll(mangaUpdates)
+    suspend fun awaitAll(animeUpdates: List<AnimeUpdate>): Boolean {
+        return animeRepository.updateAll(animeUpdates)
     }
 
     suspend fun awaitUpdateFromSource(
@@ -92,7 +92,7 @@ class UpdateAnime(
         window: Pair<Long, Long> = fetchInterval.getWindow(dateTime),
     ): Boolean {
         return animeRepository.update(
-            fetchInterval.toMangaUpdate(manga, dateTime, window),
+            fetchInterval.toAnimeUpdate(manga, dateTime, window),
         )
     }
 
