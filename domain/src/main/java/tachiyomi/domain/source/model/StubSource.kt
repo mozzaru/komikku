@@ -2,7 +2,7 @@ package tachiyomi.domain.source.model
 
 import eu.kanade.tachiyomi.source.Source
 import eu.kanade.tachiyomi.source.model.Page
-import eu.kanade.tachiyomi.source.model.SChapter
+import eu.kanade.tachiyomi.source.model.SEpisode
 import eu.kanade.tachiyomi.source.model.SAnime
 
 class StubSource(
@@ -16,9 +16,9 @@ class StubSource(
     override suspend fun getMangaDetails(manga: SAnime): SAnime =
         throw SourceNotInstalledException()
 
-    override suspend fun getChapterList(manga: SAnime): List<SChapter> =
+    override suspend fun getChapterList(manga: SAnime): List<SEpisode> =
         throw SourceNotInstalledException()
-    override suspend fun getPageList(chapter: SChapter): List<Page> =
+    override suspend fun getPageList(chapter: SEpisode): List<Page> =
         throw SourceNotInstalledException()
 
     // KMK -->

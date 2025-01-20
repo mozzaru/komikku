@@ -8,7 +8,7 @@ import eu.kanade.domain.episode.model.toSChapter
 import eu.kanade.tachiyomi.data.download.DownloadManager
 import eu.kanade.tachiyomi.data.download.DownloadProvider
 import eu.kanade.tachiyomi.source.Source
-import eu.kanade.tachiyomi.source.model.SChapter
+import eu.kanade.tachiyomi.source.model.SEpisode
 import eu.kanade.tachiyomi.source.online.HttpSource
 import exh.source.isEhBasedManga
 import tachiyomi.data.episode.EpisodeSanitizer
@@ -46,7 +46,7 @@ class SyncEpisodesWithSource(
      * @return Newly added episodes
      */
     suspend fun await(
-        rawSourceChapters: List<SChapter>,
+        rawSourceChapters: List<SEpisode>,
         manga: Anime,
         source: Source,
         manualFetch: Boolean = false,

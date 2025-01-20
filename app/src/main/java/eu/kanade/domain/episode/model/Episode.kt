@@ -1,13 +1,13 @@
 package eu.kanade.domain.episode.model
 
 import eu.kanade.tachiyomi.data.database.models.EpisodeImpl
-import eu.kanade.tachiyomi.source.model.SChapter
+import eu.kanade.tachiyomi.source.model.SEpisode
 import tachiyomi.domain.episode.model.Episode
 import eu.kanade.tachiyomi.data.database.models.Episode as DbChapter
 
 // TODO: Remove when all deps are migrated
-fun Episode.toSChapter(): SChapter {
-    return SChapter.create().also {
+fun Episode.toSChapter(): SEpisode {
+    return SEpisode.create().also {
         it.url = url
         it.name = name
         it.date_upload = dateUpload
@@ -16,13 +16,13 @@ fun Episode.toSChapter(): SChapter {
     }
 }
 
-fun Episode.copyFromSChapter(sChapter: SChapter): Episode {
+fun Episode.copyFromSChapter(sEpisode: SEpisode): Episode {
     return this.copy(
-        name = sChapter.name,
-        url = sChapter.url,
-        dateUpload = sChapter.date_upload,
-        chapterNumber = sChapter.chapter_number.toDouble(),
-        scanlator = sChapter.scanlator?.ifBlank { null }?.trim(),
+        name = sEpisode.name,
+        url = sEpisode.url,
+        dateUpload = sEpisode.date_upload,
+        chapterNumber = sEpisode.chapter_number.toDouble(),
+        scanlator = sEpisode.scanlator?.ifBlank { null }?.trim(),
     )
 }
 

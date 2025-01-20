@@ -6,7 +6,7 @@ import eu.kanade.tachiyomi.network.GET
 import eu.kanade.tachiyomi.network.newCachelessCallWithProgress
 import eu.kanade.tachiyomi.source.Source
 import eu.kanade.tachiyomi.source.model.Page
-import eu.kanade.tachiyomi.source.model.SChapter
+import eu.kanade.tachiyomi.source.model.SEpisode
 import exh.log.xLogD
 import exh.md.dto.AtHomeDto
 import exh.md.service.MangaDexService
@@ -32,7 +32,7 @@ class PageHandler(
     private val mdList: MdList,
 ) {
 
-    suspend fun fetchPageList(chapter: SChapter, usePort443Only: Boolean, dataSaver: Boolean, mangadex: Source): List<Page> {
+    suspend fun fetchPageList(chapter: SEpisode, usePort443Only: Boolean, dataSaver: Boolean, mangadex: Source): List<Page> {
         return withIOContext {
             val chapterResponse = service.viewChapter(MdUtil.getChapterId(chapter.url))
 

@@ -7,7 +7,7 @@ import eu.kanade.tachiyomi.R
 import eu.kanade.tachiyomi.data.track.mdlist.MdList
 import eu.kanade.tachiyomi.data.track.myanimelist.dto.MALOAuth
 import eu.kanade.tachiyomi.network.POST
-import eu.kanade.tachiyomi.source.model.SChapter
+import eu.kanade.tachiyomi.source.model.SEpisode
 import eu.kanade.tachiyomi.source.model.SAnime
 import eu.kanade.tachiyomi.source.online.all.MangaDex
 import eu.kanade.tachiyomi.util.PkceUtil
@@ -112,7 +112,7 @@ class MdUtil {
             return scanlators.sorted().joinToString(scanlatorSeparator)
         }
 
-        fun getMissingChapterCount(chapters: List<SChapter>, mangaStatus: Int): String? {
+        fun getMissingChapterCount(chapters: List<SEpisode>, mangaStatus: Int): String? {
             if (mangaStatus == SAnime.COMPLETED) return null
 
             val remove0ChaptersFromCount = chapters.distinctBy {

@@ -18,7 +18,7 @@ import eu.kanade.tachiyomi.source.model.FilterList
 import eu.kanade.tachiyomi.source.model.MangasPage
 import eu.kanade.tachiyomi.source.model.MetadataMangasPage
 import eu.kanade.tachiyomi.source.model.Page
-import eu.kanade.tachiyomi.source.model.SChapter
+import eu.kanade.tachiyomi.source.model.SEpisode
 import eu.kanade.tachiyomi.source.model.SAnime
 import eu.kanade.tachiyomi.source.model.copy
 import eu.kanade.tachiyomi.source.online.HttpSource
@@ -330,9 +330,9 @@ class EHentai(
         )
     }
 
-    override suspend fun getChapterList(manga: SAnime): List<SChapter> = getChapterList(manga) {}
+    override suspend fun getChapterList(manga: SAnime): List<SEpisode> = getChapterList(manga) {}
 
-    suspend fun getChapterList(manga: SAnime, throttleFunc: suspend () -> Unit): List<SChapter> {
+    suspend fun getChapterList(manga: SAnime, throttleFunc: suspend () -> Unit): List<SEpisode> {
         // Pull all the way to the root gallery
         // We can't do this with RxJava or we run into stack overflows on shit like this:
         //   https://exhentai.org/g/1073061/f9345f1c12/
@@ -375,7 +375,7 @@ class EHentai(
         val newDisplay = doc.select("#gnd a")
         // Build episode for root gallery
         val location = doc.location()
-        val self = SChapter(
+        val self = SEpisode(
             url = EHentaiSearchMetadata.normalizeUrl(location),
             name = "v1: " + doc.selectFirst("#gn")!!.text(),
             chapter_number = 1f,
@@ -395,7 +395,7 @@ class EHentai(
                 val link = newGallery.attr("href")
                 val name = newGallery.text()
                 val posted = (newGallery.nextSibling() as TextNode).text().removePrefix(", added ")
-                SChapter(
+                SEpisode(
                     url = EHentaiSearchMetadata.normalizeUrl(link),
                     name = "v${index + 2}: $name",
                     chapter_number = index + 2f,
@@ -420,7 +420,7 @@ class EHentai(
 
     @Deprecated("Use the 1.x API instead", replaceWith = ReplaceWith("getPageList"))
     override fun fetchPageList(
-        chapter: SChapter,
+        chapter: SEpisode,
     ): Observable<List<Page>> = fetchChapterPage(chapter, baseUrl + chapter.url)
         .map {
             it.mapIndexed { i, s ->
@@ -429,7 +429,7 @@ class EHentai(
         }!!
 
     private fun fetchChapterPage(
-        chapter: SChapter,
+        chapter: SEpisode,
         np: String,
         pastUrls: List<String> = emptyList(),
     ): Observable<List<String>> {
@@ -1201,7 +1201,7 @@ class EHentai(
 
     override suspend fun getPagePreviewList(
         manga: SAnime,
-        chapters: List<SChapter>,
+        chapters: List<SEpisode>,
         page: Int,
     ): PagePreviewPage {
         val doc = client.newCall(

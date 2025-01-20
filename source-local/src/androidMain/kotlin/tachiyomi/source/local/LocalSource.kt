@@ -8,7 +8,7 @@ import eu.kanade.tachiyomi.source.UnmeteredSource
 import eu.kanade.tachiyomi.source.model.FilterList
 import eu.kanade.tachiyomi.source.model.MangasPage
 import eu.kanade.tachiyomi.source.model.Page
-import eu.kanade.tachiyomi.source.model.SChapter
+import eu.kanade.tachiyomi.source.model.SEpisode
 import eu.kanade.tachiyomi.source.model.SAnime
 import eu.kanade.tachiyomi.util.lang.compareToCaseInsensitiveNaturalOrder
 import kotlinx.coroutines.async
@@ -325,12 +325,12 @@ actual class LocalSource(
     }
 
     // Chapters
-    override suspend fun getChapterList(manga: SAnime): List<SChapter> = withIOContext {
+    override suspend fun getChapterList(manga: SAnime): List<SEpisode> = withIOContext {
         val chapters = fileSystem.getFilesInAnimeDirectory(manga.url)
             // Only keep supported formats
             .filter { it.isDirectory || Archive.isSupported(it) || it.extension.equals("epub", true) }
             .map { chapterFile ->
-                SChapter.create().apply {
+                SEpisode.create().apply {
                     url = "${manga.url}/${chapterFile.name}"
                     name = if (chapterFile.isDirectory) {
                         chapterFile.name
@@ -369,9 +369,9 @@ actual class LocalSource(
     override fun getFilterList() = FilterList(OrderBy.Popular(context))
 
     // Unused stuff
-    override suspend fun getPageList(chapter: SChapter): List<Page> = throw UnsupportedOperationException("Unused")
+    override suspend fun getPageList(chapter: SEpisode): List<Page> = throw UnsupportedOperationException("Unused")
 
-    fun getFormat(chapter: SChapter): Format {
+    fun getFormat(chapter: SEpisode): Format {
         try {
             val (mangaDirName, chapterName) = chapter.url.split('/', limit = 2)
             return fileSystem.getBaseDirectory()
@@ -386,7 +386,7 @@ actual class LocalSource(
         }
     }
 
-    private fun updateCover(chapter: SChapter, manga: SAnime): UniFile? {
+    private fun updateCover(chapter: SEpisode, manga: SAnime): UniFile? {
         return try {
             when (val format = getFormat(chapter)) {
                 is Format.Directory -> {

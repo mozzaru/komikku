@@ -12,7 +12,7 @@ import eu.kanade.tachiyomi.network.awaitSuccess
 import eu.kanade.tachiyomi.source.model.MangasPage
 import eu.kanade.tachiyomi.source.model.MetadataMangasPage
 import eu.kanade.tachiyomi.source.model.Page
-import eu.kanade.tachiyomi.source.model.SChapter
+import eu.kanade.tachiyomi.source.model.SEpisode
 import eu.kanade.tachiyomi.source.model.SAnime
 import eu.kanade.tachiyomi.source.online.FollowsSource
 import eu.kanade.tachiyomi.source.online.HttpSource
@@ -200,20 +200,20 @@ class MangaDex(delegate: HttpSource, val context: Context) :
     }
 
     @Deprecated("Use the 1.x API instead", replaceWith = ReplaceWith("getChapterList"))
-    override fun fetchChapterList(manga: SAnime): Observable<List<SChapter>> {
+    override fun fetchChapterList(manga: SAnime): Observable<List<SEpisode>> {
         return mangaHandler.fetchChapterListObservable(manga, blockedGroups(), blockedUploaders())
     }
 
-    override suspend fun getChapterList(manga: SAnime): List<SChapter> {
+    override suspend fun getChapterList(manga: SAnime): List<SEpisode> {
         return mangaHandler.getChapterList(manga, blockedGroups(), blockedUploaders())
     }
 
     @Deprecated("Use the 1.x API instead", replaceWith = ReplaceWith("getPageList"))
-    override fun fetchPageList(chapter: SChapter): Observable<List<Page>> {
+    override fun fetchPageList(chapter: SEpisode): Observable<List<Page>> {
         return runAsObservable { pageHandler.fetchPageList(chapter, usePort443Only(), dataSaver(), delegate) }
     }
 
-    override suspend fun getPageList(chapter: SChapter): List<Page> {
+    override suspend fun getPageList(chapter: SEpisode): List<Page> {
         return pageHandler.fetchPageList(chapter, usePort443Only(), dataSaver(), delegate)
     }
 

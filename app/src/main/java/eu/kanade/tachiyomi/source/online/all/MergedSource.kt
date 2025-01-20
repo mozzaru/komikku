@@ -7,7 +7,7 @@ import eu.kanade.tachiyomi.data.download.DownloadManager
 import eu.kanade.tachiyomi.source.Source
 import eu.kanade.tachiyomi.source.model.FilterList
 import eu.kanade.tachiyomi.source.model.Page
-import eu.kanade.tachiyomi.source.model.SChapter
+import eu.kanade.tachiyomi.source.model.SEpisode
 import eu.kanade.tachiyomi.source.model.SAnime
 import eu.kanade.tachiyomi.source.model.copy
 import eu.kanade.tachiyomi.source.online.HttpSource
@@ -70,8 +70,8 @@ class MergedSource : HttpSource() {
     override suspend fun getImageUrl(page: Page) = throw UnsupportedOperationException()
 
     @Deprecated("Use the 1.x API instead", replaceWith = ReplaceWith("getPageList"))
-    override fun fetchPageList(chapter: SChapter) = throw UnsupportedOperationException()
-    override suspend fun getPageList(chapter: SChapter) = throw UnsupportedOperationException()
+    override fun fetchPageList(chapter: SEpisode) = throw UnsupportedOperationException()
+    override suspend fun getPageList(chapter: SEpisode) = throw UnsupportedOperationException()
 
     @Deprecated("Use the non-RxJava API instead", replaceWith = ReplaceWith("getLatestUpdates"))
     override fun fetchLatestUpdates(page: Int) = throw UnsupportedOperationException()

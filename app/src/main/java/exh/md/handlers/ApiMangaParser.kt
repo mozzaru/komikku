@@ -1,6 +1,6 @@
 package exh.md.handlers
 
-import eu.kanade.tachiyomi.source.model.SChapter
+import eu.kanade.tachiyomi.source.model.SEpisode
 import eu.kanade.tachiyomi.source.model.SAnime
 import exh.log.xLogE
 import exh.md.dto.ChapterDataDto
@@ -197,7 +197,7 @@ class ApiMangaParser(
         else -> SAnime.UNKNOWN
     }
 
-    fun chapterListParse(chapterListResponse: List<ChapterDataDto>, groupMap: Map<String, String>): List<SChapter> {
+    fun chapterListParse(chapterListResponse: List<ChapterDataDto>, groupMap: Map<String, String>): List<SEpisode> {
         val now = System.currentTimeMillis()
         return chapterListResponse
             .filterNot { MdUtil.parseDate(it.attributes.publishAt) > now && it.attributes.externalUrl == null }
@@ -215,7 +215,7 @@ class ApiMangaParser(
     private fun mapChapter(
         networkChapter: ChapterDataDto,
         groups: Map<String, String>,
-    ): SChapter {
+    ): SEpisode {
         val attributes = networkChapter.attributes
         val key = MdUtil.chapterSuffix + networkChapter.id
         val chapterName = StringBuilder()
@@ -280,7 +280,7 @@ class ApiMangaParser(
 
         // episode.language = MdLang.fromIsoCode(attributes.translatedLanguage)?.prettyPrint ?: ""
 
-        return SChapter(
+        return SEpisode(
             url = key,
             name = name,
             scanlator = scanlator,

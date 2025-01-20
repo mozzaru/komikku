@@ -1,7 +1,7 @@
 package exh.md.handlers
 
 import eu.kanade.tachiyomi.data.database.models.Track
-import eu.kanade.tachiyomi.source.model.SChapter
+import eu.kanade.tachiyomi.source.model.SEpisode
 import eu.kanade.tachiyomi.source.model.SAnime
 import exh.md.dto.ChapterDataDto
 import exh.md.service.MangaDexService
@@ -69,11 +69,11 @@ class MangaHandler(
         manga: SAnime,
         blockedGroups: String,
         blockedUploaders: String,
-    ): Observable<List<SChapter>> = runAsObservable {
+    ): Observable<List<SEpisode>> = runAsObservable {
         getChapterList(manga, blockedGroups, blockedUploaders)
     }
 
-    suspend fun getChapterList(manga: SAnime, blockedGroups: String, blockedUploaders: String): List<SChapter> {
+    suspend fun getChapterList(manga: SAnime, blockedGroups: String, blockedUploaders: String): List<SEpisode> {
         return withIOContext {
             val results = mdListCall {
                 service.viewChapters(

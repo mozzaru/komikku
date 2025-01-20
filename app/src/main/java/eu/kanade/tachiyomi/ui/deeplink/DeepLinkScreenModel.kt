@@ -7,7 +7,7 @@ import eu.kanade.domain.anime.model.toDomainManga
 import eu.kanade.domain.anime.model.toSManga
 import eu.kanade.domain.episode.interactor.SyncEpisodesWithSource
 import eu.kanade.tachiyomi.source.Source
-import eu.kanade.tachiyomi.source.model.SChapter
+import eu.kanade.tachiyomi.source.model.SEpisode
 import eu.kanade.tachiyomi.source.model.SAnime
 import eu.kanade.tachiyomi.source.online.ResolvableSource
 import eu.kanade.tachiyomi.source.online.UriType
@@ -61,13 +61,13 @@ class DeepLinkScreenModel(
         }
     }
 
-    private suspend fun getChapterFromSChapter(sChapter: SChapter, manga: Anime, source: Source): Episode? {
-        val localChapter = getEpisodeByUrlAndAnimeId.await(sChapter.url, manga.id)
+    private suspend fun getChapterFromSChapter(sEpisode: SEpisode, manga: Anime, source: Source): Episode? {
+        val localChapter = getEpisodeByUrlAndAnimeId.await(sEpisode.url, manga.id)
 
         return if (localChapter == null) {
             val sourceChapters = source.getChapterList(manga.toSManga())
             val newChapters = syncEpisodesWithSource.await(sourceChapters, manga, source, false)
-            newChapters.find { it.url == sChapter.url }
+            newChapters.find { it.url == sEpisode.url }
         } else {
             localChapter
         }
