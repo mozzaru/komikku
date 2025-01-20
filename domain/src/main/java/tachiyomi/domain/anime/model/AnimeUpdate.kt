@@ -29,7 +29,7 @@ data class AnimeUpdate(
     // SY <--
 )
 
-fun Manga.toMangaUpdate(): AnimeUpdate {
+fun Manga.toAnimeUpdate(): AnimeUpdate {
     return AnimeUpdate(
         id = id,
         source = source,

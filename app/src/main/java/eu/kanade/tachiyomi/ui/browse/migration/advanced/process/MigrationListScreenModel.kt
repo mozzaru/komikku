@@ -8,9 +8,9 @@ import eu.kanade.domain.anime.interactor.UpdateAnime
 import eu.kanade.domain.anime.model.hasCustomCover
 import eu.kanade.domain.anime.model.toSManga
 import eu.kanade.domain.episode.interactor.SyncEpisodesWithSource
+import eu.kanade.tachiyomi.animesource.AnimeCatalogueSource
 import eu.kanade.tachiyomi.data.cache.CoverCache
 import eu.kanade.tachiyomi.data.download.DownloadManager
-import eu.kanade.tachiyomi.animesource.AnimeCatalogueSource
 import eu.kanade.tachiyomi.source.getNameForMangaInfo
 import eu.kanade.tachiyomi.source.online.all.EHentai
 import eu.kanade.tachiyomi.ui.browse.migration.MigrationFlags
@@ -424,11 +424,11 @@ class MigrationListScreenModel(
             coverCache.setCustomCoverToCache(manga, coverCache.getCustomCoverFile(prevManga.id).inputStream())
         }
 
-        var mangaUpdate = AnimeUpdate(manga.id, favorite = true, dateAdded = System.currentTimeMillis())
-        var prevMangaUpdate: AnimeUpdate? = null
+        var animeUpdate = AnimeUpdate(manga.id, favorite = true, dateAdded = System.currentTimeMillis())
+        var prevAnimeUpdate: AnimeUpdate? = null
         // Update extras
         if (MigrationFlags.hasExtra(flags)) {
-            mangaUpdate = mangaUpdate.copy(
+            animeUpdate = animeUpdate.copy(
                 chapterFlags = prevManga.chapterFlags,
                 viewerFlags = prevManga.viewerFlags,
             )
@@ -442,17 +442,17 @@ class MigrationListScreenModel(
         }
         // Update favorite status
         if (replace) {
-            prevMangaUpdate = AnimeUpdate(
+            prevAnimeUpdate = AnimeUpdate(
                 id = prevManga.id,
                 favorite = false,
                 dateAdded = 0,
             )
-            mangaUpdate = mangaUpdate.copy(
+            animeUpdate = animeUpdate.copy(
                 dateAdded = prevManga.dateAdded,
             )
         }
 
-        updateAnime.awaitAll(listOfNotNull(mangaUpdate, prevMangaUpdate))
+        updateAnime.awaitAll(listOfNotNull(animeUpdate, prevAnimeUpdate))
     }
 
     /** Set a manga picked from manual search to be used as migration target */

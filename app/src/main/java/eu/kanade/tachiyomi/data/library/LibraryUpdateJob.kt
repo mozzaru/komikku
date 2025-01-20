@@ -72,7 +72,7 @@ import tachiyomi.domain.anime.interactor.GetMergedAnimeForDownloading
 import tachiyomi.domain.anime.interactor.InsertFlatMetadata
 import tachiyomi.domain.anime.interactor.NetworkToLocalAnime
 import tachiyomi.domain.anime.model.Manga
-import tachiyomi.domain.anime.model.toMangaUpdate
+import tachiyomi.domain.anime.model.toAnimeUpdate
 import tachiyomi.domain.category.model.Category
 import tachiyomi.domain.episode.interactor.GetEpisodesByAnimeId
 import tachiyomi.domain.episode.model.Episode
@@ -587,7 +587,7 @@ class LibraryUpdateJob(private val context: Context, workerParams: WorkerParamet
                                         )
                                             .copyFrom(networkManga)
                                         try {
-                                            updateAnime.await(updatedManga.toMangaUpdate())
+                                            updateAnime.await(updatedManga.toAnimeUpdate())
                                         } catch (e: Exception) {
                                             logcat(LogPriority.ERROR) { "Manga doesn't exist anymore" }
                                         }

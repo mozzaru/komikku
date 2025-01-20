@@ -1,9 +1,9 @@
 package eu.kanade.domain.anime.interactor
 
 import eu.kanade.domain.anime.model.hasCustomCover
+import eu.kanade.tachiyomi.animesource.model.SAnime
 import eu.kanade.tachiyomi.data.cache.CoverCache
 import eu.kanade.tachiyomi.data.download.DownloadManager
-import eu.kanade.tachiyomi.animesource.model.SAnime
 import tachiyomi.domain.anime.interactor.FetchInterval
 import tachiyomi.domain.anime.model.AnimeUpdate
 import tachiyomi.domain.anime.model.Manga
@@ -19,12 +19,12 @@ class UpdateAnime(
     private val fetchInterval: FetchInterval,
 ) {
 
-    suspend fun await(mangaUpdate: AnimeUpdate): Boolean {
-        return animeRepository.update(mangaUpdate)
+    suspend fun await(animeUpdate: AnimeUpdate): Boolean {
+        return animeRepository.update(animeUpdate)
     }
 
-    suspend fun awaitAll(mangaUpdates: List<AnimeUpdate>): Boolean {
-        return animeRepository.updateAll(mangaUpdates)
+    suspend fun awaitAll(animeUpdates: List<AnimeUpdate>): Boolean {
+        return animeRepository.updateAll(animeUpdates)
     }
 
     suspend fun awaitUpdateFromSource(

@@ -37,7 +37,7 @@ interface AnimeRepository {
 
     suspend fun update(update: AnimeUpdate): Boolean
 
-    suspend fun updateAll(mangaUpdates: List<AnimeUpdate>): Boolean
+    suspend fun updateAll(animeUpdates: List<AnimeUpdate>): Boolean
 
     // SY -->
     suspend fun getMangaBySourceId(sourceId: Long): List<Manga>

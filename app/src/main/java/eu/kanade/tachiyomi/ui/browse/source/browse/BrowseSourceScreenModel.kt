@@ -64,7 +64,7 @@ import tachiyomi.domain.anime.interactor.GetDuplicateLibraryAnime
 import tachiyomi.domain.anime.interactor.GetFlatMetadataById
 import tachiyomi.domain.anime.interactor.NetworkToLocalAnime
 import tachiyomi.domain.anime.model.Manga
-import tachiyomi.domain.anime.model.toMangaUpdate
+import tachiyomi.domain.anime.model.toAnimeUpdate
 import tachiyomi.domain.category.interactor.GetCategories
 import tachiyomi.domain.category.interactor.SetAnimeCategories
 import tachiyomi.domain.category.model.Category
@@ -389,7 +389,7 @@ open class BrowseSourceScreenModel(
                 addTracks.bindEnhancedTrackers(manga, source)
             }
 
-            updateAnime.await(new.toMangaUpdate())
+            updateAnime.await(new.toAnimeUpdate())
         }
     }
 

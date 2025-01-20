@@ -85,7 +85,7 @@ class EHentaiUpdateHelper(context: Context) {
         val accepted = chains.minBy { it.manga.id }
 
         val toDiscard = chains.filter { it.manga.favorite && it.manga.id != accepted.manga.id }
-        val mangaUpdates = mutableListOf<AnimeUpdate>()
+        val animeUpdates = mutableListOf<AnimeUpdate>()
 
         val chainsAsChapters = chains.flatMap { it.episodes }
         val chainsAsHistory = chains.flatMap { it.history }
@@ -95,14 +95,14 @@ class EHentaiUpdateHelper(context: Context) {
             val (chapterUpdates, newChapters, new) = getChapterList(accepted, toDiscard, chainsAsChapters)
 
             toDiscard.forEach {
-                mangaUpdates += AnimeUpdate(
+                animeUpdates += AnimeUpdate(
                     id = it.manga.id,
                     favorite = false,
                     dateAdded = 0,
                 )
             }
             if (!accepted.manga.favorite) {
-                mangaUpdates += AnimeUpdate(
+                animeUpdates += AnimeUpdate(
                     id = accepted.manga.id,
                     favorite = true,
                     dateAdded = System.currentTimeMillis(),
@@ -113,7 +113,7 @@ class EHentaiUpdateHelper(context: Context) {
             val rootsToMutate = toDiscard + newAccepted
 
             // Apply changes to all manga
-            updateAnime.awaitAll(mangaUpdates)
+            updateAnime.awaitAll(animeUpdates)
             // Insert new episodes for accepted manga
             episodeRepository.updateAll(chapterUpdates)
             episodeRepository.addAll(newChapters)
