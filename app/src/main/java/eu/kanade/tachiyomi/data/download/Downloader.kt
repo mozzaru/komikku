@@ -56,7 +56,7 @@ import tachiyomi.core.common.util.system.ImageUtil
 import tachiyomi.core.common.util.system.logcat
 import tachiyomi.core.metadata.comicinfo.COMIC_INFO_FILE
 import tachiyomi.core.metadata.comicinfo.ComicInfo
-import tachiyomi.domain.anime.model.Manga
+import tachiyomi.domain.anime.model.Anime
 import tachiyomi.domain.category.interactor.GetCategories
 import tachiyomi.domain.download.service.DownloadPreferences
 import tachiyomi.domain.episode.model.Episode
@@ -277,7 +277,7 @@ class Downloader(
      * @param episodes the list of episodes to download.
      * @param autoStart whether to start the downloader after enqueing the episodes.
      */
-    fun queueChapters(manga: Manga, episodes: List<Episode>, autoStart: Boolean) {
+    fun queueChapters(manga: Anime, episodes: List<Episode>, autoStart: Boolean) {
         if (episodes.isEmpty()) return
 
         val source = sourceManager.get(manga.source) as? HttpSource ?: return
@@ -646,7 +646,7 @@ class Downloader(
      */
     private suspend fun createComicInfoFile(
         dir: UniFile,
-        manga: Manga,
+        manga: Anime,
         episode: Episode,
         source: HttpSource,
     ) {
@@ -719,7 +719,7 @@ class Downloader(
         removeFromQueueIf { it.episode.id in chapterIds }
     }
 
-    fun removeFromQueue(manga: Manga) {
+    fun removeFromQueue(manga: Anime) {
         removeFromQueueIf { it.manga.id == manga.id }
     }
 

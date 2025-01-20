@@ -11,7 +11,7 @@ import kotlinx.coroutines.flow.asStateFlow
 import tachiyomi.core.common.util.lang.launchIO
 import tachiyomi.domain.anime.interactor.GetAnime
 import tachiyomi.domain.anime.interactor.GetFlatMetadataById
-import tachiyomi.domain.anime.model.Manga
+import tachiyomi.domain.anime.model.Anime
 import tachiyomi.domain.source.service.SourceManager
 import uy.kohesive.injekt.Injekt
 import uy.kohesive.injekt.api.get
@@ -29,7 +29,7 @@ class MetadataViewScreenModel(
     val themeCoverBased = uiPreferences.themeCoverBased().get()
     // KMK <--
 
-    private val _manga = MutableStateFlow<Manga?>(null)
+    private val _manga = MutableStateFlow<Anime?>(null)
     val manga = _manga.asStateFlow()
 
     init {

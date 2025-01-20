@@ -33,7 +33,7 @@ import tachiyomi.core.common.Constants
 import tachiyomi.core.common.i18n.pluralStringResource
 import tachiyomi.core.common.i18n.stringResource
 import tachiyomi.core.common.util.lang.launchUI
-import tachiyomi.domain.anime.model.Manga
+import tachiyomi.domain.anime.model.Anime
 import tachiyomi.domain.episode.model.Episode
 import tachiyomi.domain.library.model.LibraryAnime
 import tachiyomi.domain.source.service.SourceManager
@@ -94,7 +94,7 @@ class LibraryUpdateNotifier(
      * @param current the current progress.
      * @param total the total progress.
      */
-    suspend fun showProgressNotification(manga: List<Manga>, current: Int, total: Int) {
+    suspend fun showProgressNotification(manga: List<Anime>, current: Int, total: Int) {
         progressNotificationBuilder
             .setContentTitle(
                 context.stringResource(
@@ -174,7 +174,7 @@ class LibraryUpdateNotifier(
      *
      * @param updates a list of manga with new updates.
      */
-    fun showUpdateNotifications(updates: List<Pair<Manga, Array<Episode>>>) {
+    fun showUpdateNotifications(updates: List<Pair<Anime, Array<Episode>>>) {
         // Parent group notification
         context.notify(
             Notifications.ID_NEW_CHAPTERS,
@@ -230,7 +230,7 @@ class LibraryUpdateNotifier(
         }
     }
 
-    private suspend fun createNewChaptersNotification(manga: Manga, episodes: Array<Episode>): Notification {
+    private suspend fun createNewChaptersNotification(manga: Anime, episodes: Array<Episode>): Notification {
         val icon = getMangaIcon(manga)
         return context.notificationBuilder(Notifications.CHANNEL_NEW_CHAPTERS) {
             setContentTitle(manga.title)
@@ -298,7 +298,7 @@ class LibraryUpdateNotifier(
         context.cancelNotification(Notifications.ID_LIBRARY_PROGRESS)
     }
 
-    private suspend fun getMangaIcon(manga: Manga): Bitmap? {
+    private suspend fun getMangaIcon(manga: Anime): Bitmap? {
         val request = ImageRequest.Builder(context)
             .data(manga)
             .transformations(CircleCropTransformation())

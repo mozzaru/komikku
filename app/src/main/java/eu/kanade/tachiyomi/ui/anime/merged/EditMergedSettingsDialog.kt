@@ -26,7 +26,7 @@ import eu.kanade.tachiyomi.databinding.EditMergedSettingsDialogBinding
 import eu.kanade.tachiyomi.ui.anime.MergedMangaData
 import eu.kanade.tachiyomi.util.system.toast
 import exh.source.MERGED_SOURCE_ID
-import tachiyomi.domain.anime.model.Manga
+import tachiyomi.domain.anime.model.Anime
 import tachiyomi.domain.anime.model.MergedAnimeReference
 import tachiyomi.i18n.MR
 import tachiyomi.i18n.sy.SYMR
@@ -39,7 +39,7 @@ class EditMergedSettingsState(
     private val onDismissRequest: () -> Unit,
     private val onPositiveClick: (List<MergedAnimeReference>) -> Unit,
 ) : EditMergedMangaAdapter.EditMergedMangaItemListener {
-    var mergedMangas: List<Pair<Manga?, MergedAnimeReference>> by mutableStateOf(emptyList())
+    var mergedMangas: List<Pair<Anime?, MergedAnimeReference>> by mutableStateOf(emptyList())
     var mergeReference: MergedAnimeReference? by mutableStateOf(null)
     var mergedMangaAdapter: EditMergedMangaAdapter? by mutableStateOf(null)
     var mergedMangaHeaderAdapter: EditMergedSettingsHeaderAdapter? by mutableStateOf(null)
@@ -47,7 +47,7 @@ class EditMergedSettingsState(
     fun onViewCreated(
         context: Context,
         binding: EditMergedSettingsDialogBinding,
-        mergedManga: List<Manga>,
+        mergedManga: List<Anime>,
         mergedReferences: List<MergedAnimeReference>,
     ) {
         if (mergedReferences.isEmpty() || mergedReferences.size == 1) {
@@ -214,6 +214,6 @@ fun EditMergedSettingsDialog(
     )
 }
 
-private fun Pair<Manga?, MergedAnimeReference>.toModel(): EditMergedMangaItem {
+private fun Pair<Anime?, MergedAnimeReference>.toModel(): EditMergedMangaItem {
     return EditMergedMangaItem(first, second)
 }

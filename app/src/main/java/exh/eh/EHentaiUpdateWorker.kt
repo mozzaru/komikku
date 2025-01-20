@@ -40,7 +40,7 @@ import tachiyomi.domain.UnsortedPreferences
 import tachiyomi.domain.anime.interactor.GetExhFavoriteAnimeWithMetadata
 import tachiyomi.domain.anime.interactor.GetFlatMetadataById
 import tachiyomi.domain.anime.interactor.InsertFlatMetadata
-import tachiyomi.domain.anime.model.Manga
+import tachiyomi.domain.anime.model.Anime
 import tachiyomi.domain.episode.interactor.GetEpisodesByAnimeId
 import tachiyomi.domain.episode.model.Episode
 import tachiyomi.domain.library.service.LibraryPreferences
@@ -139,7 +139,7 @@ class EHentaiUpdateWorker(private val context: Context, workerParams: WorkerPara
 
         var failuresThisIteration = 0
         var updatedThisIteration = 0
-        val updatedManga = mutableListOf<Pair<Manga, Array<Episode>>>()
+        val updatedManga = mutableListOf<Pair<Anime, Array<Episode>>>()
         val modifiedThisIteration = mutableSetOf<Long>()
 
         try {
@@ -238,7 +238,7 @@ class EHentaiUpdateWorker(private val context: Context, workerParams: WorkerPara
     }
 
     // New, current
-    private suspend fun updateEntryAndGetChapters(manga: Manga): Pair<List<Episode>, List<Episode>> {
+    private suspend fun updateEntryAndGetChapters(manga: Anime): Pair<List<Episode>, List<Episode>> {
         val source = sourceManager.get(manga.source) as? EHentai
             ?: throw GalleryNotUpdatedException(false, IllegalStateException("Missing EH-based source (${manga.source})!"))
 
@@ -329,7 +329,7 @@ class EHentaiUpdateWorker(private val context: Context, workerParams: WorkerPara
     }
 }
 
-data class UpdateEntry(val manga: Manga, val meta: EHentaiSearchMetadata, val rootEpisode: Episode?)
+data class UpdateEntry(val manga: Anime, val meta: EHentaiSearchMetadata, val rootEpisode: Episode?)
 
 object EHentaiUpdateWorkerConstants {
     const val UPDATES_PER_ITERATION = 50

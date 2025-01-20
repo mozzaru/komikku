@@ -2,7 +2,7 @@ package tachiyomi.domain.anime.interactor
 
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.combine
-import tachiyomi.domain.anime.model.Manga
+import tachiyomi.domain.anime.model.Anime
 import tachiyomi.domain.anime.repository.AnimeRepository
 import tachiyomi.domain.episode.model.Episode
 import tachiyomi.domain.episode.repository.EpisodeRepository
@@ -12,7 +12,7 @@ class GetAnimeWithEpisodes(
     private val episodeRepository: EpisodeRepository,
 ) {
 
-    suspend fun subscribe(id: Long, applyScanlatorFilter: Boolean = false): Flow<Pair<Manga, List<Episode>>> {
+    suspend fun subscribe(id: Long, applyScanlatorFilter: Boolean = false): Flow<Pair<Anime, List<Episode>>> {
         return combine(
             animeRepository.getMangaByIdAsFlow(id),
             episodeRepository.getChapterByMangaIdAsFlow(id, applyScanlatorFilter),
@@ -21,7 +21,7 @@ class GetAnimeWithEpisodes(
         }
     }
 
-    suspend fun awaitManga(id: Long): Manga {
+    suspend fun awaitManga(id: Long): Anime {
         return animeRepository.getMangaById(id)
     }
 

@@ -1,48 +1,48 @@
 package tachiyomi.domain.anime.repository
 
 import kotlinx.coroutines.flow.Flow
+import tachiyomi.domain.anime.model.Anime
 import tachiyomi.domain.anime.model.AnimeUpdate
-import tachiyomi.domain.anime.model.Manga
 import tachiyomi.domain.library.model.LibraryAnime
 
 interface AnimeRepository {
 
-    suspend fun getMangaById(id: Long): Manga
+    suspend fun getMangaById(id: Long): Anime
 
-    suspend fun getMangaByIdAsFlow(id: Long): Flow<Manga>
+    suspend fun getMangaByIdAsFlow(id: Long): Flow<Anime>
 
-    suspend fun getMangaByUrlAndSourceId(url: String, sourceId: Long): Manga?
+    suspend fun getMangaByUrlAndSourceId(url: String, sourceId: Long): Anime?
 
-    fun getMangaByUrlAndSourceIdAsFlow(url: String, sourceId: Long): Flow<Manga?>
+    fun getMangaByUrlAndSourceIdAsFlow(url: String, sourceId: Long): Flow<Anime?>
 
-    suspend fun getFavorites(): List<Manga>
+    suspend fun getFavorites(): List<Anime>
 
-    suspend fun getReadMangaNotInLibrary(): List<Manga>
+    suspend fun getReadMangaNotInLibrary(): List<Anime>
 
     suspend fun getLibraryManga(): List<LibraryAnime>
 
     fun getLibraryMangaAsFlow(): Flow<List<LibraryAnime>>
 
-    fun getFavoritesBySourceId(sourceId: Long): Flow<List<Manga>>
+    fun getFavoritesBySourceId(sourceId: Long): Flow<List<Anime>>
 
-    suspend fun getDuplicateLibraryManga(id: Long, title: String): List<Manga>
+    suspend fun getDuplicateLibraryManga(id: Long, title: String): List<Anime>
 
-    suspend fun getUpcomingManga(statuses: Set<Long>): Flow<List<Manga>>
+    suspend fun getUpcomingManga(statuses: Set<Long>): Flow<List<Anime>>
 
     suspend fun resetViewerFlags(): Boolean
 
     suspend fun setMangaCategories(mangaId: Long, categoryIds: List<Long>)
 
-    suspend fun insert(manga: Manga): Long?
+    suspend fun insert(manga: Anime): Long?
 
     suspend fun update(update: AnimeUpdate): Boolean
 
     suspend fun updateAll(mangaUpdates: List<AnimeUpdate>): Boolean
 
     // SY -->
-    suspend fun getMangaBySourceId(sourceId: Long): List<Manga>
+    suspend fun getMangaBySourceId(sourceId: Long): List<Anime>
 
-    suspend fun getAll(): List<Manga>
+    suspend fun getAll(): List<Anime>
 
     suspend fun deleteManga(mangaId: Long)
 

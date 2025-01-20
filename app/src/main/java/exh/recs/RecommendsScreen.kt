@@ -28,7 +28,7 @@ import eu.kanade.tachiyomi.ui.browse.RemoveAnimeDialog
 import eu.kanade.tachiyomi.ui.browse.source.SourcesScreen
 import mihon.presentation.core.util.collectAsLazyPagingItems
 import tachiyomi.core.common.util.lang.launchIO
-import tachiyomi.domain.anime.model.Manga
+import tachiyomi.domain.anime.model.Anime
 import tachiyomi.presentation.core.components.material.Scaffold
 import tachiyomi.presentation.core.screens.LoadingScreen
 
@@ -56,7 +56,7 @@ class RecommendsScreen(val mangaId: Long, val sourceId: Long) : Screen() {
         }
         // KMK <--
 
-        val onMangaClick: (Manga) -> Unit = { manga ->
+        val onMangaClick: (Anime) -> Unit = { manga ->
             openSmartSearch(navigator, manga.ogTitle)
         }
 

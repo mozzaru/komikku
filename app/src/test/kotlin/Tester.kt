@@ -22,7 +22,7 @@ import tachiyomi.domain.anime.interactor.GetFavoriteEntries
 import tachiyomi.domain.anime.interactor.GetFavorites
 import tachiyomi.domain.anime.model.CustomAnimeInfo
 import tachiyomi.domain.anime.model.FavoriteEntry
-import tachiyomi.domain.anime.model.Manga
+import tachiyomi.domain.anime.model.Anime
 import tachiyomi.domain.anime.repository.CustomAnimeRepository
 import tachiyomi.domain.category.interactor.GetCategories
 import tachiyomi.domain.category.model.Category
@@ -54,21 +54,21 @@ class Tester {
     @Test
     fun localFavoritesStorageTester(): Unit = runBlocking {
         val favorites = listOf(
-            Manga.create().copy(
+            Anime.create().copy(
                 id = 1,
                 favorite = true,
                 source = EXH_SOURCE_ID,
                 url = "/g/gid/token",
             ),
             // an alias for gid2/token2
-            Manga.create().copy(
+            Anime.create().copy(
                 id = 3,
                 favorite = true,
                 source = EXH_SOURCE_ID,
                 url = "/g/gid3/token3",
             ),
             // add this one to library
-            Manga.create().copy(
+            Anime.create().copy(
                 id = 3,
                 favorite = true,
                 source = EXH_SOURCE_ID,

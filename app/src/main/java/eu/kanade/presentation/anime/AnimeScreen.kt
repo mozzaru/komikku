@@ -113,7 +113,7 @@ import exh.ui.metadata.adapters.NHentaiDescription
 import exh.ui.metadata.adapters.PururinDescription
 import exh.ui.metadata.adapters.TsuminoDescription
 import tachiyomi.domain.anime.model.AnimeCover
-import tachiyomi.domain.anime.model.Manga
+import tachiyomi.domain.anime.model.Anime
 import tachiyomi.domain.episode.model.Episode
 import tachiyomi.domain.episode.service.missingEpisodesCount
 import tachiyomi.domain.library.service.LibraryPreferences
@@ -197,10 +197,10 @@ fun AnimeScreen(
     onInvertSelection: () -> Unit,
 
     // KMK -->
-    getMangaState: @Composable (Manga) -> State<Manga>,
+    getMangaState: @Composable (Anime) -> State<Anime>,
     onRelatedMangasScreenClick: () -> Unit,
-    onRelatedMangaClick: (Manga) -> Unit,
-    onRelatedMangaLongClick: (Manga) -> Unit,
+    onRelatedMangaClick: (Anime) -> Unit,
+    onRelatedMangaLongClick: (Anime) -> Unit,
     librarySearch: (query: String) -> Unit,
     onSourceClick: () -> Unit,
     onCoverLoaded: (AnimeCover) -> Unit,
@@ -395,10 +395,10 @@ private fun AnimeScreenSmallImpl(
     onInvertSelection: () -> Unit,
 
     // KMK -->
-    getMangaState: @Composable ((Manga) -> State<Manga>),
+    getMangaState: @Composable ((Anime) -> State<Anime>),
     onRelatedMangasScreenClick: () -> Unit,
-    onRelatedMangaClick: (Manga) -> Unit,
-    onRelatedMangaLongClick: (Manga) -> Unit,
+    onRelatedMangaClick: (Anime) -> Unit,
+    onRelatedMangaLongClick: (Anime) -> Unit,
     librarySearch: (query: String) -> Unit,
     onSourceClick: () -> Unit,
     onCoverLoaded: (AnimeCover) -> Unit,
@@ -850,10 +850,10 @@ private fun AnimeScreenLargeImpl(
     onInvertSelection: () -> Unit,
 
     // KMK -->
-    getMangaState: @Composable ((Manga) -> State<Manga>),
+    getMangaState: @Composable ((Anime) -> State<Anime>),
     onRelatedMangasScreenClick: () -> Unit,
-    onRelatedMangaClick: (Manga) -> Unit,
-    onRelatedMangaLongClick: (Manga) -> Unit,
+    onRelatedMangaClick: (Anime) -> Unit,
+    onRelatedMangaLongClick: (Anime) -> Unit,
     librarySearch: (query: String) -> Unit,
     onSourceClick: () -> Unit,
     onCoverLoaded: (AnimeCover) -> Unit,
@@ -1265,7 +1265,7 @@ private fun SharedAnimeBottomActionMenu(
 }
 
 private fun LazyListScope.sharedEpisodeItems(
-    manga: Manga,
+    manga: Anime,
     mergedData: MergedMangaData?,
     chapters: List<EpisodeList>,
     isAnyChapterSelected: Boolean,
@@ -1299,7 +1299,7 @@ private fun LazyListScope.sharedEpisodeItems(
             }
             is EpisodeList.Item -> {
                 AnimeChapterListItem(
-                    title = if (manga.displayMode == Manga.CHAPTER_DISPLAY_NUMBER) {
+                    title = if (manga.displayMode == Anime.CHAPTER_DISPLAY_NUMBER) {
                         stringResource(
                             MR.strings.display_mode_chapter,
                             formatEpisodeNumber(item.episode.chapterNumber),

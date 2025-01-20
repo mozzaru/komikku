@@ -21,16 +21,16 @@ import eu.kanade.presentation.browse.components.AnimeItem
 import eu.kanade.presentation.browse.components.EmptyResultItem
 import eu.kanade.presentation.browse.components.GlobalSearchLoadingResultItem
 import eu.kanade.tachiyomi.ui.anime.RelatedAnime
-import tachiyomi.domain.anime.model.Manga
+import tachiyomi.domain.anime.model.Anime
 import tachiyomi.domain.anime.model.asMangaCover
 import tachiyomi.presentation.core.components.material.padding
 
 @Composable
 fun RelatedAnimesRow(
     relatedAnimes: List<RelatedAnime>?,
-    getMangaState: @Composable (Manga) -> State<Manga>,
-    onMangaClick: (Manga) -> Unit,
-    onMangaLongClick: (Manga) -> Unit,
+    getMangaState: @Composable (Anime) -> State<Anime>,
+    onMangaClick: (Anime) -> Unit,
+    onMangaLongClick: (Anime) -> Unit,
 ) {
     when {
         relatedAnimes == null -> {
@@ -55,9 +55,9 @@ fun RelatedAnimesRow(
 @Composable
 fun RelatedAnimeCardRow(
     relatedAnimes: List<RelatedAnime>,
-    getManga: @Composable (Manga) -> State<Manga>,
-    onMangaClick: (Manga) -> Unit,
-    onMangaLongClick: (Manga) -> Unit,
+    getManga: @Composable (Anime) -> State<Anime>,
+    onMangaClick: (Anime) -> Unit,
+    onMangaLongClick: (Anime) -> Unit,
 ) {
     val mangas = relatedAnimes.filterIsInstance<RelatedAnime.Success>().map { it.mangaList }.flatten()
     val loading = relatedAnimes.filterIsInstance<RelatedAnime.Loading>().firstOrNull()

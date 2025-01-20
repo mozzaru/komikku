@@ -10,7 +10,7 @@ import exh.source.MERGED_SOURCE_ID
 import logcat.LogPriority
 import tachiyomi.core.common.util.lang.withNonCancellableContext
 import tachiyomi.core.common.util.system.logcat
-import tachiyomi.domain.anime.model.Manga
+import tachiyomi.domain.anime.model.Anime
 import tachiyomi.domain.anime.repository.AnimeRepository
 import tachiyomi.domain.download.service.DownloadPreferences
 import tachiyomi.domain.episode.interactor.GetMergedEpisodesByAnimeId
@@ -117,7 +117,7 @@ class SetSeenStatus(
         )
     }
 
-    suspend fun await(manga: Manga, read: Boolean) = if (manga.source == MERGED_SOURCE_ID) {
+    suspend fun await(manga: Anime, read: Boolean) = if (manga.source == MERGED_SOURCE_ID) {
         awaitMerged(manga.id, read)
     } else {
         await(manga.id, read)

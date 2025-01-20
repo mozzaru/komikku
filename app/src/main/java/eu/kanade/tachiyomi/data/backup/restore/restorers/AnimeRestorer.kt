@@ -19,7 +19,7 @@ import tachiyomi.domain.anime.interactor.GetFlatMetadataById
 import tachiyomi.domain.anime.interactor.InsertFlatMetadata
 import tachiyomi.domain.anime.interactor.SetCustomAnimeInfo
 import tachiyomi.domain.anime.model.CustomAnimeInfo
-import tachiyomi.domain.anime.model.Manga
+import tachiyomi.domain.anime.model.Anime
 import tachiyomi.domain.category.interactor.GetCategories
 import tachiyomi.domain.episode.interactor.GetEpisodesByAnimeId
 import tachiyomi.domain.episode.model.Episode
@@ -109,11 +109,11 @@ class AnimeRestorer(
         }
     }
 
-    private suspend fun findExistingManga(backupAnime: BackupAnime): Manga? {
+    private suspend fun findExistingManga(backupAnime: BackupAnime): Anime? {
         return getAnimeByUrlAndSourceId.await(backupAnime.url, backupAnime.source)
     }
 
-    private suspend fun restoreExistingManga(manga: Manga, dbManga: Manga): Manga {
+    private suspend fun restoreExistingManga(manga: Anime, dbManga: Anime): Anime {
         return if (manga.version > dbManga.version) {
             updateManga(dbManga.copyFrom(manga).copy(id = dbManga.id))
         } else {
@@ -121,7 +121,7 @@ class AnimeRestorer(
         }
     }
 
-    private fun Manga.copyFrom(newer: Manga): Manga {
+    private fun Anime.copyFrom(newer: Anime): Anime {
         return this.copy(
             favorite = this.favorite || newer.favorite,
             // SY -->
@@ -137,7 +137,7 @@ class AnimeRestorer(
         )
     }
 
-    suspend fun updateManga(manga: Manga): Manga {
+    suspend fun updateManga(manga: Anime): Anime {
         handler.await(true) {
             animesQueries.update(
                 source = manga.source,
@@ -168,8 +168,8 @@ class AnimeRestorer(
     }
 
     private suspend fun restoreNewManga(
-        manga: Manga,
-    ): Manga {
+        manga: Anime,
+    ): Anime {
         return manga.copy(
             initialized = manga.description != null,
             id = insertManga(manga),
@@ -177,7 +177,7 @@ class AnimeRestorer(
         )
     }
 
-    private suspend fun restoreChapters(manga: Manga, backupEpisodes: List<BackupEpisode>) {
+    private suspend fun restoreChapters(manga: Anime, backupEpisodes: List<BackupEpisode>) {
         val dbChaptersByUrl = getEpisodesByAnimeId.await(manga.id)
             .associateBy { it.url }
 
@@ -285,9 +285,9 @@ class AnimeRestorer(
     /**
      * Inserts manga and returns id
      *
-     * @return id of [Manga], null if not found
+     * @return id of [Anime], null if not found
      */
-    private suspend fun insertManga(manga: Manga): Long {
+    private suspend fun insertManga(manga: Anime): Long {
         return handler.awaitOneExecutable(true) {
             animesQueries.insert(
                 source = manga.source,
@@ -316,7 +316,7 @@ class AnimeRestorer(
     }
 
     private suspend fun restoreMangaDetails(
-        manga: Manga,
+        manga: Anime,
         chapters: List<BackupEpisode>,
         categories: List<Long>,
         backupCategories: List<BackupCategory>,
@@ -328,7 +328,7 @@ class AnimeRestorer(
         flatMetadata: BackupFlatMetadata?,
         customManga: CustomAnimeInfo?,
         // SY <--
-    ): Manga {
+    ): Anime {
         restoreCategories(manga, categories, backupCategories)
         restoreChapters(manga, chapters)
         restoreTracking(manga, tracks)
@@ -351,7 +351,7 @@ class AnimeRestorer(
      * @param categories the categories to restore.
      */
     private suspend fun restoreCategories(
-        manga: Manga,
+        manga: Anime,
         categories: List<Long>,
         backupCategories: List<BackupCategory>,
     ) {
@@ -378,7 +378,7 @@ class AnimeRestorer(
         }
     }
 
-    private suspend fun restoreHistory(manga: Manga, backupHistory: List<BackupHistory>) {
+    private suspend fun restoreHistory(manga: Anime, backupHistory: List<BackupHistory>) {
         val toUpdate = backupHistory.mapNotNull { history ->
             val dbHistory = handler.awaitOneOrNull { historyQueries.getHistoryByEpisodeUrl(manga.id, history.url) }
             val item = history.getHistoryImpl()
@@ -419,7 +419,7 @@ class AnimeRestorer(
         }
     }
 
-    private suspend fun restoreTracking(manga: Manga, backupTracks: List<BackupTracking>) {
+    private suspend fun restoreTracking(manga: Anime, backupTracks: List<BackupTracking>) {
         val dbTrackByTrackerId = getTracks.await(manga.id).associateBy { it.trackerId }
 
         val (existingTracks, newTracks) = backupTracks
@@ -569,7 +569,7 @@ class AnimeRestorer(
      * @param manga the manga whose excluded scanlators have to be restored.
      * @param excludedScanlators the excluded scanlators to restore.
      */
-    private suspend fun restoreExcludedScanlators(manga: Manga, excludedScanlators: List<String>) {
+    private suspend fun restoreExcludedScanlators(manga: Anime, excludedScanlators: List<String>) {
         if (excludedScanlators.isEmpty()) return
         val existingExcludedScanlators = handler.awaitList {
             excluded_scanlatorsQueries.getExcludedScanlatorsByMangaId(manga.id)

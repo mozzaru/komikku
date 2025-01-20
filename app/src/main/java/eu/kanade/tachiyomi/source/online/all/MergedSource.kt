@@ -24,7 +24,7 @@ import tachiyomi.core.common.util.lang.withIOContext
 import tachiyomi.domain.anime.interactor.GetAnime
 import tachiyomi.domain.anime.interactor.GetMergedReferencesById
 import tachiyomi.domain.anime.interactor.NetworkToLocalAnime
-import tachiyomi.domain.anime.model.Manga
+import tachiyomi.domain.anime.model.Anime
 import tachiyomi.domain.anime.model.MergedAnimeReference
 import tachiyomi.domain.episode.model.Episode
 import tachiyomi.domain.source.service.SourceManager
@@ -104,13 +104,13 @@ class MergedSource : HttpSource() {
     }
 
     suspend fun fetchChaptersForMergedManga(
-        manga: Manga,
+        manga: Anime,
         downloadChapters: Boolean = true,
     ) {
         fetchChaptersAndSync(manga, downloadChapters)
     }
 
-    suspend fun fetchChaptersAndSync(manga: Manga, downloadChapters: Boolean = true): List<Episode> {
+    suspend fun fetchChaptersAndSync(manga: Anime, downloadChapters: Boolean = true): List<Episode> {
         val mangaReferences = getMergedReferencesById.await(manga.id)
         require(mangaReferences.isNotEmpty()) {
             "Manga references are empty, episodes unavailable, merge is likely corrupted"
@@ -167,7 +167,7 @@ class MergedSource : HttpSource() {
         val source = sourceManager.getOrStub(manga?.source ?: mangaSourceId)
         if (manga == null) {
             val newManga = networkToLocalAnime.await(
-                Manga.create().copy(
+                Anime.create().copy(
                     source = mangaSourceId,
                     url = mangaUrl,
                 ),
@@ -178,7 +178,7 @@ class MergedSource : HttpSource() {
         return LoadedMangaSource(source, manga, this)
     }
 
-    data class LoadedMangaSource(val source: Source, val manga: Manga?, val reference: MergedAnimeReference)
+    data class LoadedMangaSource(val source: Source, val manga: Anime?, val reference: MergedAnimeReference)
 
     override val lang = "all"
     override val supportsLatest = false

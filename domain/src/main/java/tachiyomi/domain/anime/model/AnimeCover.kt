@@ -92,7 +92,7 @@ data class AnimeCover(
     }
 }
 
-fun Manga.asMangaCover(): AnimeCover {
+fun Anime.asMangaCover(): AnimeCover {
     return AnimeCover(
         animeId = id,
         sourceId = source,

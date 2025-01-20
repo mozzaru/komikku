@@ -63,7 +63,7 @@ import tachiyomi.domain.anime.interactor.GetAnime
 import tachiyomi.domain.anime.interactor.GetDuplicateLibraryAnime
 import tachiyomi.domain.anime.interactor.GetFlatMetadataById
 import tachiyomi.domain.anime.interactor.NetworkToLocalAnime
-import tachiyomi.domain.anime.model.Manga
+import tachiyomi.domain.anime.model.Anime
 import tachiyomi.domain.anime.model.toMangaUpdate
 import tachiyomi.domain.category.interactor.GetCategories
 import tachiyomi.domain.category.interactor.SetAnimeCategories
@@ -240,7 +240,7 @@ open class BrowseSourceScreenModel(
     }
 
     // SY -->
-    open fun Flow<Manga>.combineMetadata(metadata: RaisedSearchMetadata?): Flow<Pair<Manga, RaisedSearchMetadata?>> {
+    open fun Flow<Anime>.combineMetadata(metadata: RaisedSearchMetadata?): Flow<Pair<Anime, RaisedSearchMetadata?>> {
         val metadataSource = source.getMainSource<MetadataSource<*, *>>()
         return flatMapLatest { manga ->
             if (metadataSource != null) {
@@ -372,7 +372,7 @@ open class BrowseSourceScreenModel(
      *
      * @param manga the manga to update.
      */
-    fun changeMangaFavorite(manga: Manga) {
+    fun changeMangaFavorite(manga: Anime) {
         screenModelScope.launch {
             var new = manga.copy(
                 favorite = !manga.favorite,
@@ -393,7 +393,7 @@ open class BrowseSourceScreenModel(
         }
     }
 
-    fun addFavorite(manga: Manga) {
+    fun addFavorite(manga: Anime) {
         screenModelScope.launch {
             val categories = getCategories()
             val defaultCategoryId = libraryPreferences.defaultCategory().get()
@@ -446,15 +446,15 @@ open class BrowseSourceScreenModel(
             .orEmpty()
     }
 
-    suspend fun getDuplicateLibraryManga(manga: Manga): Manga? {
+    suspend fun getDuplicateLibraryManga(manga: Anime): Anime? {
         return getDuplicateLibraryAnime.await(manga).getOrNull(0)
     }
 
-    private fun moveMangaToCategories(manga: Manga, vararg categories: Category) {
+    private fun moveMangaToCategories(manga: Anime, vararg categories: Category) {
         moveMangaToCategories(manga, categories.filter { it.id != 0L }.map { it.id })
     }
 
-    fun moveMangaToCategories(manga: Manga, categoryIds: List<Long>) {
+    fun moveMangaToCategories(manga: Anime, categoryIds: List<Long>) {
         screenModelScope.launchIO {
             setAnimeCategories.await(
                 mangaId = manga.id,
@@ -499,13 +499,13 @@ open class BrowseSourceScreenModel(
 
     sealed interface Dialog {
         data object Filter : Dialog
-        data class RemoveManga(val manga: Manga) : Dialog
-        data class AddDuplicateManga(val manga: Manga, val duplicate: Manga) : Dialog
+        data class RemoveManga(val manga: Anime) : Dialog
+        data class AddDuplicateManga(val manga: Anime, val duplicate: Anime) : Dialog
         data class ChangeMangaCategory(
-            val manga: Manga,
+            val manga: Anime,
             val initialSelection: ImmutableList<CheckboxState.State<Category>>,
         ) : Dialog
-        data class Migrate(val newManga: Manga, val oldManga: Manga) : Dialog
+        data class Migrate(val newManga: Anime, val oldManga: Anime) : Dialog
 
         // SY -->
         data class DeleteSavedSearch(val idToDelete: Long, val name: String) : Dialog

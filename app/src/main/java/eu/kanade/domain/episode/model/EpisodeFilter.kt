@@ -3,7 +3,7 @@ package eu.kanade.domain.episode.model
 import eu.kanade.domain.anime.model.downloadedFilter
 import eu.kanade.tachiyomi.data.download.DownloadManager
 import eu.kanade.tachiyomi.ui.anime.EpisodeList
-import tachiyomi.domain.anime.model.Manga
+import tachiyomi.domain.anime.model.Anime
 import tachiyomi.domain.anime.model.applyFilter
 import tachiyomi.domain.episode.model.Episode
 import tachiyomi.domain.episode.service.getEpisodeSort
@@ -14,9 +14,9 @@ import tachiyomi.source.local.isLocal
  * @return an observable of the list of episodes filtered and sorted.
  */
 fun List<Episode>.applyFilters(
-    manga: Manga,
+    manga: Anime,
     downloadManager: DownloadManager, /* SY --> */
-    mergedManga: Map<Long, Manga>, /* SY <-- */
+    mergedManga: Map<Long, Anime>, /* SY <-- */
 ): List<Episode> {
     val isLocalManga = manga.isLocal()
     val unreadFilter = manga.unreadFilter
@@ -47,7 +47,7 @@ fun List<Episode>.applyFilters(
  * Applies the view filters to the list of episodes obtained from the database.
  * @return an observable of the list of episodes filtered and sorted.
  */
-fun List<EpisodeList.Item>.applyFilters(manga: Manga): Sequence<EpisodeList.Item> {
+fun List<EpisodeList.Item>.applyFilters(manga: Anime): Sequence<EpisodeList.Item> {
     val isLocalManga = manga.isLocal()
     val unreadFilter = manga.unreadFilter
     val downloadedFilter = manga.downloadedFilter

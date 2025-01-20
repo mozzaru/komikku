@@ -4,7 +4,7 @@ import eu.kanade.tachiyomi.source.model.SManga
 import eu.kanade.tachiyomi.source.model.UpdateStrategy
 import kotlinx.coroutines.flow.Flow
 import tachiyomi.domain.anime.interactor.GetLibraryAnime
-import tachiyomi.domain.anime.model.Manga
+import tachiyomi.domain.anime.model.Anime
 import tachiyomi.domain.anime.repository.AnimeRepository
 import tachiyomi.domain.library.service.LibraryPreferences
 import tachiyomi.domain.library.service.LibraryPreferences.Companion.MANGA_HAS_UNREAD
@@ -29,12 +29,12 @@ class GetUpcomingAnime(
         SManga.PUBLISHING_FINISHED.toLong(),
     )
 
-    suspend fun subscribe(): Flow<List<Manga>> {
+    suspend fun subscribe(): Flow<List<Anime>> {
         return animeRepository.getUpcomingManga(includedStatuses)
     }
 
     // KMK -->
-    suspend fun updatingMangas(): List<Manga> {
+    suspend fun updatingMangas(): List<Anime> {
         val libraryManga = getLibraryAnime.await()
 
         val categoriesToUpdate = libraryPreferences.updateCategories().get().map(String::toLong)

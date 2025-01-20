@@ -37,7 +37,7 @@ import tachiyomi.core.common.Constants
 import tachiyomi.core.common.i18n.stringResource
 import tachiyomi.core.common.util.lang.launchIO
 import tachiyomi.core.common.util.lang.withUIContext
-import tachiyomi.domain.anime.model.Manga
+import tachiyomi.domain.anime.model.Anime
 import tachiyomi.domain.episode.model.Episode
 import tachiyomi.domain.source.service.SourceManager
 import tachiyomi.i18n.MR
@@ -225,6 +225,6 @@ class InterceptActivity : BaseActivity() {
 sealed class InterceptResult {
     data object Idle : InterceptResult()
     data object Loading : InterceptResult()
-    data class Success(val mangaId: Long, val manga: Manga, val episode: Episode? = null) : InterceptResult()
+    data class Success(val mangaId: Long, val manga: Anime, val episode: Episode? = null) : InterceptResult()
     data class Failure(val reason: String) : InterceptResult()
 }

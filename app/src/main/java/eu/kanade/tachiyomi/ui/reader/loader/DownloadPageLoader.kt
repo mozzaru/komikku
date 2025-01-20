@@ -11,7 +11,7 @@ import eu.kanade.tachiyomi.source.model.Page
 import eu.kanade.tachiyomi.ui.reader.model.ReaderChapter
 import eu.kanade.tachiyomi.ui.reader.model.ReaderPage
 import mihon.core.archive.archiveReader
-import tachiyomi.domain.anime.model.Manga
+import tachiyomi.domain.anime.model.Anime
 import uy.kohesive.injekt.injectLazy
 
 /**
@@ -19,7 +19,7 @@ import uy.kohesive.injekt.injectLazy
  */
 internal class DownloadPageLoader(
     private val chapter: ReaderChapter,
-    private val manga: Manga,
+    private val manga: Anime,
     private val source: Source,
     private val downloadManager: DownloadManager,
     private val downloadProvider: DownloadProvider,

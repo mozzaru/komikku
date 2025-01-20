@@ -30,7 +30,7 @@ import logcat.LogPriority
 import tachiyomi.core.common.util.lang.withIOContext
 import tachiyomi.core.common.util.system.logcat
 import tachiyomi.domain.anime.interactor.GetLibraryAnime
-import tachiyomi.domain.anime.model.Manga
+import tachiyomi.domain.anime.model.Anime
 import tachiyomi.domain.anime.model.toMangaUpdate
 import tachiyomi.domain.library.model.LibraryAnime
 import tachiyomi.domain.source.service.SourceManager
@@ -98,7 +98,7 @@ class MetadataUpdateJob(private val context: Context, workerParams: WorkerParame
     private suspend fun updateMetadata() {
         val semaphore = Semaphore(5)
         val progressCount = AtomicInteger(0)
-        val currentlyUpdatingManga = CopyOnWriteArrayList<Manga>()
+        val currentlyUpdatingManga = CopyOnWriteArrayList<Anime>()
 
         coroutineScope {
             mangaToUpdate.groupBy { it.manga.source }
@@ -141,9 +141,9 @@ class MetadataUpdateJob(private val context: Context, workerParams: WorkerParame
     }
 
     private suspend fun withUpdateNotification(
-        updatingManga: CopyOnWriteArrayList<Manga>,
+        updatingManga: CopyOnWriteArrayList<Anime>,
         completed: AtomicInteger,
-        manga: Manga,
+        manga: Anime,
         block: suspend () -> Unit,
     ) = coroutineScope {
         ensureActive()

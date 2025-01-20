@@ -62,7 +62,7 @@ import kotlinx.coroutines.launch
 import tachiyomi.core.common.i18n.stringResource
 import tachiyomi.core.common.util.lang.launchIO
 import tachiyomi.domain.UnsortedPreferences
-import tachiyomi.domain.anime.model.Manga
+import tachiyomi.domain.anime.model.Anime
 import tachiyomi.domain.category.model.Category
 import tachiyomi.domain.library.model.LibraryAnime
 import tachiyomi.domain.library.model.LibraryGroup
@@ -348,7 +348,7 @@ data object LibraryTab : Tab {
             }
             is LibraryScreenModel.Dialog.DeleteManga -> {
                 DeleteLibraryAnimeDialog(
-                    containsLocalManga = dialog.manga.any(Manga::isLocal),
+                    containsLocalManga = dialog.manga.any(Anime::isLocal),
                     onDismissRequest = onDismissRequest,
                     onConfirm = { deleteManga, deleteChapter ->
                         screenModel.removeMangas(dialog.manga, deleteManga, deleteChapter)

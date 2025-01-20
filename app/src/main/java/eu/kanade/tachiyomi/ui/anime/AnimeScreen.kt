@@ -108,7 +108,7 @@ import tachiyomi.core.common.util.lang.withIOContext
 import tachiyomi.core.common.util.lang.withNonCancellableContext
 import tachiyomi.core.common.util.system.logcat
 import tachiyomi.domain.UnsortedPreferences
-import tachiyomi.domain.anime.model.Manga
+import tachiyomi.domain.anime.model.Anime
 import tachiyomi.domain.episode.model.Episode
 import tachiyomi.domain.source.interactor.GetRemoteAnime
 import tachiyomi.domain.source.model.StubSource
@@ -595,7 +595,7 @@ class AnimeScreen(
     }
 
     @Suppress("LocalVariableName")
-    private fun getMangaUrl(manga_: Manga?, source_: Source?): String? {
+    private fun getMangaUrl(manga_: Anime?, source_: Source?): String? {
         val manga = manga_ ?: return null
         val source = source_ as? HttpSource ?: return null
 
@@ -607,7 +607,7 @@ class AnimeScreen(
     }
 
     @Suppress("LocalVariableName")
-    private fun openMangaInWebView(navigator: Navigator, manga_: Manga?, source_: Source?) {
+    private fun openMangaInWebView(navigator: Navigator, manga_: Anime?, source_: Source?) {
         getMangaUrl(manga_, source_)?.let { url ->
             navigator.push(
                 WebViewScreen(
@@ -620,7 +620,7 @@ class AnimeScreen(
     }
 
     @Suppress("LocalVariableName")
-    private fun shareManga(context: Context, manga_: Manga?, source_: Source?) {
+    private fun shareManga(context: Context, manga_: Anime?, source_: Source?) {
         try {
             getMangaUrl(manga_, source_)?.let { url ->
                 val intent = url.toUri().toShareIntent(context, type = "text/plain")
@@ -730,7 +730,7 @@ class AnimeScreen(
      * Copy Manga URL to Clipboard
      */
     @Suppress("LocalVariableName")
-    private fun copyMangaUrl(context: Context, manga_: Manga?, source_: Source?) {
+    private fun copyMangaUrl(context: Context, manga_: Anime?, source_: Source?) {
         val manga = manga_ ?: return
         val source = source_ as? HttpSource ?: return
         val url = source.getMangaUrl(manga.toSManga())
@@ -741,7 +741,7 @@ class AnimeScreen(
     /**
      * Initiates source migration for the specific manga.
      */
-    private fun migrateManga(navigator: Navigator, manga: Manga, toMangaId: Long? = null) {
+    private fun migrateManga(navigator: Navigator, manga: Anime, toMangaId: Long? = null) {
         // SY -->
         PreMigrationScreen.navigateToMigration(
             Injekt.get<UnsortedPreferences>().skipPreMigration().get(),
@@ -754,7 +754,7 @@ class AnimeScreen(
 
     private fun openMetadataViewer(
         navigator: Navigator,
-        manga: Manga,
+        manga: Anime,
         // KMK -->
         seedColor: Color?,
         // KMK <--
@@ -779,7 +779,7 @@ class AnimeScreen(
             .show()
     }
 
-    private fun openMorePagePreviews(navigator: Navigator, manga: Manga) {
+    private fun openMorePagePreviews(navigator: Navigator, manga: Anime) {
         navigator.push(PagePreviewScreen(manga.id))
     }
 
@@ -793,7 +793,7 @@ class AnimeScreen(
     /**
      * Called when click Merge on an entry to search for entries to merge.
      */
-    private fun openSmartSearch(navigator: Navigator, manga: Manga) {
+    private fun openSmartSearch(navigator: Navigator, manga: Anime) {
         val smartSearchConfig = SourcesScreen.SmartSearchConfig(manga.title, manga.id)
 
         navigator.push(SourcesScreen(smartSearchConfig))
@@ -803,8 +803,8 @@ class AnimeScreen(
     private fun mergeWithAnother(
         navigator: Navigator,
         context: Context,
-        manga: Manga,
-        smartSearchMerge: suspend (Manga, Long) -> Manga,
+        manga: Anime,
+        smartSearchMerge: suspend (Anime, Long) -> Anime,
     ) {
         launchUI {
             try {
@@ -832,7 +832,7 @@ class AnimeScreen(
     // EXH <--
 
     // AZ -->
-    private fun openRecommends(context: Context, navigator: Navigator, source: Source?, manga: Manga) {
+    private fun openRecommends(context: Context, navigator: Navigator, source: Source?, manga: Anime) {
         source ?: return
         if (source.isMdBasedSource() && Injekt.get<DelegateSourcePreferences>().delegateSources().get()) {
             MaterialAlertDialogBuilder(context)

@@ -34,7 +34,7 @@ import okio.sink
 import okio.source
 import tachiyomi.core.common.util.system.logcat
 import tachiyomi.domain.anime.model.AnimeCover
-import tachiyomi.domain.anime.model.Manga
+import tachiyomi.domain.anime.model.Anime
 import tachiyomi.domain.anime.model.asMangaCover
 import tachiyomi.domain.source.service.SourceManager
 import uy.kohesive.injekt.Injekt
@@ -44,9 +44,9 @@ import java.io.File
 import java.io.IOException
 
 /**
- * A [Fetcher] that fetches cover image for [Manga] object.
+ * A [Fetcher] that fetches cover image for [Anime] object.
  *
- * It uses [Manga.thumbnailUrl] if custom cover is not set by the user.
+ * It uses [Anime.thumbnailUrl] if custom cover is not set by the user.
  * Disk caching for library items is handled by [CoverCache], otherwise
  * handled by Coil's [DiskCache].
  *
@@ -365,12 +365,12 @@ class AnimeCoverFetcher(
 
     class MangaFactory(
         private val callFactoryLazy: Lazy<Call.Factory>,
-    ) : Fetcher.Factory<Manga> {
+    ) : Fetcher.Factory<Anime> {
 
         private val coverCache: CoverCache by injectLazy()
         private val sourceManager: SourceManager by injectLazy()
 
-        override fun create(data: Manga, options: Options, imageLoader: ImageLoader): Fetcher {
+        override fun create(data: Anime, options: Options, imageLoader: ImageLoader): Fetcher {
             return AnimeCoverFetcher(
                 // KMK -->
                 // url = data.thumbnailUrl,

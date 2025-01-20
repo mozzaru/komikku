@@ -15,7 +15,7 @@ import tachiyomi.domain.anime.interactor.GetAnime
 import tachiyomi.domain.anime.interactor.GetAnimeBySource
 import tachiyomi.domain.anime.interactor.InsertMergedReference
 import tachiyomi.domain.anime.model.AnimeUpdate
-import tachiyomi.domain.anime.model.Manga
+import tachiyomi.domain.anime.model.Anime
 import tachiyomi.domain.anime.model.MergedAnimeReference
 import tachiyomi.domain.episode.interactor.DeleteEpisodes
 import tachiyomi.domain.episode.interactor.UpdateEpisode
@@ -160,7 +160,7 @@ class MergedMangaRewriteMigration : Migration {
         }
     }
 
-    private fun readMangaConfig(manga: Manga): MangaConfig? {
+    private fun readMangaConfig(manga: Anime): MangaConfig? {
         return MangaConfig.readFromUrl(manga.url)
     }
 
@@ -186,5 +186,5 @@ class MergedMangaRewriteMigration : Migration {
         }
     }
 
-    private data class LoadedMangaSource(val source: Source, val manga: Manga)
+    private data class LoadedMangaSource(val source: Source, val manga: Anime)
 }

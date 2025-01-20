@@ -47,7 +47,7 @@ data class MigrateAnimeScreen(
                 PreMigrationScreen.navigateToMigration(
                     Injekt.get<UnsortedPreferences>().skipPreMigration().get(),
                     navigator,
-                    listOf(it.manga.id),
+                    listOf(it.anime.id),
                 )
                 // SY <--
             },
@@ -58,14 +58,14 @@ data class MigrateAnimeScreen(
                     PreMigrationScreen.navigateToMigration(
                         Injekt.get<UnsortedPreferences>().skipPreMigration().get(),
                         navigator,
-                        state.selected.map { it.manga.id },
+                        state.selected.map { it.anime.id },
                     )
                 } else {
                     context.toast(KMR.strings.migrating_all_entries)
                     PreMigrationScreen.navigateToMigration(
                         Injekt.get<UnsortedPreferences>().skipPreMigration().get(),
                         navigator,
-                        state.titles.map { it.manga.id },
+                        state.titles.map { it.anime.id },
                     )
                 }
             },

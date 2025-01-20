@@ -34,7 +34,7 @@ import tachiyomi.domain.UnsortedPreferences
 import tachiyomi.domain.anime.interactor.GetAnime
 import tachiyomi.domain.anime.interactor.GetLibraryAnime
 import tachiyomi.domain.anime.model.FavoriteEntry
-import tachiyomi.domain.anime.model.Manga
+import tachiyomi.domain.anime.model.Anime
 import tachiyomi.domain.category.interactor.CreateCategoryWithName
 import tachiyomi.domain.category.interactor.GetCategories
 import tachiyomi.domain.category.interactor.SetAnimeCategories
@@ -337,7 +337,7 @@ class FavoritesSyncHelper(val context: Context) {
         errorList: MutableList<FavoritesSyncStatus.SyncError.GallerySyncError>,
         changeSet: ChangeSet,
     ) {
-        val removedManga = mutableListOf<Manga>()
+        val removedManga = mutableListOf<Anime>()
 
         // Apply removals
         changeSet.removed.forEachIndexed { index, it ->
@@ -366,7 +366,7 @@ class FavoritesSyncHelper(val context: Context) {
             setAnimeCategories.await(it.id, emptyList())
         }
 
-        val insertedMangaCategories = mutableListOf<Pair<Long, Manga>>()
+        val insertedMangaCategories = mutableListOf<Pair<Long, Anime>>()
         val categories = getCategories.await()
             .filterNot(Category::isSystemCategory)
 

@@ -17,7 +17,7 @@ import kotlinx.collections.immutable.toImmutableList
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
 import tachiyomi.core.common.util.lang.withIOContext
-import tachiyomi.domain.anime.model.Manga
+import tachiyomi.domain.anime.model.Anime
 import tachiyomi.i18n.MR
 import tachiyomi.i18n.sy.SYMR
 import uy.kohesive.injekt.Injekt
@@ -137,7 +137,7 @@ class MdList(id: Long) : BaseTracker(id, "MDList") {
         }
     }
 
-    fun createInitialTracker(dbManga: Manga, mdManga: Manga = dbManga): Track {
+    fun createInitialTracker(dbManga: Anime, mdManga: Anime = dbManga): Track {
         return Track.create(id).apply {
             manga_id = dbManga.id
             status = FollowStatus.UNFOLLOWED.long

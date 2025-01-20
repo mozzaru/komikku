@@ -12,7 +12,7 @@ import kotlinx.collections.immutable.ImmutableList
 import kotlinx.collections.immutable.persistentListOf
 import okhttp3.Dns
 import okhttp3.OkHttpClient
-import tachiyomi.domain.anime.model.Manga
+import tachiyomi.domain.anime.model.Anime
 import tachiyomi.i18n.MR
 import tachiyomi.domain.track.model.Track as DomainTrack
 
@@ -95,17 +95,17 @@ class Komga(id: Long) : BaseTracker(id, "Komga"), EnhancedTracker {
 
     override fun getAcceptedSources() = listOf("eu.kanade.tachiyomi.extension.all.komga.Komga")
 
-    override suspend fun match(manga: Manga): TrackSearch? =
+    override suspend fun match(manga: Anime): TrackSearch? =
         try {
             api.getTrackSearch(manga.url)
         } catch (e: Exception) {
             null
         }
 
-    override fun isTrackFrom(track: DomainTrack, manga: Manga, source: Source?): Boolean =
+    override fun isTrackFrom(track: DomainTrack, manga: Anime, source: Source?): Boolean =
         track.remoteUrl == manga.url && source?.let { accept(it) } == true
 
-    override fun migrateTrack(track: DomainTrack, manga: Manga, newSource: Source): DomainTrack? =
+    override fun migrateTrack(track: DomainTrack, manga: Anime, newSource: Source): DomainTrack? =
         if (accept(newSource)) {
             track.copy(remoteUrl = manga.url)
         } else {

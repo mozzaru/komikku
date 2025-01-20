@@ -45,7 +45,7 @@ import exh.md.follows.MangaDexFollowsScreen
 import exh.source.isEhBasedSource
 import exh.util.nullIfBlank
 import tachiyomi.core.common.util.lang.launchIO
-import tachiyomi.domain.anime.model.Manga
+import tachiyomi.domain.anime.model.Anime
 import tachiyomi.domain.source.interactor.GetRemoteAnime
 import tachiyomi.domain.source.model.SavedSearch
 import tachiyomi.domain.source.model.StubSource
@@ -331,7 +331,7 @@ class SourceFeedScreen(val sourceId: Long) : Screen() {
         // KMK <--
     }
 
-    private fun onMangaClick(navigator: Navigator, manga: Manga) {
+    private fun onMangaClick(navigator: Navigator, manga: Anime) {
         navigator.push(AnimeScreen(manga.id, true))
     }
 

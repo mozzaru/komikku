@@ -16,7 +16,7 @@ import tachiyomi.core.common.util.lang.withIOContext
 import tachiyomi.core.common.util.lang.withNonCancellableContext
 import tachiyomi.core.common.util.lang.withUIContext
 import tachiyomi.core.common.util.system.logcat
-import tachiyomi.domain.anime.model.Manga
+import tachiyomi.domain.anime.model.Anime
 import tachiyomi.domain.episode.interactor.GetEpisodesByAnimeId
 import tachiyomi.domain.history.interactor.GetHistory
 import tachiyomi.domain.track.interactor.InsertTrack
@@ -99,7 +99,7 @@ class AddTracks(
         }
     }
 
-    suspend fun bindEnhancedTrackers(manga: Manga, source: Source) = withNonCancellableContext {
+    suspend fun bindEnhancedTrackers(manga: Anime, source: Source) = withNonCancellableContext {
         withIOContext {
             trackerManager.loggedInTrackers()
                 .filterIsInstance<EnhancedTracker>()

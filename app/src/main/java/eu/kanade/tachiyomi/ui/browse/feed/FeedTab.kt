@@ -204,7 +204,7 @@ fun feedTab(
                         selection = bulkFavoriteState.selection,
                         // KMK <--
                         onRefresh = screenModel::init,
-                        getMangaState = { manga -> screenModel.getManga(initialManga = manga) },
+                        getAnimeState = { manga -> screenModel.getManga(initialManga = manga) },
                     )
                 }
             }

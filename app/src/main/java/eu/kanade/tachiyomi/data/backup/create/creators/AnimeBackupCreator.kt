@@ -16,7 +16,7 @@ import tachiyomi.data.DatabaseHandler
 import tachiyomi.domain.anime.interactor.GetCustomAnimeInfo
 import tachiyomi.domain.anime.interactor.GetFlatMetadataById
 import tachiyomi.domain.anime.model.CustomAnimeInfo
-import tachiyomi.domain.anime.model.Manga
+import tachiyomi.domain.anime.model.Anime
 import tachiyomi.domain.category.interactor.GetCategories
 import tachiyomi.domain.history.interactor.GetHistory
 import tachiyomi.domain.source.service.SourceManager
@@ -34,13 +34,13 @@ class AnimeBackupCreator(
     // SY <--
 ) {
 
-    suspend operator fun invoke(mangas: List<Manga>, options: BackupOptions): List<BackupAnime> {
+    suspend operator fun invoke(mangas: List<Anime>, options: BackupOptions): List<BackupAnime> {
         return mangas.map {
             backupManga(it, options)
         }
     }
 
-    private suspend fun backupManga(manga: Manga, options: BackupOptions): BackupAnime {
+    private suspend fun backupManga(manga: Anime, options: BackupOptions): BackupAnime {
         // Entry for this manga
         val mangaObject = manga.toBackupManga(
             // SY -->
@@ -115,7 +115,7 @@ class AnimeBackupCreator(
     }
 }
 
-private fun Manga.toBackupManga(/* SY --> */customAnimeInfo: CustomAnimeInfo?/* SY <-- */) =
+private fun Anime.toBackupManga(/* SY --> */customAnimeInfo: CustomAnimeInfo?/* SY <-- */) =
     BackupAnime(
         url = this.url,
         title = this.title,

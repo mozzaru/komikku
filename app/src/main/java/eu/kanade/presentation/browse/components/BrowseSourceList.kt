@@ -19,19 +19,19 @@ import exh.metadata.metadata.MangaDexSearchMetadata
 import exh.metadata.metadata.RaisedSearchMetadata
 import kotlinx.coroutines.flow.StateFlow
 import tachiyomi.domain.anime.model.AnimeCover
-import tachiyomi.domain.anime.model.Manga
+import tachiyomi.domain.anime.model.Anime
 import tachiyomi.presentation.core.components.Badge
 import tachiyomi.presentation.core.i18n.stringResource
 import tachiyomi.presentation.core.util.plus
 
 @Composable
 fun BrowseSourceList(
-    mangaList: LazyPagingItems<StateFlow</* SY --> */Pair<Manga, RaisedSearchMetadata?>/* SY <-- */>>,
+    mangaList: LazyPagingItems<StateFlow</* SY --> */Pair<Anime, RaisedSearchMetadata?>/* SY <-- */>>,
     contentPadding: PaddingValues,
-    onMangaClick: (Manga) -> Unit,
-    onMangaLongClick: (Manga) -> Unit,
+    onMangaClick: (Anime) -> Unit,
+    onMangaLongClick: (Anime) -> Unit,
     // KMK -->
-    selection: List<Manga>,
+    selection: List<Anime>,
     // KMK <--
 ) {
     LazyColumn(
@@ -73,7 +73,7 @@ fun BrowseSourceList(
 
 @Composable
 internal fun BrowseSourceListItem(
-    manga: Manga,
+    manga: Anime,
     // SY -->
     metadata: RaisedSearchMetadata?,
     // SY <--

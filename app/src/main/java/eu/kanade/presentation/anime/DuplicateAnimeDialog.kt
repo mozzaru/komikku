@@ -40,7 +40,7 @@ import eu.kanade.presentation.components.AdaptiveSheet
 import eu.kanade.presentation.components.TabbedDialogPaddings
 import eu.kanade.presentation.more.settings.LocalPreferenceMinHeight
 import eu.kanade.presentation.more.settings.widget.TextPreferenceWidget
-import tachiyomi.domain.anime.model.Manga
+import tachiyomi.domain.anime.model.Anime
 import tachiyomi.i18n.MR
 import tachiyomi.i18n.kmk.KMR
 import tachiyomi.presentation.core.i18n.stringResource
@@ -55,7 +55,7 @@ fun DuplicateAnimeDialog(
     onOpenManga: () -> Unit,
     onMigrate: () -> Unit,
     // KMK -->
-    duplicate: Manga,
+    duplicate: Anime,
     // KMK <--
     modifier: Modifier = Modifier,
 ) {
@@ -194,7 +194,7 @@ fun DuplicateAnimesDialog(
     onSkipDuplicate: () -> Unit,
     stopRunning: () -> Unit,
     mangaName: String,
-    duplicate: Manga,
+    duplicate: Anime,
 ) {
     val usePanoramaCover by Injekt.get<UiPreferences>().usePanoramaCoverAlways().collectAsState()
     val coverRatio = remember { mutableFloatStateOf(1f) }

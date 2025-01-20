@@ -15,7 +15,7 @@ import kotlinx.coroutines.flow.update
 import tachiyomi.core.common.util.lang.launchIO
 import tachiyomi.domain.anime.interactor.GetAnimeByUrlAndSourceId
 import tachiyomi.domain.anime.interactor.NetworkToLocalAnime
-import tachiyomi.domain.anime.model.Manga
+import tachiyomi.domain.anime.model.Anime
 import tachiyomi.domain.episode.interactor.GetEpisodeByUrlAndAnimeId
 import tachiyomi.domain.episode.model.Episode
 import tachiyomi.domain.source.service.SourceManager
@@ -61,7 +61,7 @@ class DeepLinkScreenModel(
         }
     }
 
-    private suspend fun getChapterFromSChapter(sChapter: SChapter, manga: Manga, source: Source): Episode? {
+    private suspend fun getChapterFromSChapter(sChapter: SChapter, manga: Anime, source: Source): Episode? {
         val localChapter = getEpisodeByUrlAndAnimeId.await(sChapter.url, manga.id)
 
         return if (localChapter == null) {
@@ -73,7 +73,7 @@ class DeepLinkScreenModel(
         }
     }
 
-    private suspend fun getMangaFromSManga(sManga: SManga, sourceId: Long): Manga {
+    private suspend fun getMangaFromSManga(sManga: SManga, sourceId: Long): Anime {
         return getAnimeByUrlAndSourceId.await(sManga.url, sourceId)
             ?: networkToLocalAnime.await(sManga.toDomainManga(sourceId))
     }
@@ -86,6 +86,6 @@ class DeepLinkScreenModel(
         data object NoResults : State
 
         @Immutable
-        data class Result(val manga: Manga, val chapterId: Long? = null) : State
+        data class Result(val manga: Anime, val chapterId: Long? = null) : State
     }
 }

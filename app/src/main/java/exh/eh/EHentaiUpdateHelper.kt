@@ -10,7 +10,7 @@ import tachiyomi.domain.anime.interactor.GetAnime
 import tachiyomi.domain.anime.interactor.InsertFavoriteEntryAlternative
 import tachiyomi.domain.anime.model.AnimeUpdate
 import tachiyomi.domain.anime.model.FavoriteEntryAlternative
-import tachiyomi.domain.anime.model.Manga
+import tachiyomi.domain.anime.model.Anime
 import tachiyomi.domain.category.interactor.GetCategories
 import tachiyomi.domain.category.interactor.SetAnimeCategories
 import tachiyomi.domain.episode.interactor.GetEpisodeByUrl
@@ -26,7 +26,7 @@ import tachiyomi.domain.history.model.HistoryUpdate
 import uy.kohesive.injekt.injectLazy
 import java.io.File
 
-data class ChapterChain(val manga: Manga, val episodes: List<Episode>, val history: List<History>)
+data class ChapterChain(val manga: Anime, val episodes: List<Episode>, val history: List<History>)
 
 class EHentaiUpdateHelper(context: Context) {
     val parentLookupTable =

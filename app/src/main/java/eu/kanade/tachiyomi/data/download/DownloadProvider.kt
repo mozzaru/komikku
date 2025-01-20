@@ -8,7 +8,7 @@ import logcat.LogPriority
 import tachiyomi.core.common.i18n.stringResource
 import tachiyomi.core.common.storage.displayablePath
 import tachiyomi.core.common.util.system.logcat
-import tachiyomi.domain.anime.model.Manga
+import tachiyomi.domain.anime.model.Anime
 import tachiyomi.domain.episode.model.Episode
 import tachiyomi.domain.storage.service.StorageManager
 import tachiyomi.i18n.MR
@@ -94,7 +94,7 @@ class DownloadProvider(
      * @param manga the manga of the episode.
      * @param source the source of the episode.
      */
-    fun findChapterDirs(episodes: List<Episode>, manga: Manga, source: Source): Pair<UniFile?, List<UniFile>> {
+    fun findChapterDirs(episodes: List<Episode>, manga: Anime, source: Source): Pair<UniFile?, List<UniFile>> {
         val mangaDir = findMangaDir(/* SY --> */ manga.ogTitle /* SY <-- */, source) ?: return null to emptyList()
         return mangaDir to episodes.mapNotNull { chapter ->
             getValidChapterDirNames(chapter.name, chapter.scanlator).asSequence()
@@ -113,7 +113,7 @@ class DownloadProvider(
      */
     fun findUnmatchedChapterDirs(
         episodes: List<Episode>,
-        manga: Manga,
+        manga: Anime,
         source: Source,
     ): List<UniFile> {
         val mangaDir = findMangaDir(/* SY --> */ manga.ogTitle /* SY <-- */, source) ?: return emptyList()

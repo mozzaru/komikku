@@ -6,7 +6,7 @@ import eu.kanade.tachiyomi.data.download.DownloadManager
 import eu.kanade.tachiyomi.source.model.SManga
 import tachiyomi.domain.anime.interactor.FetchInterval
 import tachiyomi.domain.anime.model.AnimeUpdate
-import tachiyomi.domain.anime.model.Manga
+import tachiyomi.domain.anime.model.Anime
 import tachiyomi.domain.anime.repository.AnimeRepository
 import tachiyomi.source.local.isLocal
 import uy.kohesive.injekt.Injekt
@@ -28,7 +28,7 @@ class UpdateAnime(
     }
 
     suspend fun awaitUpdateFromSource(
-        localManga: Manga,
+        localManga: Anime,
         remoteManga: SManga,
         manualFetch: Boolean,
         coverCache: CoverCache = Injekt.get(),
@@ -87,7 +87,7 @@ class UpdateAnime(
     }
 
     suspend fun awaitUpdateFetchInterval(
-        manga: Manga,
+        manga: Anime,
         dateTime: ZonedDateTime = ZonedDateTime.now(),
         window: Pair<Long, Long> = fetchInterval.getWindow(dateTime),
     ): Boolean {

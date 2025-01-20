@@ -9,7 +9,7 @@ import java.io.Serializable
 import java.time.Instant
 
 @Immutable
-data class Manga(
+data class Anime(
     val id: Long,
     val source: Long,
     val favorite: Boolean,
@@ -137,7 +137,7 @@ data class Manga(
         const val CHAPTER_DISPLAY_NUMBER = 0x00100000L
         const val CHAPTER_DISPLAY_MASK = 0x00100000L
 
-        fun create() = Manga(
+        fun create() = Anime(
             id = -1L,
             url = "",
             // Sy -->

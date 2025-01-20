@@ -9,7 +9,7 @@ import kotlinx.serialization.Serializable
 import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.Json
 import tachiyomi.domain.anime.interactor.GetAnime
-import tachiyomi.domain.anime.model.Manga
+import tachiyomi.domain.anime.model.Anime
 import tachiyomi.domain.episode.interactor.GetEpisode
 import tachiyomi.domain.source.service.SourceManager
 import uy.kohesive.injekt.Injekt
@@ -98,7 +98,7 @@ class DownloadStore(
 
         val downloads = mutableListOf<Download>()
         if (objs.isNotEmpty()) {
-            val cachedManga = mutableMapOf<Long, Manga?>()
+            val cachedManga = mutableMapOf<Long, Anime?>()
             for ((mangaId, chapterId) in objs) {
                 val manga = cachedManga.getOrPut(mangaId) {
                     runBlocking { getAnime.await(mangaId) }

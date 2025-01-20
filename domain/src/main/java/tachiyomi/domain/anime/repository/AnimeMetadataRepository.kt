@@ -6,7 +6,7 @@ import exh.metadata.sql.models.SearchMetadata
 import exh.metadata.sql.models.SearchTag
 import exh.metadata.sql.models.SearchTitle
 import kotlinx.coroutines.flow.Flow
-import tachiyomi.domain.anime.model.Manga
+import tachiyomi.domain.anime.model.Anime
 
 interface AnimeMetadataRepository {
     suspend fun getMetadataById(id: Long): SearchMetadata?
@@ -25,7 +25,7 @@ interface AnimeMetadataRepository {
 
     suspend fun insertMetadata(metadata: RaisedSearchMetadata) = insertFlatMetadata(metadata.flatten())
 
-    suspend fun getExhFavoriteMangaWithMetadata(): List<Manga>
+    suspend fun getExhFavoriteMangaWithMetadata(): List<Anime>
 
     suspend fun getIdsOfFavoriteMangaWithMetadata(): List<Long>
 

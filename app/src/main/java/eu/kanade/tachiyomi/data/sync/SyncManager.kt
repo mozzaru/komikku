@@ -22,7 +22,7 @@ import tachiyomi.core.common.util.system.logcat
 import tachiyomi.data.DatabaseHandler
 import tachiyomi.data.Episodes
 import tachiyomi.data.anime.AnimeMapper.mapAnime
-import tachiyomi.domain.anime.model.Manga
+import tachiyomi.domain.anime.model.Anime
 import tachiyomi.domain.category.interactor.GetCategories
 import uy.kohesive.injekt.Injekt
 import uy.kohesive.injekt.api.get
@@ -241,15 +241,15 @@ class SyncManager(
      *
      * @return a list of all manga stored in the database
      */
-    private suspend fun getAllMangaFromDB(): List<Manga> {
+    private suspend fun getAllMangaFromDB(): List<Anime> {
         return handler.awaitList { animesQueries.getAllAnime(::mapAnime) }
     }
 
-    private suspend fun getAllMangaThatNeedsSync(): List<Manga> {
+    private suspend fun getAllMangaThatNeedsSync(): List<Anime> {
         return handler.awaitList { animesQueries.getAnimesWithFavoriteTimestamp(::mapAnime) }
     }
 
-    private suspend fun isMangaDifferent(localManga: Manga, remoteManga: BackupAnime): Boolean {
+    private suspend fun isMangaDifferent(localManga: Anime, remoteManga: BackupAnime): Boolean {
         val localChapters = handler.await { episodesQueries.getEpisodesByMangaId(localManga.id, 0).executeAsList() }
         val localCategories = getCategories.await(localManga.id).map { it.order }
 

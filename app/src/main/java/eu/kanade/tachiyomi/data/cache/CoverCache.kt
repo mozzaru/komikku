@@ -2,7 +2,7 @@ package eu.kanade.tachiyomi.data.cache
 
 import android.content.Context
 import eu.kanade.tachiyomi.util.storage.DiskUtil
-import tachiyomi.domain.anime.model.Manga
+import tachiyomi.domain.anime.model.Anime
 import java.io.File
 import java.io.IOException
 import java.io.InputStream
@@ -59,7 +59,7 @@ class CoverCache(private val context: Context) {
      * @throws IOException if there's any error.
      */
     @Throws(IOException::class)
-    fun setCustomCoverToCache(manga: Manga, inputStream: InputStream) {
+    fun setCustomCoverToCache(manga: Anime, inputStream: InputStream) {
         getCustomCoverFile(manga.id).outputStream().use {
             inputStream.copyTo(it)
         }
@@ -72,7 +72,7 @@ class CoverCache(private val context: Context) {
      * @param deleteCustomCover whether the custom cover should be deleted.
      * @return number of files that were deleted.
      */
-    fun deleteFromCache(manga: Manga, deleteCustomCover: Boolean = false): Int {
+    fun deleteFromCache(manga: Anime, deleteCustomCover: Boolean = false): Int {
         var deleted = 0
 
         getCoverFile(manga.thumbnailUrl)?.let {

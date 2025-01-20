@@ -28,7 +28,7 @@ import okhttp3.RequestBody.Companion.toRequestBody
 import tachiyomi.core.common.util.system.logcat
 import tachiyomi.data.source.NoResultsException
 import tachiyomi.data.source.SourcePagingSource
-import tachiyomi.domain.anime.model.Manga
+import tachiyomi.domain.anime.model.Anime
 import tachiyomi.domain.track.interactor.GetTracks
 import uy.kohesive.injekt.Injekt
 import uy.kohesive.injekt.api.get
@@ -264,7 +264,7 @@ class Anilist : API("https://graphql.anilist.co/") {
 
 open class RecommendsPagingSource(
     source: CatalogueSource,
-    private val manga: Manga,
+    private val manga: Anime,
     private val smart: Boolean = true,
     private var preferredApi: API = API.MYANIMELIST,
 ) : SourcePagingSource(source) {

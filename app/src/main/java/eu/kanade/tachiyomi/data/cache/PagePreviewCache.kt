@@ -13,7 +13,7 @@ import okio.Source
 import okio.buffer
 import okio.sink
 import tachiyomi.core.common.util.system.logcat
-import tachiyomi.domain.anime.model.Manga
+import tachiyomi.domain.anime.model.Anime
 import uy.kohesive.injekt.injectLazy
 import java.io.File
 import java.io.IOException
@@ -82,7 +82,7 @@ class PagePreviewCache(private val context: Context) {
      * @param manga the manga.
      * @return the list of pages.
      */
-    fun getPageListFromCache(manga: Manga, chapterIds: List<Long>, page: Int): PagePreviewPage {
+    fun getPageListFromCache(manga: Anime, chapterIds: List<Long>, page: Int): PagePreviewPage {
         // Get the key for the manga.
         val key = DiskUtil.hashKeyForDisk(getKey(manga, chapterIds, page))
 
@@ -98,7 +98,7 @@ class PagePreviewCache(private val context: Context) {
      * @param manga the manga.
      * @param pages list of pages.
      */
-    fun putPageListToCache(manga: Manga, chapterIds: List<Long>, pages: PagePreviewPage) {
+    fun putPageListToCache(manga: Anime, chapterIds: List<Long>, pages: PagePreviewPage) {
         // Convert list of pages to json string.
         val cachedValue = json.encodeToString(pages)
 
@@ -213,7 +213,7 @@ class PagePreviewCache(private val context: Context) {
         }
     }
 
-    private fun getKey(manga: Manga, chapterIds: List<Long>, page: Int): String {
+    private fun getKey(manga: Anime, chapterIds: List<Long>, page: Int): String {
         return "${manga.id}_${chapterIds.joinToString(separator = "-")}_$page"
     }
 }

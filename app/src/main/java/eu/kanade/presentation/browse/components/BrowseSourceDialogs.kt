@@ -16,7 +16,7 @@ import androidx.compose.ui.text.input.TextFieldValue
 import androidx.compose.ui.window.DialogProperties
 import eu.kanade.tachiyomi.util.system.toast
 import kotlinx.collections.immutable.ImmutableList
-import tachiyomi.domain.anime.model.Manga
+import tachiyomi.domain.anime.model.Anime
 import tachiyomi.i18n.MR
 import tachiyomi.i18n.sy.SYMR
 import tachiyomi.presentation.core.i18n.stringResource
@@ -25,7 +25,7 @@ import tachiyomi.presentation.core.i18n.stringResource
 fun RemoveAnimeDialog(
     onDismissRequest: () -> Unit,
     onConfirm: () -> Unit,
-    mangaToRemove: Manga,
+    mangaToRemove: Anime,
 ) {
     AlertDialog(
         onDismissRequest = onDismissRequest,

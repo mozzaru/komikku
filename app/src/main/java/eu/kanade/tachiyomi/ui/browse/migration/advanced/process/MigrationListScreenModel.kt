@@ -43,7 +43,7 @@ import tachiyomi.domain.anime.interactor.GetAnime
 import tachiyomi.domain.anime.interactor.GetMergedReferencesById
 import tachiyomi.domain.anime.interactor.NetworkToLocalAnime
 import tachiyomi.domain.anime.model.AnimeUpdate
-import tachiyomi.domain.anime.model.Manga
+import tachiyomi.domain.anime.model.Anime
 import tachiyomi.domain.category.interactor.GetCategories
 import tachiyomi.domain.category.interactor.SetAnimeCategories
 import tachiyomi.domain.episode.interactor.GetEpisodesByAnimeId
@@ -153,7 +153,7 @@ class MigrationListScreenModel(
             chapterCount = chapters.size,
         )
     }
-    fun getSourceName(manga: Manga) = sourceManager.getOrStub(manga.source).getNameForMangaInfo()
+    fun getSourceName(manga: Anime) = sourceManager.getOrStub(manga.source).getNameForMangaInfo()
 
     fun getMigrationSources() = preferences.migrationSources().get().split("/").mapNotNull {
         val value = it.toLongOrNull() ?: return@mapNotNull null
@@ -354,8 +354,8 @@ class MigrationListScreenModel(
     private fun mangasSkipped() = migratingItems.value.orEmpty().count { it.searchResult.value == SearchResult.NotFound }
 
     private suspend fun migrateMangaInternal(
-        prevManga: Manga,
-        manga: Manga,
+        prevManga: Anime,
+        manga: Anime,
         replace: Boolean,
     ) {
         if (prevManga.id == manga.id) return // Nothing to migrate

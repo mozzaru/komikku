@@ -7,10 +7,10 @@ import eu.davidea.flexibleadapter.items.AbstractFlexibleItem
 import eu.davidea.flexibleadapter.items.IFlexible
 import eu.kanade.tachiyomi.R
 import eu.kanade.tachiyomi.databinding.EditMergedSettingsItemBinding
-import tachiyomi.domain.anime.model.Manga
+import tachiyomi.domain.anime.model.Anime
 import tachiyomi.domain.anime.model.MergedAnimeReference
 
-class EditMergedMangaItem(val mergedManga: Manga?, val mergedAnimeReference: MergedAnimeReference) : AbstractFlexibleItem<EditMergedMangaHolder>() {
+class EditMergedMangaItem(val mergedManga: Anime?, val mergedAnimeReference: MergedAnimeReference) : AbstractFlexibleItem<EditMergedMangaHolder>() {
 
     override fun getLayoutRes(): Int {
         return R.layout.edit_merged_settings_item

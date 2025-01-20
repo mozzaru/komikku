@@ -8,7 +8,7 @@ import info.debatty.java.stringsimilarity.NormalizedLevenshtein
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.async
 import kotlinx.coroutines.supervisorScope
-import tachiyomi.domain.anime.model.Manga
+import tachiyomi.domain.anime.model.Anime
 import java.util.Locale
 
 class SmartSearchEngine(
@@ -16,7 +16,7 @@ class SmartSearchEngine(
 ) {
     private val normalizedLevenshtein = NormalizedLevenshtein()
 
-    suspend fun smartSearch(source: CatalogueSource, title: String): Manga? {
+    suspend fun smartSearch(source: CatalogueSource, title: String): Anime? {
         val cleanedTitle = cleanSmartSearchTitle(title)
 
         val queries = getSmartSearchQueries(cleanedTitle)
@@ -46,7 +46,7 @@ class SmartSearchEngine(
         return eligibleManga.maxByOrNull { it.dist }?.manga?.toDomainManga(source.id)
     }
 
-    suspend fun normalSearch(source: CatalogueSource, title: String): Manga? {
+    suspend fun normalSearch(source: CatalogueSource, title: String): Anime? {
         val eligibleManga = supervisorScope {
             val searchQuery = if (extraSearchParams != null) {
                 "$title ${extraSearchParams.trim()}"

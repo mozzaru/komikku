@@ -32,7 +32,7 @@ import eu.kanade.tachiyomi.ui.browse.migration.advanced.process.MigratingAnime
 import kotlinx.collections.immutable.ImmutableList
 import kotlinx.collections.immutable.persistentListOf
 import tachiyomi.core.common.util.lang.withIOContext
-import tachiyomi.domain.anime.model.Manga
+import tachiyomi.domain.anime.model.Anime
 import tachiyomi.i18n.MR
 import tachiyomi.i18n.sy.SYMR
 import tachiyomi.presentation.core.components.ScrollbarLazyColumn
@@ -46,10 +46,10 @@ fun MigrationListScreen(
     items: ImmutableList<MigratingAnime>,
     migrationDone: Boolean,
     finishedCount: Int,
-    getManga: suspend (MigratingAnime.SearchResult.Result) -> Manga?,
+    getManga: suspend (MigratingAnime.SearchResult.Result) -> Anime?,
     getEpisodeInfo: suspend (MigratingAnime.SearchResult.Result) -> MigratingAnime.EpisodeInfo,
-    getSourceName: (Manga) -> String,
-    onMigrationItemClick: (Manga) -> Unit,
+    getSourceName: (Anime) -> String,
+    onMigrationItemClick: (Anime) -> Unit,
     openMigrationDialog: (Boolean) -> Unit,
     skipManga: (Long) -> Unit,
     // KMK -->

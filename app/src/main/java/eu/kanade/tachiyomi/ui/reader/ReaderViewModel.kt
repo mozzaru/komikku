@@ -87,7 +87,7 @@ import tachiyomi.domain.anime.interactor.GetAnime
 import tachiyomi.domain.anime.interactor.GetFlatMetadataById
 import tachiyomi.domain.anime.interactor.GetMergedAnimeById
 import tachiyomi.domain.anime.interactor.GetMergedReferencesById
-import tachiyomi.domain.anime.model.Manga
+import tachiyomi.domain.anime.model.Anime
 import tachiyomi.domain.download.service.DownloadPreferences
 import tachiyomi.domain.episode.interactor.GetEpisodesByAnimeId
 import tachiyomi.domain.episode.interactor.GetMergedEpisodesByAnimeId
@@ -147,7 +147,7 @@ class ReaderViewModel @JvmOverloads constructor(
     /**
      * The manga loaded in the reader. It can be null when instantiated for a short time.
      */
-    val manga: Manga?
+    val manga: Anime?
         get() = state.value.manga
 
     /**
@@ -216,20 +216,20 @@ class ReaderViewModel @JvmOverloads constructor(
                     when {
                         readerPreferences.skipRead().get() && it.read -> true
                         readerPreferences.skipFiltered().get() -> {
-                            (manga.unreadFilterRaw == Manga.CHAPTER_SHOW_READ && !it.read) ||
-                                (manga.unreadFilterRaw == Manga.CHAPTER_SHOW_UNREAD && it.read) ||
+                            (manga.unreadFilterRaw == Anime.CHAPTER_SHOW_READ && !it.read) ||
+                                (manga.unreadFilterRaw == Anime.CHAPTER_SHOW_UNREAD && it.read) ||
                                 // SY -->
                                 (
-                                    manga.downloadedFilterRaw == Manga.CHAPTER_SHOW_DOWNLOADED &&
+                                    manga.downloadedFilterRaw == Anime.CHAPTER_SHOW_DOWNLOADED &&
                                         !isChapterDownloaded(it)
                                     ) ||
                                 (
-                                    manga.downloadedFilterRaw == Manga.CHAPTER_SHOW_NOT_DOWNLOADED &&
+                                    manga.downloadedFilterRaw == Anime.CHAPTER_SHOW_NOT_DOWNLOADED &&
                                         isChapterDownloaded(it)
                                     ) ||
                                 // SY <--
-                                (manga.bookmarkedFilterRaw == Manga.CHAPTER_SHOW_BOOKMARKED && !it.bookmark) ||
-                                (manga.bookmarkedFilterRaw == Manga.CHAPTER_SHOW_NOT_BOOKMARKED && it.bookmark)
+                                (manga.bookmarkedFilterRaw == Anime.CHAPTER_SHOW_BOOKMARKED && !it.bookmark) ||
+                                (manga.bookmarkedFilterRaw == Anime.CHAPTER_SHOW_NOT_BOOKMARKED && it.bookmark)
                         }
                         else -> false
                     }
@@ -960,7 +960,7 @@ class ReaderViewModel @JvmOverloads constructor(
      * Generate a filename for the given [manga] and [page]
      */
     private fun generateFilename(
-        manga: Manga,
+        manga: Anime,
         page: ReaderPage,
     ): String {
         val chapter = page.chapter.episode
@@ -1134,7 +1134,7 @@ class ReaderViewModel @JvmOverloads constructor(
         isLTR: Boolean,
         @ColorInt bg: Int,
         location: Location,
-        manga: Manga,
+        manga: Anime,
     ): Uri {
         val stream1 = page1.stream!!
         ImageUtil.findImageType(stream1) ?: throw Exception("Not an image")
@@ -1329,7 +1329,7 @@ class ReaderViewModel @JvmOverloads constructor(
 
     @Immutable
     data class State(
-        val manga: Manga? = null,
+        val manga: Anime? = null,
         val viewerChapters: ViewerChapters? = null,
         val bookmarked: Boolean = false,
         val isLoadingAdjacentChapter: Boolean = false,
@@ -1347,7 +1347,7 @@ class ReaderViewModel @JvmOverloads constructor(
         /** for display page number in double-page mode */
         val currentPageText: String = "",
         val meta: RaisedSearchMetadata? = null,
-        val mergedManga: Map<Long, Manga>? = null,
+        val mergedManga: Map<Long, Anime>? = null,
         val ehUtilsVisible: Boolean = false,
         val lastShiftDoubleState: Boolean? = null,
         val indexPageToShift: Int? = null,

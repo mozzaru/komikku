@@ -47,7 +47,7 @@ import exh.util.floor
 import kotlinx.coroutines.flow.StateFlow
 import tachiyomi.core.common.i18n.pluralStringResource
 import tachiyomi.core.common.util.lang.withIOContext
-import tachiyomi.domain.anime.model.Manga
+import tachiyomi.domain.anime.model.Anime
 import tachiyomi.domain.anime.model.asMangaCover
 import tachiyomi.i18n.sy.SYMR
 import tachiyomi.presentation.core.components.BadgeGroup
@@ -60,12 +60,12 @@ import java.time.ZoneId
 
 @Composable
 fun BrowseSourceEHentaiList(
-    mangaList: LazyPagingItems<StateFlow</* SY --> */Pair<Manga, RaisedSearchMetadata?>/* SY <-- */>>,
+    mangaList: LazyPagingItems<StateFlow</* SY --> */Pair<Anime, RaisedSearchMetadata?>/* SY <-- */>>,
     contentPadding: PaddingValues,
-    onMangaClick: (Manga) -> Unit,
-    onMangaLongClick: (Manga) -> Unit,
+    onMangaClick: (Anime) -> Unit,
+    onMangaLongClick: (Anime) -> Unit,
     // KMK -->
-    selection: List<Manga>,
+    selection: List<Anime>,
     // KMK <--
 ) {
     LazyColumn(
@@ -105,7 +105,7 @@ fun BrowseSourceEHentaiList(
 
 @Composable
 fun BrowseSourceEHentaiListItem(
-    manga: Manga,
+    manga: Anime,
     // SY -->
     metadata: RaisedSearchMetadata?,
     // SY <--

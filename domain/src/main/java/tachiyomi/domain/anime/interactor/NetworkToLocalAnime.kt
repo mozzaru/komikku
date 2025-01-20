@@ -1,13 +1,13 @@
 package tachiyomi.domain.anime.interactor
 
-import tachiyomi.domain.anime.model.Manga
+import tachiyomi.domain.anime.model.Anime
 import tachiyomi.domain.anime.repository.AnimeRepository
 
 class NetworkToLocalAnime(
     private val animeRepository: AnimeRepository,
 ) {
 
-    suspend fun await(manga: Manga): Manga {
+    suspend fun await(manga: Anime): Anime {
         val localManga = getManga(manga.url, manga.source)
         return when {
             localManga == null -> {
@@ -26,18 +26,18 @@ class NetworkToLocalAnime(
     }
 
     // KMK -->
-    suspend fun getLocal(manga: Manga): Manga = if (manga.id <= 0) {
+    suspend fun getLocal(manga: Anime): Anime = if (manga.id <= 0) {
         await(manga)
     } else {
         manga
     }
     // KMK <--
 
-    private suspend fun getManga(url: String, sourceId: Long): Manga? {
+    private suspend fun getManga(url: String, sourceId: Long): Anime? {
         return animeRepository.getMangaByUrlAndSourceId(url, sourceId)
     }
 
-    private suspend fun insertManga(manga: Manga): Long? {
+    private suspend fun insertManga(manga: Anime): Long? {
         return animeRepository.insert(manga)
     }
 }

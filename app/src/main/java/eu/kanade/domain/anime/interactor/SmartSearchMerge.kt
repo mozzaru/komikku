@@ -12,7 +12,7 @@ import tachiyomi.domain.anime.interactor.GetAnime
 import tachiyomi.domain.anime.interactor.GetMergedReferencesById
 import tachiyomi.domain.anime.interactor.InsertMergedReference
 import tachiyomi.domain.anime.interactor.NetworkToLocalAnime
-import tachiyomi.domain.anime.model.Manga
+import tachiyomi.domain.anime.model.Anime
 import tachiyomi.domain.anime.model.MergedAnimeReference
 import tachiyomi.domain.category.interactor.GetCategories
 import tachiyomi.domain.category.interactor.SetAnimeCategories
@@ -30,7 +30,7 @@ class SmartSearchMerge(
     private val getCategories: GetCategories = Injekt.get(),
     private val setAnimeCategories: SetAnimeCategories = Injekt.get(),
 ) {
-    suspend fun smartSearchMerge(manga: Manga, originalMangaId: Long): Manga {
+    suspend fun smartSearchMerge(manga: Anime, originalMangaId: Long): Anime {
         // KMK -->
         val context = Injekt.get<Application>()
         // KMK <--
@@ -84,7 +84,7 @@ class SmartSearchMerge(
                 // Merged already
                 return originalManga
             }
-            var mergedManga = Manga.create()
+            var mergedManga = Anime.create()
                 .copy(
                     url = originalManga.url,
                     ogTitle = originalManga.title,

@@ -1,18 +1,18 @@
 package tachiyomi.domain.anime.repository
 
 import kotlinx.coroutines.flow.Flow
-import tachiyomi.domain.anime.model.Manga
+import tachiyomi.domain.anime.model.Anime
 import tachiyomi.domain.anime.model.MergeAnimeSettingsUpdate
 import tachiyomi.domain.anime.model.MergedAnimeReference
 
 interface AnimeMergeRepository {
-    suspend fun getMergedManga(): List<Manga>
+    suspend fun getMergedManga(): List<Anime>
 
-    suspend fun subscribeMergedManga(): Flow<List<Manga>>
+    suspend fun subscribeMergedManga(): Flow<List<Anime>>
 
-    suspend fun getMergedMangaById(id: Long): List<Manga>
+    suspend fun getMergedMangaById(id: Long): List<Anime>
 
-    suspend fun subscribeMergedMangaById(id: Long): Flow<List<Manga>>
+    suspend fun subscribeMergedMangaById(id: Long): Flow<List<Anime>>
 
     suspend fun getReferencesById(id: Long): List<MergedAnimeReference>
 
@@ -30,5 +30,5 @@ interface AnimeMergeRepository {
 
     suspend fun deleteByMergeId(mergeId: Long)
 
-    suspend fun getMergeMangaForDownloading(mergeId: Long): List<Manga>
+    suspend fun getMergeMangaForDownloading(mergeId: Long): List<Anime>
 }

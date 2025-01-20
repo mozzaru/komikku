@@ -29,7 +29,7 @@ import kotlinx.collections.immutable.persistentListOf
 import kotlinx.collections.immutable.toImmutableList
 import kotlinx.coroutines.flow.StateFlow
 import tachiyomi.core.common.i18n.stringResource
-import tachiyomi.domain.anime.model.Manga
+import tachiyomi.domain.anime.model.Anime
 import tachiyomi.domain.library.model.LibraryDisplayMode
 import tachiyomi.domain.source.model.StubSource
 import tachiyomi.i18n.MR
@@ -43,7 +43,7 @@ import tachiyomi.source.local.LocalSource
 @Composable
 fun BrowseSourceContent(
     source: Source?,
-    mangaList: LazyPagingItems<StateFlow</* SY --> */Pair<Manga, RaisedSearchMetadata?>/* SY <-- */>>,
+    mangaList: LazyPagingItems<StateFlow</* SY --> */Pair<Anime, RaisedSearchMetadata?>/* SY <-- */>>,
     columns: GridCells,
     // SY -->
     ehentaiBrowseDisplayMode: Boolean,
@@ -56,10 +56,10 @@ fun BrowseSourceContent(
     onHelpClick: (() -> Unit)?,
     onLocalSourceHelpClick: (() -> Unit)?,
     // SY <--
-    onMangaClick: (Manga) -> Unit,
-    onMangaLongClick: (Manga) -> Unit,
+    onMangaClick: (Anime) -> Unit,
+    onMangaLongClick: (Anime) -> Unit,
     // KMK -->
-    selection: List<Manga>,
+    selection: List<Anime>,
     // KMK <--
 ) {
     val context = LocalContext.current

@@ -49,7 +49,7 @@ import uy.kohesive.injekt.Injekt
 import uy.kohesive.injekt.api.get
 import xyz.nulldev.ts.api.http.serializer.FilterSerializer
 import java.util.concurrent.Executors
-import tachiyomi.domain.anime.model.Manga as DomainManga
+import tachiyomi.domain.anime.model.Anime as DomainManga
 
 /**
  * Presenter of [feedTab]

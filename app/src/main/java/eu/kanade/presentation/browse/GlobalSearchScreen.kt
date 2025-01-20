@@ -21,7 +21,7 @@ import eu.kanade.tachiyomi.ui.browse.source.globalsearch.SearchScreenModel
 import eu.kanade.tachiyomi.ui.browse.source.globalsearch.SourceFilter
 import eu.kanade.tachiyomi.util.system.LocaleHelper
 import kotlinx.collections.immutable.ImmutableMap
-import tachiyomi.domain.anime.model.Manga
+import tachiyomi.domain.anime.model.Anime
 import tachiyomi.presentation.core.components.material.Scaffold
 import tachiyomi.domain.source.model.Source as DomainSource
 
@@ -33,10 +33,10 @@ fun GlobalSearchScreen(
     onSearch: (String) -> Unit,
     onChangeSearchFilter: (SourceFilter) -> Unit,
     onToggleResults: () -> Unit,
-    getManga: @Composable (Manga) -> State<Manga>,
+    getAnime: @Composable (Anime) -> State<Anime>,
     onClickSource: (CatalogueSource) -> Unit,
-    onClickItem: (Manga) -> Unit,
-    onLongClickItem: (Manga) -> Unit,
+    onClickItem: (Anime) -> Unit,
+    onLongClickItem: (Anime) -> Unit,
     // KMK -->
     bulkFavoriteScreenModel: BulkFavoriteScreenModel,
     hasPinnedSources: Boolean,
@@ -101,7 +101,7 @@ fun GlobalSearchScreen(
         GlobalSearchContent(
             items = state.filteredItems,
             contentPadding = paddingValues,
-            getManga = getManga,
+            getManga = getAnime,
             onClickSource = onClickSource,
             onClickItem = onClickItem,
             onLongClickItem = onLongClickItem,
@@ -116,13 +116,13 @@ fun GlobalSearchScreen(
 internal fun GlobalSearchContent(
     items: ImmutableMap<CatalogueSource, SearchItemResult>,
     contentPadding: PaddingValues,
-    getManga: @Composable (Manga) -> State<Manga>,
+    getManga: @Composable (Anime) -> State<Anime>,
     onClickSource: (CatalogueSource) -> Unit,
-    onClickItem: (Manga) -> Unit,
-    onLongClickItem: (Manga) -> Unit,
+    onClickItem: (Anime) -> Unit,
+    onLongClickItem: (Anime) -> Unit,
     fromSourceId: Long? = null,
     // KMK -->
-    selection: List<Manga>,
+    selection: List<Anime>,
     // KMK <--
 ) {
     LazyColumn(

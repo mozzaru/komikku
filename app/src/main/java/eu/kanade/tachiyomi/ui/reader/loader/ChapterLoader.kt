@@ -13,7 +13,7 @@ import mihon.core.archive.epubReader
 import tachiyomi.core.common.i18n.stringResource
 import tachiyomi.core.common.util.lang.withIOContext
 import tachiyomi.core.common.util.system.logcat
-import tachiyomi.domain.anime.model.Manga
+import tachiyomi.domain.anime.model.Anime
 import tachiyomi.domain.anime.model.MergedAnimeReference
 import tachiyomi.domain.source.model.StubSource
 import tachiyomi.domain.source.service.SourceManager
@@ -28,13 +28,13 @@ class ChapterLoader(
     private val context: Context,
     private val downloadManager: DownloadManager,
     private val downloadProvider: DownloadProvider,
-    private val manga: Manga,
+    private val manga: Anime,
     private val source: Source,
     // SY -->
     private val sourceManager: SourceManager,
     private val readerPrefs: ReaderPreferences,
     private val mergedReferences: List<MergedAnimeReference>,
-    private val mergedManga: Map<Long, Manga>,
+    private val mergedManga: Map<Long, Anime>,
     // SY <--
 ) {
 

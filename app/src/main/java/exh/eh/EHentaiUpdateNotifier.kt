@@ -13,7 +13,7 @@ import eu.kanade.tachiyomi.util.system.cancelNotification
 import eu.kanade.tachiyomi.util.system.notificationBuilder
 import eu.kanade.tachiyomi.util.system.notify
 import tachiyomi.core.common.i18n.stringResource
-import tachiyomi.domain.anime.model.Manga
+import tachiyomi.domain.anime.model.Anime
 import tachiyomi.i18n.MR
 import uy.kohesive.injekt.injectLazy
 import java.math.RoundingMode
@@ -55,7 +55,7 @@ class EHentaiUpdateNotifier(private val context: Context) {
      * @param current the current progress.
      * @param total the total progress.
      */
-    fun showProgressNotification(manga: Manga, current: Int, total: Int) {
+    fun showProgressNotification(manga: Anime, current: Int, total: Int) {
         progressNotificationBuilder
             .setContentTitle(
                 context.stringResource(

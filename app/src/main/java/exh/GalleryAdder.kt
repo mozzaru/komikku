@@ -13,7 +13,7 @@ import exh.source.getMainSource
 import tachiyomi.core.common.i18n.stringResource
 import tachiyomi.domain.anime.interactor.GetAnime
 import tachiyomi.domain.anime.interactor.NetworkToLocalAnime
-import tachiyomi.domain.anime.model.Manga
+import tachiyomi.domain.anime.model.Anime
 import tachiyomi.domain.episode.interactor.GetEpisode
 import tachiyomi.domain.episode.model.Episode
 import tachiyomi.domain.source.service.SourceManager
@@ -137,7 +137,7 @@ class GalleryAdder(
             // Use manga in DB if possible, otherwise, make a new manga
             var manga = getAnime.await(cleanedMangaUrl, source.id)
                 ?: networkToLocalAnime.await(
-                    Manga.create().copy(
+                    Anime.create().copy(
                         source = source.id,
                         url = cleanedMangaUrl,
                     ),
@@ -226,7 +226,7 @@ sealed class GalleryAddEvent {
 
     class Success(
         override val galleryUrl: String,
-        val manga: Manga,
+        val manga: Anime,
         val context: Context,
         val episode: Episode? = null,
     ) : GalleryAddEvent() {

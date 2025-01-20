@@ -127,7 +127,7 @@ import tachiyomi.domain.anime.interactor.UpdateMergedSettings
 import tachiyomi.domain.anime.model.AnimeCover
 import tachiyomi.domain.anime.model.AnimeUpdate
 import tachiyomi.domain.anime.model.CustomAnimeInfo
-import tachiyomi.domain.anime.model.Manga
+import tachiyomi.domain.anime.model.Anime
 import tachiyomi.domain.anime.model.MergeAnimeSettingsUpdate
 import tachiyomi.domain.anime.model.MergedAnimeReference
 import tachiyomi.domain.anime.model.applyFilter
@@ -224,7 +224,7 @@ class AnimeScreenModel(
     val themeCoverBased = uiPreferences.themeCoverBased().get()
     // KMK <--
 
-    val manga: Manga?
+    val manga: Anime?
         get() = successState?.manga
 
     val source: Source?
@@ -261,13 +261,13 @@ class AnimeScreenModel(
 
     // SY -->
     private data class CombineState(
-        val manga: Manga,
+        val manga: Anime,
         val episodes: List<Episode>,
         val flatMetadata: FlatMetadata?,
         val mergedData: MergedMangaData? = null,
         val pagePreviewsState: PagePreviewState = PagePreviewState.Loading,
     ) {
-        constructor(pair: Pair<Manga, List<Episode>>, flatMetadata: FlatMetadata?) :
+        constructor(pair: Pair<Anime, List<Episode>>, flatMetadata: FlatMetadata?) :
             this(pair.first, pair.second, flatMetadata)
     }
     // SY <--
@@ -521,7 +521,7 @@ class AnimeScreenModel(
                     screenModelScope.launchIO {
                         if (it == null) return@launchIO
                         val animeCover = when (model) {
-                            is Manga -> model.asMangaCover()
+                            is Anime -> model.asMangaCover()
                             is AnimeCover -> model
                             else -> return@launchIO
                         }
@@ -698,7 +698,7 @@ class AnimeScreenModel(
 
     // KMK -->
     @Composable
-    fun getManga(initialManga: Manga): RuntimeState<Manga> {
+    fun getManga(initialManga: Anime): RuntimeState<Anime> {
         return produceState(initialValue = initialManga) {
             getAnime.subscribe(initialManga.url, initialManga.source)
                 .flowWithLifecycle(lifecycle)
@@ -711,7 +711,7 @@ class AnimeScreenModel(
         }
     }
 
-    suspend fun smartSearchMerge(manga: Manga, originalMangaId: Long): Manga {
+    suspend fun smartSearchMerge(manga: Anime, originalMangaId: Long): Anime {
         return smartSearchMerge.smartSearchMerge(manga, originalMangaId)
     }
     // KMK <--
@@ -844,7 +844,7 @@ class AnimeScreenModel(
         }
     }
 
-    fun setFetchInterval(manga: Manga, interval: Int) {
+    fun setFetchInterval(manga: Anime, interval: Int) {
         screenModelScope.launchIO {
             if (
                 updateAnime.awaitUpdateFetchInterval(
@@ -897,12 +897,12 @@ class AnimeScreenModel(
      * @param manga the manga to get categories from.
      * @return Array of category ids the manga is in, if none returns default id
      */
-    private suspend fun getMangaCategoryIds(manga: Manga): List<Long> {
+    private suspend fun getMangaCategoryIds(manga: Anime): List<Long> {
         return getCategories.await(manga.id)
             .map { it.id }
     }
 
-    fun moveMangaToCategoriesAndAddToLibrary(manga: Manga, categories: List<Long>) {
+    fun moveMangaToCategoriesAndAddToLibrary(manga: Anime, categories: List<Long>) {
         moveMangaToCategory(categories)
         if (manga.favorite) return
 
@@ -999,7 +999,7 @@ class AnimeScreenModel(
     }
 
     private fun List<Episode>.toChapterListItems(
-        manga: Manga,
+        manga: Anime,
         // SY -->
         mergedData: MergedMangaData?,
         // SY <--
@@ -1052,7 +1052,7 @@ class AnimeScreenModel(
     }
 
     // SY -->
-    private fun getPagePreviews(manga: Manga, source: Source) {
+    private fun getPagePreviews(manga: Anime, source: Source) {
         screenModelScope.launchIO {
             when (val result = getPagePreviews.await(manga, source, 1)) {
                 is GetPagePreviews.Result.Error -> updateSuccessState {
@@ -1451,9 +1451,9 @@ class AnimeScreenModel(
         val manga = successState?.manga ?: return
 
         val flag = when (state) {
-            TriState.DISABLED -> Manga.SHOW_ALL
-            TriState.ENABLED_IS -> Manga.CHAPTER_SHOW_UNREAD
-            TriState.ENABLED_NOT -> Manga.CHAPTER_SHOW_READ
+            TriState.DISABLED -> Anime.SHOW_ALL
+            TriState.ENABLED_IS -> Anime.CHAPTER_SHOW_UNREAD
+            TriState.ENABLED_NOT -> Anime.CHAPTER_SHOW_READ
         }
         screenModelScope.launchNonCancellable {
             setAnimeEpisodeFlags.awaitSetUnreadFilter(manga, flag)
@@ -1468,9 +1468,9 @@ class AnimeScreenModel(
         val manga = successState?.manga ?: return
 
         val flag = when (state) {
-            TriState.DISABLED -> Manga.SHOW_ALL
-            TriState.ENABLED_IS -> Manga.CHAPTER_SHOW_DOWNLOADED
-            TriState.ENABLED_NOT -> Manga.CHAPTER_SHOW_NOT_DOWNLOADED
+            TriState.DISABLED -> Anime.SHOW_ALL
+            TriState.ENABLED_IS -> Anime.CHAPTER_SHOW_DOWNLOADED
+            TriState.ENABLED_NOT -> Anime.CHAPTER_SHOW_NOT_DOWNLOADED
         }
 
         screenModelScope.launchNonCancellable {
@@ -1486,9 +1486,9 @@ class AnimeScreenModel(
         val manga = successState?.manga ?: return
 
         val flag = when (state) {
-            TriState.DISABLED -> Manga.SHOW_ALL
-            TriState.ENABLED_IS -> Manga.CHAPTER_SHOW_BOOKMARKED
-            TriState.ENABLED_NOT -> Manga.CHAPTER_SHOW_NOT_BOOKMARKED
+            TriState.DISABLED -> Anime.SHOW_ALL
+            TriState.ENABLED_IS -> Anime.CHAPTER_SHOW_BOOKMARKED
+            TriState.ENABLED_NOT -> Anime.CHAPTER_SHOW_NOT_BOOKMARKED
         }
 
         screenModelScope.launchNonCancellable {
@@ -1710,19 +1710,19 @@ class AnimeScreenModel(
 
     sealed interface Dialog {
         data class ChangeCategory(
-            val manga: Manga,
+            val manga: Anime,
             val initialSelection: ImmutableList<CheckboxState<Category>>,
         ) : Dialog
         data class DeleteChapters(val episodes: List<Episode>) : Dialog
-        data class DuplicateManga(val manga: Manga, val duplicate: Manga) : Dialog
+        data class DuplicateManga(val manga: Anime, val duplicate: Anime) : Dialog
 
         /* SY -->
         data class Migrate(val newManga: Manga, val oldManga: Manga) : Dialog
         SY <-- */
-        data class SetFetchInterval(val manga: Manga) : Dialog
+        data class SetFetchInterval(val manga: Anime) : Dialog
 
         // SY -->
-        data class EditMangaInfo(val manga: Manga) : Dialog
+        data class EditMangaInfo(val manga: Anime) : Dialog
         data class EditMergedSettings(val mergedData: MergedMangaData) : Dialog
         // SY <--
 
@@ -1794,7 +1794,7 @@ class AnimeScreenModel(
 
         @Immutable
         data class Success(
-            val manga: Manga,
+            val manga: Anime,
             val source: Source,
             val isFromSource: Boolean,
             val chapters: List<EpisodeList.Item>,
@@ -1893,7 +1893,7 @@ class AnimeScreenModel(
              * Applies the view filters to the list of episodes obtained from the database.
              * @return an observable of the list of episodes filtered and sorted.
              */
-            private fun List<EpisodeList.Item>.applyFilters(manga: Manga): Sequence<EpisodeList.Item> {
+            private fun List<EpisodeList.Item>.applyFilters(manga: Anime): Sequence<EpisodeList.Item> {
                 val isLocalManga = manga.isLocal()
                 val unreadFilter = manga.unreadFilter
                 val downloadedFilter = manga.downloadedFilter
@@ -1911,7 +1911,7 @@ class AnimeScreenModel(
 // SY -->
 data class MergedMangaData(
     val references: List<MergedAnimeReference>,
-    val manga: Map<Long, Manga>,
+    val manga: Map<Long, Anime>,
     val sources: List<Source>,
 )
 // SY <--
@@ -1955,7 +1955,7 @@ sealed interface RelatedAnime {
 
     data class Success(
         val keyword: String,
-        val mangaList: List<Manga>,
+        val mangaList: List<Anime>,
     ) : RelatedAnime {
         val isEmpty: Boolean
             get() = mangaList.isEmpty()
@@ -1963,7 +1963,7 @@ sealed interface RelatedAnime {
         companion object {
             suspend fun fromPair(
                 pair: Pair<String, List<SManga>>,
-                toManga: suspend (mangaList: List<SManga>) -> List<Manga>,
+                toManga: suspend (mangaList: List<SManga>) -> List<Anime>,
             ) = Success(pair.first, toManga(pair.second))
         }
     }
@@ -1973,7 +1973,7 @@ sealed interface RelatedAnime {
     }
 
     companion object {
-        internal fun List<RelatedAnime>.sorted(manga: Manga): List<RelatedAnime> {
+        internal fun List<RelatedAnime>.sorted(manga: Anime): List<RelatedAnime> {
             val success = filterIsInstance<Success>()
             val loading = filterIsInstance<Loading>()
             val title = manga.title.lowercase()
@@ -1987,7 +1987,7 @@ sealed interface RelatedAnime {
                 loading
         }
 
-        internal fun List<RelatedAnime>.removeDuplicates(manga: Manga): List<RelatedAnime> {
+        internal fun List<RelatedAnime>.removeDuplicates(manga: Anime): List<RelatedAnime> {
             val mangaHashes = HashSet<Int>().apply { add(manga.url.hashCode()) }
 
             return map { relatedManga ->

@@ -27,7 +27,7 @@ import eu.kanade.tachiyomi.ui.browse.ChangeAnimesCategoryDialog
 import eu.kanade.tachiyomi.ui.browse.RemoveAnimeDialog
 import mihon.presentation.core.util.collectAsLazyPagingItems
 import tachiyomi.core.common.util.lang.launchIO
-import tachiyomi.domain.anime.model.Manga
+import tachiyomi.domain.anime.model.Anime
 import tachiyomi.i18n.sy.SYMR
 import tachiyomi.presentation.core.components.material.Scaffold
 import tachiyomi.presentation.core.i18n.stringResource
@@ -57,7 +57,7 @@ class MangaDexSimilarScreen(val mangaId: Long, val sourceId: Long) : Screen() {
         }
         // KMK <--
 
-        val onMangaClick: (Manga) -> Unit = {
+        val onMangaClick: (Anime) -> Unit = {
             navigator.push(AnimeScreen(it.id, true))
         }
 

@@ -94,7 +94,7 @@ import tachiyomi.domain.anime.interactor.GetSearchTitles
 import tachiyomi.domain.anime.interactor.SetCustomAnimeInfo
 import tachiyomi.domain.anime.model.AnimeUpdate
 import tachiyomi.domain.anime.model.CustomAnimeInfo
-import tachiyomi.domain.anime.model.Manga
+import tachiyomi.domain.anime.model.Anime
 import tachiyomi.domain.anime.model.applyFilter
 import tachiyomi.domain.category.interactor.GetCategories
 import tachiyomi.domain.category.interactor.SetAnimeCategories
@@ -685,14 +685,14 @@ class LibraryScreenModel(
      *
      * @param mangas the list of manga.
      */
-    private suspend fun getCommonCategories(mangas: List<Manga>): Collection<Category> {
+    private suspend fun getCommonCategories(mangas: List<Anime>): Collection<Category> {
         if (mangas.isEmpty()) return emptyList()
         return mangas
             .map { getCategories.await(it.id).toSet() }
             .reduce { set1, set2 -> set1.intersect(set2) }
     }
 
-    suspend fun getNextUnreadChapter(manga: Manga): Episode? {
+    suspend fun getNextUnreadChapter(manga: Anime): Episode? {
         // SY -->
         val mergedManga = getMergedAnimeById.await(manga.id).associateBy { it.id }
         return if (manga.id == MERGED_SOURCE_ID) {
@@ -708,7 +708,7 @@ class LibraryScreenModel(
      *
      * @param mangas the list of manga.
      */
-    private suspend fun getMixCategories(mangas: List<Manga>): Collection<Category> {
+    private suspend fun getMixCategories(mangas: List<Anime>): Collection<Category> {
         if (mangas.isEmpty()) return emptyList()
         val mangaCategories = mangas.map { getCategories.await(it.id).toSet() }
         val common = mangaCategories.reduce { set1, set2 -> set1.intersect(set2) }
@@ -734,7 +734,7 @@ class LibraryScreenModel(
      * @param mangas the list of manga.
      * @param amount the amount to queue or null to queue all
      */
-    private fun downloadUnreadChapters(mangas: List<Manga>, amount: Int?) {
+    private fun downloadUnreadChapters(mangas: List<Anime>, amount: Int?) {
         screenModelScope.launchNonCancellable {
             mangas.forEach { manga ->
                 // SY -->
@@ -867,7 +867,7 @@ class LibraryScreenModel(
      * @param deleteFromLibrary whether to delete manga from library.
      * @param deleteChapters whether to delete downloaded episodes.
      */
-    fun removeMangas(mangaList: List<Manga>, deleteFromLibrary: Boolean, deleteChapters: Boolean) {
+    fun removeMangas(mangaList: List<Anime>, deleteFromLibrary: Boolean, deleteChapters: Boolean) {
         screenModelScope.launchNonCancellable {
             val mangaToDelete = mangaList.distinctBy { it.id }
 
@@ -912,7 +912,7 @@ class LibraryScreenModel(
      * @param addCategories the categories to add for all mangas.
      * @param removeCategories the categories to remove in all mangas.
      */
-    fun setMangaCategories(mangaList: List<Manga>, addCategories: List<Long>, removeCategories: List<Long>) {
+    fun setMangaCategories(mangaList: List<Anime>, addCategories: List<Long>, removeCategories: List<Long>) {
         screenModelScope.launchNonCancellable {
             mangaList.forEach { manga ->
                 val categoryIds = getCategories.await(manga.id)
@@ -1269,17 +1269,17 @@ class LibraryScreenModel(
     sealed interface Dialog {
         data object SettingsSheet : Dialog
         data class ChangeCategory(
-            val manga: List<Manga>,
+            val manga: List<Anime>,
             val initialSelection: ImmutableList<CheckboxState<Category>>,
         ) : Dialog
-        data class DeleteManga(val manga: List<Manga>) : Dialog
+        data class DeleteManga(val manga: List<Anime>) : Dialog
         data object SyncFavoritesWarning : Dialog
         data object SyncFavoritesConfirm : Dialog
     }
 
     // SY -->
     /** Returns first unread episode of a manga */
-    suspend fun getFirstUnread(manga: Manga): Episode? {
+    suspend fun getFirstUnread(manga: Anime): Episode? {
         return getNextEpisodes.await(manga.id).firstOrNull()
     }
 

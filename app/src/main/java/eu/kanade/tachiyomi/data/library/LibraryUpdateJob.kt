@@ -71,7 +71,7 @@ import tachiyomi.domain.anime.interactor.GetLibraryAnime
 import tachiyomi.domain.anime.interactor.GetMergedAnimeForDownloading
 import tachiyomi.domain.anime.interactor.InsertFlatMetadata
 import tachiyomi.domain.anime.interactor.NetworkToLocalAnime
-import tachiyomi.domain.anime.model.Manga
+import tachiyomi.domain.anime.model.Anime
 import tachiyomi.domain.anime.model.toMangaUpdate
 import tachiyomi.domain.category.model.Category
 import tachiyomi.domain.episode.interactor.GetEpisodesByAnimeId
@@ -296,7 +296,7 @@ class LibraryUpdateJob(private val context: Context, workerParams: WorkerParamet
         }
 
         val restrictions = libraryPreferences.autoUpdateMangaRestrictions().get()
-        val skippedUpdates = mutableListOf<Pair<Manga, String?>>()
+        val skippedUpdates = mutableListOf<Pair<Anime, String?>>()
         val (_, fetchWindowUpperBound) = fetchInterval.getWindow(ZonedDateTime.now())
 
         mangaToUpdate = listToUpdate
@@ -367,9 +367,9 @@ class LibraryUpdateJob(private val context: Context, workerParams: WorkerParamet
     private suspend fun updateChapterList() {
         val semaphore = Semaphore(5)
         val progressCount = AtomicInteger(0)
-        val currentlyUpdatingManga = CopyOnWriteArrayList<Manga>()
-        val newUpdates = CopyOnWriteArrayList<Pair<Manga, Array<Episode>>>()
-        val failedUpdates = CopyOnWriteArrayList<Pair<Manga, String?>>()
+        val currentlyUpdatingManga = CopyOnWriteArrayList<Anime>()
+        val newUpdates = CopyOnWriteArrayList<Pair<Anime, Array<Episode>>>()
+        val failedUpdates = CopyOnWriteArrayList<Pair<Anime, String?>>()
         val hasDownloads = AtomicBoolean(false)
         // SY -->
         val mdlistLogged = mdList.isLoggedIn
@@ -507,7 +507,7 @@ class LibraryUpdateJob(private val context: Context, workerParams: WorkerParamet
         }
     }
 
-    private fun downloadChapters(manga: Manga, episodes: List<Episode>) {
+    private fun downloadChapters(manga: Anime, episodes: List<Episode>) {
         // We don't want to start downloading while the library is updating, because websites
         // may don't like it and they could ban the user.
         // SY -->
@@ -535,7 +535,7 @@ class LibraryUpdateJob(private val context: Context, workerParams: WorkerParamet
      * @param manga the manga to update.
      * @return a pair of the inserted and removed episodes.
      */
-    private suspend fun updateManga(manga: Manga, fetchWindow: Pair<Long, Long>): List<Episode> {
+    private suspend fun updateManga(manga: Anime, fetchWindow: Pair<Long, Long>): List<Episode> {
         val source = sourceManager.getOrStub(manga.source)
 
         // Update manga metadata if needed
@@ -560,7 +560,7 @@ class LibraryUpdateJob(private val context: Context, workerParams: WorkerParamet
     private suspend fun updateCovers() {
         val semaphore = Semaphore(5)
         val progressCount = AtomicInteger(0)
-        val currentlyUpdatingManga = CopyOnWriteArrayList<Manga>()
+        val currentlyUpdatingManga = CopyOnWriteArrayList<Anime>()
 
         coroutineScope {
             mangaToUpdate.groupBy { it.manga.source }
@@ -628,14 +628,14 @@ class LibraryUpdateJob(private val context: Context, workerParams: WorkerParamet
 
                 count++
                 notifier.showProgressNotification(
-                    listOf(Manga.create().copy(ogTitle = networkManga.title)), count, size,
+                    listOf(Anime.create().copy(ogTitle = networkManga.title)), count, size,
                 )
 
                 var dbManga = getAnime.await(networkManga.url, mangaDex.id)
 
                 if (dbManga == null) {
                     dbManga = networkToLocalAnime.await(
-                        Manga.create().copy(
+                        Anime.create().copy(
                             url = networkManga.url,
                             ogTitle = networkManga.title,
                             source = mangaDex.id,
@@ -692,9 +692,9 @@ class LibraryUpdateJob(private val context: Context, workerParams: WorkerParamet
     // SY <--
 
     private suspend fun withUpdateNotification(
-        updatingManga: CopyOnWriteArrayList<Manga>,
+        updatingManga: CopyOnWriteArrayList<Anime>,
         completed: AtomicInteger,
-        manga: Manga,
+        manga: Anime,
         block: suspend () -> Unit,
     ) = coroutineScope {
         ensureActive()
@@ -724,7 +724,7 @@ class LibraryUpdateJob(private val context: Context, workerParams: WorkerParamet
         deleteLibraryUpdateErrors.deleteMangaError(mangaId = mangaId)
     }
 
-    private suspend fun writeErrorToDB(error: Pair<Manga, String?>) {
+    private suspend fun writeErrorToDB(error: Pair<Anime, String?>) {
         val errorMessage = error.second ?: "???"
         val errorMessageId = insertLibraryUpdateErrorMessages.get(errorMessage)
             ?: insertLibraryUpdateErrorMessages.insert(
@@ -736,7 +736,7 @@ class LibraryUpdateJob(private val context: Context, workerParams: WorkerParamet
         )
     }
 
-    private suspend fun writeErrorsToDB(errors: List<Pair<Manga, String?>>) {
+    private suspend fun writeErrorsToDB(errors: List<Pair<Anime, String?>>) {
         val libraryErrors = errors.groupBy({ it.second }, { it.first })
         val errorMessages = insertLibraryUpdateErrorMessages.insertAll(
             libraryUpdateErrorMessages = libraryErrors.keys.map { errorMessage ->

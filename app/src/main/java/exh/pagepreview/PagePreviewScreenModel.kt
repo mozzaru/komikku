@@ -15,7 +15,7 @@ import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.flow.update
 import tachiyomi.core.common.util.lang.launchIO
 import tachiyomi.domain.anime.interactor.GetAnime
-import tachiyomi.domain.anime.model.Manga
+import tachiyomi.domain.anime.model.Anime
 import tachiyomi.domain.episode.interactor.GetEpisodesByAnimeId
 import tachiyomi.domain.episode.model.Episode
 import tachiyomi.domain.source.service.SourceManager
@@ -99,7 +99,7 @@ sealed class PagePreviewState {
         val pagePreviews: List<PagePreview>,
         val hasNextPage: Boolean,
         val pageCount: Int?,
-        val manga: Manga,
+        val manga: Anime,
         val episode: Episode,
         val source: Source,
     ) : PagePreviewState()

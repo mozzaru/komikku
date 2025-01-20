@@ -70,7 +70,7 @@ import kotlinx.coroutines.launch
 import logcat.LogPriority
 import tachiyomi.core.common.i18n.stringResource
 import tachiyomi.core.common.util.system.logcat
-import tachiyomi.domain.anime.model.Manga
+import tachiyomi.domain.anime.model.Anime
 import tachiyomi.domain.track.interactor.GetTracks
 import tachiyomi.domain.track.model.Track
 import tachiyomi.i18n.MR
@@ -82,7 +82,7 @@ import uy.kohesive.injekt.api.get
 
 @Composable
 fun EditAnimeDialog(
-    manga: Manga,
+    manga: Anime,
     // KMK -->
     coverRatio: MutableFloatState,
     // KMK <--
@@ -257,7 +257,7 @@ data class EditAnimeDialogColors(
 // KMK <--
 
 private fun onViewCreated(
-    manga: Manga,
+    manga: Anime,
     context: Context,
     binding: EditMangaDialogBinding,
     scope: CoroutineScope,
@@ -432,7 +432,7 @@ private fun onViewCreated(
     }
 }
 
-private suspend fun getTrackers(manga: Manga, binding: EditMangaDialogBinding, context: Context, getTracks: GetTracks, trackerManager: TrackerManager, tracks: MutableState<List<Pair<Track, Tracker>>>, showTrackerSelectionDialogue: MutableState<Boolean>) {
+private suspend fun getTrackers(manga: Anime, binding: EditMangaDialogBinding, context: Context, getTracks: GetTracks, trackerManager: TrackerManager, tracks: MutableState<List<Pair<Track, Tracker>>>, showTrackerSelectionDialogue: MutableState<Boolean>) {
     tracks.value = getTracks.await(manga.id).map { track ->
         track to trackerManager.get(track.trackerId)!!
     }
@@ -477,7 +477,7 @@ private suspend fun autofillFromTracker(binding: EditMangaDialogBinding, track: 
 }
 
 private fun resetTags(
-    manga: Manga,
+    manga: Anime,
     binding: EditMangaDialogBinding,
     scope: CoroutineScope,
     // KMK -->
@@ -492,7 +492,7 @@ private fun resetTags(
 }
 
 private fun loadCover(
-    manga: Manga,
+    manga: Anime,
     binding: EditMangaDialogBinding,
     // KMK -->
     coverRatio: MutableFloatState,
@@ -514,7 +514,7 @@ private fun loadCover(
 }
 
 private fun resetInfo(
-    manga: Manga,
+    manga: Anime,
     binding: EditMangaDialogBinding,
     scope: CoroutineScope,
     // KMK -->

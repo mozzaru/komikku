@@ -12,7 +12,7 @@ import eu.kanade.tachiyomi.source.model.SChapter
 import eu.kanade.tachiyomi.source.online.HttpSource
 import exh.source.isEhBasedManga
 import tachiyomi.data.episode.EpisodeSanitizer
-import tachiyomi.domain.anime.model.Manga
+import tachiyomi.domain.anime.model.Anime
 import tachiyomi.domain.episode.interactor.GetEpisodesByAnimeId
 import tachiyomi.domain.episode.interactor.ShouldUpdateDbEpisode
 import tachiyomi.domain.episode.interactor.UpdateEpisode
@@ -47,7 +47,7 @@ class SyncEpisodesWithSource(
      */
     suspend fun await(
         rawSourceChapters: List<SChapter>,
-        manga: Manga,
+        manga: Anime,
         source: Source,
         manualFetch: Boolean = false,
         fetchWindow: Pair<Long, Long> = Pair(0, 0),

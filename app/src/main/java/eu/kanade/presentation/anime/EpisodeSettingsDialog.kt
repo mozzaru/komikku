@@ -32,7 +32,7 @@ import eu.kanade.presentation.components.TabbedDialog
 import eu.kanade.presentation.components.TabbedDialogPaddings
 import kotlinx.collections.immutable.persistentListOf
 import tachiyomi.core.common.preference.TriState
-import tachiyomi.domain.anime.model.Manga
+import tachiyomi.domain.anime.model.Anime
 import tachiyomi.i18n.MR
 import tachiyomi.presentation.core.components.LabeledCheckbox
 import tachiyomi.presentation.core.components.RadioItem
@@ -44,7 +44,7 @@ import tachiyomi.presentation.core.theme.active
 @Composable
 fun EpisodeSettingsDialog(
     onDismissRequest: () -> Unit,
-    manga: Manga? = null,
+    manga: Anime? = null,
     onDownloadFilterChanged: (TriState) -> Unit,
     onUnreadFilterChanged: (TriState) -> Unit,
     onBookmarkedFilterChanged: (TriState) -> Unit,
@@ -192,10 +192,10 @@ private fun ColumnScope.SortPage(
     onItemSelected: (Long) -> Unit,
 ) {
     listOf(
-        MR.strings.sort_by_source to Manga.CHAPTER_SORTING_SOURCE,
-        MR.strings.sort_by_number to Manga.CHAPTER_SORTING_NUMBER,
-        MR.strings.sort_by_upload_date to Manga.CHAPTER_SORTING_UPLOAD_DATE,
-        MR.strings.action_sort_alpha to Manga.CHAPTER_SORTING_ALPHABET,
+        MR.strings.sort_by_source to Anime.CHAPTER_SORTING_SOURCE,
+        MR.strings.sort_by_number to Anime.CHAPTER_SORTING_NUMBER,
+        MR.strings.sort_by_upload_date to Anime.CHAPTER_SORTING_UPLOAD_DATE,
+        MR.strings.action_sort_alpha to Anime.CHAPTER_SORTING_ALPHABET,
     ).map { (titleRes, mode) ->
         SortItem(
             label = stringResource(titleRes),
@@ -211,8 +211,8 @@ private fun ColumnScope.DisplayPage(
     onItemSelected: (Long) -> Unit,
 ) {
     listOf(
-        MR.strings.show_title to Manga.CHAPTER_DISPLAY_NAME,
-        MR.strings.show_chapter_number to Manga.CHAPTER_DISPLAY_NUMBER,
+        MR.strings.show_title to Anime.CHAPTER_DISPLAY_NAME,
+        MR.strings.show_chapter_number to Anime.CHAPTER_DISPLAY_NUMBER,
     ).map { (titleRes, mode) ->
         RadioItem(
             label = stringResource(titleRes),

@@ -1,7 +1,7 @@
 package tachiyomi.domain.anime.interactor
 
 import tachiyomi.domain.anime.model.AnimeUpdate
-import tachiyomi.domain.anime.model.Manga
+import tachiyomi.domain.anime.model.Anime
 import tachiyomi.domain.episode.interactor.GetEpisodesByAnimeId
 import tachiyomi.domain.episode.model.Episode
 import java.time.Instant
@@ -15,7 +15,7 @@ class FetchInterval(
 ) {
 
     suspend fun toMangaUpdate(
-        manga: Manga,
+        manga: Anime,
         dateTime: ZonedDateTime,
         window: Pair<Long, Long>,
     ): AnimeUpdate {
@@ -87,7 +87,7 @@ class FetchInterval(
     }
 
     private fun calculateNextUpdate(
-        manga: Manga,
+        manga: Anime,
         interval: Int,
         dateTime: ZonedDateTime,
         window: Pair<Long, Long>,
