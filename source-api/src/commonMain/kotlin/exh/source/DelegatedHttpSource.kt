@@ -3,8 +3,8 @@ package exh.source
 import eu.kanade.tachiyomi.source.model.FilterList
 import eu.kanade.tachiyomi.source.model.MangasPage
 import eu.kanade.tachiyomi.source.model.Page
-import eu.kanade.tachiyomi.source.model.SChapter
-import eu.kanade.tachiyomi.source.model.SManga
+import eu.kanade.tachiyomi.source.model.SEpisode
+import eu.kanade.tachiyomi.source.model.SAnime
 import eu.kanade.tachiyomi.source.online.HttpSource
 import okhttp3.OkHttpClient
 import okhttp3.Request
@@ -80,7 +80,7 @@ abstract class DelegatedHttpSource(val delegate: HttpSource) : HttpSource() {
         throw UnsupportedOperationException("Should never be called!")
 
     /**
-     * Parses the response from the site and returns a SChapter Object.
+     * Parses the response from the site and returns a SEpisode Object.
      *
      * @param response the response from the site.
      */
@@ -207,7 +207,7 @@ abstract class DelegatedHttpSource(val delegate: HttpSource) : HttpSource() {
      * @param manga the manga to be updated.
      */
     @Deprecated("Use the 1.x API instead", replaceWith = ReplaceWith("getMangaDetails"))
-    override fun fetchMangaDetails(manga: SManga): Observable<SManga> {
+    override fun fetchMangaDetails(manga: SAnime): Observable<SAnime> {
         ensureDelegateCompatible()
         return delegate.fetchMangaDetails(manga)
     }
@@ -215,7 +215,7 @@ abstract class DelegatedHttpSource(val delegate: HttpSource) : HttpSource() {
     /**
      * [1.x API] Get the updated details for a manga.
      */
-    override suspend fun getMangaDetails(manga: SManga): SManga {
+    override suspend fun getMangaDetails(manga: SAnime): SAnime {
         ensureDelegateCompatible()
         return delegate.getMangaDetails(manga)
     }
@@ -226,7 +226,7 @@ abstract class DelegatedHttpSource(val delegate: HttpSource) : HttpSource() {
      *
      * @param manga the manga to be updated.
      */
-    override fun mangaDetailsRequest(manga: SManga): Request {
+    override fun mangaDetailsRequest(manga: SAnime): Request {
         ensureDelegateCompatible()
         return delegate.mangaDetailsRequest(manga)
     }
@@ -238,7 +238,7 @@ abstract class DelegatedHttpSource(val delegate: HttpSource) : HttpSource() {
      * @param manga the manga to look for chapters.
      */
     @Deprecated("Use the 1.x API instead", replaceWith = ReplaceWith("getChapterList"))
-    override fun fetchChapterList(manga: SManga): Observable<List<SChapter>> {
+    override fun fetchChapterList(manga: SAnime): Observable<List<SEpisode>> {
         ensureDelegateCompatible()
         return delegate.fetchChapterList(manga)
     }
@@ -246,7 +246,7 @@ abstract class DelegatedHttpSource(val delegate: HttpSource) : HttpSource() {
     /**
      * [1.x API] Get all the available chapters for a manga.
      */
-    override suspend fun getChapterList(manga: SManga): List<SChapter> {
+    override suspend fun getChapterList(manga: SAnime): List<SEpisode> {
         ensureDelegateCompatible()
         return delegate.getChapterList(manga)
     }
@@ -257,7 +257,7 @@ abstract class DelegatedHttpSource(val delegate: HttpSource) : HttpSource() {
      * @param chapter the chapter whose page list has to be fetched.
      */
     @Deprecated("Use the 1.x API instead", replaceWith = ReplaceWith("getPageList"))
-    override fun fetchPageList(chapter: SChapter): Observable<List<Page>> {
+    override fun fetchPageList(chapter: SEpisode): Observable<List<Page>> {
         ensureDelegateCompatible()
         return delegate.fetchPageList(chapter)
     }
@@ -265,7 +265,7 @@ abstract class DelegatedHttpSource(val delegate: HttpSource) : HttpSource() {
     /**
      * [1.x API] Get the list of pages a chapter has.
      */
-    override suspend fun getPageList(chapter: SChapter): List<Page> {
+    override suspend fun getPageList(chapter: SEpisode): List<Page> {
         ensureDelegateCompatible()
         return delegate.getPageList(chapter)
     }
@@ -304,7 +304,7 @@ abstract class DelegatedHttpSource(val delegate: HttpSource) : HttpSource() {
      * @param manga the manga
      * @return url of the manga
      */
-    override fun getMangaUrl(manga: SManga): String {
+    override fun getMangaUrl(manga: SAnime): String {
         ensureDelegateCompatible()
         return delegate.getMangaUrl(manga)
     }
@@ -316,7 +316,7 @@ abstract class DelegatedHttpSource(val delegate: HttpSource) : HttpSource() {
      * @param chapter the chapter
      * @return url of the chapter
      */
-    override fun getChapterUrl(chapter: SChapter): String {
+    override fun getChapterUrl(chapter: SEpisode): String {
         ensureDelegateCompatible()
         return delegate.getChapterUrl(chapter)
     }
@@ -328,7 +328,7 @@ abstract class DelegatedHttpSource(val delegate: HttpSource) : HttpSource() {
      * @param chapter the chapter to be added.
      * @param manga the manga of the chapter.
      */
-    override fun prepareNewChapter(chapter: SChapter, manga: SManga) {
+    override fun prepareNewChapter(chapter: SEpisode, manga: SAnime) {
         ensureDelegateCompatible()
         return delegate.prepareNewChapter(chapter, manga)
     }

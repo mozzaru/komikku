@@ -1,8 +1,8 @@
 package eu.kanade.tachiyomi.source
 
 import eu.kanade.tachiyomi.source.model.Page
-import eu.kanade.tachiyomi.source.model.SChapter
-import eu.kanade.tachiyomi.source.model.SManga
+import eu.kanade.tachiyomi.source.model.SEpisode
+import eu.kanade.tachiyomi.source.model.SAnime
 
 /**
  * A basic interface for creating a source. It could be an online source, a local source, stub source, etc.
@@ -39,7 +39,7 @@ interface Source {
      * @param manga the manga to update.
      * @return the updated manga.
      */
-    suspend fun getMangaDetails(manga: SManga): SManga
+    suspend fun getMangaDetails(manga: SAnime): SAnime
 
     /**
      * Get all the available chapters for a manga.
@@ -48,7 +48,7 @@ interface Source {
      * @param manga the manga to update.
      * @return the chapters for the manga.
      */
-    suspend fun getChapterList(manga: SManga): List<SChapter>
+    suspend fun getChapterList(manga: SAnime): List<SEpisode>
 
     /**
      * Get the list of pages a chapter has. Pages should be returned
@@ -58,7 +58,7 @@ interface Source {
      * @param chapter the chapter.
      * @return the pages for the chapter.
      */
-    suspend fun getPageList(chapter: SChapter): List<Page>
+    suspend fun getPageList(chapter: SEpisode): List<Page>
 
     // KMK -->
     /**
@@ -69,9 +69,9 @@ interface Source {
      * @return a list of <keyword, related mangas>
      */
     suspend fun getRelatedMangaList(
-        manga: SManga,
+        manga: SAnime,
         exceptionHandler: (Throwable) -> Unit,
-        pushResults: suspend (relatedManga: Pair<String, List<SManga>>, completed: Boolean) -> Unit,
+        pushResults: suspend (relatedManga: Pair<String, List<SAnime>>, completed: Boolean) -> Unit,
     )
     // KMK <--
 }

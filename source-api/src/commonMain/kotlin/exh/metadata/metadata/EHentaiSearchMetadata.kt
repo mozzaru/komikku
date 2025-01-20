@@ -2,7 +2,7 @@ package exh.metadata.metadata
 
 import android.content.Context
 import androidx.core.net.toUri
-import eu.kanade.tachiyomi.source.model.SManga
+import eu.kanade.tachiyomi.source.model.SAnime
 import eu.kanade.tachiyomi.source.model.copy
 import exh.metadata.MetadataUtil
 import exh.pref.DelegateSourcePreferences
@@ -48,7 +48,7 @@ class EHentaiSearchMetadata : RaisedSearchMetadata() {
     var aged: Boolean = false
     var lastUpdateCheck: Long = 0
 
-    override fun createMangaInfo(manga: SManga): SManga {
+    override fun createMangaInfo(manga: SAnime): SAnime {
         val key = gId?.let { gId ->
             gToken?.let { gToken ->
                 idAndTokenToUrl(gId, gToken)
@@ -71,12 +71,12 @@ class EHentaiSearchMetadata : RaisedSearchMetadata() {
 
         // Try to automatically identify if it is ongoing, we try not to be too lenient here to avoid making mistakes
         // We default to completed
-        var status = SManga.COMPLETED
+        var status = SAnime.COMPLETED
         title?.let { t ->
             MetadataUtil.ONGOING_SUFFIX.find {
                 t.endsWith(it, ignoreCase = true)
             }?.let {
-                status = SManga.ONGOING
+                status = SAnime.ONGOING
             }
         }
 

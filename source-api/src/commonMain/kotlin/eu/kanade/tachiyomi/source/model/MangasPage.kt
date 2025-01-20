@@ -3,7 +3,7 @@ package eu.kanade.tachiyomi.source.model
 import exh.metadata.metadata.RaisedSearchMetadata
 
 /* SY --> */
-open /* SY <-- */ class MangasPage(open val mangas: List<SManga>, open val hasNextPage: Boolean) {
+open /* SY <-- */ class MangasPage(open val mangas: List<SAnime>, open val hasNextPage: Boolean) {
     // SY -->
     override fun equals(other: Any?): Boolean {
         if (this === other) return true
@@ -22,7 +22,7 @@ open /* SY <-- */ class MangasPage(open val mangas: List<SManga>, open val hasNe
     }
     // SY <--
 
-    fun copy(mangas: List<SManga> = this.mangas, hasNextPage: Boolean = this.hasNextPage): MangasPage {
+    fun copy(mangas: List<SAnime> = this.mangas, hasNextPage: Boolean = this.hasNextPage): MangasPage {
         return MangasPage(mangas, hasNextPage)
     }
 
@@ -33,13 +33,13 @@ open /* SY <-- */ class MangasPage(open val mangas: List<SManga>, open val hasNe
 
 // SY -->
 class MetadataMangasPage(
-    override val mangas: List<SManga>,
+    override val mangas: List<SAnime>,
     override val hasNextPage: Boolean,
     val mangasMetadata: List<RaisedSearchMetadata>,
     val nextKey: Long? = null,
 ) : MangasPage(mangas, hasNextPage) {
     fun copy(
-        mangas: List<SManga> = this.mangas,
+        mangas: List<SAnime> = this.mangas,
         hasNextPage: Boolean = this.hasNextPage,
         mangasMetadata: List<RaisedSearchMetadata> = this.mangasMetadata,
         nextKey: Long? = this.nextKey,

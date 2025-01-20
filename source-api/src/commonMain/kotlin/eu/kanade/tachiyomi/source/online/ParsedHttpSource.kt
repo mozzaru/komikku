@@ -2,8 +2,8 @@ package eu.kanade.tachiyomi.source.online
 
 import eu.kanade.tachiyomi.source.model.MangasPage
 import eu.kanade.tachiyomi.source.model.Page
-import eu.kanade.tachiyomi.source.model.SChapter
-import eu.kanade.tachiyomi.source.model.SManga
+import eu.kanade.tachiyomi.source.model.SEpisode
+import eu.kanade.tachiyomi.source.model.SAnime
 import eu.kanade.tachiyomi.util.asJsoup
 import okhttp3.Response
 import org.jsoup.nodes.Document
@@ -46,7 +46,7 @@ abstract class ParsedHttpSource : HttpSource() {
      *
      * @param element an element obtained from [popularMangaSelector].
      */
-    protected abstract fun popularMangaFromElement(element: Element): SManga
+    protected abstract fun popularMangaFromElement(element: Element): SAnime
 
     /**
      * Returns the Jsoup selector that returns the <a> tag linking to the next page, or null if
@@ -85,7 +85,7 @@ abstract class ParsedHttpSource : HttpSource() {
      *
      * @param element an element obtained from [searchMangaSelector].
      */
-    protected abstract fun searchMangaFromElement(element: Element): SManga
+    protected abstract fun searchMangaFromElement(element: Element): SAnime
 
     /**
      * Returns the Jsoup selector that returns the <a> tag linking to the next page, or null if
@@ -124,7 +124,7 @@ abstract class ParsedHttpSource : HttpSource() {
      *
      * @param element an element obtained from [latestUpdatesSelector].
      */
-    protected abstract fun latestUpdatesFromElement(element: Element): SManga
+    protected abstract fun latestUpdatesFromElement(element: Element): SAnime
 
     /**
      * Returns the Jsoup selector that returns the <a> tag linking to the next page, or null if
@@ -138,7 +138,7 @@ abstract class ParsedHttpSource : HttpSource() {
      *
      * @param response the response from the site.
      */
-    override fun mangaDetailsParse(response: Response): SManga {
+    override fun mangaDetailsParse(response: Response): SAnime {
         return mangaDetailsParse(response.asJsoup())
     }
 
@@ -147,7 +147,7 @@ abstract class ParsedHttpSource : HttpSource() {
      *
      * @param document the parsed document.
      */
-    protected abstract fun mangaDetailsParse(document: Document): SManga
+    protected abstract fun mangaDetailsParse(document: Document): SAnime
 
     // KMK -->
     /**
@@ -157,7 +157,7 @@ abstract class ParsedHttpSource : HttpSource() {
      * @since komikku/extensions-lib 1.6
      * @param response the response from the site.
      */
-    override fun relatedMangaListParse(response: Response): List<SManga> {
+    override fun relatedMangaListParse(response: Response): List<SAnime> {
         return response.asJsoup()
             .select(relatedMangaListSelector()).map { relatedMangaFromElement(it) }
     }
@@ -175,7 +175,7 @@ abstract class ParsedHttpSource : HttpSource() {
      * @since komikku/extensions-lib 1.6
      * @param element an element obtained from [relatedMangaListSelector].
      */
-    protected open fun relatedMangaFromElement(element: Element): SManga = popularMangaFromElement(element)
+    protected open fun relatedMangaFromElement(element: Element): SAnime = popularMangaFromElement(element)
     // KMK <--
 
     /**
@@ -184,7 +184,7 @@ abstract class ParsedHttpSource : HttpSource() {
      *
      * @param response the response from the site.
      */
-    override fun chapterListParse(response: Response): List<SChapter> {
+    override fun chapterListParse(response: Response): List<SEpisode> {
         val document = response.asJsoup()
         return document.select(chapterListSelector()).map { chapterFromElement(it) }
     }
@@ -199,7 +199,7 @@ abstract class ParsedHttpSource : HttpSource() {
      *
      * @param element an element obtained from [chapterListSelector].
      */
-    protected abstract fun chapterFromElement(element: Element): SChapter
+    protected abstract fun chapterFromElement(element: Element): SEpisode
 
     /**
      * Parses the response from the site and returns the page list.

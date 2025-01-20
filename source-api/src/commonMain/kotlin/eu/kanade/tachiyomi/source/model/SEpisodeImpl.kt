@@ -2,7 +2,7 @@
 
 package eu.kanade.tachiyomi.source.model
 
-class SChapterImpl : SChapter {
+class SEpisodeImpl : SEpisode {
 
     override lateinit var url: String
 

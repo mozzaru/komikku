@@ -11,8 +11,8 @@ import eu.kanade.tachiyomi.source.CatalogueSource
 import eu.kanade.tachiyomi.source.model.FilterList
 import eu.kanade.tachiyomi.source.model.MangasPage
 import eu.kanade.tachiyomi.source.model.Page
-import eu.kanade.tachiyomi.source.model.SChapter
-import eu.kanade.tachiyomi.source.model.SManga
+import eu.kanade.tachiyomi.source.model.SEpisode
+import eu.kanade.tachiyomi.source.model.SAnime
 import exh.log.maybeInjectEHLogger
 import exh.pref.DelegateSourcePreferences
 import exh.source.DelegatedHttpSource
@@ -295,7 +295,7 @@ abstract class HttpSource : CatalogueSource {
      * @param manga the manga to update.
      * @return the updated manga.
      */
-    override suspend fun getMangaDetails(manga: SManga): SManga {
+    override suspend fun getMangaDetails(manga: SAnime): SAnime {
         @Suppress("DEPRECATION")
         return fetchMangaDetails(manga).awaitSingle()
     }
@@ -307,7 +307,7 @@ abstract class HttpSource : CatalogueSource {
      * @param manga the manga to be updated.
      */
     @Deprecated("Use the non-RxJava API instead", replaceWith = ReplaceWith("getMangaDetails(manga)"))
-    open fun fetchMangaDetails(manga: SManga): Observable<SManga> {
+    open fun fetchMangaDetails(manga: SAnime): Observable<SAnime> {
         return client.newCall(mangaDetailsRequest(manga))
             .asObservableSuccess()
             .map { response ->
@@ -322,7 +322,7 @@ abstract class HttpSource : CatalogueSource {
      *
      * @param manga the manga to be updated.
      */
-    open fun mangaDetailsRequest(manga: SManga): Request {
+    open fun mangaDetailsRequest(manga: SAnime): Request {
         return GET(baseUrl + manga.url, headers)
     }
 
@@ -331,7 +331,7 @@ abstract class HttpSource : CatalogueSource {
      *
      * @param response the response from the site.
      */
-    protected abstract fun mangaDetailsParse(response: Response): SManga
+    protected abstract fun mangaDetailsParse(response: Response): SAnime
 
     // KMK -->
     /**
@@ -351,7 +351,7 @@ abstract class HttpSource : CatalogueSource {
      * @return the related mangas for the current manga.
      * @throws UnsupportedOperationException if a source doesn't support related mangas.
      */
-    override suspend fun fetchRelatedMangaList(manga: SManga): List<SManga> = coroutineScope {
+    override suspend fun fetchRelatedMangaList(manga: SAnime): List<SAnime> = coroutineScope {
         async {
             client.newCall(relatedMangaListRequest(manga))
                 .execute()
@@ -369,7 +369,7 @@ abstract class HttpSource : CatalogueSource {
      * @since komikku/extensions-lib 1.6
      * @param manga the manga to look for related mangas.
      */
-    protected open fun relatedMangaListRequest(manga: SManga): Request {
+    protected open fun relatedMangaListRequest(manga: SAnime): Request {
         return mangaDetailsRequest(manga)
     }
 
@@ -379,7 +379,7 @@ abstract class HttpSource : CatalogueSource {
      * @since komikku/extensions-lib 1.6
      * @param response the response from the site.
      */
-    protected open fun relatedMangaListParse(response: Response): List<SManga> = popularMangaParse(response).mangas
+    protected open fun relatedMangaListParse(response: Response): List<SAnime> = popularMangaParse(response).mangas
     // KMK <--
 
     /**
@@ -389,7 +389,7 @@ abstract class HttpSource : CatalogueSource {
      * @param manga the manga to update.
      * @return the chapters for the manga.
      */
-    override suspend fun getChapterList(manga: SManga): List<SChapter> {
+    override suspend fun getChapterList(manga: SAnime): List<SEpisode> {
         @Suppress("DEPRECATION")
         return fetchChapterList(manga).awaitSingle()
     }
@@ -401,7 +401,7 @@ abstract class HttpSource : CatalogueSource {
      * @param manga the manga to look for chapters.
      */
     @Deprecated("Use the non-RxJava API instead", replaceWith = ReplaceWith("getChapterList(manga)"))
-    open fun fetchChapterList(manga: SManga): Observable<List<SChapter>> {
+    open fun fetchChapterList(manga: SAnime): Observable<List<SEpisode>> {
         return client.newCall(chapterListRequest(manga))
             .asObservableSuccess()
             .map { response ->
@@ -416,7 +416,7 @@ abstract class HttpSource : CatalogueSource {
      *
      * @param manga the manga to look for chapters.
      */
-    protected open fun chapterListRequest(manga: SManga): Request {
+    protected open fun chapterListRequest(manga: SAnime): Request {
         return GET(baseUrl + manga.url, headers)
     }
 
@@ -425,14 +425,14 @@ abstract class HttpSource : CatalogueSource {
      *
      * @param response the response from the site.
      */
-    protected abstract fun chapterListParse(response: Response): List<SChapter>
+    protected abstract fun chapterListParse(response: Response): List<SEpisode>
 
     /**
-     * Parses the response from the site and returns a SChapter Object.
+     * Parses the response from the site and returns a SEpisode Object.
      *
      * @param response the response from the site.
      */
-    protected open fun chapterPageParse(response: Response): SChapter = throw UnsupportedOperationException("Not used!")
+    protected open fun chapterPageParse(response: Response): SEpisode = throw UnsupportedOperationException("Not used!")
 
     /**
      * Get the list of pages a chapter has. Pages should be returned
@@ -442,7 +442,7 @@ abstract class HttpSource : CatalogueSource {
      * @param chapter the chapter.
      * @return the pages for the chapter.
      */
-    override suspend fun getPageList(chapter: SChapter): List<Page> {
+    override suspend fun getPageList(chapter: SEpisode): List<Page> {
         @Suppress("DEPRECATION")
         return fetchPageList(chapter).awaitSingle()
     }
@@ -454,7 +454,7 @@ abstract class HttpSource : CatalogueSource {
      * @param chapter the chapter whose page list has to be fetched.
      */
     @Deprecated("Use the non-RxJava API instead", replaceWith = ReplaceWith("getPageList(chapter)"))
-    open fun fetchPageList(chapter: SChapter): Observable<List<Page>> {
+    open fun fetchPageList(chapter: SEpisode): Observable<List<Page>> {
         return client.newCall(pageListRequest(chapter))
             .asObservableSuccess()
             .map { response ->
@@ -469,7 +469,7 @@ abstract class HttpSource : CatalogueSource {
      *
      * @param chapter the chapter whose page list has to be fetched.
      */
-    protected open fun pageListRequest(chapter: SChapter): Request {
+    protected open fun pageListRequest(chapter: SEpisode): Request {
         return GET(baseUrl + chapter.url, headers)
     }
 
@@ -554,7 +554,7 @@ abstract class HttpSource : CatalogueSource {
      *
      * @param url the full url to the chapter.
      */
-    fun SChapter.setUrlWithoutDomain(url: String) {
+    fun SEpisode.setUrlWithoutDomain(url: String) {
         this.url = getUrlWithoutDomain(url)
     }
 
@@ -565,7 +565,7 @@ abstract class HttpSource : CatalogueSource {
      *
      * @param url the full url to the manga.
      */
-    fun SManga.setUrlWithoutDomain(url: String) {
+    fun SAnime.setUrlWithoutDomain(url: String) {
         this.url = getUrlWithoutDomain(url)
     }
 
@@ -599,7 +599,7 @@ abstract class HttpSource : CatalogueSource {
      * @param manga the manga
      * @return url of the manga
      */
-    open fun getMangaUrl(manga: SManga): String {
+    open fun getMangaUrl(manga: SAnime): String {
         return mangaDetailsRequest(manga).url.toString()
     }
 
@@ -611,7 +611,7 @@ abstract class HttpSource : CatalogueSource {
      * @param chapter the chapter
      * @return url of the chapter
      */
-    open fun getChapterUrl(chapter: SChapter): String {
+    open fun getChapterUrl(chapter: SEpisode): String {
         return pageListRequest(chapter).url.toString()
     }
 
@@ -622,7 +622,7 @@ abstract class HttpSource : CatalogueSource {
      * @param chapter the chapter to be added.
      * @param manga the manga of the chapter.
      */
-    open fun prepareNewChapter(chapter: SChapter, manga: SManga) {}
+    open fun prepareNewChapter(chapter: SEpisode, manga: SAnime) {}
 
     /**
      * Returns the list of filters for the source.

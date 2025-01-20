@@ -3,8 +3,8 @@ package exh.source
 import eu.kanade.tachiyomi.source.model.FilterList
 import eu.kanade.tachiyomi.source.model.MangasPage
 import eu.kanade.tachiyomi.source.model.Page
-import eu.kanade.tachiyomi.source.model.SChapter
-import eu.kanade.tachiyomi.source.model.SManga
+import eu.kanade.tachiyomi.source.model.SEpisode
+import eu.kanade.tachiyomi.source.model.SAnime
 import eu.kanade.tachiyomi.source.online.HttpSource
 import exh.pref.DelegateSourcePreferences
 import okhttp3.Response
@@ -84,7 +84,7 @@ class EnhancedHttpSource(
         throw UnsupportedOperationException("Should never be called!")
 
     /**
-     * Parses the response from the site and returns a SChapter Object.
+     * Parses the response from the site and returns a SEpisode Object.
      *
      * @param response the response from the site.
      */
@@ -194,12 +194,12 @@ class EnhancedHttpSource(
      * @param manga the manga to be updated.
      */
     @Deprecated("Use the 1.x API instead", replaceWith = ReplaceWith("getMangaDetails"))
-    override fun fetchMangaDetails(manga: SManga) = source().fetchMangaDetails(manga)
+    override fun fetchMangaDetails(manga: SAnime) = source().fetchMangaDetails(manga)
 
     /**
      * [1.x API] Get the updated details for a manga.
      */
-    override suspend fun getMangaDetails(manga: SManga): SManga = source().getMangaDetails(manga)
+    override suspend fun getMangaDetails(manga: SAnime): SAnime = source().getMangaDetails(manga)
 
     /**
      * Returns the request for the details of a manga. Override only if it's needed to change the
@@ -207,7 +207,7 @@ class EnhancedHttpSource(
      *
      * @param manga the manga to be updated.
      */
-    override fun mangaDetailsRequest(manga: SManga) = source().mangaDetailsRequest(manga)
+    override fun mangaDetailsRequest(manga: SAnime) = source().mangaDetailsRequest(manga)
 
     /**
      * Returns an observable with the updated chapter list for a manga. Normally it's not needed to
@@ -216,12 +216,12 @@ class EnhancedHttpSource(
      * @param manga the manga to look for chapters.
      */
     @Deprecated("Use the 1.x API instead", replaceWith = ReplaceWith("getChapterList"))
-    override fun fetchChapterList(manga: SManga) = source().fetchChapterList(manga)
+    override fun fetchChapterList(manga: SAnime) = source().fetchChapterList(manga)
 
     /**
      * [1.x API] Get all the available chapters for a manga.
      */
-    override suspend fun getChapterList(manga: SManga): List<SChapter> = source().getChapterList(manga)
+    override suspend fun getChapterList(manga: SAnime): List<SEpisode> = source().getChapterList(manga)
 
     /**
      * Returns an observable with the page list for a chapter.
@@ -229,12 +229,12 @@ class EnhancedHttpSource(
      * @param chapter the chapter whose page list has to be fetched.
      */
     @Deprecated("Use the 1.x API instead", replaceWith = ReplaceWith("getPageList"))
-    override fun fetchPageList(chapter: SChapter) = source().fetchPageList(chapter)
+    override fun fetchPageList(chapter: SEpisode) = source().fetchPageList(chapter)
 
     /**
      * [1.x API] Get the list of pages a chapter has.
      */
-    override suspend fun getPageList(chapter: SChapter): List<Page> = source().getPageList(chapter)
+    override suspend fun getPageList(chapter: SEpisode): List<Page> = source().getPageList(chapter)
 
     /**
      * Returns an observable with the page containing the source url of the image. If there's any
@@ -261,7 +261,7 @@ class EnhancedHttpSource(
      * @param manga the manga
      * @return url of the manga
      */
-    override fun getMangaUrl(manga: SManga) = source().getMangaUrl(manga)
+    override fun getMangaUrl(manga: SAnime) = source().getMangaUrl(manga)
 
     /**
      * Returns the url of the provided chapter
@@ -270,7 +270,7 @@ class EnhancedHttpSource(
      * @param chapter the chapter
      * @return url of the chapter
      */
-    override fun getChapterUrl(chapter: SChapter) = source().getChapterUrl(chapter)
+    override fun getChapterUrl(chapter: SEpisode) = source().getChapterUrl(chapter)
 
     /**
      * Called before inserting a new chapter into database. Use it if you need to override chapter
@@ -279,7 +279,7 @@ class EnhancedHttpSource(
      * @param chapter the chapter to be added.
      * @param manga the manga of the chapter.
      */
-    override fun prepareNewChapter(chapter: SChapter, manga: SManga) =
+    override fun prepareNewChapter(chapter: SEpisode, manga: SAnime) =
         source().prepareNewChapter(chapter, manga)
 
     /**

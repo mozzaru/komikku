@@ -18,7 +18,7 @@ interface SChapter : Serializable {
 
     var scanlator: String?
 
-    fun copyFrom(other: SChapter) {
+    fun copyFrom(other: SEpisode) {
         name = other.name
         url = other.url
         date_upload = other.date_upload
@@ -27,8 +27,8 @@ interface SChapter : Serializable {
     }
 
     companion object {
-        fun create(): SChapter {
-            return SChapterImpl()
+        fun create(): SEpisode {
+            return SEpisodeImpl()
         }
 
         // SY -->
@@ -38,7 +38,7 @@ interface SChapter : Serializable {
             date_upload: Long = 0,
             chapter_number: Float = -1F,
             scanlator: String? = null,
-        ): SChapter {
+        ): SEpisode {
             return create().apply {
                 this.name = name
                 this.url = url

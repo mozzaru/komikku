@@ -3,7 +3,7 @@ package eu.kanade.tachiyomi.source
 import dev.icerock.moko.graphics.BuildConfig
 import eu.kanade.tachiyomi.source.model.FilterList
 import eu.kanade.tachiyomi.source.model.MangasPage
-import eu.kanade.tachiyomi.source.model.SManga
+import eu.kanade.tachiyomi.source.model.SAnime
 import kotlinx.coroutines.CoroutineExceptionHandler
 import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.launch
@@ -99,9 +99,9 @@ interface CatalogueSource : Source {
      * @throws UnsupportedOperationException if a source doesn't support related mangas.
      */
     override suspend fun getRelatedMangaList(
-        manga: SManga,
+        manga: SAnime,
         exceptionHandler: (Throwable) -> Unit,
-        pushResults: suspend (relatedManga: Pair<String, List<SManga>>, completed: Boolean) -> Unit,
+        pushResults: suspend (relatedManga: Pair<String, List<SAnime>>, completed: Boolean) -> Unit,
     ) {
         val handler = CoroutineExceptionHandler { _, e -> exceptionHandler(e) }
         if (!disableRelatedMangas) {
@@ -119,8 +119,8 @@ interface CatalogueSource : Source {
      * @since komikku/extensions-lib 1.6
      */
     suspend fun getRelatedMangaListByExtension(
-        manga: SManga,
-        pushResults: suspend (relatedManga: Pair<String, List<SManga>>, completed: Boolean) -> Unit,
+        manga: SAnime,
+        pushResults: suspend (relatedManga: Pair<String, List<SAnime>>, completed: Boolean) -> Unit,
     ) {
         runCatching { fetchRelatedMangaList(manga) }
             .onSuccess { if (it.isNotEmpty()) pushResults(Pair("", it), false) }
@@ -145,7 +145,7 @@ interface CatalogueSource : Source {
      * @return the related mangas for the current manga.
      * @throws UnsupportedOperationException if a source doesn't support related mangas.
      */
-    suspend fun fetchRelatedMangaList(manga: SManga): List<SManga> = throw UnsupportedOperationException("Unsupported!")
+    suspend fun fetchRelatedMangaList(manga: SAnime): List<SAnime> = throw UnsupportedOperationException("Unsupported!")
 
     /**
      * Slit & strip manga's title into separate searchable keywords.
@@ -178,8 +178,8 @@ interface CatalogueSource : Source {
      * @since komikku/extensions-lib 1.6
      */
     suspend fun getRelatedMangaListBySearch(
-        manga: SManga,
-        pushResults: suspend (relatedManga: Pair<String, List<SManga>>, completed: Boolean) -> Unit,
+        manga: SAnime,
+        pushResults: suspend (relatedManga: Pair<String, List<SAnime>>, completed: Boolean) -> Unit,
     ) {
         val words = HashSet<String>()
         words.add(manga.title)

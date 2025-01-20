@@ -67,8 +67,8 @@ interface SManga : Serializable {
         const val CANCELLED = 5
         const val ON_HIATUS = 6
 
-        fun create(): SManga {
-            return SMangaImpl()
+        fun create(): SAnime {
+            return SAnimeImpl()
         }
 
         // SY -->
@@ -82,7 +82,7 @@ interface SManga : Serializable {
             status: Int = 0,
             thumbnail_url: String? = null,
             initialized: Boolean = false,
-        ): SManga {
+        ): SAnime {
             return create().also {
                 it.url = url
                 it.title = title
@@ -100,7 +100,7 @@ interface SManga : Serializable {
 }
 
 // SY -->
-fun SManga.copy(
+fun SAnime.copy(
     url: String = this.url,
     title: String = this.originalTitle,
     artist: String? = this.originalArtist,
@@ -110,7 +110,7 @@ fun SManga.copy(
     status: Int = this.status,
     thumbnail_url: String? = this.originalThumbnailUrl,
     initialized: Boolean = this.initialized,
-) = SManga.create().also {
+) = SAnime.create().also {
     it.url = url
     it.title = title
     it.artist = artist
