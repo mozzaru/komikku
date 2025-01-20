@@ -27,7 +27,7 @@ import eu.kanade.tachiyomi.ui.browse.ChangeAnimesCategoryDialog
 import eu.kanade.tachiyomi.ui.browse.RemoveAnimeDialog
 import mihon.presentation.core.util.collectAsLazyPagingItems
 import tachiyomi.core.common.util.lang.launchIO
-import tachiyomi.domain.anime.model.Manga
+import tachiyomi.domain.anime.model.Anime
 import tachiyomi.i18n.sy.SYMR
 import tachiyomi.presentation.core.components.material.Scaffold
 import tachiyomi.presentation.core.i18n.stringResource
@@ -57,7 +57,7 @@ class MangaDexSimilarScreen(val mangaId: Long, val sourceId: Long) : Screen() {
         }
         // KMK <--
 
-        val onMangaClick: (Manga) -> Unit = {
+        val onMangaClick: (Anime) -> Unit = {
             navigator.push(AnimeScreen(it.id, true))
         }
 
@@ -93,7 +93,7 @@ class MangaDexSimilarScreen(val mangaId: Long, val sourceId: Long) : Screen() {
                     // KMK <--
                     BrowseSourceSimpleToolbar(
                         navigateUp = navigator::pop,
-                        title = stringResource(SYMR.strings.similar, screenModel.manga.title),
+                        title = stringResource(SYMR.strings.similar, screenModel.anime.title),
                         displayMode = screenModel.displayMode,
                         onDisplayModeChange = { screenModel.displayMode = it },
                         scrollBehavior = scrollBehavior,
@@ -108,7 +108,7 @@ class MangaDexSimilarScreen(val mangaId: Long, val sourceId: Long) : Screen() {
         ) { paddingValues ->
             BrowseSourceContent(
                 source = screenModel.source,
-                mangaList = mangaList,
+                animeList = mangaList,
                 columns = screenModel.getColumnsPreference(LocalConfiguration.current.orientation),
                 // SY -->
                 ehentaiBrowseDisplayMode = false,

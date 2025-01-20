@@ -48,7 +48,7 @@ class SuwayomiApi(private val trackId: Long) {
 
     suspend fun getTrackSearch(trackUrl: String): TrackSearch = withIOContext {
         val url = try {
-            // test if getting api url or manga id
+            // test if getting api url or anime id
             val mangaId = trackUrl.toLong()
             "$baseUrl/api/v1/manga/$mangaId"
         } catch (e: NumberFormatException) {

@@ -10,7 +10,7 @@ import exh.source.MERGED_SOURCE_ID
 import logcat.LogPriority
 import tachiyomi.core.common.util.lang.withNonCancellableContext
 import tachiyomi.core.common.util.system.logcat
-import tachiyomi.domain.anime.model.Manga
+import tachiyomi.domain.anime.model.Anime
 import tachiyomi.domain.anime.repository.AnimeRepository
 import tachiyomi.domain.download.service.DownloadPreferences
 import tachiyomi.domain.episode.interactor.GetMergedEpisodesByAnimeId
@@ -40,10 +40,10 @@ class SetSeenStatus(
      * Mark episodes as read/unread, also delete downloaded episodes if 'After manually marked as read' is set.
      *
      * Called from:
-     *  - [LibraryScreenModel]: Manually select mangas & mark as read
+     *  - [LibraryScreenModel]: Manually select animes & mark as read
      *  - [AnimeScreenModel.markChaptersRead]: Manually select episodes & mark as read or swipe episode as read
      *  - [UpdatesScreenModel.markUpdatesRead]: Manually select episodes & mark as read
-     *  - [LibraryUpdateJob.updateChapterList]: when a manga is updated and has new episode but already read,
+     *  - [LibraryUpdateJob.updateChapterList]: when a anime is updated and has new episode but already read,
      *  it will mark that new **duplicated** episode as read & delete downloading/downloaded -> should be treat as
      *  automatically ~ no auto delete
      *  - [ReaderViewModel.updateChapterProgress]: mark **duplicated** episode as read after finish reading -> should be
@@ -89,7 +89,7 @@ class SetSeenStatus(
                 .groupBy { it.mangaId }
                 .forEach { (mangaId, chapters) ->
                     deleteDownload.awaitAll(
-                        manga = animeRepository.getMangaById(mangaId),
+                        anime = animeRepository.getMangaById(mangaId),
                         episodes = chapters.toTypedArray(),
                     )
                 }
@@ -117,10 +117,10 @@ class SetSeenStatus(
         )
     }
 
-    suspend fun await(manga: Manga, read: Boolean) = if (manga.source == MERGED_SOURCE_ID) {
-        awaitMerged(manga.id, read)
+    suspend fun await(anime: Anime, read: Boolean) = if (anime.source == MERGED_SOURCE_ID) {
+        awaitMerged(anime.id, read)
     } else {
-        await(manga.id, read)
+        await(anime.id, read)
     }
     // SY <--
 

@@ -88,7 +88,7 @@ data class BrowseSourceScreen(
     // SY -->
     private val filtersJson: String? = null,
     private val savedSearch: Long? = null,
-    /** being set when called from [SmartSearchScreen] or when click on a manga from this screen
+    /** being set when called from [SmartSearchScreen] or when click on a anime from this screen
      * which was previously opened from `SmartSearchScreen` */
     private val smartSearchConfig: SourcesScreen.SmartSearchConfig? = null,
     // SY <--
@@ -322,7 +322,7 @@ data class BrowseSourceScreen(
         ) { paddingValues ->
             BrowseSourceContent(
                 source = screenModel.source,
-                mangaList = mangaList,
+                animeList = mangaList,
                 columns = screenModel.getColumnsPreference(LocalConfiguration.current.orientation),
                 // SY -->
                 ehentaiBrowseDisplayMode = screenModel.ehentaiBrowseDisplayMode,
@@ -435,7 +435,7 @@ data class BrowseSourceScreen(
             is BrowseSourceScreenModel.Dialog.AddDuplicateManga -> {
                 DuplicateAnimeDialog(
                     onDismissRequest = onDismissRequest,
-                    onConfirm = { screenModel.addFavorite(dialog.manga) },
+                    onConfirm = { screenModel.addFavorite(dialog.anime) },
                     onOpenManga = { navigator.push(AnimeScreen(dialog.duplicate.id)) },
                     onMigrate = {
                         // SY -->
@@ -443,7 +443,7 @@ data class BrowseSourceScreen(
                             Injekt.get<UnsortedPreferences>().skipPreMigration().get(),
                             navigator,
                             dialog.duplicate.id,
-                            dialog.manga.id,
+                            dialog.anime.id,
                         )
                         // SY <--
                     },
@@ -456,9 +456,9 @@ data class BrowseSourceScreen(
                 RemoveAnimeDialog(
                     onDismissRequest = onDismissRequest,
                     onConfirm = {
-                        screenModel.changeMangaFavorite(dialog.manga)
+                        screenModel.changeMangaFavorite(dialog.anime)
                     },
-                    mangaToRemove = dialog.manga,
+                    animeToRemove = dialog.anime,
                 )
             }
             is BrowseSourceScreenModel.Dialog.ChangeMangaCategory -> {
@@ -467,8 +467,8 @@ data class BrowseSourceScreen(
                     onDismissRequest = onDismissRequest,
                     onEditCategories = { navigator.push(CategoryScreen()) },
                     onConfirm = { include, _ ->
-                        screenModel.changeMangaFavorite(dialog.manga)
-                        screenModel.moveMangaToCategories(dialog.manga, include)
+                        screenModel.changeMangaFavorite(dialog.anime)
+                        screenModel.moveMangaToCategories(dialog.anime, include)
                     },
                 )
             }

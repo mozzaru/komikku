@@ -4,10 +4,10 @@ data class MergedAnimeReference(
     // Tag identifier, unique
     val id: Long,
 
-    // The manga where it grabs the updated manga info
+    // The anime where it grabs the updated anime info
     val isInfoManga: Boolean,
 
-    // If false the manga will not grab chapter updates
+    // If false the anime will not grab chapter updates
     val getChapterUpdates: Boolean,
 
     // The mode in which the chapters are handeled, only set in the main merge reference
@@ -19,19 +19,19 @@ data class MergedAnimeReference(
     // Set if you want it to download new chapters
     val downloadChapters: Boolean,
 
-    // merged manga this reference is attached to
+    // merged anime this reference is attached to
     val mergeId: Long?,
 
-    // merged manga url this reference is attached to
+    // merged anime url this reference is attached to
     val mergeUrl: String,
 
-    // manga id included in the merge this reference is attached to
+    // anime id included in the merge this reference is attached to
     val mangaId: Long?,
 
-    // manga url included in the merge this reference is attached to
+    // anime url included in the merge this reference is attached to
     val mangaUrl: String,
 
-    // source of the manga that is merged into this merge
+    // source of the anime that is merged into this merge
     val mangaSourceId: Long,
 ) {
     companion object {

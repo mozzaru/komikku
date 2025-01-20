@@ -12,7 +12,7 @@ import tachiyomi.domain.anime.interactor.GetAnime
 import tachiyomi.domain.anime.interactor.GetMergedReferencesById
 import tachiyomi.domain.anime.interactor.InsertMergedReference
 import tachiyomi.domain.anime.interactor.NetworkToLocalAnime
-import tachiyomi.domain.anime.model.Manga
+import tachiyomi.domain.anime.model.Anime
 import tachiyomi.domain.anime.model.MergedAnimeReference
 import tachiyomi.domain.category.interactor.GetCategories
 import tachiyomi.domain.category.interactor.SetAnimeCategories
@@ -30,7 +30,7 @@ class SmartSearchMerge(
     private val getCategories: GetCategories = Injekt.get(),
     private val setAnimeCategories: SetAnimeCategories = Injekt.get(),
 ) {
-    suspend fun smartSearchMerge(manga: Manga, originalMangaId: Long): Manga {
+    suspend fun smartSearchMerge(anime: Anime, originalMangaId: Long): Anime {
         // KMK -->
         val context = Injekt.get<Application>()
         // KMK <--
@@ -38,7 +38,7 @@ class SmartSearchMerge(
             ?: throw IllegalArgumentException(context.stringResource(SYMR.strings.merge_unknown_entry, originalMangaId))
         if (originalManga.source == MERGED_SOURCE_ID) {
             val children = getMergedReferencesById.await(originalMangaId)
-            if (children.any { it.mangaSourceId == manga.source && it.mangaUrl == manga.url }) {
+            if (children.any { it.mangaSourceId == anime.source && it.mangaUrl == anime.url }) {
                 // Merged already
                 return originalManga
             }
@@ -53,9 +53,9 @@ class SmartSearchMerge(
                     downloadChapters = true,
                     mergeId = originalManga.id,
                     mergeUrl = originalManga.url,
-                    mangaId = manga.id,
-                    mangaUrl = manga.url,
-                    mangaSourceId = manga.source,
+                    mangaId = anime.id,
+                    mangaUrl = anime.url,
+                    mangaSourceId = anime.source,
                 ),
             )
 
@@ -80,11 +80,11 @@ class SmartSearchMerge(
 
             return originalManga
         } else {
-            if (manga.id == originalMangaId) {
+            if (anime.id == originalMangaId) {
                 // Merged already
                 return originalManga
             }
-            var mergedManga = Manga.create()
+            var mergedAnime = Anime.create()
                 .copy(
                     url = originalManga.url,
                     ogTitle = originalManga.title,
@@ -99,11 +99,11 @@ class SmartSearchMerge(
                     dateAdded = System.currentTimeMillis(),
                 )
 
-            var existingManga = getAnime.await(mergedManga.url, mergedManga.source)
+            var existingManga = getAnime.await(mergedAnime.url, mergedAnime.source)
             while (existingManga != null) {
                 if (existingManga.favorite) {
                     // Duplicate entry found -> use it instead
-                    mergedManga = existingManga
+                    mergedAnime = existingManga
                     break
                 } else {
                     withNonCancellableContext {
@@ -114,14 +114,14 @@ class SmartSearchMerge(
                     }
                 }
                 // Remove previously merged entry from database (user already removed from favorites)
-                existingManga = getAnime.await(mergedManga.url, mergedManga.source)
+                existingManga = getAnime.await(mergedAnime.url, mergedAnime.source)
             }
 
-            mergedManga = networkToLocalAnime.await(mergedManga)
+            mergedAnime = networkToLocalAnime.await(mergedAnime)
 
             getCategories.await(originalMangaId)
                 .let { categories ->
-                    setAnimeCategories.await(mergedManga.id, categories.map { it.id })
+                    setAnimeCategories.await(mergedAnime.id, categories.map { it.id })
                 }
 
             val originalMangaReference = MergedAnimeReference(
@@ -131,8 +131,8 @@ class SmartSearchMerge(
                 chapterSortMode = 0,
                 chapterPriority = 0,
                 downloadChapters = true,
-                mergeId = mergedManga.id,
-                mergeUrl = mergedManga.url,
+                mergeId = mergedAnime.id,
+                mergeUrl = mergedAnime.url,
                 mangaId = originalManga.id,
                 mangaUrl = originalManga.url,
                 mangaSourceId = originalManga.source,
@@ -145,11 +145,11 @@ class SmartSearchMerge(
                 chapterSortMode = 0,
                 chapterPriority = 0,
                 downloadChapters = true,
-                mergeId = mergedManga.id,
-                mergeUrl = mergedManga.url,
-                mangaId = manga.id,
-                mangaUrl = manga.url,
-                mangaSourceId = manga.source,
+                mergeId = mergedAnime.id,
+                mergeUrl = mergedAnime.url,
+                mangaId = anime.id,
+                mangaUrl = anime.url,
+                mangaSourceId = anime.source,
             )
 
             val mergedAnimeReference = MergedAnimeReference(
@@ -159,18 +159,18 @@ class SmartSearchMerge(
                 chapterSortMode = 0,
                 chapterPriority = -1,
                 downloadChapters = false,
-                mergeId = mergedManga.id,
-                mergeUrl = mergedManga.url,
-                mangaId = mergedManga.id,
-                mangaUrl = mergedManga.url,
+                mergeId = mergedAnime.id,
+                mergeUrl = mergedAnime.url,
+                mangaId = mergedAnime.id,
+                mangaUrl = mergedAnime.url,
                 mangaSourceId = MERGED_SOURCE_ID,
             )
 
             insertMergedReference.awaitAll(listOf(originalMangaReference, newMangaReference, mergedAnimeReference))
 
-            return mergedManga
+            return mergedAnime
         }
 
-        // Note that if the manga are merged in a different order, this won't trigger, but I don't care lol
+        // Note that if the anime are merged in a different order, this won't trigger, but I don't care lol
     }
 }

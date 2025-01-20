@@ -8,7 +8,7 @@ import exh.source.EH_SOURCE_ID
 import exh.source.EXH_SOURCE_ID
 import kotlinx.coroutines.flow.Flow
 import tachiyomi.data.DatabaseHandler
-import tachiyomi.domain.anime.model.Manga
+import tachiyomi.domain.anime.model.Anime
 import tachiyomi.domain.anime.repository.AnimeMetadataRepository
 
 class AnimeMetadataRepositoryImpl(
@@ -57,7 +57,7 @@ class AnimeMetadataRepositoryImpl(
         }
     }
 
-    override suspend fun getExhFavoriteMangaWithMetadata(): List<Manga> {
+    override suspend fun getExhFavoriteMangaWithMetadata(): List<Anime> {
         return handler.awaitList {
             animesQueries.getEhAnimeWithMetadata(EH_SOURCE_ID, EXH_SOURCE_ID, AnimeMapper::mapAnime)
         }

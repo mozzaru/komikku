@@ -29,7 +29,7 @@ fun AnimeSource.getNameForMangaInfo(
         // KMK -->
         isLocalOrStub() -> toString()
         // KMK <--
-        // For edge cases where user disables a source they got manga of in their library.
+        // For edge cases where user disables a source they got anime of in their library.
         hasOneActiveLanguages && !isInEnabledLanguages ->
             // KMK -->
             "$name (${FlagEmoji.getEmojiLangFlag(lang)})"

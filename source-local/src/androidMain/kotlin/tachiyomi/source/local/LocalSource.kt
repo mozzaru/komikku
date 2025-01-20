@@ -33,7 +33,7 @@ import tachiyomi.core.metadata.comicinfo.ComicInfoPublishingStatus
 import tachiyomi.core.metadata.comicinfo.copyFromComicInfo
 import tachiyomi.core.metadata.comicinfo.getComicInfo
 import tachiyomi.core.metadata.tachiyomi.AnimeDetails
-import tachiyomi.domain.anime.model.Manga
+import tachiyomi.domain.anime.model.Anime
 import tachiyomi.domain.episode.service.EpisodeRecognition
 import tachiyomi.i18n.MR
 import tachiyomi.source.local.filter.OrderBy
@@ -192,13 +192,13 @@ actual class LocalSource(
     }
     // SY <--
 
-    // Manga details related
+    // Anime details related
     override suspend fun getAnimeDetails(anime: SAnime): SAnime = withIOContext {
         coverManager.find(anime.url)?.let {
             anime.thumbnail_url = it.uri.toString()
         }
 
-        // Augment manga details based on metadata files
+        // Augment anime details based on metadata files
         try {
             val mangaDir = fileSystem.getAnimeDirectory(anime.url) ?: error("${anime.url} is not a valid directory")
             val mangaDirFiles = mangaDir.listFiles().orEmpty()
@@ -273,7 +273,7 @@ actual class LocalSource(
                 }
             }
         } catch (e: Throwable) {
-            logcat(LogPriority.ERROR, e) { "Error setting manga details from local metadata for ${anime.title}" }
+            logcat(LogPriority.ERROR, e) { "Error setting anime details from local metadata for ${anime.title}" }
         }
 
         return@withIOContext anime
@@ -439,7 +439,7 @@ actual class LocalSource(
     }
 }
 
-fun Manga.isLocal(): Boolean = source == LocalSource.ID
+fun Anime.isLocal(): Boolean = source == LocalSource.ID
 
 fun AnimeSource.isLocal(): Boolean = id == LocalSource.ID
 

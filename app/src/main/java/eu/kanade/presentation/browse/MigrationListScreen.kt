@@ -32,7 +32,7 @@ import eu.kanade.tachiyomi.ui.browse.migration.advanced.process.MigratingAnime
 import kotlinx.collections.immutable.ImmutableList
 import kotlinx.collections.immutable.persistentListOf
 import tachiyomi.core.common.util.lang.withIOContext
-import tachiyomi.domain.anime.model.Manga
+import tachiyomi.domain.anime.model.Anime
 import tachiyomi.i18n.MR
 import tachiyomi.i18n.sy.SYMR
 import tachiyomi.presentation.core.components.ScrollbarLazyColumn
@@ -46,10 +46,10 @@ fun MigrationListScreen(
     items: ImmutableList<MigratingAnime>,
     migrationDone: Boolean,
     finishedCount: Int,
-    getManga: suspend (MigratingAnime.SearchResult.Result) -> Manga?,
+    getAnime: suspend (MigratingAnime.SearchResult.Result) -> Anime?,
     getEpisodeInfo: suspend (MigratingAnime.SearchResult.Result) -> MigratingAnime.EpisodeInfo,
-    getSourceName: (Manga) -> String,
-    onMigrationItemClick: (Manga) -> Unit,
+    getSourceName: (Anime) -> String,
+    onMigrationItemClick: (Anime) -> Unit,
     openMigrationDialog: (Boolean) -> Unit,
     skipManga: (Long) -> Unit,
     // KMK -->
@@ -106,7 +106,7 @@ fun MigrationListScreen(
         ScrollbarLazyColumn(
             contentPadding = contentPadding + topSmallPaddingValues,
         ) {
-            items(items, key = { "migration-list-${it.manga.id}" }) { migrationItem ->
+            items(items, key = { "migration-list-${it.anime.id}" }) { migrationItem ->
                 Row(
                     Modifier
                         .fillMaxWidth()
@@ -123,10 +123,10 @@ fun MigrationListScreen(
                             .weight(1f)
                             .align(Alignment.Top)
                             .fillMaxHeight(),
-                        manga = migrationItem.manga,
+                        anime = migrationItem.anime,
                         sourcesString = migrationItem.sourcesString,
                         episodeInfo = migrationItem.episodeInfo,
-                        onClick = { onMigrationItemClick(migrationItem.manga) },
+                        onClick = { onMigrationItemClick(migrationItem.anime) },
                     )
 
                     Icon(
@@ -143,7 +143,7 @@ fun MigrationListScreen(
                             .fillMaxHeight(),
                         migrationItem = migrationItem,
                         result = result,
-                        getManga = getManga,
+                        getAnime = getAnime,
                         getEpisodeInfo = getEpisodeInfo,
                         getSourceName = getSourceName,
                         onMigrationItemClick = onMigrationItemClick,
@@ -153,16 +153,16 @@ fun MigrationListScreen(
                         modifier = Modifier
                             .weight(0.2f),
                         result = result,
-                        skipManga = { skipManga(migrationItem.manga.id) },
+                        skipManga = { skipManga(migrationItem.anime.id) },
                         // KMK -->
-                        cancelManga = { cancelManga(migrationItem.manga.id) },
+                        cancelManga = { cancelManga(migrationItem.anime.id) },
                         // KMK <--
                         searchManually = { searchManually(migrationItem) },
                         migrateNow = {
-                            migrateNow(migrationItem.manga.id)
+                            migrateNow(migrationItem.anime.id)
                         },
                         copyNow = {
-                            copyNow(migrationItem.manga.id)
+                            copyNow(migrationItem.anime.id)
                         },
                     )
                 }

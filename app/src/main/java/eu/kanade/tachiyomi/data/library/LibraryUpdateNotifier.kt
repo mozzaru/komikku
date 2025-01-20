@@ -33,7 +33,7 @@ import tachiyomi.core.common.Constants
 import tachiyomi.core.common.i18n.pluralStringResource
 import tachiyomi.core.common.i18n.stringResource
 import tachiyomi.core.common.util.lang.launchUI
-import tachiyomi.domain.anime.model.Manga
+import tachiyomi.domain.anime.model.Anime
 import tachiyomi.domain.episode.model.Episode
 import tachiyomi.domain.library.model.LibraryAnime
 import tachiyomi.domain.source.service.SourceManager
@@ -88,13 +88,13 @@ class LibraryUpdateNotifier(
     }
 
     /**
-     * Shows the notification containing the currently updating manga and the progress.
+     * Shows the notification containing the currently updating anime and the progress.
      *
-     * @param manga the manga that are being updated.
+     * @param anime the anime that are being updated.
      * @param current the current progress.
      * @param total the total progress.
      */
-    suspend fun showProgressNotification(manga: List<Manga>, current: Int, total: Int) {
+    suspend fun showProgressNotification(anime: List<Anime>, current: Int, total: Int) {
         progressNotificationBuilder
             .setContentTitle(
                 context.stringResource(
@@ -108,7 +108,7 @@ class LibraryUpdateNotifier(
         // KMK <--
 
         if (!securityPreferences.hideNotificationContent().get()) {
-            val updatingText = manga.joinToString("\n") { it.title.chop(40) }
+            val updatingText = anime.joinToString("\n") { it.title.chop(40) }
             progressNotificationBuilder.setStyle(NotificationCompat.BigTextStyle().bigText(updatingText))
         }
 
@@ -125,7 +125,7 @@ class LibraryUpdateNotifier(
      */
     fun showQueueSizeWarningNotificationIfNeeded(mangaToUpdate: List<LibraryAnime>) {
         val maxUpdatesFromSource = mangaToUpdate
-            .groupBy { it.manga.source }
+            .groupBy { it.anime.source }
             .filterKeys { sourceManager.get(it) !is UnmeteredSource }
             .maxOfOrNull { it.value.size } ?: 0
 
@@ -172,9 +172,9 @@ class LibraryUpdateNotifier(
     /**
      * Shows the notification containing the result of the update done by the service.
      *
-     * @param updates a list of manga with new updates.
+     * @param updates a list of anime with new updates.
      */
-    fun showUpdateNotifications(updates: List<Pair<Manga, Array<Episode>>>) {
+    fun showUpdateNotifications(updates: List<Pair<Anime, Array<Episode>>>) {
         // Parent group notification
         context.notify(
             Notifications.ID_NEW_CHAPTERS,
@@ -215,7 +215,7 @@ class LibraryUpdateNotifier(
             setAutoCancel(true)
         }
 
-        // Per-manga notification
+        // Per-anime notification
         if (!securityPreferences.hideNotificationContent().get()) {
             launchUI {
                 context.notify(
@@ -230,10 +230,10 @@ class LibraryUpdateNotifier(
         }
     }
 
-    private suspend fun createNewChaptersNotification(manga: Manga, episodes: Array<Episode>): Notification {
-        val icon = getMangaIcon(manga)
+    private suspend fun createNewChaptersNotification(anime: Anime, episodes: Array<Episode>): Notification {
+        val icon = getMangaIcon(anime)
         return context.notificationBuilder(Notifications.CHANNEL_NEW_CHAPTERS) {
-            setContentTitle(manga.title)
+            setContentTitle(anime.title)
 
             val description = getNewChaptersDescription(episodes)
             setContentText(description)
@@ -250,7 +250,7 @@ class LibraryUpdateNotifier(
             priority = NotificationCompat.PRIORITY_HIGH
 
             // Open first episode on tap
-            setContentIntent(NotificationReceiver.openChapterPendingActivity(context, manga, episodes.first()))
+            setContentIntent(NotificationReceiver.openChapterPendingActivity(context, anime, episodes.first()))
             setAutoCancel(true)
 
             // Mark episodes as read action
@@ -259,7 +259,7 @@ class LibraryUpdateNotifier(
                 context.stringResource(MR.strings.action_mark_as_read),
                 NotificationReceiver.markAsReadPendingBroadcast(
                     context,
-                    manga,
+                    anime,
                     episodes,
                     Notifications.ID_NEW_CHAPTERS,
                 ),
@@ -270,7 +270,7 @@ class LibraryUpdateNotifier(
                 context.stringResource(MR.strings.action_view_chapters),
                 NotificationReceiver.openChapterPendingActivity(
                     context,
-                    manga,
+                    anime,
                     Notifications.ID_NEW_CHAPTERS,
                 ),
             )
@@ -282,7 +282,7 @@ class LibraryUpdateNotifier(
                     context.stringResource(MR.strings.action_download),
                     NotificationReceiver.downloadChaptersPendingBroadcast(
                         context,
-                        manga,
+                        anime,
                         episodes,
                         Notifications.ID_NEW_CHAPTERS,
                     ),
@@ -298,9 +298,9 @@ class LibraryUpdateNotifier(
         context.cancelNotification(Notifications.ID_LIBRARY_PROGRESS)
     }
 
-    private suspend fun getMangaIcon(manga: Manga): Bitmap? {
+    private suspend fun getMangaIcon(anime: Anime): Bitmap? {
         val request = ImageRequest.Builder(context)
-            .data(manga)
+            .data(anime)
             .transformations(CircleCropTransformation())
             .size(NOTIF_ICON_SIZE)
             .build()

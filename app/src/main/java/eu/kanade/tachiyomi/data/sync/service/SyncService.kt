@@ -84,13 +84,13 @@ abstract class SyncService(
     }
 
     /**
-     * Merges two lists of BackupAnime objects, selecting the most recent manga based on the lastModifiedAt value.
-     * If lastModifiedAt is null for a manga, it treats that manga as the oldest possible for comparison purposes.
-     * This function is designed to reconcile local and remote manga lists, ensuring the most up-to-date manga is retained.
+     * Merges two lists of BackupAnime objects, selecting the most recent anime based on the lastModifiedAt value.
+     * If lastModifiedAt is null for a anime, it treats that anime as the oldest possible for comparison purposes.
+     * This function is designed to reconcile local and remote anime lists, ensuring the most up-to-date anime is retained.
      *
      * @param localMangaList The list of local BackupAnime objects or null.
      * @param remoteMangaList The list of remote BackupAnime objects or null.
-     * @return A list of BackupAnime objects, each representing the most recent version of the manga from either local or remote sources.
+     * @return A list of BackupAnime objects, each representing the most recent version of the anime from either local or remote sources.
      */
     private fun mergeMangaLists(
         localMangaList: List<BackupAnime>?,
@@ -143,7 +143,7 @@ abstract class SyncService(
                 local != null && remote == null -> updateCategories(local, localCategoriesMapByOrder)
                 local == null && remote != null -> updateCategories(remote, remoteCategoriesMapByOrder)
                 local != null && remote != null -> {
-                    // Compare versions to decide which manga to keep
+                    // Compare versions to decide which anime to keep
                     if (local.version >= remote.version) {
                         logcat(LogPriority.DEBUG, logTag) {
                             "Keeping local version of ${local.title} with merged episodes."
@@ -162,7 +162,7 @@ abstract class SyncService(
                         )
                     }
                 }
-                else -> null // No manga found for key
+                else -> null // No anime found for key
             }
         }
 
@@ -170,7 +170,7 @@ abstract class SyncService(
         val (favorites, nonFavorites) = mergedList.partition { it.favorite }
 
         logcat(LogPriority.DEBUG, logTag) {
-            "Merge completed. Total merged manga: ${mergedList.size}, Favorites: ${favorites.size}, " +
+            "Merge completed. Total merged anime: ${mergedList.size}, Favorites: ${favorites.size}, " +
                 "Non-Favorites: ${nonFavorites.size}"
         }
 

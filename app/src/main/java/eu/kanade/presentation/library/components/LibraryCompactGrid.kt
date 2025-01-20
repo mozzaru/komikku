@@ -34,7 +34,7 @@ internal fun LibraryCompactGrid(
             items = items,
             contentType = { "library_compact_grid_item" },
         ) { libraryItem ->
-            val manga = libraryItem.libraryAnime.manga
+            val manga = libraryItem.libraryAnime.anime
             AnimeCompactGridItem(
                 isSelected = selection.fastAny { it.id == libraryItem.libraryAnime.id },
                 title = manga.title.takeIf { showTitle },

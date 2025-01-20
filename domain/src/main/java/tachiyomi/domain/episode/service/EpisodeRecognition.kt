@@ -42,7 +42,7 @@ object EpisodeRecognition {
 
         // Get chapter title with lower case
         val cleanChapterName = chapterName.lowercase()
-            // Remove manga title from chapter title.
+            // Remove anime title from chapter title.
             .replace(mangaTitle.lowercase(), "").trim()
             // Remove comma's or hyphens.
             .replace(',', '.')

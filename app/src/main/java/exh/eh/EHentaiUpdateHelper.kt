@@ -10,7 +10,7 @@ import tachiyomi.domain.anime.interactor.GetAnime
 import tachiyomi.domain.anime.interactor.InsertFavoriteEntryAlternative
 import tachiyomi.domain.anime.model.AnimeUpdate
 import tachiyomi.domain.anime.model.FavoriteEntryAlternative
-import tachiyomi.domain.anime.model.Manga
+import tachiyomi.domain.anime.model.Anime
 import tachiyomi.domain.category.interactor.GetCategories
 import tachiyomi.domain.category.interactor.SetAnimeCategories
 import tachiyomi.domain.episode.interactor.GetEpisodeByUrl
@@ -26,7 +26,7 @@ import tachiyomi.domain.history.model.HistoryUpdate
 import uy.kohesive.injekt.injectLazy
 import java.io.File
 
-data class ChapterChain(val manga: Manga, val episodes: List<Episode>, val history: List<History>)
+data class ChapterChain(val anime: Anime, val episodes: List<Episode>, val history: List<History>)
 
 class EHentaiUpdateHelper(context: Context) {
     val parentLookupTable =
@@ -79,12 +79,12 @@ class EHentaiUpdateHelper(context: Context) {
                     )
                 }
             }
-            .filter { it.manga.source == sourceId }
+            .filter { it.anime.source == sourceId }
 
         // Accept oldest chain
-        val accepted = chains.minBy { it.manga.id }
+        val accepted = chains.minBy { it.anime.id }
 
-        val toDiscard = chains.filter { it.manga.favorite && it.manga.id != accepted.manga.id }
+        val toDiscard = chains.filter { it.anime.favorite && it.anime.id != accepted.anime.id }
         val animeUpdates = mutableListOf<AnimeUpdate>()
 
         val chainsAsChapters = chains.flatMap { it.episodes }
@@ -96,30 +96,30 @@ class EHentaiUpdateHelper(context: Context) {
 
             toDiscard.forEach {
                 animeUpdates += AnimeUpdate(
-                    id = it.manga.id,
+                    id = it.anime.id,
                     favorite = false,
                     dateAdded = 0,
                 )
             }
-            if (!accepted.manga.favorite) {
+            if (!accepted.anime.favorite) {
                 animeUpdates += AnimeUpdate(
-                    id = accepted.manga.id,
+                    id = accepted.anime.id,
                     favorite = true,
                     dateAdded = System.currentTimeMillis(),
                 )
             }
 
-            val newAccepted = ChapterChain(accepted.manga, newChapters, emptyList())
+            val newAccepted = ChapterChain(accepted.anime, newChapters, emptyList())
             val rootsToMutate = toDiscard + newAccepted
 
-            // Apply changes to all manga
+            // Apply changes to all anime
             updateAnime.awaitAll(animeUpdates)
-            // Insert new episodes for accepted manga
+            // Insert new episodes for accepted anime
             episodeRepository.updateAll(chapterUpdates)
             episodeRepository.addAll(newChapters)
 
             val (newHistory, deleteHistory) = getHistory(
-                getEpisodesByAnimeId.await(accepted.manga.id),
+                getEpisodesByAnimeId.await(accepted.anime.id),
                 chainsAsChapters,
                 chainsAsHistory,
             )
@@ -140,22 +140,22 @@ class EHentaiUpdateHelper(context: Context) {
                 insertFavoriteEntryAlternative.await(favoriteEntryUpdate)
             }
 
-            // Copy categories from all chains to accepted manga
+            // Copy categories from all chains to accepted anime
 
             val newCategories = rootsToMutate.flatMap { chapterChain ->
-                getCategories.await(chapterChain.manga.id).map { it.id }
+                getCategories.await(chapterChain.anime.id).map { it.id }
             }.distinct()
             rootsToMutate.forEach {
-                setAnimeCategories.await(it.manga.id, newCategories)
+                setAnimeCategories.await(it.anime.id, newCategories)
             }
 
             Triple(newAccepted, toDiscard, newChapters)
         } else {
-            /*val notNeeded = chains.filter { it.manga.id != accepted.manga.id }
+            /*val notNeeded = chains.filter { it.anime.id != accepted.anime.id }
             val (newChapters, new) = getEpisodeList(accepted, notNeeded, chainsAsChapters)
-            val newAccepted = ChapterChain(accepted.manga, newChapters)
+            val newAccepted = ChapterChain(accepted.anime, newChapters)
 
-            // Insert new episodes for accepted manga
+            // Insert new episodes for accepted anime
             db.insertChapters(newAccepted.episodes).await()*/
 
             Triple(accepted, emptyList(), emptyList())
@@ -166,16 +166,16 @@ class EHentaiUpdateHelper(context: Context) {
         accepted: ChapterChain,
         toDiscard: List<ChapterChain>,
     ): FavoriteEntryAlternative? {
-        val favorite = toDiscard.find { it.manga.favorite } ?: return null
+        val favorite = toDiscard.find { it.anime.favorite } ?: return null
 
-        val gid = EHentaiSearchMetadata.galleryId(accepted.manga.url)
-        val token = EHentaiSearchMetadata.galleryToken(accepted.manga.url)
+        val gid = EHentaiSearchMetadata.galleryId(accepted.anime.url)
+        val token = EHentaiSearchMetadata.galleryToken(accepted.anime.url)
 
         return FavoriteEntryAlternative(
             otherGid = gid,
             otherToken = token,
-            gid = EHentaiSearchMetadata.galleryId(favorite.manga.url),
-            token = EHentaiSearchMetadata.galleryToken(favorite.manga.url),
+            gid = EHentaiSearchMetadata.galleryId(favorite.anime.url),
+            token = EHentaiSearchMetadata.galleryToken(favorite.anime.url),
         )
     }
 
@@ -238,7 +238,7 @@ class EHentaiUpdateHelper(context: Context) {
                     new = true
                     curChapters + Episode(
                         id = -1,
-                        mangaId = accepted.manga.id,
+                        mangaId = accepted.anime.id,
                         url = chapter.url,
                         name = chapter.name,
                         read = chapter.read,

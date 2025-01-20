@@ -26,7 +26,7 @@ import eu.kanade.presentation.util.rememberResourceBitmapPainter
 import eu.kanade.tachiyomi.R
 import eu.kanade.tachiyomi.ui.browse.migration.advanced.process.MigratingAnime
 import tachiyomi.core.common.util.lang.withIOContext
-import tachiyomi.domain.anime.model.Manga
+import tachiyomi.domain.anime.model.Anime
 import tachiyomi.i18n.sy.SYMR
 import tachiyomi.presentation.core.i18n.stringResource
 
@@ -35,10 +35,10 @@ fun MigrationItemResult(
     modifier: Modifier,
     migrationItem: MigratingAnime,
     result: MigratingAnime.SearchResult,
-    getManga: suspend (MigratingAnime.SearchResult.Result) -> Manga?,
+    getAnime: suspend (MigratingAnime.SearchResult.Result) -> Anime?,
     getEpisodeInfo: suspend (MigratingAnime.SearchResult.Result) -> MigratingAnime.EpisodeInfo,
-    getSourceName: (Manga) -> String,
-    onMigrationItemClick: (Manga) -> Unit,
+    getSourceName: (Anime) -> String,
+    onMigrationItemClick: (Anime) -> Unit,
 ) {
     Box(modifier.height(IntrinsicSize.Min)) {
         when (result) {
@@ -73,13 +73,13 @@ fun MigrationItemResult(
                 )
             }
             is MigratingAnime.SearchResult.Result -> {
-                val item by produceState<Triple<Manga, MigratingAnime.EpisodeInfo, String>?>(
+                val item by produceState<Triple<Anime, MigratingAnime.EpisodeInfo, String>?>(
                     initialValue = null,
                     migrationItem,
                     result,
                 ) {
                     value = withIOContext {
-                        val manga = getManga(result) ?: return@withIOContext null
+                        val manga = getAnime(result) ?: return@withIOContext null
                         Triple(
                             manga,
                             getEpisodeInfo(result),
@@ -91,7 +91,7 @@ fun MigrationItemResult(
                     val (manga, chapterInfo, source) = item!!
                     MigrationItem(
                         modifier = Modifier.fillMaxSize(),
-                        manga = manga,
+                        anime = manga,
                         sourcesString = source,
                         episodeInfo = chapterInfo,
                         onClick = {

@@ -4,7 +4,7 @@ import kotlinx.coroutines.flow.Flow
 import logcat.LogPriority
 import tachiyomi.core.common.util.system.logcat
 import tachiyomi.data.DatabaseHandler
-import tachiyomi.domain.anime.model.Manga
+import tachiyomi.domain.anime.model.Anime
 import tachiyomi.domain.anime.model.MergeAnimeSettingsUpdate
 import tachiyomi.domain.anime.model.MergedAnimeReference
 import tachiyomi.domain.anime.repository.AnimeMergeRepository
@@ -13,19 +13,19 @@ class AnimeMergeRepositoryImpl(
     private val handler: DatabaseHandler,
 ) : AnimeMergeRepository {
 
-    override suspend fun getMergedManga(): List<Manga> {
+    override suspend fun getMergedManga(): List<Anime> {
         return handler.awaitList { mergedQueries.selectAllMergedMangas(AnimeMapper::mapAnime) }
     }
 
-    override suspend fun subscribeMergedManga(): Flow<List<Manga>> {
+    override suspend fun subscribeMergedManga(): Flow<List<Anime>> {
         return handler.subscribeToList { mergedQueries.selectAllMergedMangas(AnimeMapper::mapAnime) }
     }
 
-    override suspend fun getMergedMangaById(id: Long): List<Manga> {
+    override suspend fun getMergedMangaById(id: Long): List<Anime> {
         return handler.awaitList { mergedQueries.selectMergedMangasById(id, AnimeMapper::mapAnime) }
     }
 
-    override suspend fun subscribeMergedMangaById(id: Long): Flow<List<Manga>> {
+    override suspend fun subscribeMergedMangaById(id: Long): Flow<List<Anime>> {
         return handler.subscribeToList { mergedQueries.selectMergedMangasById(id, AnimeMapper::mapAnime) }
     }
 
@@ -121,7 +121,7 @@ class AnimeMergeRepositoryImpl(
         }
     }
 
-    override suspend fun getMergeMangaForDownloading(mergeId: Long): List<Manga> {
+    override suspend fun getMergeMangaForDownloading(mergeId: Long): List<Anime> {
         return handler.awaitList { mergedQueries.selectMergedMangasForDownloadingById(mergeId, AnimeMapper::mapAnime) }
     }
 }

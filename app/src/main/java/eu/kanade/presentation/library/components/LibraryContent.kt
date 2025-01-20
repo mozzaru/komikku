@@ -77,7 +77,7 @@ fun LibraryContent(
         val notSelectionMode = selection.isEmpty()
         val onClickManga = { manga: LibraryAnime ->
             if (notSelectionMode) {
-                onMangaClicked(manga.manga.id)
+                onMangaClicked(manga.anime.id)
             } else {
                 onToggleSelection(manga)
             }

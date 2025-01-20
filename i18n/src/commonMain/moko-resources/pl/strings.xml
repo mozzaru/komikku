@@ -815,7 +815,7 @@
     <string name="pref_flash_style_white_black">Biały i czarny</string>
     <string name="pref_flash_style_black">Czarny</string>
     <string name="pref_flash_style_white">Biały</string>
-    <string name="manga_interval_expected_update_null">Ta manga jest zakończona lub nie ma przewidywanej daty wydania.</string>
+    <string name="manga_interval_expected_update_null">Ta anime jest zakończona lub nie ma przewidywanej daty wydania.</string>
     <string name="pref_flash_page_interval">Migaj co</string>
     <string name="pref_display_profile">Niestandardowy profil</string>
 </resources>

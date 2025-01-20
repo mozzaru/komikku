@@ -37,7 +37,7 @@ import tachiyomi.core.common.Constants
 import tachiyomi.core.common.i18n.stringResource
 import tachiyomi.core.common.util.lang.launchIO
 import tachiyomi.core.common.util.lang.withUIContext
-import tachiyomi.domain.anime.model.Manga
+import tachiyomi.domain.anime.model.Anime
 import tachiyomi.domain.episode.model.Episode
 import tachiyomi.domain.source.service.SourceManager
 import tachiyomi.i18n.MR
@@ -130,7 +130,7 @@ class InterceptActivity : BaseActivity() {
                         finish()
                         startActivity(
                             if (it.episode != null) {
-                                ReaderActivity.newIntent(this, it.manga.id, it.episode.id)
+                                ReaderActivity.newIntent(this, it.anime.id, it.episode.id)
                             } else {
                                 Intent(this, MainActivity::class.java)
                                     .setAction(Constants.SHORTCUT_MANGA)
@@ -212,7 +212,7 @@ class InterceptActivity : BaseActivity() {
         )
 
         status.value = when (result) {
-            is GalleryAddEvent.Success -> InterceptResult.Success(result.manga.id, result.manga, result.episode)
+            is GalleryAddEvent.Success -> InterceptResult.Success(result.anime.id, result.anime, result.episode)
             is GalleryAddEvent.Fail -> InterceptResult.Failure(result.logMessage)
         }
     }
@@ -225,6 +225,6 @@ class InterceptActivity : BaseActivity() {
 sealed class InterceptResult {
     data object Idle : InterceptResult()
     data object Loading : InterceptResult()
-    data class Success(val mangaId: Long, val manga: Manga, val episode: Episode? = null) : InterceptResult()
+    data class Success(val mangaId: Long, val anime: Anime, val episode: Episode? = null) : InterceptResult()
     data class Failure(val reason: String) : InterceptResult()
 }

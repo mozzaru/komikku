@@ -9,7 +9,7 @@ import kotlinx.serialization.Serializable
 import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.Json
 import tachiyomi.domain.anime.interactor.GetAnime
-import tachiyomi.domain.anime.model.Manga
+import tachiyomi.domain.anime.model.Anime
 import tachiyomi.domain.episode.interactor.GetEpisode
 import tachiyomi.domain.source.service.SourceManager
 import uy.kohesive.injekt.Injekt
@@ -98,9 +98,9 @@ class DownloadStore(
 
         val downloads = mutableListOf<Download>()
         if (objs.isNotEmpty()) {
-            val cachedManga = mutableMapOf<Long, Manga?>()
+            val cachedAnime = mutableMapOf<Long, Anime?>()
             for ((mangaId, chapterId) in objs) {
-                val manga = cachedManga.getOrPut(mangaId) {
+                val manga = cachedAnime.getOrPut(mangaId) {
                     runBlocking { getAnime.await(mangaId) }
                 } ?: continue
                 val source = sourceManager.get(manga.source) as? AnimeHttpSource ?: continue
@@ -120,7 +120,7 @@ class DownloadStore(
      * @param download the download to serialize.
      */
     private fun serialize(download: Download): String {
-        val obj = DownloadObject(download.manga.id, download.episode.id, counter++)
+        val obj = DownloadObject(download.anime.id, download.episode.id, counter++)
         return json.encodeToString(obj)
     }
 
@@ -141,7 +141,7 @@ class DownloadStore(
 /**
  * Class used for download serialization
  *
- * @param mangaId the id of the manga.
+ * @param mangaId the id of the anime.
  * @param chapterId the id of the episode.
  * @param order the order of the download in the queue.
  */

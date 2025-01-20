@@ -30,7 +30,7 @@ import tachiyomi.core.common.i18n.stringResource
 import tachiyomi.core.common.util.system.logcat
 import tachiyomi.domain.anime.interactor.GetFavorites
 import tachiyomi.domain.anime.interactor.GetMergedAnime
-import tachiyomi.domain.anime.model.Manga
+import tachiyomi.domain.anime.model.Anime
 import tachiyomi.domain.anime.repository.AnimeRepository
 import tachiyomi.domain.backup.service.BackupPreferences
 import tachiyomi.i18n.MR
@@ -149,10 +149,10 @@ class BackupCreator(
         return categoriesBackupCreator()
     }
 
-    suspend fun backupMangas(mangas: List<Manga>, options: BackupOptions): List<BackupAnime> {
+    suspend fun backupMangas(animes: List<Anime>, options: BackupOptions): List<BackupAnime> {
         if (!options.libraryEntries) return emptyList()
 
-        return animeBackupCreator(mangas, options)
+        return animeBackupCreator(animes, options)
     }
 
     fun backupSources(mangas: List<BackupAnime>): List<BackupSource> {

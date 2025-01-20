@@ -57,7 +57,7 @@ fun RelatedAnimesScreen(
                     onSelectAll = {
                         successState.relatedMangasSorted?.forEach {
                             val relatedAnime = it as RelatedAnime.Success
-                            relatedAnime.mangaList.forEach { manga ->
+                            relatedAnime.animeList.forEach { manga ->
                                 bulkFavoriteScreenModel.select(manga)
                             }
                         }
@@ -65,14 +65,14 @@ fun RelatedAnimesScreen(
                     onReverseSelection = {
                         successState.relatedMangasSorted
                             ?.map { it as RelatedAnime.Success }
-                            ?.flatMap { it.mangaList }
+                            ?.flatMap { it.animeList }
                             ?.let { bulkFavoriteScreenModel.reverseSelection(it) }
                     },
                 )
             } else {
                 BrowseSourceSimpleToolbar(
                     navigateUp = navigateUp,
-                    title = successState.manga.title,
+                    title = successState.anime.title,
                     displayMode = displayMode,
                     onDisplayModeChange = { displayMode = it },
                     scrollBehavior = scrollBehavior,
@@ -85,7 +85,7 @@ fun RelatedAnimesScreen(
     ) { paddingValues ->
         RelatedAnimesContent(
             relatedAnimes = successState.relatedMangasSorted,
-            getMangaState = { manga -> screenModel.getManga(initialManga = manga) },
+            getAnimeState = { manga -> screenModel.getManga(initialAnime = manga) },
             columns = getColumnsPreference(LocalConfiguration.current.orientation),
             displayMode = displayMode,
             contentPadding = paddingValues,

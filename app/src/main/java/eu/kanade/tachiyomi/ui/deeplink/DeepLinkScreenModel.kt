@@ -15,7 +15,7 @@ import kotlinx.coroutines.flow.update
 import tachiyomi.core.common.util.lang.launchIO
 import tachiyomi.domain.anime.interactor.GetAnimeByUrlAndSourceId
 import tachiyomi.domain.anime.interactor.NetworkToLocalAnime
-import tachiyomi.domain.anime.model.Manga
+import tachiyomi.domain.anime.model.Anime
 import tachiyomi.domain.episode.interactor.GetEpisodeByUrlAndAnimeId
 import tachiyomi.domain.episode.model.Episode
 import tachiyomi.domain.source.service.SourceManager
@@ -61,19 +61,19 @@ class DeepLinkScreenModel(
         }
     }
 
-    private suspend fun getChapterFromSChapter(sEpisode: SEpisode, manga: Manga, source: AnimeSource): Episode? {
-        val localChapter = getEpisodeByUrlAndAnimeId.await(sEpisode.url, manga.id)
+    private suspend fun getChapterFromSChapter(sEpisode: SEpisode, anime: Anime, source: AnimeSource): Episode? {
+        val localChapter = getEpisodeByUrlAndAnimeId.await(sEpisode.url, anime.id)
 
         return if (localChapter == null) {
-            val sourceChapters = source.getEpisodeList(manga.toSManga())
-            val newChapters = syncEpisodesWithSource.await(sourceChapters, manga, source, false)
+            val sourceChapters = source.getEpisodeList(anime.toSManga())
+            val newChapters = syncEpisodesWithSource.await(sourceChapters, anime, source, false)
             newChapters.find { it.url == sEpisode.url }
         } else {
             localChapter
         }
     }
 
-    private suspend fun getMangaFromSManga(sAnime: SAnime, sourceId: Long): Manga {
+    private suspend fun getMangaFromSManga(sAnime: SAnime, sourceId: Long): Anime {
         return getAnimeByUrlAndSourceId.await(sAnime.url, sourceId)
             ?: networkToLocalAnime.await(sAnime.toDomainManga(sourceId))
     }
@@ -86,6 +86,6 @@ class DeepLinkScreenModel(
         data object NoResults : State
 
         @Immutable
-        data class Result(val manga: Manga, val chapterId: Long? = null) : State
+        data class Result(val anime: Anime, val chapterId: Long? = null) : State
     }
 }

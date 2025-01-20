@@ -30,7 +30,7 @@ import logcat.LogPriority
 import tachiyomi.core.common.util.lang.withIOContext
 import tachiyomi.core.common.util.system.logcat
 import tachiyomi.domain.anime.interactor.GetLibraryAnime
-import tachiyomi.domain.anime.model.Manga
+import tachiyomi.domain.anime.model.Anime
 import tachiyomi.domain.anime.model.toAnimeUpdate
 import tachiyomi.domain.library.model.LibraryAnime
 import tachiyomi.domain.source.service.SourceManager
@@ -88,7 +88,7 @@ class MetadataUpdateJob(private val context: Context, workerParams: WorkerParame
     }
 
     /**
-     * Adds list of manga to be updated.
+     * Adds list of anime to be updated.
      */
     private suspend fun addMangaToQueue() {
         mangaToUpdate = getLibraryAnime.await()
@@ -98,20 +98,20 @@ class MetadataUpdateJob(private val context: Context, workerParams: WorkerParame
     private suspend fun updateMetadata() {
         val semaphore = Semaphore(5)
         val progressCount = AtomicInteger(0)
-        val currentlyUpdatingManga = CopyOnWriteArrayList<Manga>()
+        val currentlyUpdatingAnime = CopyOnWriteArrayList<Anime>()
 
         coroutineScope {
-            mangaToUpdate.groupBy { it.manga.source }
+            mangaToUpdate.groupBy { it.anime.source }
                 .values
                 .map { mangaInSource ->
                     async {
                         semaphore.withPermit {
                             mangaInSource.forEach { libraryManga ->
-                                val manga = libraryManga.manga
+                                val manga = libraryManga.anime
                                 ensureActive()
 
                                 withUpdateNotification(
-                                    currentlyUpdatingManga,
+                                    currentlyUpdatingAnime,
                                     progressCount,
                                     manga,
                                 ) {
@@ -123,7 +123,7 @@ class MetadataUpdateJob(private val context: Context, workerParams: WorkerParame
                                         try {
                                             updateAnime.await(updatedManga.toAnimeUpdate())
                                         } catch (e: Exception) {
-                                            logcat(LogPriority.ERROR) { "Manga doesn't exist anymore" }
+                                            logcat(LogPriority.ERROR) { "Anime doesn't exist anymore" }
                                         }
                                     } catch (e: Throwable) {
                                         // Ignore errors and continue
@@ -141,16 +141,16 @@ class MetadataUpdateJob(private val context: Context, workerParams: WorkerParame
     }
 
     private suspend fun withUpdateNotification(
-        updatingManga: CopyOnWriteArrayList<Manga>,
+        updatingAnime: CopyOnWriteArrayList<Anime>,
         completed: AtomicInteger,
-        manga: Manga,
+        anime: Anime,
         block: suspend () -> Unit,
     ) = coroutineScope {
         ensureActive()
 
-        updatingManga.add(manga)
+        updatingAnime.add(anime)
         notifier.showProgressNotification(
-            updatingManga,
+            updatingAnime,
             completed.get(),
             mangaToUpdate.size,
         )
@@ -159,10 +159,10 @@ class MetadataUpdateJob(private val context: Context, workerParams: WorkerParame
 
         ensureActive()
 
-        updatingManga.remove(manga)
+        updatingAnime.remove(anime)
         completed.getAndIncrement()
         notifier.showProgressNotification(
-            updatingManga,
+            updatingAnime,
             completed.get(),
             mangaToUpdate.size,
         )

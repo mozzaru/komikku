@@ -45,7 +45,7 @@ import exh.md.follows.MangaDexFollowsScreen
 import exh.source.isEhBasedSource
 import exh.util.nullIfBlank
 import tachiyomi.core.common.util.lang.launchIO
-import tachiyomi.domain.anime.model.Manga
+import tachiyomi.domain.anime.model.Anime
 import tachiyomi.domain.source.interactor.GetRemoteAnime
 import tachiyomi.domain.source.model.SavedSearch
 import tachiyomi.domain.source.model.StubSource
@@ -142,7 +142,7 @@ class SourceFeedScreen(val sourceId: Long) : Screen() {
                     onClickSearch = { onSearchClick(navigator, screenModel.source, it) },
                     searchQuery = state.searchQuery,
                     onSearchQueryChange = screenModel::search,
-                    getMangaState = { screenModel.getManga(initialManga = it) },
+                    getAnimeState = { screenModel.getManga(initialManga = it) },
                     // KMK -->
                     navigateUp = { navigator.pop() },
                     onWebViewClick = {
@@ -331,8 +331,8 @@ class SourceFeedScreen(val sourceId: Long) : Screen() {
         // KMK <--
     }
 
-    private fun onMangaClick(navigator: Navigator, manga: Manga) {
-        navigator.push(AnimeScreen(manga.id, true))
+    private fun onMangaClick(navigator: Navigator, anime: Anime) {
+        navigator.push(AnimeScreen(anime.id, true))
     }
 
     private fun onBrowseClick(navigator: Navigator, sourceId: Long, search: String? = null, savedSearch: Long? = null, filters: String? = null) {

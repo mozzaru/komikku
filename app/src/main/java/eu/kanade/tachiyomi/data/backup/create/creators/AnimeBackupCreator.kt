@@ -16,7 +16,7 @@ import tachiyomi.data.DatabaseHandler
 import tachiyomi.domain.anime.interactor.GetCustomAnimeInfo
 import tachiyomi.domain.anime.interactor.GetFlatMetadataById
 import tachiyomi.domain.anime.model.CustomAnimeInfo
-import tachiyomi.domain.anime.model.Manga
+import tachiyomi.domain.anime.model.Anime
 import tachiyomi.domain.category.interactor.GetCategories
 import tachiyomi.domain.history.interactor.GetHistory
 import tachiyomi.domain.source.service.SourceManager
@@ -34,47 +34,47 @@ class AnimeBackupCreator(
     // SY <--
 ) {
 
-    suspend operator fun invoke(mangas: List<Manga>, options: BackupOptions): List<BackupAnime> {
-        return mangas.map {
+    suspend operator fun invoke(animes: List<Anime>, options: BackupOptions): List<BackupAnime> {
+        return animes.map {
             backupManga(it, options)
         }
     }
 
-    private suspend fun backupManga(manga: Manga, options: BackupOptions): BackupAnime {
-        // Entry for this manga
-        val mangaObject = manga.toBackupManga(
+    private suspend fun backupManga(anime: Anime, options: BackupOptions): BackupAnime {
+        // Entry for this anime
+        val mangaObject = anime.toBackupManga(
             // SY -->
             if (options.customInfo) {
-                getCustomAnimeInfo.get(manga.id)
+                getCustomAnimeInfo.get(anime.id)
             } else {
                 null
             }, /* SY <-- */
         )
 
         // SY -->
-        if (manga.source == MERGED_SOURCE_ID) {
+        if (anime.source == MERGED_SOURCE_ID) {
             mangaObject.mergedMangaReferences = handler.awaitList {
-                mergedQueries.selectByMergeId(manga.id, backupMergedMangaReferenceMapper)
+                mergedQueries.selectByMergeId(anime.id, backupMergedMangaReferenceMapper)
             }
         }
 
-        val source = sourceManager.get(manga.source)?.getMainSource<MetadataSource<*, *>>()
+        val source = sourceManager.get(anime.source)?.getMainSource<MetadataSource<*, *>>()
         if (source != null) {
-            getFlatMetadataById.await(manga.id)?.let { flatMetadata ->
+            getFlatMetadataById.await(anime.id)?.let { flatMetadata ->
                 mangaObject.flatMetadata = BackupFlatMetadata.copyFrom(flatMetadata)
             }
         }
         // SY <--
 
         mangaObject.excludedScanlators = handler.awaitList {
-            excluded_scanlatorsQueries.getExcludedScanlatorsByMangaId(manga.id)
+            excluded_scanlatorsQueries.getExcludedScanlatorsByMangaId(anime.id)
         }
 
         if (options.chapters) {
             // Backup all the episodes
             handler.awaitList {
                 episodesQueries.getEpisodesByMangaId(
-                    mangaId = manga.id,
+                    mangaId = anime.id,
                     applyScanlatorFilter = 0, // false
                     mapper = backupEpisodeMapper,
                 )
@@ -84,22 +84,22 @@ class AnimeBackupCreator(
         }
 
         if (options.categories) {
-            // Backup categories for this manga
-            val categoriesForManga = getCategories.await(manga.id)
+            // Backup categories for this anime
+            val categoriesForManga = getCategories.await(anime.id)
             if (categoriesForManga.isNotEmpty()) {
                 mangaObject.categories = categoriesForManga.map { it.order }
             }
         }
 
         if (options.tracking) {
-            val tracks = handler.awaitList { anime_syncQueries.getTracksByAnimeId(manga.id, backupTrackMapper) }
+            val tracks = handler.awaitList { anime_syncQueries.getTracksByAnimeId(anime.id, backupTrackMapper) }
             if (tracks.isNotEmpty()) {
                 mangaObject.tracking = tracks
             }
         }
 
         if (options.history) {
-            val historyByMangaId = getHistory.await(manga.id)
+            val historyByMangaId = getHistory.await(anime.id)
             if (historyByMangaId.isNotEmpty()) {
                 val history = historyByMangaId.map { history ->
                     val chapter = handler.awaitOne { episodesQueries.getEpisodeById(history.chapterId) }
@@ -115,7 +115,7 @@ class AnimeBackupCreator(
     }
 }
 
-private fun Manga.toBackupManga(/* SY --> */customAnimeInfo: CustomAnimeInfo?/* SY <-- */) =
+private fun Anime.toBackupManga(/* SY --> */customAnimeInfo: CustomAnimeInfo?/* SY <-- */) =
     BackupAnime(
         url = this.url,
         title = this.title,

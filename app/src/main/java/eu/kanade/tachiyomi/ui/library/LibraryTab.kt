@@ -62,7 +62,7 @@ import kotlinx.coroutines.launch
 import tachiyomi.core.common.i18n.stringResource
 import tachiyomi.core.common.util.lang.launchIO
 import tachiyomi.domain.UnsortedPreferences
-import tachiyomi.domain.anime.model.Manga
+import tachiyomi.domain.anime.model.Anime
 import tachiyomi.domain.category.model.Category
 import tachiyomi.domain.library.model.LibraryAnime
 import tachiyomi.domain.library.model.LibraryGroup
@@ -159,7 +159,7 @@ data object LibraryTab : Tab {
                         scope.launch {
                             val randomItem = screenModel.getRandomLibraryItemForCurrentCategory()
                             if (randomItem != null) {
-                                navigator.push(AnimeScreen(randomItem.libraryAnime.manga.id))
+                                navigator.push(AnimeScreen(randomItem.libraryAnime.anime.id))
                             } else {
                                 snackbarHostState.showSnackbar(
                                     context.stringResource(MR.strings.information_no_entries_found),
@@ -190,14 +190,14 @@ data object LibraryTab : Tab {
                     onMarkAsReadClicked = { screenModel.markReadSelection(true) },
                     onMarkAsUnreadClicked = { screenModel.markReadSelection(false) },
                     onDownloadClicked = screenModel::runDownloadActionSelection
-                        .takeIf { state.selection.fastAll { !it.manga.isLocal() } },
+                        .takeIf { state.selection.fastAll { !it.anime.isLocal() } },
                     onDeleteClicked = screenModel::openDeleteMangaDialog,
                     // SY -->
                     onClickCleanTitles = screenModel::cleanTitles.takeIf { state.showCleanTitles },
                     onClickMigrate = {
                         val selectedMangaIds = state.selection
-                            .filterNot { it.manga.source == MERGED_SOURCE_ID }
-                            .map { it.manga.id }
+                            .filterNot { it.anime.source == MERGED_SOURCE_ID }
+                            .map { it.anime.id }
                         screenModel.clearSelection()
                         if (selectedMangaIds.isNotEmpty()) {
                             PreMigrationScreen.navigateToMigration(
@@ -215,8 +215,8 @@ data object LibraryTab : Tab {
                     // KMK -->
                     onClickMerge = {
                         if (state.selection.size == 1) {
-                            val manga = state.selection.first().manga
-                            // Invoke merging for this manga
+                            val manga = state.selection.first().anime
+                            // Invoke merging for this anime
                             screenModel.clearSelection()
                             val smartSearchConfig = SourcesScreen.SmartSearchConfig(manga.title, manga.id)
                             navigator.push(SourcesScreen(smartSearchConfig))
@@ -225,7 +225,7 @@ data object LibraryTab : Tab {
                             val selection = state.selection
                             screenModel.clearSelection()
                             scope.launchIO {
-                                val mergingMangas = selection.filterNot { it.manga.source == MERGED_SOURCE_ID }
+                                val mergingMangas = selection.filterNot { it.anime.source == MERGED_SOURCE_ID }
                                 val mergedMangaId = screenModel.smartSearchMerge(selection)
                                 snackbarHostState.showSnackbar(context.stringResource(SYMR.strings.entry_merged))
                                 if (mergedMangaId != null) {
@@ -236,7 +236,7 @@ data object LibraryTab : Tab {
                                     )
                                     if (result == SnackbarResult.ActionPerformed) {
                                         screenModel.removeMangas(
-                                            mangaList = mergingMangas.map { it.manga },
+                                            animeList = mergingMangas.map { it.anime },
                                             deleteFromLibrary = true,
                                             deleteChapters = false,
                                         )
@@ -285,7 +285,7 @@ data object LibraryTab : Tab {
                         onMangaClicked = { navigator.push(AnimeScreen(it)) },
                         onContinueReadingClicked = { it: LibraryAnime ->
                             scope.launchIO {
-                                val chapter = screenModel.getNextUnreadChapter(it.manga)
+                                val chapter = screenModel.getNextUnreadChapter(it.anime)
                                 if (chapter != null) {
                                     context.startActivity(
                                         ReaderActivity.newIntent(context, chapter.mangaId, chapter.id),
@@ -342,16 +342,16 @@ data object LibraryTab : Tab {
                     },
                     onConfirm = { include, exclude ->
                         screenModel.clearSelection()
-                        screenModel.setMangaCategories(dialog.manga, include, exclude)
+                        screenModel.setMangaCategories(dialog.anime, include, exclude)
                     },
                 )
             }
             is LibraryScreenModel.Dialog.DeleteManga -> {
                 DeleteLibraryAnimeDialog(
-                    containsLocalManga = dialog.manga.any(Manga::isLocal),
+                    containsLocalManga = dialog.anime.any(Anime::isLocal),
                     onDismissRequest = onDismissRequest,
                     onConfirm = { deleteManga, deleteChapter ->
-                        screenModel.removeMangas(dialog.manga, deleteManga, deleteChapter)
+                        screenModel.removeMangas(dialog.anime, deleteManga, deleteChapter)
                         screenModel.clearSelection()
                     },
                 )

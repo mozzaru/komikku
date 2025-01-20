@@ -108,7 +108,7 @@ import tachiyomi.core.common.util.lang.withIOContext
 import tachiyomi.core.common.util.lang.withNonCancellableContext
 import tachiyomi.core.common.util.system.logcat
 import tachiyomi.domain.UnsortedPreferences
-import tachiyomi.domain.anime.model.Manga
+import tachiyomi.domain.anime.model.Anime
 import tachiyomi.domain.episode.model.Episode
 import tachiyomi.domain.source.interactor.GetRemoteAnime
 import tachiyomi.domain.source.model.StubSource
@@ -121,7 +121,7 @@ import uy.kohesive.injekt.api.get
 
 class AnimeScreen(
     private val mangaId: Long,
-    /** If it is opened from Source then it will auto expand the manga description */
+    /** If it is opened from Source then it will auto expand the anime description */
     val fromSource: Boolean = false,
     private val smartSearchConfig: SourcesScreen.SmartSearchConfig? = null,
 ) : Screen(), AssistContentScreen {
@@ -235,14 +235,14 @@ class AnimeScreen(
         val haptic = LocalHapticFeedback.current
         val isHttpSource = remember { successState.source is AnimeHttpSource }
 
-        LaunchedEffect(successState.manga, screenModel.source) {
+        LaunchedEffect(successState.anime, screenModel.source) {
             if (isHttpSource) {
                 try {
                     withIOContext {
-                        assistUrl = getMangaUrl(screenModel.manga, screenModel.source)
+                        assistUrl = getMangaUrl(screenModel.anime, screenModel.source)
                     }
                 } catch (e: Exception) {
-                    logcat(LogPriority.ERROR, e) { "Failed to get manga URL" }
+                    logcat(LogPriority.ERROR, e) { "Failed to get anime URL" }
                 }
             }
         }
@@ -269,7 +269,7 @@ class AnimeScreen(
         AnimeScreen(
             state = successState,
             snackbarHostState = screenModel.snackbarHostState,
-            nextUpdate = successState.manga.expectedNextUpdate,
+            nextUpdate = successState.anime.expectedNextUpdate,
             isTabletUi = isTabletUi(),
             chapterSwipeStartAction = screenModel.chapterSwipeStartAction,
             chapterSwipeEndAction = screenModel.chapterSwipeEndAction,
@@ -285,7 +285,7 @@ class AnimeScreen(
                 if (successState.mergedData == null) {
                     openMangaInWebView(
                         navigator,
-                        screenModel.manga,
+                        screenModel.anime,
                         screenModel.source,
                     )
                 } else {
@@ -300,7 +300,7 @@ class AnimeScreen(
             onWebViewLongClicked = {
                 copyMangaUrl(
                     context,
-                    screenModel.manga,
+                    screenModel.anime,
                     screenModel.source,
                 )
             }.takeIf { isHttpSource },
@@ -322,19 +322,19 @@ class AnimeScreen(
             },
             // KMK <--
             onCoverClicked = screenModel::showCoverDialog,
-            onShareClicked = { shareManga(context, screenModel.manga, screenModel.source) }.takeIf { isHttpSource },
+            onShareClicked = { shareManga(context, screenModel.anime, screenModel.source) }.takeIf { isHttpSource },
             onDownloadActionClicked = screenModel::runDownloadAction.takeIf { !successState.source.isLocalOrStub() },
-            onEditCategoryClicked = screenModel::showChangeCategoryDialog.takeIf { successState.manga.favorite },
+            onEditCategoryClicked = screenModel::showChangeCategoryDialog.takeIf { successState.anime.favorite },
             onEditFetchIntervalClicked = screenModel::showSetFetchIntervalDialog.takeIf {
-                successState.manga.favorite
+                successState.anime.favorite
             },
             previewsRowCount = successState.previewsRowCount,
             // SY -->
-            onMigrateClicked = { migrateManga(navigator, screenModel.manga!!) }.takeIf { successState.manga.favorite },
+            onMigrateClicked = { migrateManga(navigator, screenModel.anime!!) }.takeIf { successState.anime.favorite },
             onMetadataViewerClicked = {
                 openMetadataViewer(
                     navigator,
-                    successState.manga,
+                    successState.anime,
                     // KMK -->
                     successState.seedColor,
                     // KMK <--
@@ -342,17 +342,17 @@ class AnimeScreen(
             },
             onEditInfoClicked = screenModel::showEditMangaInfoDialog,
             onRecommendClicked = {
-                openRecommends(context, navigator, screenModel.source?.getMainSource(), successState.manga)
+                openRecommends(context, navigator, screenModel.source?.getMainSource(), successState.anime)
             },
             onMergedSettingsClicked = screenModel::showEditMergedSettingsDialog,
-            onMergeClicked = { openSmartSearch(navigator, successState.manga) },
+            onMergeClicked = { openSmartSearch(navigator, successState.anime) },
             onMergeWithAnotherClicked = {
-                mergeWithAnother(navigator, context, successState.manga, screenModel::smartSearchMerge)
+                mergeWithAnother(navigator, context, successState.anime, screenModel::smartSearchMerge)
             },
             onOpenPagePreview = { page ->
                 openPagePreview(context, successState.chapters.minByOrNull { it.episode.sourceOrder }?.episode, page)
             },
-            onMorePreviewsClicked = { openMorePagePreviews(navigator, successState.manga) },
+            onMorePreviewsClicked = { openMorePagePreviews(navigator, successState.anime) },
             // SY <--
             onMultiBookmarkClicked = screenModel::bookmarkChapters,
             onMultiMarkAsReadClicked = screenModel::markChaptersRead,
@@ -363,7 +363,7 @@ class AnimeScreen(
             onAllChapterSelected = screenModel::toggleAllSelection,
             onInvertSelection = screenModel::invertSelection,
             // KMK -->
-            getMangaState = { screenModel.getManga(initialManga = it) },
+            getAnimeState = { screenModel.getManga(initialAnime = it) },
             onRelatedMangasScreenClick = {
                 if (successState.isRelatedMangasFetched == null) {
                     scope.launchIO { screenModel.fetchRelatedMangasFromSource(onDemand = true) }
@@ -411,7 +411,7 @@ class AnimeScreen(
                 }
             },
             onCoverLoaded = {
-                if (screenModel.themeCoverBased || successState.manga.favorite) screenModel.setPaletteColor(it)
+                if (screenModel.themeCoverBased || successState.anime.favorite) screenModel.setPaletteColor(it)
             },
             coverRatio = coverRatio,
             onPaletteScreenClick = { navigator.push(PaletteScreen(successState.seedColor?.toArgb())) },
@@ -430,7 +430,7 @@ class AnimeScreen(
                     onDismissRequest = onDismissRequest,
                     onEditCategories = { navigator.push(CategoryScreen()) },
                     onConfirm = { include, _ ->
-                        screenModel.moveMangaToCategoriesAndAddToLibrary(dialog.manga, include)
+                        screenModel.moveMangaToCategoriesAndAddToLibrary(dialog.anime, include)
                     },
                 )
             }
@@ -452,7 +452,7 @@ class AnimeScreen(
                     onOpenManga = { navigator.push(AnimeScreen(dialog.duplicate.id)) },
                     onMigrate = {
                         // SY -->
-                        migrateManga(navigator, dialog.duplicate, screenModel.manga!!.id)
+                        migrateManga(navigator, dialog.duplicate, screenModel.anime!!.id)
                         // SY <--
                     },
                     // KMK -->
@@ -463,7 +463,7 @@ class AnimeScreen(
 
             AnimeScreenModel.Dialog.SettingsSheet -> EpisodeSettingsDialog(
                 onDismissRequest = onDismissRequest,
-                manga = successState.manga,
+                anime = successState.anime,
                 onDownloadFilterChanged = screenModel::setDownloadedFilter,
                 onUnreadFilterChanged = screenModel::setUnreadFilter,
                 onBookmarkedFilterChanged = screenModel::setBookmarkedFilter,
@@ -478,8 +478,8 @@ class AnimeScreen(
             AnimeScreenModel.Dialog.TrackSheet -> {
                 NavigatorAdaptiveSheet(
                     screen = TrackInfoDialogHomeScreen(
-                        mangaId = successState.manga.id,
-                        mangaTitle = successState.manga.title,
+                        mangaId = successState.anime.id,
+                        mangaTitle = successState.anime.title,
                         sourceId = successState.source.id,
                     ),
                     enableSwipeDismiss = { it.lastItem is TrackInfoDialogHomeScreen },
@@ -488,7 +488,7 @@ class AnimeScreen(
             }
 
             AnimeScreenModel.Dialog.FullCover -> {
-                val sm = rememberScreenModel { AnimeCoverScreenModel(successState.manga.id) }
+                val sm = rememberScreenModel { AnimeCoverScreenModel(successState.anime.id) }
                 val manga by sm.state.collectAsState()
                 if (manga != null) {
                     val getContent = rememberLauncherForActivityResult(ActivityResultContracts.GetContent()) {
@@ -507,7 +507,7 @@ class AnimeScreen(
                     )
                     // KMK <--
                     AnimeCoverDialog(
-                        manga = manga!!,
+                        anime = manga!!,
                         snackbarHostState = sm.snackbarHostState,
                         isCustomCover = remember(manga) { manga!!.hasCustomCover() },
                         onShareClick = { sm.shareCover(context) },
@@ -546,17 +546,17 @@ class AnimeScreen(
 
             is AnimeScreenModel.Dialog.SetFetchInterval -> {
                 SetIntervalDialog(
-                    interval = dialog.manga.fetchInterval,
-                    nextUpdate = dialog.manga.expectedNextUpdate,
+                    interval = dialog.anime.fetchInterval,
+                    nextUpdate = dialog.anime.expectedNextUpdate,
                     onDismissRequest = onDismissRequest,
-                    onValueChanged = { interval: Int -> screenModel.setFetchInterval(dialog.manga, interval) }
+                    onValueChanged = { interval: Int -> screenModel.setFetchInterval(dialog.anime, interval) }
                         .takeIf { screenModel.isUpdateIntervalEnabled },
                 )
             }
             // SY -->
             is AnimeScreenModel.Dialog.EditMangaInfo -> {
                 EditAnimeDialog(
-                    manga = dialog.manga,
+                    anime = dialog.anime,
                     // KMK -->
                     coverRatio = coverRatio,
                     // KMK <--
@@ -595,8 +595,8 @@ class AnimeScreen(
     }
 
     @Suppress("LocalVariableName")
-    private fun getMangaUrl(manga_: Manga?, source_: AnimeSource?): String? {
-        val manga = manga_ ?: return null
+    private fun getMangaUrl(anime_: Anime?, source_: AnimeSource?): String? {
+        val manga = anime_ ?: return null
         val source = source_ as? AnimeHttpSource ?: return null
 
         return try {
@@ -607,12 +607,12 @@ class AnimeScreen(
     }
 
     @Suppress("LocalVariableName")
-    private fun openMangaInWebView(navigator: Navigator, manga_: Manga?, source_: AnimeSource?) {
-        getMangaUrl(manga_, source_)?.let { url ->
+    private fun openMangaInWebView(navigator: Navigator, anime_: Anime?, source_: AnimeSource?) {
+        getMangaUrl(anime_, source_)?.let { url ->
             navigator.push(
                 WebViewScreen(
                     url = url,
-                    initialTitle = manga_?.title,
+                    initialTitle = anime_?.title,
                     sourceId = source_?.id,
                 ),
             )
@@ -620,9 +620,9 @@ class AnimeScreen(
     }
 
     @Suppress("LocalVariableName")
-    private fun shareManga(context: Context, manga_: Manga?, source_: AnimeSource?) {
+    private fun shareManga(context: Context, anime_: Anime?, source_: AnimeSource?) {
         try {
-            getMangaUrl(manga_, source_)?.let { url ->
+            getMangaUrl(anime_, source_)?.let { url ->
                 val intent = url.toUri().toShareIntent(context, type = "text/plain")
                 context.startActivity(
                     Intent.createChooser(
@@ -727,11 +727,11 @@ class AnimeScreen(
     }
 
     /**
-     * Copy Manga URL to Clipboard
+     * Copy Anime URL to Clipboard
      */
     @Suppress("LocalVariableName")
-    private fun copyMangaUrl(context: Context, manga_: Manga?, source_: AnimeSource?) {
-        val manga = manga_ ?: return
+    private fun copyMangaUrl(context: Context, anime_: Anime?, source_: AnimeSource?) {
+        val manga = anime_ ?: return
         val source = source_ as? AnimeHttpSource ?: return
         val url = source.getAnimeUrl(manga.toSManga())
         context.copyToClipboard(url, url)
@@ -739,14 +739,14 @@ class AnimeScreen(
 
     // SY -->
     /**
-     * Initiates source migration for the specific manga.
+     * Initiates source migration for the specific anime.
      */
-    private fun migrateManga(navigator: Navigator, manga: Manga, toMangaId: Long? = null) {
+    private fun migrateManga(navigator: Navigator, anime: Anime, toMangaId: Long? = null) {
         // SY -->
         PreMigrationScreen.navigateToMigration(
             Injekt.get<UnsortedPreferences>().skipPreMigration().get(),
             navigator,
-            manga.id,
+            anime.id,
             toMangaId,
         )
         // SY <--
@@ -754,17 +754,17 @@ class AnimeScreen(
 
     private fun openMetadataViewer(
         navigator: Navigator,
-        manga: Manga,
+        anime: Anime,
         // KMK -->
         seedColor: Color?,
         // KMK <--
     ) {
-        navigator.push(MetadataViewScreen(manga.id, manga.source, seedColor?.toArgb()))
+        navigator.push(MetadataViewScreen(anime.id, anime.source, seedColor?.toArgb()))
     }
 
     private fun openMergedMangaWebview(context: Context, navigator: Navigator, mergedMangaData: MergedMangaData) {
         val sourceManager: SourceManager = Injekt.get()
-        val mergedManga = mergedMangaData.manga.values.filterNot { it.source == MERGED_SOURCE_ID }
+        val mergedManga = mergedMangaData.anime.values.filterNot { it.source == MERGED_SOURCE_ID }
         val sources = mergedManga.map { sourceManager.getOrStub(it.source) }
         MaterialAlertDialogBuilder(context)
             .setTitle(MR.strings.action_open_in_web_view.getString(context))
@@ -779,8 +779,8 @@ class AnimeScreen(
             .show()
     }
 
-    private fun openMorePagePreviews(navigator: Navigator, manga: Manga) {
-        navigator.push(PagePreviewScreen(manga.id))
+    private fun openMorePagePreviews(navigator: Navigator, anime: Anime) {
+        navigator.push(PagePreviewScreen(anime.id))
     }
 
     private fun openPagePreview(context: Context, episode: Episode?, page: Int) {
@@ -793,8 +793,8 @@ class AnimeScreen(
     /**
      * Called when click Merge on an entry to search for entries to merge.
      */
-    private fun openSmartSearch(navigator: Navigator, manga: Manga) {
-        val smartSearchConfig = SourcesScreen.SmartSearchConfig(manga.title, manga.id)
+    private fun openSmartSearch(navigator: Navigator, anime: Anime) {
+        val smartSearchConfig = SourcesScreen.SmartSearchConfig(anime.title, anime.id)
 
         navigator.push(SourcesScreen(smartSearchConfig))
     }
@@ -803,13 +803,13 @@ class AnimeScreen(
     private fun mergeWithAnother(
         navigator: Navigator,
         context: Context,
-        manga: Manga,
-        smartSearchMerge: suspend (Manga, Long) -> Manga,
+        anime: Anime,
+        smartSearchMerge: suspend (Anime, Long) -> Anime,
     ) {
         launchUI {
             try {
                 val mergedManga = withNonCancellableContext {
-                    smartSearchMerge(manga, smartSearchConfig?.origMangaId!!)
+                    smartSearchMerge(anime, smartSearchConfig?.origMangaId!!)
                 }
 
                 navigator.popUntil { it is SourcesScreen }
@@ -832,7 +832,7 @@ class AnimeScreen(
     // EXH <--
 
     // AZ -->
-    private fun openRecommends(context: Context, navigator: Navigator, source: AnimeSource?, manga: Manga) {
+    private fun openRecommends(context: Context, navigator: Navigator, source: AnimeSource?, anime: Anime) {
         source ?: return
         if (source.isMdBasedSource() && Injekt.get<DelegateSourcePreferences>().delegateSources().get()) {
             MaterialAlertDialogBuilder(context)
@@ -846,13 +846,13 @@ class AnimeScreen(
                 ) { dialog, index ->
                     dialog.dismiss()
                     when (index) {
-                        0 -> navigator.push(MangaDexSimilarScreen(manga.id, source.id))
-                        1 -> navigator.push(RecommendsScreen(manga.id, source.id))
+                        0 -> navigator.push(MangaDexSimilarScreen(anime.id, source.id))
+                        1 -> navigator.push(RecommendsScreen(anime.id, source.id))
                     }
                 }
                 .show()
         } else if (source is AnimeCatalogueSource) {
-            navigator.push(RecommendsScreen(manga.id, source.id))
+            navigator.push(RecommendsScreen(anime.id, source.id))
         }
     }
     // AZ <--

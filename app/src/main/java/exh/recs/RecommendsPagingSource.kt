@@ -28,7 +28,7 @@ import okhttp3.RequestBody.Companion.toRequestBody
 import tachiyomi.core.common.util.system.logcat
 import tachiyomi.data.source.NoResultsException
 import tachiyomi.data.source.SourcePagingSource
-import tachiyomi.domain.anime.model.Manga
+import tachiyomi.domain.anime.model.Anime
 import tachiyomi.domain.track.interactor.GetTracks
 import uy.kohesive.injekt.Injekt
 import uy.kohesive.injekt.api.get
@@ -264,7 +264,7 @@ class Anilist : API("https://graphql.anilist.co/") {
 
 open class RecommendsPagingSource(
     source: AnimeCatalogueSource,
-    private val manga: Manga,
+    private val anime: Anime,
     private val smart: Boolean = true,
     private var preferredApi: API = API.MYANIMELIST,
 ) : SourcePagingSource(source) {
@@ -272,11 +272,11 @@ open class RecommendsPagingSource(
     val getTracks: GetTracks by injectLazy()
 
     override suspend fun requestNextPage(currentPage: Int): AnimesPage {
-        if (smart) preferredApi = if (manga.mangaType() != MangaType.TYPE_MANGA) API.ANILIST else preferredApi
+        if (smart) preferredApi = if (anime.mangaType() != MangaType.TYPE_MANGA) API.ANILIST else preferredApi
 
         val apiList = API_MAP.toList().sortedByDescending { it.first == preferredApi }
 
-        val tracks = getTracks.await(manga.id)
+        val tracks = getTracks.await(anime.id)
 
         val recs = apiList.firstNotNullOfOrNull { (key, api) ->
             try {
@@ -288,7 +288,7 @@ open class RecommendsPagingSource(
                 val recs = if (id != null) {
                     api.getRecsById(id.toString())
                 } else {
-                    api.getRecsBySearch(manga.ogTitle)
+                    api.getRecsBySearch(anime.ogTitle)
                 }
                 logcat { key.toString() + " > Results: " + recs.size }
                 recs.ifEmpty { null }

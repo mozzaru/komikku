@@ -10,7 +10,7 @@ import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.runBlocking
 import tachiyomi.domain.anime.interactor.GetAnime
-import tachiyomi.domain.anime.model.Manga
+import tachiyomi.domain.anime.model.Anime
 import tachiyomi.domain.source.repository.SourcePagingSourceType
 import uy.kohesive.injekt.Injekt
 import uy.kohesive.injekt.api.get
@@ -21,13 +21,13 @@ class MangaDexSimilarScreenModel(
     private val getAnime: GetAnime = Injekt.get(),
 ) : BrowseSourceScreenModel(sourceId, null) {
 
-    val manga: Manga = runBlocking { getAnime.await(mangaId) }!!
+    val anime: Anime = runBlocking { getAnime.await(mangaId) }!!
 
     override fun createSourcePagingSource(query: String, filters: AnimeFilterList): SourcePagingSourceType {
-        return MangaDexSimilarPagingSource(manga, source.getMainSource() as MangaDex)
+        return MangaDexSimilarPagingSource(anime, source.getMainSource() as MangaDex)
     }
 
-    override fun Flow<Manga>.combineMetadata(metadata: RaisedSearchMetadata?): Flow<Pair<Manga, RaisedSearchMetadata?>> {
+    override fun Flow<Anime>.combineMetadata(metadata: RaisedSearchMetadata?): Flow<Pair<Anime, RaisedSearchMetadata?>> {
         return map { it to metadata }
     }
 

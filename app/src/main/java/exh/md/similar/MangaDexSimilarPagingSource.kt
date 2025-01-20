@@ -8,17 +8,17 @@ import kotlinx.coroutines.async
 import kotlinx.coroutines.coroutineScope
 import tachiyomi.data.source.NoResultsException
 import tachiyomi.data.source.SourcePagingSource
-import tachiyomi.domain.anime.model.Manga
+import tachiyomi.domain.anime.model.Anime
 
 /**
  * MangaDexSimilarPagingSource inherited from the general Pager.
  */
-class MangaDexSimilarPagingSource(val manga: Manga, val mangadex: MangaDex) : SourcePagingSource(mangadex) {
+class MangaDexSimilarPagingSource(val anime: Anime, val mangadex: MangaDex) : SourcePagingSource(mangadex) {
 
     override suspend fun requestNextPage(currentPage: Int): AnimesPage {
         val mangasPage = coroutineScope {
-            val similarPageDef = async { mangadex.getMangaSimilar(manga.toSManga()) }
-            val relatedPageDef = async { mangadex.getMangaRelated(manga.toSManga()) }
+            val similarPageDef = async { mangadex.getMangaSimilar(anime.toSManga()) }
+            val relatedPageDef = async { mangadex.getMangaRelated(anime.toSManga()) }
             val similarPage = similarPageDef.await()
             val relatedPage = relatedPageDef.await()
 

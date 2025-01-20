@@ -40,14 +40,14 @@ class EditMergedMangaHolder(view: View, val adapter: EditMergedMangaAdapter) : F
 
     fun bind(item: EditMergedMangaItem) {
         reference = item.mergedAnimeReference
-        item.mergedManga?.let {
+        item.mergedAnime?.let {
             binding.cover.load(it) {
                 transformations(RoundedCornersTransformation(4.dpToPx.toFloat()))
             }
         }
 
         binding.title.text = Injekt.get<SourceManager>().getOrStub(item.mergedAnimeReference.mangaSourceId).toString()
-        binding.subtitle.text = item.mergedManga?.title
+        binding.subtitle.text = item.mergedAnime?.title
         updateDownloadChaptersIcon(item.mergedAnimeReference.downloadChapters)
         updateChapterUpdatesIcon(item.mergedAnimeReference.getChapterUpdates)
     }

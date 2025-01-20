@@ -9,21 +9,21 @@
         <item quantity="other">%d heures de verrouillage</item>
     </plurals>
     <plurals name="pref_tag_sorting_desc">
-        <item quantity="zero">Aucun Tag dans la liste de tri. Cela ajoute une option dans la bibliothèque pour trier par une liste de tags basée sur la priorité, ce qui signifie que les mangas seront triés de manière à prioriser ceux avec les tags que vous voulez</item>
-        <item quantity="one">%1$d Tag dans la liste de tri. Cela ajoute une option dans la bibliothèque pour trier par une liste de tag basée sur la priorité, ce qui signifie que les mangas seront triés de manière à prioriser ceux avec les tag que vous voulez</item>
-        <item quantity="other">%1$d Tags dans la liste de tri. Cela ajoute une option dans la bibliothèque pour trier par une liste de tags basée sur la priorité, ce qui signifie que les mangas seront triés de manière à prioriser ceux avec les tags que vous voulez</item>
+        <item quantity="zero">Aucun Tag dans la liste de tri. Cela ajoute une option dans la bibliothèque pour trier par une liste de tags basée sur la priorité, ce qui signifie que les animes seront triés de manière à prioriser ceux avec les tags que vous voulez</item>
+        <item quantity="one">%1$d Tag dans la liste de tri. Cela ajoute une option dans la bibliothèque pour trier par une liste de tag basée sur la priorité, ce qui signifie que les animes seront triés de manière à prioriser ceux avec les tag que vous voulez</item>
+        <item quantity="other">%1$d Tags dans la liste de tri. Cela ajoute une option dans la bibliothèque pour trier par une liste de tags basée sur la priorité, ce qui signifie que les animes seront triés de manière à prioriser ceux avec les tags que vous voulez</item>
     </plurals>
     <plurals name="migrate_entry">
-        <item quantity="one">Migrer %1$d%2$s manga?</item>
-        <item quantity="other">Migrer %1$d%2$s manga?</item>
+        <item quantity="one">Migrer %1$d%2$s anime?</item>
+        <item quantity="other">Migrer %1$d%2$s anime?</item>
     </plurals>
     <plurals name="copy_entry">
-        <item quantity="one">Copie %1$d%2$s manga?</item>
-        <item quantity="other">Copie %1$d%2$s mangas?</item>
+        <item quantity="one">Copie %1$d%2$s anime?</item>
+        <item quantity="other">Copie %1$d%2$s animes?</item>
     </plurals>
     <plurals name="entry_migrated">
-        <item quantity="one">%d manga migré</item>
-        <item quantity="other">%d mangas migrés</item>
+        <item quantity="one">%d anime migré</item>
+        <item quantity="other">%d animes migrés</item>
     </plurals>
 
     <!-- Extra gallery info -->

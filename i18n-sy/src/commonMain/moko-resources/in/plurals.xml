@@ -14,21 +14,21 @@
         <item quantity="other">Memuat ulang %1$d halaman…</item>
     </plurals>
     <plurals name="pref_tag_sorting_desc">
-        <item quantity="zero">Tidak ada tagar dalam daftar penyortiran. Ini menambahkan opsi di perpustakaan untuk mengurutkan berdasarkan daftar tagar berdasarkan prioritas, yang berarti manga akan diurutkan dengan cara memprioritaskan sesuai dengan tagar yang Anda inginkan</item>
-        <item quantity="one">Ada %1$d tagar dalam daftar penyortiran. Ini menambahkan opsi di perpustakaan untuk mengurutkan berdasarkan daftar tagar berdasarkan prioritas, yang berarti manga akan diurutkan dengan cara memprioritaskan sesuai dengan tagar yang Anda inginkan</item>
-        <item quantity="other">Ada %1$d tagar dalam daftar penyortiran. Ini menambahkan opsi di perpustakaan untuk mengurutkan berdasarkan daftar tagar berdasarkan prioritas, yang berarti manga akan diurutkan dengan cara memprioritaskan sesuai dengan tagar yang Anda inginkan</item>
+        <item quantity="zero">Tidak ada tagar dalam daftar penyortiran. Ini menambahkan opsi di perpustakaan untuk mengurutkan berdasarkan daftar tagar berdasarkan prioritas, yang berarti anime akan diurutkan dengan cara memprioritaskan sesuai dengan tagar yang Anda inginkan</item>
+        <item quantity="one">Ada %1$d tagar dalam daftar penyortiran. Ini menambahkan opsi di perpustakaan untuk mengurutkan berdasarkan daftar tagar berdasarkan prioritas, yang berarti anime akan diurutkan dengan cara memprioritaskan sesuai dengan tagar yang Anda inginkan</item>
+        <item quantity="other">Ada %1$d tagar dalam daftar penyortiran. Ini menambahkan opsi di perpustakaan untuk mengurutkan berdasarkan daftar tagar berdasarkan prioritas, yang berarti anime akan diurutkan dengan cara memprioritaskan sesuai dengan tagar yang Anda inginkan</item>
     </plurals>
     <plurals name="migrate_entry">
-        <item quantity="one">Pindahkan %1$d%2$s manga?</item>
-        <item quantity="other">Pindahkan %1$d%2$s manga?</item>
+        <item quantity="one">Pindahkan %1$d%2$s anime?</item>
+        <item quantity="other">Pindahkan %1$d%2$s anime?</item>
     </plurals>
     <plurals name="copy_entry">
-        <item quantity="one">Salin %1$d%2$s manga?</item>
-        <item quantity="other">Salin %1$d%2$s manga?</item>
+        <item quantity="one">Salin %1$d%2$s anime?</item>
+        <item quantity="other">Salin %1$d%2$s anime?</item>
     </plurals>
     <plurals name="entry_migrated">
-        <item quantity="one">%d manga dipindahkan</item>
-        <item quantity="other">%d manga dipindahkan</item>
+        <item quantity="one">%d anime dipindahkan</item>
+        <item quantity="other">%d anime dipindahkan</item>
     </plurals>
     <!-- Extra gallery info -->
     <plurals name="num_pages">

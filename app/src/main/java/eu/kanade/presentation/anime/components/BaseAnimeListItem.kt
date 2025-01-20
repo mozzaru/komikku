@@ -16,13 +16,13 @@ import androidx.compose.ui.hapticfeedback.HapticFeedbackType
 import androidx.compose.ui.platform.LocalHapticFeedback
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
-import tachiyomi.domain.anime.model.Manga
+import tachiyomi.domain.anime.model.Anime
 import tachiyomi.presentation.core.components.material.padding
 import tachiyomi.presentation.core.util.selectedBackground
 
 @Composable
 fun BaseAnimeListItem(
-    manga: Manga,
+    anime: Anime,
     modifier: Modifier = Modifier,
     onClickItem: () -> Unit = {},
     onClickCover: () -> Unit = onClickItem,
@@ -30,9 +30,9 @@ fun BaseAnimeListItem(
     onLongClick: () -> Unit = onClickItem,
     selected: Boolean,
     // KMK <--
-    cover: @Composable RowScope.() -> Unit = { defaultCover(manga, onClickCover) },
+    cover: @Composable RowScope.() -> Unit = { defaultCover(anime, onClickCover) },
     actions: @Composable RowScope.() -> Unit = {},
-    content: @Composable RowScope.() -> Unit = { defaultContent(manga) },
+    content: @Composable RowScope.() -> Unit = { defaultContent(anime) },
 ) {
     // KMK -->
     val haptic = LocalHapticFeedback.current
@@ -61,7 +61,7 @@ fun BaseAnimeListItem(
     }
 }
 
-private val defaultCover: @Composable RowScope.(Manga, () -> Unit) -> Unit = { manga, onClick ->
+private val defaultCover: @Composable RowScope.(Anime, () -> Unit) -> Unit = { manga, onClick ->
     AnimeCover.Square(
         modifier = Modifier
             .padding(vertical = MaterialTheme.padding.small)
@@ -74,7 +74,7 @@ private val defaultCover: @Composable RowScope.(Manga, () -> Unit) -> Unit = { m
     )
 }
 
-private val defaultContent: @Composable RowScope.(Manga) -> Unit = {
+private val defaultContent: @Composable RowScope.(Anime) -> Unit = {
     Box(modifier = Modifier.weight(1f)) {
         Text(
             text = it.title,

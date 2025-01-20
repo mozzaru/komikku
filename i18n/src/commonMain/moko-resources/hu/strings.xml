@@ -436,7 +436,7 @@
     <string name="used_cache">Felhasznált: %1$s</string>
     <string name="pref_clear_database">Adatbázis törlése</string>
     <string name="pref_clear_database_summary">Nem könyvtári elemek előzményeinek törlése</string>
-    <string name="clear_database_source_item_count">%1$d nem könyvtári manga az adatbázisban</string>
+    <string name="clear_database_source_item_count">%1$d nem könyvtári anime az adatbázisban</string>
     <string name="pref_auto_clear_chapter_cache">Fejezet gyorsítótárának törlése kilépéskor</string>
     <string name="local_invalid_format">Helytelen fejezet formátum</string>
     <string name="label_network">Hálózat</string>

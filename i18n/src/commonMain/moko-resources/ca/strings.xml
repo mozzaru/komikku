@@ -817,7 +817,7 @@
     <string name="pref_flash_style_black">Negre</string>
     <string name="pref_flash_page_interval">Flaix cada</string>
     <string name="pref_flash_style_white_black">Blanc i negre</string>
-    <string name="manga_interval_expected_update_null">Aquest manga està completat o bé no té cap data de publicació prevista.</string>
+    <string name="manga_interval_expected_update_null">Aquest anime està completat o bé no té cap data de publicació prevista.</string>
     <string name="invalid_backup_file_json">Còpia de seguretat en JSON no suportada</string>
     <string name="invalid_backup_file_unknown">El fitxer de còpia de seguretat és corrupte</string>
     <string name="extensionRepo_settings">Repositoris d’extensions</string>

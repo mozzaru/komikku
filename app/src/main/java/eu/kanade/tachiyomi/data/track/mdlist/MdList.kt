@@ -17,7 +17,7 @@ import kotlinx.collections.immutable.toImmutableList
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
 import tachiyomi.core.common.util.lang.withIOContext
-import tachiyomi.domain.anime.model.Manga
+import tachiyomi.domain.anime.model.Anime
 import tachiyomi.i18n.MR
 import tachiyomi.i18n.sy.SYMR
 import uy.kohesive.injekt.Injekt
@@ -84,7 +84,7 @@ class MdList(id: Long) : BaseTracker(id, "MDList") {
                 mdex.updateRating(track)
             }
 
-            // mangadex wont update episodes if manga is not follows this prevents unneeded network call
+            // mangadex wont update episodes if anime is not follows this prevents unneeded network call
 
             /*if (followStatus != FollowStatus.UNFOLLOWED) {
                 if (track.total_chapters != 0 && track.last_chapter_read == track.total_chapters) {
@@ -137,12 +137,12 @@ class MdList(id: Long) : BaseTracker(id, "MDList") {
         }
     }
 
-    fun createInitialTracker(dbManga: Manga, mdManga: Manga = dbManga): Track {
+    fun createInitialTracker(dbAnime: Anime, mdAnime: Anime = dbAnime): Track {
         return Track.create(id).apply {
-            manga_id = dbManga.id
+            manga_id = dbAnime.id
             status = FollowStatus.UNFOLLOWED.long
-            tracking_url = MdUtil.baseUrl + mdManga.url
-            title = mdManga.title
+            tracking_url = MdUtil.baseUrl + mdAnime.url
+            title = mdAnime.title
         }
     }
 

@@ -29,7 +29,7 @@ fun UrlImportableSource.urlImportFetchSearchManga(
                 .map { res ->
                     AnimesPage(
                         if (res is GalleryAddEvent.Success) {
-                            listOf(res.manga.toSManga())
+                            listOf(res.anime.toSManga())
                         } else {
                             emptyList()
                         },
@@ -59,7 +59,7 @@ suspend fun UrlImportableSource.urlImportFetchSearchMangaSuspend(
 
             AnimesPage(
                 if (res is GalleryAddEvent.Success) {
-                    listOf(res.manga.toSManga())
+                    listOf(res.anime.toSManga())
                 } else {
                     emptyList()
                 },

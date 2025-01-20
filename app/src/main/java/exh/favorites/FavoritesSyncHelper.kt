@@ -34,7 +34,7 @@ import tachiyomi.domain.UnsortedPreferences
 import tachiyomi.domain.anime.interactor.GetAnime
 import tachiyomi.domain.anime.interactor.GetLibraryAnime
 import tachiyomi.domain.anime.model.FavoriteEntry
-import tachiyomi.domain.anime.model.Manga
+import tachiyomi.domain.anime.model.Anime
 import tachiyomi.domain.category.interactor.CreateCategoryWithName
 import tachiyomi.domain.category.interactor.GetCategories
 import tachiyomi.domain.category.interactor.SetAnimeCategories
@@ -337,7 +337,7 @@ class FavoritesSyncHelper(val context: Context) {
         errorList: MutableList<FavoritesSyncStatus.SyncError.GallerySyncError>,
         changeSet: ChangeSet,
     ) {
-        val removedManga = mutableListOf<Manga>()
+        val removedAnime = mutableListOf<Anime>()
 
         // Apply removals
         changeSet.removed.forEachIndexed { index, it ->
@@ -356,17 +356,17 @@ class FavoritesSyncHelper(val context: Context) {
 
                 if (manga?.favorite == true) {
                     updateAnime.awaitUpdateFavorite(manga.id, false)
-                    removedManga += manga
+                    removedAnime += manga
                 }
             }
         }
 
         // Can't do too many DB OPs in one go
-        removedManga.forEach {
+        removedAnime.forEach {
             setAnimeCategories.await(it.id, emptyList())
         }
 
-        val insertedMangaCategories = mutableListOf<Pair<Long, Manga>>()
+        val insertedAnimeCategories = mutableListOf<Pair<Long, Anime>>()
         val categories = getCategories.await()
             .filterNot(Category::isSystemCategory)
 
@@ -418,12 +418,12 @@ class FavoritesSyncHelper(val context: Context) {
                     throw IgnoredException(error)
                 }
             } else if (result is GalleryAddEvent.Success) {
-                insertedMangaCategories += categories[it.category].id to result.manga
+                insertedAnimeCategories += categories[it.category].id to result.anime
             }
         }
 
         // Can't do too many DB OPs in one go
-        insertedMangaCategories.forEach { (category, manga) ->
+        insertedAnimeCategories.forEach { (category, manga) ->
             setAnimeCategories.await(manga.id, listOf(category))
         }
     }

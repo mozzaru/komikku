@@ -810,7 +810,7 @@
     <string name="pref_webtoon_disable_zoom_out">Dışa yakınlaştırmayı devre dışı bırak</string>
     <string name="invalid_backup_file_json">JSON yedekleri desteklenmiyor</string>
     <string name="invalid_backup_file_unknown">Yedek dosyası bozuk</string>
-    <string name="manga_interval_expected_update_null">Bu manga ya tamamlanmış ya da tahmin edilen yayımlanma tarihi yok.</string>
+    <string name="manga_interval_expected_update_null">Bu anime ya tamamlanmış ya da tahmin edilen yayımlanma tarihi yok.</string>
     <string name="action_add_anyway">Yine de ekle</string>
     <string name="action_migrate_duplicate">Zaten olan girdiyi taşı</string>
     <string name="action_replace_repo">Değiştir</string>

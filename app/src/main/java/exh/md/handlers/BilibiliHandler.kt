@@ -40,7 +40,7 @@ class BilibiliHandler(currentClient: OkHttpClient) {
     val json by injectLazy<Json>()
 
     suspend fun fetchPageList(externalUrl: String, chapterNumber: String): List<Page> {
-        // Sometimes the urls direct it to the manga page instead, so we try to find the correct episode
+        // Sometimes the urls direct it to the anime page instead, so we try to find the correct episode
         // Though these seem to be older episodes, so maybe remove this later
         val chapterUrl = if (externalUrl.contains("mc\\d*/\\d*".toRegex())) {
             getChapterUrl(externalUrl)

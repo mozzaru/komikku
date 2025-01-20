@@ -114,7 +114,7 @@ class ApiMangaParser(
 
                 statistics?.rating?.let {
                     rating = it.bayesian?.toFloat()
-                    // manga.users = it.users
+                    // anime.users = it.users
                 }
 
                 mangaAttributesDto.links?.asMdMap<String>()?.let { links ->

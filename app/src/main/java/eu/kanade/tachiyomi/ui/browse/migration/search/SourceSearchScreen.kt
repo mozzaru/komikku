@@ -36,7 +36,7 @@ import kotlinx.collections.immutable.persistentListOf
 import mihon.presentation.core.util.collectAsLazyPagingItems
 import tachiyomi.core.common.Constants
 import tachiyomi.core.common.util.lang.launchIO
-import tachiyomi.domain.anime.model.Manga
+import tachiyomi.domain.anime.model.Anime
 import tachiyomi.i18n.sy.SYMR
 import tachiyomi.presentation.core.components.material.Scaffold
 import tachiyomi.presentation.core.i18n.stringResource
@@ -47,7 +47,7 @@ import tachiyomi.source.local.LocalSource
  * Opened when click on a source in [MigrateSearchScreen]
  */
 data class SourceSearchScreen(
-    private val oldManga: Manga,
+    private val oldAnime: Anime,
     private val sourceId: Long,
     private val query: String?,
 ) : Screen() {
@@ -137,18 +137,18 @@ data class SourceSearchScreen(
             },
             snackbarHost = { SnackbarHost(hostState = snackbarHostState) },
         ) { paddingValues ->
-            val openMigrateDialog: (Manga) -> Unit = {
+            val openMigrateDialog: (Anime) -> Unit = {
                 // SY -->
                 navigator.items
                     .filterIsInstance<MigrationListScreen>()
                     .last()
-                    .newSelectedItem = oldManga.id to it.id
+                    .newSelectedItem = oldAnime.id to it.id
                 navigator.popUntil { it is MigrationListScreen }
                 // SY <--
             }
             BrowseSourceContent(
                 source = screenModel.source,
-                mangaList = mangaList,
+                animeList = mangaList,
                 columns = screenModel.getColumnsPreference(LocalConfiguration.current.orientation),
                 // SY -->
                 ehentaiBrowseDisplayMode = screenModel.ehentaiBrowseDisplayMode,

@@ -2,12 +2,12 @@ package exh.util
 
 import exh.source.isEhBasedManga
 import exh.source.nHentaiSourceIds
-import tachiyomi.domain.anime.model.Manga
+import tachiyomi.domain.anime.model.Anime
 import tachiyomi.domain.source.service.SourceManager
 import uy.kohesive.injekt.Injekt
 import uy.kohesive.injekt.api.get
 
-fun Manga.isLewd(): Boolean {
+fun Anime.isLewd(): Boolean {
     val sourceName = Injekt.get<SourceManager>().get(source)?.name
 
     if (isEhBasedManga() || source in nHentaiSourceIds) {

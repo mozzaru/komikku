@@ -43,7 +43,7 @@ import kotlinx.collections.immutable.ImmutableList
 import kotlinx.collections.immutable.toImmutableList
 import kotlinx.coroutines.delay
 import tachiyomi.core.common.i18n.stringResource
-import tachiyomi.domain.anime.model.Manga
+import tachiyomi.domain.anime.model.Anime
 import tachiyomi.domain.source.model.FeedSavedSearch
 import tachiyomi.domain.source.model.SavedSearch
 import tachiyomi.domain.source.model.Source
@@ -65,7 +65,7 @@ data class FeedItemUI(
     val source: AnimeCatalogueSource?,
     val title: String,
     val subtitle: String,
-    val results: List<Manga>?,
+    val results: List<Anime>?,
 )
 
 @Composable
@@ -77,13 +77,13 @@ fun FeedScreen(
     // KMK -->
     onLongClickFeed: (FeedItemUI, Boolean, Boolean) -> Unit,
     // KMK <--
-    onClickManga: (Manga) -> Unit,
+    onClickManga: (Anime) -> Unit,
     // KMK -->
-    onLongClickManga: (Manga) -> Unit,
-    selection: List<Manga>,
+    onLongClickManga: (Anime) -> Unit,
+    selection: List<Anime>,
     // KMK <--
     onRefresh: () -> Unit,
-    getMangaState: @Composable (Manga) -> State<Manga>,
+    getAnimeState: @Composable (Anime) -> State<Anime>,
 ) {
     when {
         state.isLoading -> LoadingScreen()
@@ -141,7 +141,7 @@ fun FeedScreen(
                         ) {
                             FeedItem(
                                 item = item,
-                                getMangaState = { getMangaState(it) },
+                                getAnimeState = { getAnimeState(it) },
                                 onClickManga = onClickManga,
                                 // KMK -->
                                 onLongClickManga = onLongClickManga,
@@ -159,11 +159,11 @@ fun FeedScreen(
 @Composable
 fun FeedItem(
     item: FeedItemUI,
-    getMangaState: @Composable ((Manga) -> State<Manga>),
-    onClickManga: (Manga) -> Unit,
+    getAnimeState: @Composable ((Anime) -> State<Anime>),
+    onClickManga: (Anime) -> Unit,
     // KMK -->
-    onLongClickManga: (Manga) -> Unit,
-    selection: List<Manga>,
+    onLongClickManga: (Anime) -> Unit,
+    selection: List<Anime>,
     // KMK <--
 ) {
     when {
@@ -176,7 +176,7 @@ fun FeedItem(
         else -> {
             GlobalSearchCardRow(
                 titles = item.results,
-                getManga = getMangaState,
+                getAnime = getAnimeState,
                 onClick = onClickManga,
                 // KMK -->
                 onLongClick = onLongClickManga,

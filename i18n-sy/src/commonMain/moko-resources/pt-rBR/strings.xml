@@ -374,7 +374,7 @@
     <string name="batch_add_not_exist_log_message">Mangá não existe: %1$s</string>
     <string name="gallery_adder_importing_gallery">Importando mangá (url: %1$s, fav: %2$s, forceSource: %3$s)…</string>
     <string name="gallery_adder_source_uri_must_match">Erro ao verificar relação do URI da fonte!</string>
-    <string name="gallery_adder_uri_map_to_gallery_error">Erro map-to-manga do URI da fonte!</string>
+    <string name="gallery_adder_uri_map_to_gallery_error">Erro map-to-anime do URI da fonte!</string>
     <string name="gallery_adder_uri_map_to_chapter_error">Erro map-to-chapter do URI da fonte!</string>
     <string name="gallery_adder_uri_clean_error">Erro so limpar URI da fonte!</string>
     <string name="gallery_adder_chapter_fetch_error">Falha ao atualizar capítulos da galeria: %1$s!</string>
@@ -457,7 +457,7 @@
     <!-- Extra gallery info -->
     <string name="is_visible">Visível: %1$s</string>
     <string name="language_translated">%1$s TR</string>
-    <!-- Merged manga -->
+    <!-- Merged anime -->
     <string name="merge_settings">Configurações da junção</string>
     <string name="fetch_chapter_updates">Buscar atualizações de capítulo</string>
     <string name="delete_merged_entry">Tem certeza?</string>

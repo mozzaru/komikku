@@ -47,7 +47,7 @@ import exh.util.floor
 import kotlinx.coroutines.flow.StateFlow
 import tachiyomi.core.common.i18n.pluralStringResource
 import tachiyomi.core.common.util.lang.withIOContext
-import tachiyomi.domain.anime.model.Manga
+import tachiyomi.domain.anime.model.Anime
 import tachiyomi.domain.anime.model.asMangaCover
 import tachiyomi.i18n.sy.SYMR
 import tachiyomi.presentation.core.components.BadgeGroup
@@ -60,30 +60,30 @@ import java.time.ZoneId
 
 @Composable
 fun BrowseSourceEHentaiList(
-    mangaList: LazyPagingItems<StateFlow</* SY --> */Pair<Manga, RaisedSearchMetadata?>/* SY <-- */>>,
+    animeList: LazyPagingItems<StateFlow</* SY --> */Pair<Anime, RaisedSearchMetadata?>/* SY <-- */>>,
     contentPadding: PaddingValues,
-    onMangaClick: (Manga) -> Unit,
-    onMangaLongClick: (Manga) -> Unit,
+    onMangaClick: (Anime) -> Unit,
+    onMangaLongClick: (Anime) -> Unit,
     // KMK -->
-    selection: List<Manga>,
+    selection: List<Anime>,
     // KMK <--
 ) {
     LazyColumn(
         contentPadding = contentPadding,
     ) {
         item {
-            if (mangaList.loadState.prepend is LoadState.Loading) {
+            if (animeList.loadState.prepend is LoadState.Loading) {
                 BrowseSourceLoadingItem()
             }
         }
 
-        items(count = mangaList.itemCount) { index ->
-            val pair by mangaList[index]?.collectAsState() ?: return@items
+        items(count = animeList.itemCount) { index ->
+            val pair by animeList[index]?.collectAsState() ?: return@items
             val manga = pair.first
             val metadata = pair.second
 
             BrowseSourceEHentaiListItem(
-                manga = manga,
+                anime = manga,
                 // SY -->
                 metadata = metadata,
                 // SY <--
@@ -96,7 +96,7 @@ fun BrowseSourceEHentaiList(
         }
 
         item {
-            if (mangaList.loadState.refresh is LoadState.Loading || mangaList.loadState.append is LoadState.Loading) {
+            if (animeList.loadState.refresh is LoadState.Loading || animeList.loadState.append is LoadState.Loading) {
                 BrowseSourceLoadingItem()
             }
         }
@@ -105,7 +105,7 @@ fun BrowseSourceEHentaiList(
 
 @Composable
 fun BrowseSourceEHentaiListItem(
-    manga: Manga,
+    anime: Anime,
     // SY -->
     metadata: RaisedSearchMetadata?,
     // SY <--
@@ -118,10 +118,10 @@ fun BrowseSourceEHentaiListItem(
 ) {
     if (metadata !is EHentaiSearchMetadata) return
     // KMK -->
-    val coverData = manga.asMangaCover()
+    val coverData = anime.asMangaCover()
     val bgColor = coverData.dominantCoverColors?.first?.let { Color(it) }.takeIf { libraryColored }
     val onBgColor = coverData.dominantCoverColors?.second.takeIf { libraryColored }
-    val coverAlpha = if (manga.favorite) CommonAnimeItemDefaults.BrowseFavoriteCoverAlpha else 1f
+    val coverAlpha = if (anime.favorite) CommonAnimeItemDefaults.BrowseFavoriteCoverAlpha else 1f
     // KMK <--
 
     val context = LocalContext.current
@@ -222,7 +222,7 @@ fun BrowseSourceEHentaiListItem(
                     data = coverData,
                 )
             }
-            if (manga.favorite) {
+            if (anime.favorite) {
                 BadgeGroup(
                     modifier = Modifier
                         .padding(4.dp)
@@ -237,7 +237,7 @@ fun BrowseSourceEHentaiListItem(
         Column(Modifier.fillMaxSize(), verticalArrangement = Arrangement.SpaceBetween) {
             Column(Modifier.fillMaxWidth()) {
                 Text(
-                    text = manga.title,
+                    text = anime.title,
                     maxLines = 2,
                     modifier = Modifier.padding(start = 8.dp, top = 8.dp),
                     style = MaterialTheme.typography.titleSmall,

@@ -218,7 +218,7 @@
     <string name="manga_tracking_tab">Rastreo</string>
     <string name="error_category_exists">¡Ya existe una categoría con este nombre!</string>
     <string name="snack_categories_deleted">Categorías eliminadas</string>
-    <string name="snack_add_to_library">¿Añadir manga a la biblioteca?</string>
+    <string name="snack_add_to_library">¿Añadir anime a la biblioteca?</string>
     <string name="picture_saved">Imagen guardada</string>
     <string name="custom_filter">Filtro personalizado</string>
     <string name="set_as_cover">Poner como portada</string>
@@ -813,7 +813,7 @@
     <string name="pref_flash_style_black">Negro</string>
     <string name="pref_flash_duration">Duración del flash</string>
     <string name="pref_flash_duration_summary">%1$s ms</string>
-    <string name="manga_interval_expected_update_null">Este manga está terminado o no hay fecha de publicación prevista.</string>
+    <string name="manga_interval_expected_update_null">Este anime está terminado o no hay fecha de publicación prevista.</string>
     <string name="invalid_backup_file_json">Copia de seguridad JSON no compatible</string>
     <string name="invalid_backup_file_unknown">El archivo de la copia de seguridad está dañado</string>
     <string name="extensionRepo_settings">Repositorios de extensiones</string>

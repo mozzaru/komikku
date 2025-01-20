@@ -109,8 +109,8 @@ class MangaHandler(
         return withIOContext {
             /*val metadata = async {
                 val mangaUrl = MdUtil.buildMangaUrl(MdUtil.getMangaId(track.tracking_url))
-                val manga = MangaInfo(mangaUrl, track.title)
-                val response = client.newCall(mangaRequest(manga)).await()
+                val anime = MangaInfo(mangaUrl, track.title)
+                val response = client.newCall(mangaRequest(anime)).await()
                 val metadata = MangaDexSearchMetadata()
                 apiMangaParser.parseIntoMetadata(metadata, response, emptyList())
                 metadata

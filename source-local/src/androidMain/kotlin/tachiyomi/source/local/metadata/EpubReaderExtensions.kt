@@ -8,7 +8,7 @@ import java.text.SimpleDateFormat
 import java.util.Locale
 
 /**
- * Fills manga and chapter metadata using this epub file's metadata.
+ * Fills anime and chapter metadata using this epub file's metadata.
  */
 fun EpubReader.fillMetadata(manga: SAnime, chapter: SEpisode) {
     val ref = getPackageHref()

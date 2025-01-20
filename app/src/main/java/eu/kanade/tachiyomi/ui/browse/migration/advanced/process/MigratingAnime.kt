@@ -7,14 +7,14 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.SupervisorJob
 import kotlinx.coroutines.flow.MutableStateFlow
 import tachiyomi.core.common.i18n.stringResource
-import tachiyomi.domain.anime.model.Manga
+import tachiyomi.domain.anime.model.Anime
 import tachiyomi.i18n.MR
 import tachiyomi.i18n.sy.SYMR
 import java.text.DecimalFormat
 import kotlin.coroutines.CoroutineContext
 
 class MigratingAnime(
-    val manga: Manga,
+    val anime: Anime,
     val episodeInfo: EpisodeInfo,
     val sourcesString: String,
     parentContext: CoroutineContext,
@@ -22,7 +22,7 @@ class MigratingAnime(
     val migrationScope = CoroutineScope(parentContext + SupervisorJob() + Dispatchers.Default)
 
     // KMK -->
-    var searchingJob: Deferred<Manga?>? = null
+    var searchingJob: Deferred<Anime?>? = null
     // KMK <--
 
     val searchResult = MutableStateFlow<SearchResult>(SearchResult.Searching)

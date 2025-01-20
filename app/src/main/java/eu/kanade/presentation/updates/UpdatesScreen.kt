@@ -262,7 +262,7 @@ sealed interface UpdatesUiModel {
     data class Header(val date: LocalDate) : UpdatesUiModel
     open class Item(open val item: UpdatesItem, open val isExpandable: Boolean = false) : UpdatesUiModel
     // KMK -->
-    /** The first [Item] in a group of episodes from same manga */
+    /** The first [Item] in a group of episodes from same anime */
     data class Leader(override val item: UpdatesItem, override val isExpandable: Boolean) : Item(item)
     // KMK <--
 }

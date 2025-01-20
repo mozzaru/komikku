@@ -11,7 +11,7 @@
   <string name="download_cache_renew_interval_6hour">6 hodin</string>
   <string name="download_cache_renew_interval_12hour">12 hodin</string>
   <string name="download_cache_renew_interval_24hour">1 den</string>
-  <string name="download_cache_renew_interval_info">Je-li nastaveno na \"manuální\", obnovte každý manga nebo použijte akci \"Invalidovat stahování\" v \"Pokročilé\"</string>
+  <string name="download_cache_renew_interval_info">Je-li nastaveno na \"manuální\", obnovte každý anime nebo použijte akci \"Invalidovat stahování\" v \"Pokročilé\"</string>
   <string name="pref_clean_invalid_downloads">Vyčistit neplatné stahování</string>
   <string name="pref_clean_invalid_downloads_summary">Najít a odstranit všechna stahování, soubory, složky, které nejsou uloženy ve vaší knihovně</string>
   <string name="invalid_downloads_cleaned">Neplatné stahování vyčištěno</string>

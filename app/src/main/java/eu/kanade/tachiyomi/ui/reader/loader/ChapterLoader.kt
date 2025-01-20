@@ -13,7 +13,7 @@ import mihon.core.archive.epubReader
 import tachiyomi.core.common.i18n.stringResource
 import tachiyomi.core.common.util.lang.withIOContext
 import tachiyomi.core.common.util.system.logcat
-import tachiyomi.domain.anime.model.Manga
+import tachiyomi.domain.anime.model.Anime
 import tachiyomi.domain.anime.model.MergedAnimeReference
 import tachiyomi.domain.source.model.StubSource
 import tachiyomi.domain.source.service.SourceManager
@@ -28,13 +28,13 @@ class ChapterLoader(
     private val context: Context,
     private val downloadManager: DownloadManager,
     private val downloadProvider: DownloadProvider,
-    private val manga: Manga,
+    private val anime: Anime,
     private val source: AnimeSource,
     // SY -->
     private val sourceManager: SourceManager,
     private val readerPrefs: ReaderPreferences,
     private val mergedReferences: List<MergedAnimeReference>,
-    private val mergedManga: Map<Long, Manga>,
+    private val mergedAnime: Map<Long, Anime>,
     // SY <--
 ) {
 
@@ -95,8 +95,8 @@ class ChapterLoader(
         val isDownloaded = downloadManager.isChapterDownloaded(
             chapterName = dbChapter.name,
             chapterScanlator = dbChapter.scanlator, /* SY --> */
-            mangaTitle = manga.ogTitle /* SY <-- */,
-            sourceId = manga.source,
+            mangaTitle = anime.ogTitle /* SY <-- */,
+            sourceId = anime.source,
             skipCache = true,
         )
         return when {
@@ -107,18 +107,18 @@ class ChapterLoader(
                 } ?: error("Merge reference null")
                 val source = sourceManager.get(mangaReference.mangaSourceId)
                     ?: error("Source ${mangaReference.mangaSourceId} was null")
-                val manga = mergedManga[chapter.episode.manga_id] ?: error("Manga for merged episode was null")
+                val anime = mergedAnime[chapter.episode.manga_id] ?: error("Anime for merged episode was null")
                 val isMergedMangaDownloaded = downloadManager.isChapterDownloaded(
                     chapterName = chapter.episode.name,
                     chapterScanlator = chapter.episode.scanlator,
-                    mangaTitle = manga.ogTitle,
-                    sourceId = manga.source,
+                    mangaTitle = anime.ogTitle,
+                    sourceId = anime.source,
                     skipCache = true,
                 )
                 when {
                     isMergedMangaDownloaded -> DownloadPageLoader(
                         chapter = chapter,
-                        manga = manga,
+                        anime = anime,
                         source = source,
                         downloadManager = downloadManager,
                         downloadProvider = downloadProvider,
@@ -137,7 +137,7 @@ class ChapterLoader(
             // SY <--
             isDownloaded -> DownloadPageLoader(
                 chapter,
-                manga,
+                anime,
                 source,
                 downloadManager,
                 downloadProvider,

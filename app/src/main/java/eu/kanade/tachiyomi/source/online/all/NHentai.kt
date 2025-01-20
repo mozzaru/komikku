@@ -252,6 +252,6 @@ class NHentai(delegate: AnimeHttpSource, val context: Context) :
 
         // AZ <--
         private val UNICODE_ESCAPE_REGEX = Regex("\\\\u([0-9a-fA-F]{4})")
-        private const val TITLE_PREF = "Display manga title as:"
+        private const val TITLE_PREF = "Display anime title as:"
     }
 }

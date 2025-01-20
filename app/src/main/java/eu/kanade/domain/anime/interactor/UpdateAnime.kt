@@ -6,7 +6,7 @@ import eu.kanade.tachiyomi.data.cache.CoverCache
 import eu.kanade.tachiyomi.data.download.DownloadManager
 import tachiyomi.domain.anime.interactor.FetchInterval
 import tachiyomi.domain.anime.model.AnimeUpdate
-import tachiyomi.domain.anime.model.Manga
+import tachiyomi.domain.anime.model.Anime
 import tachiyomi.domain.anime.repository.AnimeRepository
 import tachiyomi.source.local.isLocal
 import uy.kohesive.injekt.Injekt
@@ -28,7 +28,7 @@ class UpdateAnime(
     }
 
     suspend fun awaitUpdateFromSource(
-        localManga: Manga,
+        localAnime: Anime,
         remoteManga: SAnime,
         manualFetch: Boolean,
         coverCache: CoverCache = Injekt.get(),
@@ -43,8 +43,8 @@ class UpdateAnime(
         }
 
         // SY -->
-        val title = if (remoteTitle.isNotBlank() && localManga.ogTitle != remoteTitle) {
-            downloadManager.renameMangaDir(localManga.ogTitle, remoteTitle, localManga.source)
+        val title = if (remoteTitle.isNotBlank() && localAnime.ogTitle != remoteTitle) {
+            downloadManager.renameMangaDir(localAnime.ogTitle, remoteTitle, localAnime.source)
             remoteTitle
         } else {
             null
@@ -55,14 +55,14 @@ class UpdateAnime(
             when {
                 // Never refresh covers if the url is empty to avoid "losing" existing covers
                 remoteManga.thumbnail_url.isNullOrEmpty() -> null
-                !manualFetch && localManga.thumbnailUrl == remoteManga.thumbnail_url -> null
-                localManga.isLocal() -> Instant.now().toEpochMilli()
-                localManga.hasCustomCover(coverCache) -> {
-                    coverCache.deleteFromCache(localManga, false)
+                !manualFetch && localAnime.thumbnailUrl == remoteManga.thumbnail_url -> null
+                localAnime.isLocal() -> Instant.now().toEpochMilli()
+                localAnime.hasCustomCover(coverCache) -> {
+                    coverCache.deleteFromCache(localAnime, false)
                     null
                 }
                 else -> {
-                    coverCache.deleteFromCache(localManga, false)
+                    coverCache.deleteFromCache(localAnime, false)
                     Instant.now().toEpochMilli()
                 }
             }
@@ -71,7 +71,7 @@ class UpdateAnime(
 
         return animeRepository.update(
             AnimeUpdate(
-                id = localManga.id,
+                id = localAnime.id,
                 title = title,
                 coverLastModified = coverLastModified,
                 author = remoteManga.author,
@@ -87,12 +87,12 @@ class UpdateAnime(
     }
 
     suspend fun awaitUpdateFetchInterval(
-        manga: Manga,
+        anime: Anime,
         dateTime: ZonedDateTime = ZonedDateTime.now(),
         window: Pair<Long, Long> = fetchInterval.getWindow(dateTime),
     ): Boolean {
         return animeRepository.update(
-            fetchInterval.toMangaUpdate(manga, dateTime, window),
+            fetchInterval.toMangaUpdate(anime, dateTime, window),
         )
     }
 

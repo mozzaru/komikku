@@ -27,7 +27,7 @@ data class AnimeCover(
 
     // KMK -->
     /**
-     * [vibrantCoverColor] is used to set the color theme in manga detail page.
+     * [vibrantCoverColor] is used to set the color theme in anime detail page.
      * It contains color for all mangas, both in library or browsing.
      *
      * It reads/saves to a hashmap in [AnimeCover.vibrantCoverColorMap] for multiple mangas.
@@ -46,7 +46,7 @@ data class AnimeCover(
      *
      * Format: <first: cover color, second: text color>.
      *
-     * Set in *[MangaCoverMetadata.setRatioAndColors]* whenever browsing meets a favorite manga
+     * Set in *[MangaCoverMetadata.setRatioAndColors]* whenever browsing meets a favorite anime
      *  by loading from *[CoverCache]*.
      *
      * Get in *[CommonMangaItem.MangaCompactGridItem]*, *[CommonMangaItem.MangaComfortableGridItem]* and
@@ -75,7 +75,7 @@ data class AnimeCover(
         val vibrantCoverColorMap: HashMap<Long, Int?> = hashMapOf()
 
         /**
-         * [dominantCoverColorMap] stores favorite manga's cover & text's color as a joined string in Prefs.
+         * [dominantCoverColorMap] stores favorite anime's cover & text's color as a joined string in Prefs.
          * They will be loaded each time *[App]* is initialized with *[MangaCoverMetadata.load]*.
          *
          * They will be saved back when *[MainActivity.onPause]* is triggered.
@@ -92,7 +92,7 @@ data class AnimeCover(
     }
 }
 
-fun Manga.asMangaCover(): AnimeCover {
+fun Anime.asMangaCover(): AnimeCover {
     return AnimeCover(
         animeId = id,
         sourceId = source,

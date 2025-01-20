@@ -3,7 +3,7 @@ package eu.kanade.tachiyomi.ui.anime.merged
 import eu.davidea.flexibleadapter.FlexibleAdapter
 
 /**
- * Adapter storing a list of merged manga.
+ * Adapter storing a list of merged anime.
  *
  * @param controller the context of the fragment containing this adapter.
  * @param isPriorityOrder if deduplication mode is based on priority

@@ -50,7 +50,7 @@ class SmartSearchScreen(
                 if (results is SmartSearchScreenModel.SearchResults.Found) {
                     navigator.replace(
                         AnimeScreen(
-                            results.manga.id,
+                            results.anime.id,
                             // KMK -->
                             // Finding the entry to be merged to, so we don't want to expand description
                             // so that user can see the `Merge to another` button

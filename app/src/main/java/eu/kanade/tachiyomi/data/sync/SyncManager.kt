@@ -22,7 +22,7 @@ import tachiyomi.core.common.util.system.logcat
 import tachiyomi.data.DatabaseHandler
 import tachiyomi.data.Episodes
 import tachiyomi.data.anime.AnimeMapper.mapAnime
-import tachiyomi.domain.anime.model.Manga
+import tachiyomi.domain.anime.model.Anime
 import tachiyomi.domain.category.interactor.GetCategories
 import uy.kohesive.injekt.Injekt
 import uy.kohesive.injekt.api.get
@@ -65,7 +65,7 @@ class SyncManager(
     /**
      * Syncs data with a sync service.
      *
-     * This function retrieves local data (favorites, manga, extensions, and categories)
+     * This function retrieves local data (favorites, anime, extensions, and categories)
      * from the database using the BackupManager, then synchronizes the data with a sync service.
      */
     suspend fun syncData() {
@@ -237,27 +237,27 @@ class SyncManager(
     }
 
     /**
-     * Retrieves all manga from the local database.
+     * Retrieves all anime from the local database.
      *
-     * @return a list of all manga stored in the database
+     * @return a list of all anime stored in the database
      */
-    private suspend fun getAllMangaFromDB(): List<Manga> {
+    private suspend fun getAllMangaFromDB(): List<Anime> {
         return handler.awaitList { animesQueries.getAllAnime(::mapAnime) }
     }
 
-    private suspend fun getAllMangaThatNeedsSync(): List<Manga> {
+    private suspend fun getAllMangaThatNeedsSync(): List<Anime> {
         return handler.awaitList { animesQueries.getAnimesWithFavoriteTimestamp(::mapAnime) }
     }
 
-    private suspend fun isMangaDifferent(localManga: Manga, remoteManga: BackupAnime): Boolean {
-        val localChapters = handler.await { episodesQueries.getEpisodesByMangaId(localManga.id, 0).executeAsList() }
-        val localCategories = getCategories.await(localManga.id).map { it.order }
+    private suspend fun isMangaDifferent(localAnime: Anime, remoteManga: BackupAnime): Boolean {
+        val localChapters = handler.await { episodesQueries.getEpisodesByMangaId(localAnime.id, 0).executeAsList() }
+        val localCategories = getCategories.await(localAnime.id).map { it.order }
 
         if (areChaptersDifferent(localChapters, remoteManga.chapters)) {
             return true
         }
 
-        if (localManga.version != remoteManga.version) {
+        if (localAnime.version != remoteManga.version) {
             return true
         }
 
@@ -289,11 +289,11 @@ class SyncManager(
     }
 
     /**
-     * Filters the favorite and non-favorite manga from the backup and checks
-     * if the favorite manga is different from the local database.
+     * Filters the favorite and non-favorite anime from the backup and checks
+     * if the favorite anime is different from the local database.
      * @param backup the Backup object containing the backup data.
-     * @return a Pair of lists, where the first list contains different favorite manga
-     * and the second list contains non-favorite manga.
+     * @return a Pair of lists, where the first list contains different favorite anime
+     * and the second list contains non-favorite anime.
      */
     private suspend fun filterFavoritesAndNonFavorites(backup: Backup): Pair<List<BackupAnime>, List<BackupAnime>> {
         val favorites = mutableListOf<BackupAnime>()
@@ -312,7 +312,7 @@ class SyncManager(
                 val compositeKey = Triple(remoteManga.source, remoteManga.url, remoteManga.title)
                 val localManga = localMangaMap[compositeKey]
                 when {
-                    // Checks if the manga is in favorites and needs updating or adding
+                    // Checks if the anime is in favorites and needs updating or adding
                     remoteManga.favorite -> {
                         if (localManga == null || isMangaDifferent(localManga, remoteManga)) {
                             logcat(LogPriority.DEBUG, logTag) { "Adding to favorites: ${remoteManga.title}" }
@@ -341,7 +341,7 @@ class SyncManager(
     }
 
     /**
-     * Updates the non-favorite manga in the local database with their favorite status from the backup.
+     * Updates the non-favorite anime in the local database with their favorite status from the backup.
      * @param nonFavorites the list of non-favorite BackupAnime objects from the backup.
      */
     private suspend fun updateNonFavorites(nonFavorites: List<BackupAnime>) {

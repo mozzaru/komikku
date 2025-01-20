@@ -817,7 +817,7 @@
     <string name="pref_flash_with">Mag-flash na may</string>
     <string name="pref_flash_style_black">Itim</string>
     <string name="pref_flash_style_white">Puti</string>
-    <string name="manga_interval_expected_update_null">Ang manga na ito ay nakumpleto na, o walang nahulaang petsa ng paglabas.</string>
+    <string name="manga_interval_expected_update_null">Ang anime na ito ay nakumpleto na, o walang nahulaang petsa ng paglabas.</string>
     <string name="invalid_backup_file_json">Hindi suportado ang JSON backup</string>
     <string name="invalid_backup_file_unknown">Nasira ang backup file</string>
     <string name="extensionRepo_settings">Mga repo ng extension</string>

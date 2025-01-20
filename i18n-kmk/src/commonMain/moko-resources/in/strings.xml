@@ -11,7 +11,7 @@
   <string name="download_cache_renew_interval_6hour">6 jam</string>
   <string name="download_cache_renew_interval_12hour">12 jam</string>
   <string name="download_cache_renew_interval_24hour">1 hari</string>
-  <string name="download_cache_renew_interval_info">Jika disetel ke \"manual\", segarkan setiap manga atau gunakan tindakan \"Batalkan indeks unduhan\" di \"Lanjutan\"</string>
+  <string name="download_cache_renew_interval_info">Jika disetel ke \"manual\", segarkan setiap anime atau gunakan tindakan \"Batalkan indeks unduhan\" di \"Lanjutan\"</string>
   <string name="pref_clean_invalid_downloads">Bersihkan unduhan yang tidak valid</string>
   <string name="pref_clean_invalid_downloads_summary">Temukan dan hapus semua unduhan, file, folder yang tidak disimpan di perpustakaan Anda</string>
   <string name="invalid_downloads_cleaned">Unduhan yang tidak valid dibersihkan</string>

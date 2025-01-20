@@ -5,7 +5,7 @@ import kotlinx.serialization.protobuf.ProtoNumber
 import tachiyomi.domain.anime.model.MergedAnimeReference
 
 /*
-* SY merged manga backup class
+* SY merged anime backup class
  */
 @Serializable
 data class BackupMergedMangaReference(

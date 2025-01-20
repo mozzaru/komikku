@@ -85,7 +85,7 @@ import eu.kanade.tachiyomi.R
 import eu.kanade.tachiyomi.animesource.model.SAnime
 import eu.kanade.tachiyomi.util.system.copyToClipboard
 import tachiyomi.domain.anime.interactor.FetchInterval
-import tachiyomi.domain.anime.model.Manga
+import tachiyomi.domain.anime.model.Anime
 import tachiyomi.domain.library.service.LibraryPreferences
 import tachiyomi.domain.library.service.LibraryPreferences.Companion.MANGA_NON_COMPLETED
 import tachiyomi.i18n.MR
@@ -112,7 +112,7 @@ private val whitespaceLineRegex = Regex("[\\r\\n]{2,}", setOf(RegexOption.MULTIL
 fun AnimeInfoBox(
     isTabletUi: Boolean,
     appBarPadding: Dp,
-    manga: Manga,
+    anime: Anime,
     sourceName: String,
     isStubSource: Boolean,
     onCoverClick: () -> Unit,
@@ -136,7 +136,7 @@ fun AnimeInfoBox(
         )
         AsyncImage(
             model = ImageRequest.Builder(LocalContext.current)
-                .data(manga)
+                .data(anime)
                 .crossfade(true)
                 .build(),
             contentDescription = null,
@@ -168,12 +168,12 @@ fun AnimeInfoBox(
                 .alpha(0.2f),
         )
 
-        // Manga & source info
+        // Anime & source info
         CompositionLocalProvider(LocalContentColor provides MaterialTheme.colorScheme.onSurface) {
             if (!isTabletUi) {
                 AnimeAndSourceTitlesSmall(
                     appBarPadding = appBarPadding,
-                    manga = manga,
+                    anime = anime,
                     sourceName = sourceName,
                     isStubSource = isStubSource,
                     onCoverClick = onCoverClick,
@@ -189,7 +189,7 @@ fun AnimeInfoBox(
             } else {
                 AnimeAndSourceTitlesLarge(
                     appBarPadding = appBarPadding,
-                    manga = manga,
+                    anime = anime,
                     sourceName = sourceName,
                     isStubSource = isStubSource,
                     onCoverClick = onCoverClick,
@@ -465,7 +465,7 @@ fun ExpandableAnimeDescription(
 @Composable
 private fun AnimeAndSourceTitlesLarge(
     appBarPadding: Dp,
-    manga: Manga,
+    anime: Anime,
     sourceName: String,
     isStubSource: Boolean,
     onCoverClick: () -> Unit,
@@ -489,7 +489,7 @@ private fun AnimeAndSourceTitlesLarge(
             AnimeCover.Panorama(
                 modifier = Modifier.fillMaxWidth(0.65f),
                 data = ImageRequest.Builder(LocalContext.current)
-                    .data(manga)
+                    .data(anime)
                     .crossfade(true)
                     .build(),
                 contentDescription = stringResource(MR.strings.manga_cover),
@@ -507,7 +507,7 @@ private fun AnimeAndSourceTitlesLarge(
             AnimeCover.Book(
                 modifier = Modifier.fillMaxWidth(0.65f),
                 data = ImageRequest.Builder(LocalContext.current)
-                    .data(manga)
+                    .data(anime)
                     .crossfade(true)
                     .build(),
                 contentDescription = stringResource(MR.strings.manga_cover),
@@ -523,10 +523,10 @@ private fun AnimeAndSourceTitlesLarge(
         }
         Spacer(modifier = Modifier.height(16.dp))
         AnimeContentInfo(
-            title = manga.title,
-            author = manga.author,
-            artist = manga.artist,
-            status = manga.status,
+            title = anime.title,
+            author = anime.author,
+            artist = anime.artist,
+            status = anime.status,
             sourceName = sourceName,
             isStubSource = isStubSource,
             doSearch = doSearch,
@@ -542,7 +542,7 @@ private fun AnimeAndSourceTitlesLarge(
 @Composable
 private fun AnimeAndSourceTitlesSmall(
     appBarPadding: Dp,
-    manga: Manga,
+    anime: Anime,
     sourceName: String,
     isStubSource: Boolean,
     onCoverClick: () -> Unit,
@@ -571,7 +571,7 @@ private fun AnimeAndSourceTitlesSmall(
                     .align(Alignment.CenterVertically),
                 // KMK <--
                 data = ImageRequest.Builder(LocalContext.current)
-                    .data(manga)
+                    .data(anime)
                     .crossfade(true)
                     .build(),
                 contentDescription = stringResource(MR.strings.manga_cover),
@@ -593,7 +593,7 @@ private fun AnimeAndSourceTitlesSmall(
                     .align(Alignment.CenterVertically),
                 // KMK <--
                 data = ImageRequest.Builder(LocalContext.current)
-                    .data(manga)
+                    .data(anime)
                     .crossfade(true)
                     .build(),
                 contentDescription = stringResource(MR.strings.manga_cover),
@@ -611,10 +611,10 @@ private fun AnimeAndSourceTitlesSmall(
             verticalArrangement = Arrangement.spacedBy(2.dp),
         ) {
             AnimeContentInfo(
-                title = manga.title,
-                author = manga.author,
-                artist = manga.artist,
-                status = manga.status,
+                title = anime.title,
+                author = anime.author,
+                artist = anime.artist,
+                status = anime.status,
                 sourceName = sourceName,
                 isStubSource = isStubSource,
                 doSearch = doSearch,

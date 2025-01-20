@@ -8,7 +8,7 @@ import exh.smartsearch.SmartSearchEngine
 import kotlinx.coroutines.CancellationException
 import tachiyomi.core.common.util.lang.launchIO
 import tachiyomi.domain.anime.interactor.NetworkToLocalAnime
-import tachiyomi.domain.anime.model.Manga
+import tachiyomi.domain.anime.model.Anime
 import tachiyomi.domain.source.service.SourceManager
 import uy.kohesive.injekt.Injekt
 import uy.kohesive.injekt.api.get
@@ -46,7 +46,7 @@ class SmartSearchScreenModel(
     }
 
     sealed class SearchResults {
-        data class Found(val manga: Manga) : SearchResults()
+        data class Found(val anime: Anime) : SearchResults()
         data object NotFound : SearchResults()
         data object Error : SearchResults()
     }

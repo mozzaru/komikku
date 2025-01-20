@@ -26,7 +26,7 @@ import tachiyomi.core.common.util.lang.withIOContext
 import tachiyomi.core.common.util.lang.withUIContext
 import tachiyomi.core.common.util.system.logcat
 import tachiyomi.domain.anime.interactor.GetAnime
-import tachiyomi.domain.anime.model.Manga
+import tachiyomi.domain.anime.model.Anime
 import tachiyomi.i18n.MR
 import uy.kohesive.injekt.Injekt
 import uy.kohesive.injekt.api.get
@@ -39,7 +39,7 @@ class AnimeCoverScreenModel(
     private val updateAnime: UpdateAnime = Injekt.get(),
 
     val snackbarHostState: SnackbarHostState = SnackbarHostState(),
-) : StateScreenModel<Manga?>(null) {
+) : StateScreenModel<Anime?>(null) {
 
     init {
         screenModelScope.launchIO {
@@ -84,7 +84,7 @@ class AnimeCoverScreenModel(
     }
 
     /**
-     * Save manga cover Bitmap to picture or temporary share directory.
+     * Save anime cover Bitmap to picture or temporary share directory.
      *
      * @param context The context for building and executing the ImageRequest
      * @return the uri to saved file

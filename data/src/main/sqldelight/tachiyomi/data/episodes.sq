@@ -43,7 +43,7 @@ BEGIN
     UPDATE episodes SET version = version + 1
     WHERE _id = new._id;
 
-    -- Update the manga version
+    -- Update the anime version
     UPDATE animes SET version = version + 1
     WHERE _id = new.manga_id AND (SELECT is_syncing FROM animes WHERE _id = new.manga_id) = 0;
 END;

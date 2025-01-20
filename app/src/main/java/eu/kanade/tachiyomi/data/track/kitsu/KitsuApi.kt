@@ -204,7 +204,7 @@ class KitsuApi(private val client: OkHttpClient, interceptor: KitsuInterceptor) 
                         if (it.data.isNotEmpty() && it.included.isNotEmpty()) {
                             it.firstToTrack()
                         } else {
-                            throw Exception("Could not find manga")
+                            throw Exception("Could not find anime")
                         }
                     }
             }

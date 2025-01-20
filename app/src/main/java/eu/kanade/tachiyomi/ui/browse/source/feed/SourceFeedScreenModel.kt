@@ -58,7 +58,7 @@ import uy.kohesive.injekt.Injekt
 import uy.kohesive.injekt.api.get
 import xyz.nulldev.ts.api.http.serializer.FilterSerializer
 import java.util.concurrent.Executors
-import tachiyomi.domain.anime.model.Manga as DomainManga
+import tachiyomi.domain.anime.model.Anime as DomainManga
 
 open class SourceFeedScreenModel(
     val sourceId: Long,
@@ -208,7 +208,7 @@ open class SourceFeedScreenModel(
     }
 
     /**
-     * Initiates get manga per feed.
+     * Initiates get anime per feed.
      */
     private fun getFeed(feedSavedSearch: List<SourceFeedUI>) {
         // KMK -->

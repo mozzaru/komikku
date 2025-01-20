@@ -805,7 +805,7 @@
 \nPokud to tak je správně, bude%2$s nahrazen, v opačném případě kontaktujte správce repozitáře.</string>
     <string name="pref_flash_duration_summary">%1$s ms</string>
     <string name="pref_flash_style_white">Bílou</string>
-    <string name="manga_interval_expected_update_null">Tato manga je buďto dokončená, nebo nemá přibližné datum vydání.</string>
+    <string name="manga_interval_expected_update_null">Tato anime je buďto dokončená, nebo nemá přibližné datum vydání.</string>
     <string name="label_upcoming">Nadcházející</string>
     <string name="pref_flash_duration">Délka bliknutí</string>
     <string name="pref_flash_page_interval">Bliknout každých</string>

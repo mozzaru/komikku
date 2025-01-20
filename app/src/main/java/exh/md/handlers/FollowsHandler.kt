@@ -42,7 +42,7 @@ class FollowsHandler(
     }
 
     /**
-     * Parse follows api to manga page
+     * Parse follows api to anime page
      * used when multiple follows
      */
     private fun followsParseMangaPage(
@@ -63,7 +63,7 @@ class FollowsHandler(
     }
 
     /**
-     * Change the status of a manga
+     * Change the status of a anime
      */
     suspend fun updateFollowStatus(mangaId: String, followStatus: FollowStatus): Boolean {
         return withIOContext {
@@ -127,7 +127,7 @@ class FollowsHandler(
     }
 
     /**
-     * fetch all manga from all possible pages
+     * fetch all anime from all possible pages
      */
     suspend fun fetchAllFollows(): List<Pair<SAnime, MangaDexSearchMetadata>> {
         return withIOContext {

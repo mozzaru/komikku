@@ -30,7 +30,7 @@ import eu.kanade.presentation.browse.components.RelatedAnimesComfortableGrid
 import eu.kanade.presentation.browse.components.RelatedAnimesCompactGrid
 import eu.kanade.presentation.browse.components.RelatedAnimesList
 import eu.kanade.tachiyomi.ui.anime.RelatedAnime
-import tachiyomi.domain.anime.model.Manga
+import tachiyomi.domain.anime.model.Anime
 import tachiyomi.domain.library.model.LibraryDisplayMode
 import tachiyomi.i18n.MR
 import tachiyomi.presentation.core.components.material.padding
@@ -41,15 +41,15 @@ import tachiyomi.presentation.core.screens.LoadingScreen
 @Composable
 fun RelatedAnimesContent(
     relatedAnimes: List<RelatedAnime>?,
-    getMangaState: @Composable (Manga) -> State<Manga>,
+    getAnimeState: @Composable (Anime) -> State<Anime>,
     columns: GridCells,
     displayMode: LibraryDisplayMode,
     contentPadding: PaddingValues,
-    onMangaClick: (Manga) -> Unit,
-    onMangaLongClick: (Manga) -> Unit,
+    onMangaClick: (Anime) -> Unit,
+    onMangaLongClick: (Anime) -> Unit,
     onKeywordClick: (String) -> Unit,
     onKeywordLongClick: (String) -> Unit,
-    selection: List<Manga>,
+    selection: List<Anime>,
 ) {
     if (relatedAnimes == null) {
         LoadingScreen(
@@ -70,7 +70,7 @@ fun RelatedAnimesContent(
         LibraryDisplayMode.ComfortableGrid -> {
             RelatedAnimesComfortableGrid(
                 relatedAnimes = relatedAnimes,
-                getManga = getMangaState,
+                getAnime = getAnimeState,
                 columns = columns,
                 contentPadding = contentPadding,
                 onMangaClick = onMangaClick,
@@ -83,7 +83,7 @@ fun RelatedAnimesContent(
         LibraryDisplayMode.ComfortableGridPanorama -> {
             RelatedAnimesComfortableGrid(
                 relatedAnimes = relatedAnimes,
-                getManga = getMangaState,
+                getAnime = getAnimeState,
                 columns = columns,
                 contentPadding = contentPadding,
                 onMangaClick = onMangaClick,
@@ -97,7 +97,7 @@ fun RelatedAnimesContent(
         LibraryDisplayMode.CompactGrid, LibraryDisplayMode.CoverOnlyGrid -> {
             RelatedAnimesCompactGrid(
                 relatedAnimes = relatedAnimes,
-                getManga = getMangaState,
+                getAnime = getAnimeState,
                 columns = columns,
                 contentPadding = contentPadding,
                 onMangaClick = onMangaClick,
@@ -110,7 +110,7 @@ fun RelatedAnimesContent(
         LibraryDisplayMode.List -> {
             RelatedAnimesList(
                 relatedAnimes = relatedAnimes,
-                getManga = getMangaState,
+                getAnime = getAnimeState,
                 contentPadding = contentPadding,
                 onMangaClick = onMangaClick,
                 onMangaLongClick = onMangaLongClick,

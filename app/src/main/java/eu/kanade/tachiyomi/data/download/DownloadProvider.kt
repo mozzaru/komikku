@@ -8,7 +8,7 @@ import logcat.LogPriority
 import tachiyomi.core.common.i18n.stringResource
 import tachiyomi.core.common.storage.displayablePath
 import tachiyomi.core.common.util.system.logcat
-import tachiyomi.domain.anime.model.Manga
+import tachiyomi.domain.anime.model.Anime
 import tachiyomi.domain.episode.model.Episode
 import tachiyomi.domain.storage.service.StorageManager
 import tachiyomi.i18n.MR
@@ -17,7 +17,7 @@ import uy.kohesive.injekt.api.get
 
 /**
  * This class is used to provide the directories where the downloads should be saved.
- * It uses the following path scheme: /<root downloads dir>/<source name>/<manga>/<episode>
+ * It uses the following path scheme: /<root downloads dir>/<source name>/<anime>/<episode>
  *
  * @param context the application context.
  */
@@ -30,10 +30,10 @@ class DownloadProvider(
         get() = storageManager.getDownloadsDirectory()
 
     /**
-     * Returns the download directory for a manga. For internal use only.
+     * Returns the download directory for a anime. For internal use only.
      *
-     * @param mangaTitle the title of the manga to query.
-     * @param source the source of the manga.
+     * @param mangaTitle the title of the anime to query.
+     * @param source the source of the anime.
      */
     internal fun getMangaDir(mangaTitle: String, source: AnimeSource): UniFile {
         try {
@@ -62,10 +62,10 @@ class DownloadProvider(
     }
 
     /**
-     * Returns the download directory for a manga if it exists.
+     * Returns the download directory for a anime if it exists.
      *
-     * @param mangaTitle the title of the manga to query.
-     * @param source the source of the manga.
+     * @param mangaTitle the title of the anime to query.
+     * @param source the source of the anime.
      */
     fun findMangaDir(mangaTitle: String, source: AnimeSource): UniFile? {
         val sourceDir = findSourceDir(source)
@@ -77,7 +77,7 @@ class DownloadProvider(
      *
      * @param chapterName the name of the episode to query.
      * @param chapterScanlator scanlator of the episode to query
-     * @param mangaTitle the title of the manga to query.
+     * @param mangaTitle the title of the anime to query.
      * @param source the source of the episode.
      */
     fun findChapterDir(chapterName: String, chapterScanlator: String?, mangaTitle: String, source: AnimeSource): UniFile? {
@@ -91,11 +91,11 @@ class DownloadProvider(
      * Returns a list of downloaded directories for the episodes that exist.
      *
      * @param episodes the episodes to query.
-     * @param manga the manga of the episode.
+     * @param anime the anime of the episode.
      * @param source the source of the episode.
      */
-    fun findChapterDirs(episodes: List<Episode>, manga: Manga, source: AnimeSource): Pair<UniFile?, List<UniFile>> {
-        val mangaDir = findMangaDir(/* SY --> */ manga.ogTitle /* SY <-- */, source) ?: return null to emptyList()
+    fun findChapterDirs(episodes: List<Episode>, anime: Anime, source: AnimeSource): Pair<UniFile?, List<UniFile>> {
+        val mangaDir = findMangaDir(/* SY --> */ anime.ogTitle /* SY <-- */, source) ?: return null to emptyList()
         return mangaDir to episodes.mapNotNull { chapter ->
             getValidChapterDirNames(chapter.name, chapter.scanlator).asSequence()
                 .mapNotNull { mangaDir.findFile(it) }
@@ -105,18 +105,18 @@ class DownloadProvider(
 
     // SY -->
     /**
-     * Returns a list of all files in manga directory
+     * Returns a list of all files in anime directory
      *
      * @param episodes the episodes to query.
-     * @param manga the manga of the episode.
+     * @param anime the anime of the episode.
      * @param source the source of the episode.
      */
     fun findUnmatchedChapterDirs(
         episodes: List<Episode>,
-        manga: Manga,
+        anime: Anime,
         source: AnimeSource,
     ): List<UniFile> {
-        val mangaDir = findMangaDir(/* SY --> */ manga.ogTitle /* SY <-- */, source) ?: return emptyList()
+        val mangaDir = findMangaDir(/* SY --> */ anime.ogTitle /* SY <-- */, source) ?: return emptyList()
         return mangaDir.listFiles().orEmpty().asList().filter {
             episodes.find { chp ->
                 getValidChapterDirNames(chp.name, chp.scanlator).any { dir ->
@@ -138,9 +138,9 @@ class DownloadProvider(
     }
 
     /**
-     * Returns the download directory name for a manga.
+     * Returns the download directory name for a anime.
      *
-     * @param mangaTitle the title of the manga to query.
+     * @param mangaTitle the title of the anime to query.
      */
     fun getMangaDirName(mangaTitle: String): String {
         return DiskUtil.buildValidFilename(mangaTitle)

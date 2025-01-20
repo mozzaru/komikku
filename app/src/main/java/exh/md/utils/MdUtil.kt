@@ -52,7 +52,7 @@ class MdUtil {
         const val mangaLimit = 20
 
         /**
-         * Get the manga offset pages are 1 based, so subtract 1
+         * Get the anime offset pages are 1 based, so subtract 1
          */
         fun getMangaListOffset(page: Int): String = (mangaLimit * (page - 1)).toString()
 
@@ -82,7 +82,7 @@ class MdUtil {
             return "/manga/$mangaUuid"
         }
 
-        // Get the ID from the manga url
+        // Get the ID from the anime url
         fun getMangaId(url: String): String = url.trimEnd('/').substringAfterLast("/")
 
         fun getChapterId(url: String) = url.substringAfterLast("/")

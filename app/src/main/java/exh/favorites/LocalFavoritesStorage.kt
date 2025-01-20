@@ -16,7 +16,7 @@ import tachiyomi.domain.anime.interactor.GetFavoriteEntries
 import tachiyomi.domain.anime.interactor.GetFavorites
 import tachiyomi.domain.anime.interactor.InsertFavoriteEntries
 import tachiyomi.domain.anime.model.FavoriteEntry
-import tachiyomi.domain.anime.model.Manga
+import tachiyomi.domain.anime.model.Anime
 import tachiyomi.domain.category.interactor.GetCategories
 import tachiyomi.domain.category.model.Category
 import uy.kohesive.injekt.Injekt
@@ -100,7 +100,7 @@ class LocalFavoritesStorage(
     private fun queryListForEntry(list: List<FavoriteEntry>, entry: FavoriteEntry) =
         list.find { it.urlEquals(entry) && it.category == entry.category }
 
-    private suspend fun Flow<Manga>.loadDbCategories(): Flow<Pair<Int, Manga>> {
+    private suspend fun Flow<Anime>.loadDbCategories(): Flow<Pair<Int, Anime>> {
         val dbCategories = getCategories.await()
             .filterNot(Category::isSystemCategory)
 
@@ -114,7 +114,7 @@ class LocalFavoritesStorage(
         }
     }
 
-    private fun Flow<Pair<Int, Manga>>.parseToFavoriteEntries() =
+    private fun Flow<Pair<Int, Anime>>.parseToFavoriteEntries() =
         filter { (_, manga) ->
             validateDbManga(manga)
         }.mapNotNull { (categoryId, manga) ->
@@ -130,8 +130,8 @@ class LocalFavoritesStorage(
             }
         }
 
-    private fun validateDbManga(manga: Manga) =
-        manga.favorite && manga.isEhBasedManga()
+    private fun validateDbManga(anime: Anime) =
+        anime.favorite && anime.isEhBasedManga()
 
     companion object {
         const val MAX_CATEGORIES = 9

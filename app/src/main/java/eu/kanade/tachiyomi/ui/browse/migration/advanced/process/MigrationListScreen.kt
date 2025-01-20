@@ -27,7 +27,7 @@ import tachiyomi.core.common.util.lang.withUIContext
 import tachiyomi.i18n.sy.SYMR
 
 /**
- * Screen showing a list of pair of source-dest manga entries being migrated.
+ * Screen showing a list of pair of source-dest anime entries being migrated.
  */
 class MigrationListScreen(private val config: MigrationProcedureConfig) : Screen() {
 
@@ -99,7 +99,7 @@ class MigrationListScreen(private val config: MigrationProcedureConfig) : Screen
             items = items ?: persistentListOf(),
             migrationDone = migrationDone,
             finishedCount = finishedCount,
-            getManga = screenModel::getManga,
+            getAnime = screenModel::getManga,
             getEpisodeInfo = screenModel::getChapterInfo,
             getSourceName = screenModel::getSourceName,
             onMigrationItemClick = {
@@ -117,9 +117,9 @@ class MigrationListScreen(private val config: MigrationProcedureConfig) : Screen
                 val validSources = if (sources.size == 1) {
                     sources
                 } else {
-                    sources.filter { it.id != migrationItem.manga.source }
+                    sources.filter { it.id != migrationItem.anime.source }
                 }
-                val searchScreen = MigrateSearchScreen(migrationItem.manga.id, validSources.map { it.id })
+                val searchScreen = MigrateSearchScreen(migrationItem.anime.id, validSources.map { it.id })
                 navigator push searchScreen
             },
             migrateNow = { screenModel.migrateManga(it, false) },

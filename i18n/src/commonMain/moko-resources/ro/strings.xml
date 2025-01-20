@@ -808,7 +808,7 @@
     <string name="upcoming_calendar_next">Luna următoare</string>
     <string name="upcoming_calendar_prev">Luna anterioară</string>
     <string name="extensionRepo_settings">Repo-uri extensii</string>
-    <string name="manga_interval_expected_update_null">Această manga este fie finalizată, fie nu există preconizare pentru data lansării.</string>
+    <string name="manga_interval_expected_update_null">Această anime este fie finalizată, fie nu există preconizare pentru data lansării.</string>
     <string name="pref_flash_style_black">Negru</string>
     <string name="pref_flash_with">Luminează cu</string>
     <string name="pref_flash_style_white">Alb</string>

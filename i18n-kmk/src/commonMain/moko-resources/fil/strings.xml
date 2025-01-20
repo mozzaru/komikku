@@ -11,7 +11,7 @@
   <string name="download_cache_renew_interval_6hour">6 oras</string>
   <string name="download_cache_renew_interval_12hour">12 oras</string>
   <string name="download_cache_renew_interval_24hour">1 araw</string>
-  <string name="download_cache_renew_interval_info">Kung nakatakda sa \"mano-mano\", maaaring i-refresh ang bawat manga o gamitin ang aksyon na \"Ipawalang-bisa ang indese ng mga download\" sa \"Karagdagan\"</string>
+  <string name="download_cache_renew_interval_info">Kung nakatakda sa \"mano-mano\", maaaring i-refresh ang bawat anime o gamitin ang aksyon na \"Ipawalang-bisa ang indese ng mga download\" sa \"Karagdagan\"</string>
   <string name="pref_clean_invalid_downloads">Linisin ang mga di-balidong mga download</string>
   <string name="pref_clean_invalid_downloads_summary">Hanapin at tanggalin ang mga download, file, folder na di naka-save sa iyong akalatan</string>
   <string name="invalid_downloads_cleaned">Nalinis ang mga di-balidong mga download</string>

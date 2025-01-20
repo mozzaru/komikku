@@ -9,14 +9,14 @@
         <changelogtext>[b]Improve:[/b] Add option to always use SSIV for image decoding</changelogtext>
         <changelogtext>[b]Fix:[/b] Duplicate chapters on backup restoring</changelogtext>
         <changelogtext>[b]Fix:[/b] Exclude categories when delete read chapter, except manually deleting</changelogtext>
-        <changelogtext>[b]Fix:[/b] Don't auto-expand manga when browsing if is favorited</changelogtext>
+        <changelogtext>[b]Fix:[/b] Don't auto-expand anime when browsing if is favorited</changelogtext>
         <changelogtext>[b]Fix:[/b] Download job stops all together even if 1 entry is failed to create directory</changelogtext>
-        <changelogtext>[b]Fix:[/b] Color Fill manga info from tracker</changelogtext>
+        <changelogtext>[b]Fix:[/b] Color Fill anime info from tracker</changelogtext>
         <changelogtext>[b]Fix:[/b] Some debug functions name</changelogtext>
         <changelogtext>[b]Fix:[/b] App shortcuts</changelogtext>
     </changelogversion>
     <changelogversion versionName="r9643" changeDate="December 18, 2024">
-        <changelogtext>[b]New:[/b] Get manga info from tracker</changelogtext>
+        <changelogtext>[b]New:[/b] Get anime info from tracker</changelogtext>
         <changelogtext>[b]Improve:[/b] Increase new updates count when updates found</changelogtext>
         <changelogtext>[b]Improve:[/b] favorites sync statuses</changelogtext>
         <changelogtext>[b]Improve:[/b] Update usage of work:work-runtime</changelogtext>
@@ -96,7 +96,7 @@
         <changelogtext>[b]New:[/b] allow Feed to hide entries already in Library</changelogtext>
         <changelogtext>[b]New:[/b] Added random library sort</changelogtext>
         <changelogtext>[b]New:[/b] Add option to opt out of Crashlytics</changelogtext>
-        <changelogtext>[b]Improve:[/b] show duplicating manga cover on Duplicate dialog</changelogtext>
+        <changelogtext>[b]Improve:[/b] show duplicating anime cover on Duplicate dialog</changelogtext>
         <changelogtext>[b]Improve:[/b] always enable panorama cover for Feed &amp; Global search</changelogtext>
         <changelogtext>[b]Improve:[/b] Add Quantity Badge to Upcoming Screen</changelogtext>
         <changelogtext>[b]Improve:[/b] make global search pinned/all sticky</changelogtext>
@@ -115,8 +115,8 @@
         <changelogtext>[b]Fix:[/b] late loading saved-searches when jump from SourceFeedScreen or FeedScreen</changelogtext>
         <changelogtext>[b]Fix:[/b] color when using custom theme with AndroidView on DownloadQueue &amp; MigrationBottomSheetDialog</changelogtext>
         <changelogtext>[b]Fix:[/b] source search box's height</changelogtext>
-        <changelogtext>[b]Fix:[/b] issue with not showing source names in merged manga sometimes</changelogtext>
-        <changelogtext>[b]Fix:[/b] EnhancedTracker not auto binding when adding manga to library</changelogtext>
+        <changelogtext>[b]Fix:[/b] issue with not showing source names in merged anime sometimes</changelogtext>
+        <changelogtext>[b]Fix:[/b] EnhancedTracker not auto binding when adding anime to library</changelogtext>
         <changelogtext>[b]Fix:[/b] Retain remote last chapter read if it's higher than the local one for EnhancedTracker</changelogtext>
     </changelogversion>
     <changelogversion versionName="r9404" changeDate="September 27, 2024">
@@ -173,7 +173,7 @@
         <changelogtext>[b]Improve:[/b] Add more auto backup hours</changelogtext>
         <changelogtext>[b]Improve:[/b] Add option to update library each 6 hours</changelogtext>
         <changelogtext>[b]Improve:[/b] Back-button on pre-migration source</changelogtext>
-        <changelogtext>[b]Improve:[/b] Don't expand description on the manga while merging</changelogtext>
+        <changelogtext>[b]Improve:[/b] Don't expand description on the anime while merging</changelogtext>
         <changelogtext>[b]Improve:[/b] Hide keyboard when a Tracker SearchResultItem is clicked</changelogtext>
         <changelogtext>[b]Improve:[/b] Move dropdown menu to correct position</changelogtext>
         <changelogtext>[b]Improve:[/b] Add extensions list refresh menu</changelogtext>
@@ -191,7 +191,7 @@
         <changelogtext>[b]New:[/b] Add a button to select all scanlators</changelogtext>
         <changelogtext>[b]New:[/b] Add an "open in browser" button to reader menu</changelogtext>
         <changelogtext>[b]New:[/b] Add Backup and Restore of Extension Repos</changelogtext>
-        <changelogtext>[b]Improve:[/b] allow canceling search for a migrating manga without remove it</changelogtext>
+        <changelogtext>[b]Improve:[/b] allow canceling search for a migrating anime without remove it</changelogtext>
         <changelogtext>[b]Improve:[/b] put Suggestions in overflow</changelogtext>
         <changelogtext>[b]Fix:[/b] Update Kitsu's domain to kitsu.app</changelogtext>
         <changelogtext>[b]Fix:[/b] settings to show/hide progress-banner were not working</changelogtext>
@@ -217,7 +217,7 @@
         <changelogtext>[b]Fix:[/b] library is backed up when disabled and make categories backup/restore independent</changelogtext>
         <changelogtext>[b]Fix:[/b] canceling job didn't hide status banner</changelogtext>
         <changelogtext>[b]Fix:[/b] copy icon (migration whole list) was always migrating instead of copy</changelogtext>
-        <changelogtext>[b]Fix:[/b] migrate/copy manga untick delete downloaded had no effect but always delete</changelogtext>
+        <changelogtext>[b]Fix:[/b] migrate/copy anime untick delete downloaded had no effect but always delete</changelogtext>
         <changelogtext>Update translation</changelogtext>
     </changelogversion>
     <changelogversion versionName="r9149" changeDate="July 22, 2024">
@@ -261,15 +261,15 @@
         <changelogtext>[b]Fix:[/b] sometimes it's loading forever if app sleeps for too long (in Source's feed &amp; browse screens)</changelogtext>
     </changelogversion>
     <changelogversion versionName="r9066" changeDate="June 25, 2024">
-        <changelogtext>[b]New:[/b] Home icon in manga view</changelogtext>
+        <changelogtext>[b]New:[/b] Home icon in anime view</changelogtext>
         <changelogtext>[b]New:[/b] Showing changelog in preview build</changelogtext>
         <changelogtext>[b]Improve:[/b] Full color for Reader &amp; Cover</changelogtext>
         <changelogtext>[b]Improve:[/b] Better background for full cover view</changelogtext>
         <changelogtext>[b]Improve:[/b] Better cover_error &amp; cover_loading size</changelogtext>
-        <changelogtext>[b]Improve:[/b] navigation flow when click on manga's source</changelogtext>
+        <changelogtext>[b]Improve:[/b] navigation flow when click on anime's source</changelogtext>
         <changelogtext>[b]Improve:[/b] Sticky header &amp; language for sources filter</changelogtext>
         <changelogtext>[b]Improve:[/b] Metadata view</changelogtext>
-        <changelogtext>[b]Improve:[/b] Scrollbar for related mangas screen</changelogtext>
+        <changelogtext>[b]Improve:[/b] Scrollbar for related animes screen</changelogtext>
         <changelogtext>[b]Improve:[/b] other UI improvements</changelogtext>
         <changelogtext>[b]Fix:[/b] crashing issues with Suggestions screens</changelogtext>
         <changelogtext>[b]Fix:[/b] unexpected skips in strong skipping mode</changelogtext>
@@ -339,14 +339,14 @@
         <changelogtext>Beta build switch to 'preview' repo</changelogtext>
     </changelogversion>
     <changelogversion versionName="1.10.5 (r8851)" changeDate="May 9,2024">
-        <changelogtext>[b]New[/b] Show related mangas for all sources</changelogtext>
+        <changelogtext>[b]New[/b] Show related animes for all sources</changelogtext>
         <changelogtext>[b]New[/b] Bulk select multiple entries to favorite/category</changelogtext>
         <changelogtext>[b]New[/b] Search for sources in Browse screen</changelogtext>
         <changelogtext>[b]New[/b] Quick NSFW sources filter in both Extensions/Browse screen</changelogtext>
         <changelogtext>[b]Improved[/b] Feeds screen support all sources</changelogtext>
         <changelogtext>[b]Improved[/b] More Feed's entries</changelogtext>
         <changelogtext>[b]New[/b] Built-in official extensions repo</changelogtext>
-        <changelogtext>[b]Improved[/b] Click manga's source name will jump to source browsing</changelogtext>
+        <changelogtext>[b]Improved[/b] Click anime's source name will jump to source browsing</changelogtext>
         <changelogtext>[b]Improved[/b] Show extensions/sources NSFW &amp; languages tag</changelogtext>
         <changelogtext>[b]Improved[/b] Jump to extensions' settings from Source screen</changelogtext>
         <changelogtext>[b]New[/b] Migrate to Komikku's own Tracking clients</changelogtext>
@@ -359,7 +359,7 @@
         <changelogtext>Include the delayed tracker update fix</changelogtext>
     </changelogversion>
     <changelogversion versionName="1.2.0" changeDate="Aug 12,2020">
-        <changelogtext>[b]New[/b] quick clean Titles, adds a quick clean that will clean titles from manga from certain sources, it will quickly remove unnecessary bloat</changelogtext>
+        <changelogtext>[b]New[/b] quick clean Titles, adds a quick clean that will clean titles from anime from certain sources, it will quickly remove unnecessary bloat</changelogtext>
         <changelogtext>[b]Rewritten[/b] rewrite the library search engine (that was inherited from EH), it now can exclude, use quotes for absolute searches, it supports namespace tags, and a bunch more, its probably the most advanced search engine any Tachi fork has</changelogtext>
         <changelogtext>[b]New[/b] smart Background, when using a pager like LTR, the background will now change color depending on the page (from J2k)</changelogtext>
     </changelogversion>

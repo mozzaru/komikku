@@ -49,7 +49,7 @@ class SyncEpisodeProgressWithTrack(
         /**
          * Chapters to update to follow tracker: only continuous incremental episodes
          * any abnormal episode number will stop it from updating read status further.
-         * Some mangas has name such as Volume 2 Episode 1 which will corrupt the order
+         * Some animes has name such as Volume 2 Episode 1 which will corrupt the order
          * if we sort by chapterNumber.
          */
         val episodeUpdates = dbChapters

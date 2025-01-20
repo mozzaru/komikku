@@ -251,7 +251,7 @@ class AnilistApi(val client: OkHttpClient, interceptor: AnilistInterceptor) {
     }
 
     suspend fun getLibManga(track: Track, userId: Int): Track {
-        return findLibManga(track, userId) ?: throw Exception("Could not find manga")
+        return findLibManga(track, userId) ?: throw Exception("Could not find anime")
     }
 
     fun createOAuth(token: String): ALOAuth {

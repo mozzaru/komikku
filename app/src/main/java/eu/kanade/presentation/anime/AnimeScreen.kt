@@ -113,7 +113,7 @@ import exh.ui.metadata.adapters.NHentaiDescription
 import exh.ui.metadata.adapters.PururinDescription
 import exh.ui.metadata.adapters.TsuminoDescription
 import tachiyomi.domain.anime.model.AnimeCover
-import tachiyomi.domain.anime.model.Manga
+import tachiyomi.domain.anime.model.Anime
 import tachiyomi.domain.episode.model.Episode
 import tachiyomi.domain.episode.service.missingEpisodesCount
 import tachiyomi.domain.library.service.LibraryPreferences
@@ -197,10 +197,10 @@ fun AnimeScreen(
     onInvertSelection: () -> Unit,
 
     // KMK -->
-    getMangaState: @Composable (Manga) -> State<Manga>,
+    getAnimeState: @Composable (Anime) -> State<Anime>,
     onRelatedMangasScreenClick: () -> Unit,
-    onRelatedMangaClick: (Manga) -> Unit,
-    onRelatedMangaLongClick: (Manga) -> Unit,
+    onRelatedMangaClick: (Anime) -> Unit,
+    onRelatedMangaLongClick: (Anime) -> Unit,
     librarySearch: (query: String) -> Unit,
     onSourceClick: () -> Unit,
     onCoverLoaded: (AnimeCover) -> Unit,
@@ -262,7 +262,7 @@ fun AnimeScreen(
             onAllChapterSelected = onAllChapterSelected,
             onInvertSelection = onInvertSelection,
             // KMK -->
-            getMangaState = getMangaState,
+            getAnimeState = getAnimeState,
             onRelatedMangasScreenClick = onRelatedMangasScreenClick,
             onRelatedMangaClick = onRelatedMangaClick,
             onRelatedMangaLongClick = onRelatedMangaLongClick,
@@ -320,7 +320,7 @@ fun AnimeScreen(
             onAllChapterSelected = onAllChapterSelected,
             onInvertSelection = onInvertSelection,
             // KMK -->
-            getMangaState = getMangaState,
+            getAnimeState = getAnimeState,
             onRelatedMangasScreenClick = onRelatedMangasScreenClick,
             onRelatedMangaClick = onRelatedMangaClick,
             onRelatedMangaLongClick = onRelatedMangaLongClick,
@@ -395,10 +395,10 @@ private fun AnimeScreenSmallImpl(
     onInvertSelection: () -> Unit,
 
     // KMK -->
-    getMangaState: @Composable ((Manga) -> State<Manga>),
+    getAnimeState: @Composable ((Anime) -> State<Anime>),
     onRelatedMangasScreenClick: () -> Unit,
-    onRelatedMangaClick: (Manga) -> Unit,
-    onRelatedMangaLongClick: (Manga) -> Unit,
+    onRelatedMangaClick: (Anime) -> Unit,
+    onRelatedMangaLongClick: (Anime) -> Unit,
     librarySearch: (query: String) -> Unit,
     onSourceClick: () -> Unit,
     onCoverLoaded: (AnimeCover) -> Unit,
@@ -465,7 +465,7 @@ private fun AnimeScreenSmallImpl(
                 label = "Top Bar Background",
             )
             AnimeToolbar(
-                title = state.manga.title,
+                title = state.anime.title,
                 titleAlphaProvider = { animatedTitleAlpha },
                 backgroundAlphaProvider = { animatedBgAlpha },
                 hasFilters = state.filterActive,
@@ -477,16 +477,16 @@ private fun AnimeScreenSmallImpl(
                 onClickRefresh = onRefresh,
                 onClickMigrate = onMigrateClicked,
                 // SY -->
-                onClickEditInfo = onEditInfoClicked.takeIf { state.manga.favorite },
+                onClickEditInfo = onEditInfoClicked.takeIf { state.anime.favorite },
                 // KMK -->
                 onClickRelatedMangas = onRelatedMangasScreenClick.takeIf {
                     !expandRelatedMangas &&
                         showRelatedMangasInOverflow &&
-                        state.manga.source != MERGED_SOURCE_ID
+                        state.anime.source != MERGED_SOURCE_ID
                 },
                 // KMK <--
                 onClickRecommend = onRecommendClicked.takeIf { state.showRecommendationsInOverflow },
-                onClickMergedSettings = onMergedSettingsClicked.takeIf { state.manga.source == MERGED_SOURCE_ID },
+                onClickMergedSettings = onMergedSettingsClicked.takeIf { state.anime.source == MERGED_SOURCE_ID },
                 onClickMerge = onMergeClicked.takeIf { state.showMergeInOverflow },
                 // SY <--
                 actionModeCounter = selectedChapterCount,
@@ -607,7 +607,7 @@ private fun AnimeScreenSmallImpl(
                         AnimeInfoBox(
                             isTabletUi = false,
                             appBarPadding = topPadding,
-                            manga = state.manga,
+                            anime = state.anime,
                             sourceName = remember { state.source.getNameForMangaInfo(state.mergedData?.sources) },
                             isStubSource = remember { state.source is StubSource },
                             onCoverClick = onCoverClicked,
@@ -626,10 +626,10 @@ private fun AnimeScreenSmallImpl(
                         contentType = AnimeScreenItem.ACTION_ROW,
                     ) {
                         AnimeActionRow(
-                            favorite = state.manga.favorite,
+                            favorite = state.anime.favorite,
                             trackingCount = state.trackingCount,
                             nextUpdate = nextUpdate,
-                            isUserIntervalMode = state.manga.fetchInterval < 0,
+                            isUserIntervalMode = state.anime.fetchInterval < 0,
                             onAddToLibraryClicked = onAddToLibraryClicked,
                             onWebViewClicked = onWebViewClicked,
                             onWebViewLongClicked = onWebViewLongClicked,
@@ -640,8 +640,8 @@ private fun AnimeScreenSmallImpl(
                             onMergeClicked = onMergeClicked.takeUnless { state.showMergeInOverflow },
                             // SY <--
                             // KMK -->
-                            status = state.manga.status,
-                            interval = state.manga.fetchInterval,
+                            status = state.anime.status,
+                            interval = state.anime.fetchInterval,
                             // KMK <--
                         )
                     }
@@ -667,15 +667,15 @@ private fun AnimeScreenSmallImpl(
                         contentType = AnimeScreenItem.DESCRIPTION_WITH_TAG,
                     ) {
                         ExpandableAnimeDescription(
-                            defaultExpandState = state.isFromSource && !state.manga.favorite,
-                            description = state.manga.description,
-                            tagsProvider = { state.manga.genre },
+                            defaultExpandState = state.isFromSource && !state.anime.favorite,
+                            description = state.anime.description,
+                            tagsProvider = { state.anime.genre },
                             onTagSearch = onTagSearch,
                             onCopyTagToClipboard = onCopyTagToClipboard,
                             // SY -->
                             doSearch = onSearch,
-                            searchMetadataChips = remember(state.meta, state.source.id, state.manga.genre) {
-                                SearchMetadataChips(state.meta, state.source, state.manga.genre)
+                            searchMetadataChips = remember(state.meta, state.source.id, state.anime.genre) {
+                                SearchMetadataChips(state.meta, state.source, state.anime.genre)
                             },
                             // SY <--
                         )
@@ -684,7 +684,7 @@ private fun AnimeScreenSmallImpl(
                     // KMK -->
                     if (state.source !is StubSource &&
                         relatedMangasEnabled &&
-                        state.manga.source != MERGED_SOURCE_ID
+                        state.anime.source != MERGED_SOURCE_ID
                     ) {
                         if (expandRelatedMangas) {
                             if (state.relatedMangasSorted?.isNotEmpty() != false) {
@@ -704,7 +704,7 @@ private fun AnimeScreenSmallImpl(
                                         )
                                         RelatedAnimesRow(
                                             relatedAnimes = state.relatedMangasSorted,
-                                            getMangaState = getMangaState,
+                                            getAnimeState = getAnimeState,
                                             onMangaClick = onRelatedMangaClick,
                                             onMangaLongClick = onRelatedMangaLongClick,
                                         )
@@ -770,7 +770,7 @@ private fun AnimeScreenSmallImpl(
                     }
 
                     sharedEpisodeItems(
-                        manga = state.manga,
+                        anime = state.anime,
                         mergedData = state.mergedData,
                         chapters = listItem,
                         isAnyChapterSelected = chapters.fastAny { it.selected },
@@ -850,10 +850,10 @@ private fun AnimeScreenLargeImpl(
     onInvertSelection: () -> Unit,
 
     // KMK -->
-    getMangaState: @Composable ((Manga) -> State<Manga>),
+    getAnimeState: @Composable ((Anime) -> State<Anime>),
     onRelatedMangasScreenClick: () -> Unit,
-    onRelatedMangaClick: (Manga) -> Unit,
-    onRelatedMangaLongClick: (Manga) -> Unit,
+    onRelatedMangaClick: (Anime) -> Unit,
+    onRelatedMangaLongClick: (Anime) -> Unit,
     librarySearch: (query: String) -> Unit,
     onSourceClick: () -> Unit,
     onCoverLoaded: (AnimeCover) -> Unit,
@@ -911,7 +911,7 @@ private fun AnimeScreenLargeImpl(
             }
             AnimeToolbar(
                 modifier = Modifier.onSizeChanged { topBarHeight = it.height },
-                title = state.manga.title,
+                title = state.anime.title,
                 titleAlphaProvider = { if (isAnySelected) 1f else 0f },
                 backgroundAlphaProvider = { 1f },
                 hasFilters = state.filterActive,
@@ -923,16 +923,16 @@ private fun AnimeScreenLargeImpl(
                 onClickRefresh = onRefresh,
                 onClickMigrate = onMigrateClicked,
                 // SY -->
-                onClickEditInfo = onEditInfoClicked.takeIf { state.manga.favorite },
+                onClickEditInfo = onEditInfoClicked.takeIf { state.anime.favorite },
                 // KMK -->
                 onClickRelatedMangas = onRelatedMangasScreenClick.takeIf {
                     !expandRelatedMangas &&
                         showRelatedMangasInOverflow &&
-                        state.manga.source != MERGED_SOURCE_ID
+                        state.anime.source != MERGED_SOURCE_ID
                 },
                 // KMK <--
                 onClickRecommend = onRecommendClicked.takeIf { state.showRecommendationsInOverflow },
-                onClickMergedSettings = onMergedSettingsClicked.takeIf { state.manga.source == MERGED_SOURCE_ID },
+                onClickMergedSettings = onMergedSettingsClicked.takeIf { state.anime.source == MERGED_SOURCE_ID },
                 onClickMerge = onMergeClicked.takeIf { state.showMergeInOverflow },
                 // SY <--
                 actionModeCounter = selectedChapterCount,
@@ -1054,7 +1054,7 @@ private fun AnimeScreenLargeImpl(
                         AnimeInfoBox(
                             isTabletUi = true,
                             appBarPadding = contentPadding.calculateTopPadding(),
-                            manga = state.manga,
+                            anime = state.anime,
                             sourceName = remember { state.source.getNameForMangaInfo(state.mergedData?.sources) },
                             isStubSource = remember { state.source is StubSource },
                             onCoverClick = onCoverClicked,
@@ -1067,10 +1067,10 @@ private fun AnimeScreenLargeImpl(
                             // KMK <--
                         )
                         AnimeActionRow(
-                            favorite = state.manga.favorite,
+                            favorite = state.anime.favorite,
                             trackingCount = state.trackingCount,
                             nextUpdate = nextUpdate,
-                            isUserIntervalMode = state.manga.fetchInterval < 0,
+                            isUserIntervalMode = state.anime.fetchInterval < 0,
                             onAddToLibraryClicked = onAddToLibraryClicked,
                             onWebViewClicked = onWebViewClicked,
                             onWebViewLongClicked = onWebViewLongClicked,
@@ -1081,8 +1081,8 @@ private fun AnimeScreenLargeImpl(
                             onMergeClicked = onMergeClicked.takeUnless { state.showMergeInOverflow },
                             // SY <--
                             // KMK -->
-                            status = state.manga.status,
-                            interval = state.manga.fetchInterval,
+                            status = state.anime.status,
+                            interval = state.anime.fetchInterval,
                             // KMK <--
                         )
                         // SY -->
@@ -1095,14 +1095,14 @@ private fun AnimeScreenLargeImpl(
                         // SY <--
                         ExpandableAnimeDescription(
                             defaultExpandState = true,
-                            description = state.manga.description,
-                            tagsProvider = { state.manga.genre },
+                            description = state.anime.description,
+                            tagsProvider = { state.anime.genre },
                             onTagSearch = onTagSearch,
                             onCopyTagToClipboard = onCopyTagToClipboard,
                             // SY -->
                             doSearch = onSearch,
-                            searchMetadataChips = remember(state.meta, state.source.id, state.manga.genre) {
-                                SearchMetadataChips(state.meta, state.source, state.manga.genre)
+                            searchMetadataChips = remember(state.meta, state.source.id, state.anime.genre) {
+                                SearchMetadataChips(state.meta, state.source, state.anime.genre)
                             },
                             // SY <--
                         )
@@ -1142,7 +1142,7 @@ private fun AnimeScreenLargeImpl(
                             // KMK -->
                             if (state.source !is StubSource &&
                                 relatedMangasEnabled &&
-                                state.manga.source != MERGED_SOURCE_ID
+                                state.anime.source != MERGED_SOURCE_ID
                             ) {
                                 if (expandRelatedMangas) {
                                     if (state.relatedMangasSorted?.isNotEmpty() != false) {
@@ -1162,7 +1162,7 @@ private fun AnimeScreenLargeImpl(
                                                 )
                                                 RelatedAnimesRow(
                                                     relatedAnimes = state.relatedMangasSorted,
-                                                    getMangaState = getMangaState,
+                                                    getAnimeState = getAnimeState,
                                                     onMangaClick = onRelatedMangaClick,
                                                     onMangaLongClick = onRelatedMangaLongClick,
                                                 )
@@ -1200,7 +1200,7 @@ private fun AnimeScreenLargeImpl(
                             }
 
                             sharedEpisodeItems(
-                                manga = state.manga,
+                                anime = state.anime,
                                 mergedData = state.mergedData,
                                 chapters = listItem,
                                 isAnyChapterSelected = chapters.fastAny { it.selected },
@@ -1265,7 +1265,7 @@ private fun SharedAnimeBottomActionMenu(
 }
 
 private fun LazyListScope.sharedEpisodeItems(
-    manga: Manga,
+    anime: Anime,
     mergedData: MergedMangaData?,
     chapters: List<EpisodeList>,
     isAnyChapterSelected: Boolean,
@@ -1284,7 +1284,7 @@ private fun LazyListScope.sharedEpisodeItems(
         key = { item ->
             when (item) {
                 // KMK: using hashcode to prevent edge-cases where the missing count might duplicate,
-                // especially on merged manga
+                // especially on merged anime
                 is EpisodeList.MissingCount -> "missing-count-${item.hashCode()}"
                 is EpisodeList.Item -> "episode-${item.id}"
             }
@@ -1299,7 +1299,7 @@ private fun LazyListScope.sharedEpisodeItems(
             }
             is EpisodeList.Item -> {
                 AnimeChapterListItem(
-                    title = if (manga.displayMode == Manga.CHAPTER_DISPLAY_NUMBER) {
+                    title = if (anime.displayMode == Anime.CHAPTER_DISPLAY_NUMBER) {
                         stringResource(
                             MR.strings.display_mode_chapter,
                             formatEpisodeNumber(item.episode.chapterNumber),
@@ -1311,7 +1311,7 @@ private fun LazyListScope.sharedEpisodeItems(
                         .takeIf { it > 0L }
                         ?.let {
                             // SY -->
-                            if (manga.isEhBasedManga()) {
+                            if (anime.isEhBasedManga()) {
                                 MetadataUtil.EX_DATE_FORMAT
                                     .format(ZonedDateTime.ofInstant(Instant.ofEpochMilli(it), ZoneId.systemDefault()))
                             } else {
@@ -1339,7 +1339,7 @@ private fun LazyListScope.sharedEpisodeItems(
                     bookmark = item.episode.bookmark,
                     selected = item.selected,
                     downloadIndicatorEnabled =
-                    !isAnyChapterSelected && !(mergedData?.manga?.get(item.episode.mangaId) ?: manga).isLocal(),
+                    !isAnyChapterSelected && !(mergedData?.anime?.get(item.episode.mangaId) ?: anime).isLocal(),
                     downloadStateProvider = { item.downloadState },
                     downloadProgressProvider = { item.downloadProgress },
                     chapterSwipeStartAction = chapterSwipeStartAction,

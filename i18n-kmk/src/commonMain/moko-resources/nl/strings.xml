@@ -11,7 +11,7 @@
   <string name="download_cache_renew_interval_6hour">6 uur</string>
   <string name="download_cache_renew_interval_12hour">12 uur</string>
   <string name="download_cache_renew_interval_24hour">1 dag</string>
-  <string name="download_cache_renew_interval_info">Indien ingesteld op \"handmatig\", verververs manga of gebruik de \"Ongevalideer downloads index\" actie in \"Geavanceerd\"</string>
+  <string name="download_cache_renew_interval_info">Indien ingesteld op \"handmatig\", verververs anime of gebruik de \"Ongevalideer downloads index\" actie in \"Geavanceerd\"</string>
   <string name="pref_clean_invalid_downloads">Ongeldige downloads opschonen</string>
   <string name="pref_clean_invalid_downloads_summary">Zoek en verwijder alle downloads, bestanden, mappen die niet worden opgeslagen in uw bibliotheek</string>
   <string name="invalid_downloads_cleaned">Ongeldige downloads opgeschoond</string>

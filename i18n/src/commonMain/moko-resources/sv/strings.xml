@@ -653,7 +653,7 @@
     <string name="pref_skip_dupe_chapters">Hoppa över duplicerade kapitel</string>
     <string name="action_display_show_continue_reading_button">Fortsätt läsa knapp</string>
     <string name="action_not_now">Inte nu</string>
-    <string name="action_open_random_manga">Öppna en slumpmässig manga</string>
+    <string name="action_open_random_manga">Öppna en slumpmässig anime</string>
     <string name="pref_invalidate_download_cache">Gör nedladdningsindexet ogiltigt</string>
     <string name="pref_invalidate_download_cache_summary">Tvinga appen att läsa in nedladdade kapitel på nytt</string>
     <string name="fdroid_warning">F-Droid-versioner stöds inte officiellt.
@@ -810,7 +810,7 @@
     <string name="action_view_upcoming">Visa kommande uppdateringar</string>
     <string name="upcoming_guide">Kommande guide</string>
     <string name="file_picker_uri_permission_unsupported">Misslyckades med att skaffa beständig mappåtkomst. Appen kan bete sig oväntat.</string>
-    <string name="manga_interval_expected_update_null">Denna manga är antingen avslutad, eller så finns inget förutsebart publiceringsdatum.</string>
+    <string name="manga_interval_expected_update_null">Denna anime är antingen avslutad, eller så finns inget förutsebart publiceringsdatum.</string>
     <string name="pref_flash_duration">Blink varaktighet</string>
     <string name="pref_flash_duration_summary">%1$s ms</string>
     <string name="pref_flash_page_interval">Blinka var</string>

@@ -11,7 +11,7 @@
   <string name="download_cache_renew_interval_6hour">6 ore</string>
   <string name="download_cache_renew_interval_12hour">12 ore</string>
   <string name="download_cache_renew_interval_24hour">1 giorno</string>
-  <string name="download_cache_renew_interval_info">Se impostato su \"manual\", aggiorna ogni manga o usando l\'azione \"Invalidate downloads index\" in \"Avanzate\"</string>
+  <string name="download_cache_renew_interval_info">Se impostato su \"manual\", aggiorna ogni anime o usando l\'azione \"Invalidate downloads index\" in \"Avanzate\"</string>
   <string name="pref_clean_invalid_downloads">Pulisci download non validi</string>
   <string name="pref_clean_invalid_downloads_summary">Trova e rimuovi tutti i download, file, cartelle che non vengono salvate nella tua libreria</string>
   <string name="invalid_downloads_cleaned">Scaricamenti non validi puliti</string>

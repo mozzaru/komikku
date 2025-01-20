@@ -749,7 +749,7 @@
     <string name="source_settings">Impostatziones de sas fontes</string>
     <string name="app_settings">Impostatziones de s\'aplicatzione</string>
     <string name="exclude_scanlators">Esclude sos iscandutores (iscansidores+tradutores)</string>
-    <string name="manga_interval_expected_update_null">Custu manga est acabbadu o non b\'at una data de publicatzione previdida.</string>
+    <string name="manga_interval_expected_update_null">Custu anime est acabbadu o non b\'at una data de publicatzione previdida.</string>
     <string name="file_picker_uri_permission_unsupported">Non s\'est pòdidu otènnere s\'atzessu permanente a sa cartella. S\'aplicatzione si diat pòdere cumportare in manera no isetada.</string>
     <string name="ext_permission_install_apps_warning">B\'at bisòngiu de sos permissos pro installare estensiones. Toca inoghe pro los frunire.</string>
     <string name="information_empty_repos">Non tenes galu depòsitos impostados.</string>

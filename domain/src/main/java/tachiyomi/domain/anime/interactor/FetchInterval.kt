@@ -1,7 +1,7 @@
 package tachiyomi.domain.anime.interactor
 
 import tachiyomi.domain.anime.model.AnimeUpdate
-import tachiyomi.domain.anime.model.Manga
+import tachiyomi.domain.anime.model.Anime
 import tachiyomi.domain.episode.interactor.GetEpisodesByAnimeId
 import tachiyomi.domain.episode.model.Episode
 import java.time.Instant
@@ -15,12 +15,12 @@ class FetchInterval(
 ) {
 
     suspend fun toMangaUpdate(
-        manga: Manga,
+        anime: Anime,
         dateTime: ZonedDateTime,
         window: Pair<Long, Long>,
     ): AnimeUpdate {
-        val interval = manga.fetchInterval.takeIf { it < 0 } ?: calculateInterval(
-            episodes = getEpisodesByAnimeId.await(manga.id, applyScanlatorFilter = true),
+        val interval = anime.fetchInterval.takeIf { it < 0 } ?: calculateInterval(
+            episodes = getEpisodesByAnimeId.await(anime.id, applyScanlatorFilter = true),
             zone = dateTime.zone,
         )
         val currentWindow = if (window.first == 0L && window.second == 0L) {
@@ -28,9 +28,9 @@ class FetchInterval(
         } else {
             window
         }
-        val nextUpdate = calculateNextUpdate(manga, interval, dateTime, currentWindow)
+        val nextUpdate = calculateNextUpdate(anime, interval, dateTime, currentWindow)
 
-        return AnimeUpdate(id = manga.id, nextUpdate = nextUpdate, fetchInterval = interval)
+        return AnimeUpdate(id = anime.id, nextUpdate = nextUpdate, fetchInterval = interval)
     }
 
     fun getWindow(dateTime: ZonedDateTime): Pair<Long, Long> {
@@ -87,17 +87,17 @@ class FetchInterval(
     }
 
     private fun calculateNextUpdate(
-        manga: Manga,
+        anime: Anime,
         interval: Int,
         dateTime: ZonedDateTime,
         window: Pair<Long, Long>,
     ): Long {
-        if (manga.nextUpdate in window.first.rangeTo(window.second + 1)) {
-            return manga.nextUpdate
+        if (anime.nextUpdate in window.first.rangeTo(window.second + 1)) {
+            return anime.nextUpdate
         }
 
         val latestDate = ZonedDateTime.ofInstant(
-            if (manga.lastUpdate > 0) Instant.ofEpochMilli(manga.lastUpdate) else Instant.now(),
+            if (anime.lastUpdate > 0) Instant.ofEpochMilli(anime.lastUpdate) else Instant.now(),
             dateTime.zone,
         )
             .toLocalDate()

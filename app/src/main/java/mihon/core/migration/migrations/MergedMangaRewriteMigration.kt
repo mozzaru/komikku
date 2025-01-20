@@ -15,7 +15,7 @@ import tachiyomi.domain.anime.interactor.GetAnime
 import tachiyomi.domain.anime.interactor.GetAnimeBySource
 import tachiyomi.domain.anime.interactor.InsertMergedReference
 import tachiyomi.domain.anime.model.AnimeUpdate
-import tachiyomi.domain.anime.model.Manga
+import tachiyomi.domain.anime.model.Anime
 import tachiyomi.domain.anime.model.MergedAnimeReference
 import tachiyomi.domain.episode.interactor.DeleteEpisodes
 import tachiyomi.domain.episode.interactor.UpdateEpisode
@@ -73,8 +73,8 @@ class MergedMangaRewriteMigration : Migration {
                             downloadChapters = true,
                             mergeId = newFirst.id,
                             mergeUrl = newFirst.url,
-                            mangaId = load.manga.id,
-                            mangaUrl = load.manga.url,
+                            mangaId = load.anime.id,
+                            mangaUrl = load.anime.url,
                             mangaSourceId = load.source.id,
                         )
                     }
@@ -99,14 +99,14 @@ class MergedMangaRewriteMigration : Migration {
                 val mergedMangaChapters =
                     handler.awaitList {
                         ehQueries.getChaptersByMangaIds(
-                            loadedMangaList.map { it.manga.id },
+                            loadedMangaList.map { it.anime.id },
                             EpisodeMapper::mapChapter,
                         )
                     }
 
                 val mergedMangaChaptersMatched = mergedMangaChapters.mapNotNull { chapter ->
                     loadedMangaList.firstOrNull {
-                        it.manga.id == chapter.id
+                        it.anime.id == chapter.id
                     }?.let { it to chapter }
                 }
                 val parsedChapters = chapters.filter {
@@ -117,7 +117,7 @@ class MergedMangaRewriteMigration : Migration {
                     mergedMangaChaptersMatched.firstOrNull {
                         it.second.url == parsedChapter.second.url &&
                             it.first.source.id == parsedChapter.second.source &&
-                            it.first.manga.url == parsedChapter.second.mangaUrl
+                            it.first.anime.url == parsedChapter.second.mangaUrl
                     }?.let {
                         chaptersToUpdate += EpisodeUpdate(
                             it.second.id,
@@ -160,8 +160,8 @@ class MergedMangaRewriteMigration : Migration {
         }
     }
 
-    private fun readMangaConfig(manga: Manga): MangaConfig? {
-        return MangaConfig.readFromUrl(manga.url)
+    private fun readMangaConfig(anime: Anime): MangaConfig? {
+        return MangaConfig.readFromUrl(anime.url)
     }
 
     @Serializable
@@ -186,5 +186,5 @@ class MergedMangaRewriteMigration : Migration {
         }
     }
 
-    private data class LoadedMangaSource(val source: AnimeSource, val manga: Manga)
+    private data class LoadedMangaSource(val source: AnimeSource, val anime: Anime)
 }

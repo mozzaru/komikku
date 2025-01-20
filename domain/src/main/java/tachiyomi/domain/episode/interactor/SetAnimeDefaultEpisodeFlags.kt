@@ -3,7 +3,7 @@ package tachiyomi.domain.episode.interactor
 import tachiyomi.core.common.util.lang.withNonCancellableContext
 import tachiyomi.domain.anime.interactor.GetFavorites
 import tachiyomi.domain.anime.interactor.SetAnimeEpisodeFlags
-import tachiyomi.domain.anime.model.Manga
+import tachiyomi.domain.anime.model.Anime
 import tachiyomi.domain.library.service.LibraryPreferences
 
 class SetAnimeDefaultEpisodeFlags(
@@ -12,11 +12,11 @@ class SetAnimeDefaultEpisodeFlags(
     private val getFavorites: GetFavorites,
 ) {
 
-    suspend fun await(manga: Manga) {
+    suspend fun await(anime: Anime) {
         withNonCancellableContext {
             with(libraryPreferences) {
                 setAnimeEpisodeFlags.awaitSetAllFlags(
-                    mangaId = manga.id,
+                    mangaId = anime.id,
                     unreadFilter = filterChapterByRead().get(),
                     downloadedFilter = filterChapterByDownloaded().get(),
                     bookmarkedFilter = filterChapterByBookmarked().get(),

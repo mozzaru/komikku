@@ -9,16 +9,16 @@
         <changelogtext>[b]Improve:[/b] Add option to always use SSIV for image decoding</changelogtext>
         <changelogtext>[b]Fix:[/b] Duplicate chapters on backup restoring</changelogtext>
         <changelogtext>[b]Fix:[/b] Exclude categories when delete read chapter, except manually deleting</changelogtext>
-        <changelogtext>[b]Fix:[/b] Don't auto-expand manga when browsing if is favorited</changelogtext>
+        <changelogtext>[b]Fix:[/b] Don't auto-expand anime when browsing if is favorited</changelogtext>
         <changelogtext>[b]Fix:[/b] Download job stops all together even if 1 entry is failed to create directory</changelogtext>
-        <changelogtext>[b]Fix:[/b] Color Fill manga info from tracker</changelogtext>
+        <changelogtext>[b]Fix:[/b] Color Fill anime info from tracker</changelogtext>
         <changelogtext>[b]Fix:[/b] Some debug functions name</changelogtext>
         <changelogtext>[b]Fix:[/b] App shortcuts</changelogtext>
     </changelogversion>
     <changelogversion versionName="1.12.2" changeDate="December 18, 2024">
         <changelogtext>[b]New:[/b] Auto install app update</changelogtext>
         <changelogtext>[b]New:[/b] filter only Obsolete sources in Migration screen</changelogtext>
-        <changelogtext>[b]New:[/b] Get manga info from tracker</changelogtext>
+        <changelogtext>[b]New:[/b] Get anime info from tracker</changelogtext>
         <changelogtext>[b]Improve:[/b] App update retry/resume</changelogtext>
         <changelogtext>[b]Improve:[/b] add manual download &amp; error message to app update error notification</changelogtext>
         <changelogtext>[b]Improve:[/b] add webp support to nh</changelogtext>
@@ -92,7 +92,7 @@
         <changelogtext>[b]New:[/b] Add Backup and Restore of Extension Repos</changelogtext>
         <changelogtext>[b]New:[/b] Remove the 'UNOFFICIAL' status, remove built-in Komikku repo, instead allow adding it as default</changelogtext>
         <changelogtext>[b]Improve:[/b] Default disable Integrated H features</changelogtext>
-        <changelogtext>[b]Improve:[/b] show duplicating manga cover on Duplicate dialog</changelogtext>
+        <changelogtext>[b]Improve:[/b] show duplicating anime cover on Duplicate dialog</changelogtext>
         <changelogtext>[b]Improve:[/b] allow chapter 0 dupe auto mark as read</changelogtext>
         <changelogtext>[b]Improve:[/b] rework panorama cover settings</changelogtext>
         <changelogtext>[b]Improve:[/b] update all trackers based on common data when new tracker is added</changelogtext>
@@ -124,14 +124,14 @@
         <changelogtext>[b]Improve:[/b] Add more auto backup hours</changelogtext>
         <changelogtext>[b]Improve:[/b] Add option to update library each 6 hours</changelogtext>
         <changelogtext>[b]Improve:[/b] Back-button on pre-migration source</changelogtext>
-        <changelogtext>[b]Improve:[/b] Don't expand description on the manga while merging</changelogtext>
+        <changelogtext>[b]Improve:[/b] Don't expand description on the anime while merging</changelogtext>
         <changelogtext>[b]Improve:[/b] Hide keyboard when a Tracker SearchResultItem is clicked</changelogtext>
         <changelogtext>[b]Improve:[/b] Move dropdown menu to correct position</changelogtext>
         <changelogtext>[b]Improve:[/b] Add extensions list refresh menu</changelogtext>
         <changelogtext>[b]Improve:[/b] Add confirmation when adding repo via URI</changelogtext>
         <changelogtext>[b]Improve:[/b] Respect privacy settings in extension update notification</changelogtext>
         <changelogtext>[b]Improve:[/b] Option to not backup Saved searches &amp; Feeds</changelogtext>
-        <changelogtext>[b]Improve:[/b] allow canceling search for a migrating manga without remove it</changelogtext>
+        <changelogtext>[b]Improve:[/b] allow canceling search for a migrating anime without remove it</changelogtext>
         <changelogtext>[b]Improve:[/b] put Suggestions in overflow</changelogtext>
         <changelogtext>[b]Improve:[/b] Smart library updates now will honor the 'Skip Completed' option</changelogtext>
         <changelogtext>[b]Fix:[/b] for ExH</changelogtext>
@@ -141,8 +141,8 @@
         <changelogtext>[b]Fix:[/b] reader slider</changelogtext>
         <changelogtext>[b]Fix:[/b] settings SliderItem steps count</changelogtext>
         <changelogtext>[b]Fix:[/b] source search box's height</changelogtext>
-        <changelogtext>[b]Fix:[/b] issue with not showing source names in merged manga sometimes</changelogtext>
-        <changelogtext>[b]Fix:[/b] EnhancedTracker not auto binding when adding manga to library</changelogtext>
+        <changelogtext>[b]Fix:[/b] issue with not showing source names in merged anime sometimes</changelogtext>
+        <changelogtext>[b]Fix:[/b] EnhancedTracker not auto binding when adding anime to library</changelogtext>
         <changelogtext>[b]Fix:[/b] Retain remote last chapter read if it's higher than the local one for EnhancedTracker</changelogtext>
         <changelogtext>[b]Fix:[/b] Kitsu `ratingTwenty` being typed as String</changelogtext>
         <changelogtext>[b]Fix:[/b] Kitsu `synopsis` nullability</changelogtext>
@@ -174,7 +174,7 @@
         <changelogtext>[b]Improve:[/b] Background color for favorite entries</changelogtext>
         <changelogtext>[b]Fix:[/b] Update E-H to support libraryColored, bulk-selection overlay</changelogtext>
         <changelogtext>[b]Fix:[/b] Copy icon (migration whole list) was always migrating instead of copy</changelogtext>
-        <changelogtext>[b]Fix:[/b] Migrate/copy manga with 'Delete downloaded' unticked had no effect but always delete</changelogtext>
+        <changelogtext>[b]Fix:[/b] Migrate/copy anime with 'Delete downloaded' unticked had no effect but always delete</changelogtext>
         <changelogtext>[b]Fix:[/b] Background color of selected entries</changelogtext>
         <changelogtext>[b]Fix:[/b] (performance) rework cover's loading animation</changelogtext>
         <changelogtext>[b]Fix:[/b] (performance) laggy after browsing library for a while</changelogtext>
@@ -208,14 +208,14 @@
         <changelogtext>[b]Fix:[/b] storage permission request for non-conforming devices</changelogtext>
     </changelogversion>
     <changelogversion versionName="1.10.5" changeDate="May 9,2024">
-        <changelogtext>[b]New[/b] Show related mangas for all sources</changelogtext>
+        <changelogtext>[b]New[/b] Show related animes for all sources</changelogtext>
         <changelogtext>[b]New[/b] Bulk select multiple entries to favorite/category</changelogtext>
         <changelogtext>[b]New[/b] Search for sources in Browse screen</changelogtext>
         <changelogtext>[b]New[/b] Quick NSFW sources filter in both Extensions/Browse screen</changelogtext>
         <changelogtext>[b]Improved[/b] Feeds screen support all sources</changelogtext>
         <changelogtext>[b]Improved[/b] More Feed's entries</changelogtext>
         <changelogtext>Built-in official extensions repo</changelogtext>
-        <changelogtext>[b]Improved[/b] Click manga's source name will jump to source browsing</changelogtext>
+        <changelogtext>[b]Improved[/b] Click anime's source name will jump to source browsing</changelogtext>
         <changelogtext>[b]Improved[/b] Show extensions/sources NSFW &amp; languages tag</changelogtext>
         <changelogtext>[b]Improved[/b] Jump to extensions' settings from Source screen</changelogtext>
         <changelogtext>Migrate to Komikku's own Tracking clients</changelogtext>
@@ -228,7 +228,7 @@
         <changelogtext>Include the delayed tracker update fix</changelogtext>
     </changelogversion>
     <changelogversion versionName="1.2.0" changeDate="Aug 12,2020">
-        <changelogtext>[b]New[/b] quick clean Titles, adds a quick clean that will clean titles from manga from certain sources, it will quickly remove unnecessary bloat</changelogtext>
+        <changelogtext>[b]New[/b] quick clean Titles, adds a quick clean that will clean titles from anime from certain sources, it will quickly remove unnecessary bloat</changelogtext>
         <changelogtext>[b]Rewritten[/b] rewrite the library search engine (that was inherited from EH), it now can exclude, use quotes for absolute searches, it supports namespace tags, and a bunch more, its probably the most advanced search engine any Tachi fork has</changelogtext>
         <changelogtext>[b]New[/b] smart Background, when using a pager like LTR, the background will now change color depending on the page (from J2k)</changelogtext>
     </changelogversion>

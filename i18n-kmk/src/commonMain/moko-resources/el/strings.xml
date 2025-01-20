@@ -11,7 +11,7 @@
   <string name="download_cache_renew_interval_6hour">6 ώρες</string>
   <string name="download_cache_renew_interval_12hour">12 ώρες</string>
   <string name="download_cache_renew_interval_24hour">1 ημέρα</string>
-  <string name="download_cache_renew_interval_info">Εάν επιλέξετε \"εγχειρίδιο\", είτε ανανεώστε κάθε manga είτε χρησιμοποιώντας την ενέργεια \"Invalidate downloads index\" στο \"Advanced\"</string>
+  <string name="download_cache_renew_interval_info">Εάν επιλέξετε \"εγχειρίδιο\", είτε ανανεώστε κάθε anime είτε χρησιμοποιώντας την ενέργεια \"Invalidate downloads index\" στο \"Advanced\"</string>
   <string name="pref_clean_invalid_downloads">Καθαρισμός μη έγκυρων λήψεων</string>
   <string name="pref_clean_invalid_downloads_summary">Βρείτε και αφαιρέστε όλες τις λήψεις, αρχεία, φακέλους που δεν αποθηκεύονται στη βιβλιοθήκη σας</string>
   <string name="invalid_downloads_cleaned">Μη έγκυρες λήψεις καθαρίστηκαν</string>

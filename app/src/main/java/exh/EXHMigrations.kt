@@ -8,7 +8,7 @@ import exh.source.NHENTAI_OLD_ID
 import exh.source.NHENTAI_SOURCE_ID
 import exh.source.TSUMINO_OLD_ID
 import exh.source.TSUMINO_SOURCE_ID
-import tachiyomi.domain.anime.model.Manga
+import tachiyomi.domain.anime.model.Anime
 import java.net.URI
 import java.net.URISyntaxException
 
@@ -17,8 +17,8 @@ object EXHMigrations {
     /**
      * Migrate old source ID of delegated sources in old backup
      */
-    fun migrateBackupEntry(manga: Manga): Manga {
-        var newManga = manga
+    fun migrateBackupEntry(anime: Anime): Anime {
+        var newManga = anime
         if (newManga.source == NHENTAI_OLD_ID) {
             newManga = newManga.copy(
                 // Migrate the old source to the delegated one

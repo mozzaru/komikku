@@ -13,7 +13,7 @@ import androidx.compose.ui.util.fastAny
 import eu.kanade.presentation.browse.RelatedAnimeTitle
 import eu.kanade.presentation.browse.RelatedAnimesLoadingItem
 import eu.kanade.tachiyomi.ui.anime.RelatedAnime
-import tachiyomi.domain.anime.model.Manga
+import tachiyomi.domain.anime.model.Anime
 import tachiyomi.i18n.MR
 import tachiyomi.i18n.kmk.KMR
 import tachiyomi.presentation.core.components.FastScrollLazyColumn
@@ -24,13 +24,13 @@ import tachiyomi.presentation.core.i18n.stringResource
 @Composable
 fun RelatedAnimesList(
     relatedAnimes: List<RelatedAnime>,
-    getManga: @Composable (Manga) -> State<Manga>,
+    getAnime: @Composable (Anime) -> State<Anime>,
     contentPadding: PaddingValues,
-    onMangaClick: (Manga) -> Unit,
-    onMangaLongClick: (Manga) -> Unit,
+    onMangaClick: (Anime) -> Unit,
+    onMangaLongClick: (Anime) -> Unit,
     onKeywordClick: (String) -> Unit,
     onKeywordLongClick: (String) -> Unit,
-    selection: List<Manga>,
+    selection: List<Anime>,
 ) {
     FastScrollLazyColumn(
         // Using modifier instead of contentPadding so we can use stickyHeader
@@ -82,12 +82,12 @@ fun RelatedAnimesList(
                     )
                 }
                 items(
-                    key = { "related-list-${relatedAnime.mangaList[it].url.hashCode()}" },
-                    count = relatedAnime.mangaList.size,
+                    key = { "related-list-${relatedAnime.animeList[it].url.hashCode()}" },
+                    count = relatedAnime.animeList.size,
                 ) { index ->
-                    val manga by getManga(relatedAnime.mangaList[index])
+                    val manga by getAnime(relatedAnime.animeList[index])
                     BrowseSourceListItem(
-                        manga = manga,
+                        anime = manga,
                         onClick = { onMangaClick(manga) },
                         onLongClick = { onMangaLongClick(manga) },
                         isSelected = selection.fastAny { selected -> selected.id == manga.id },

@@ -126,7 +126,7 @@ class EHentai(
     data class ParsedManga(val fav: Int, val manga: SAnime, val metadata: EHentaiSearchMetadata)
 
     private fun extendedGenericMangaParse(doc: Document) = with(doc) {
-        // Parse mangas (supports compact + extended layout)
+        // Parse animes (supports compact + extended layout)
         val parsedMangas = select(".itg > tbody > tr").filter { element ->
             // Do not parse header and ads
             element.selectFirst("th") == null && element.selectFirst(".itd") == null
@@ -605,10 +605,10 @@ class EHentai(
     }
 
     /**
-     * Returns an observable with the updated details for a manga. Normally it's not needed to
+     * Returns an observable with the updated details for a anime. Normally it's not needed to
      * override this method.
      *
-     * @param anime the manga to be updated.
+     * @param anime the anime to be updated.
      */
     @Deprecated("Use the 1.x API instead", replaceWith = ReplaceWith("getAnimeDetails"))
     override fun fetchAnimeDetails(anime: SAnime): Observable<SAnime> {
