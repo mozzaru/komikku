@@ -21,19 +21,19 @@ import eu.kanade.tachiyomi.R
 import exh.metadata.metadata.MangaDexSearchMetadata
 import exh.metadata.metadata.RaisedSearchMetadata
 import kotlinx.coroutines.flow.StateFlow
-import tachiyomi.domain.anime.model.AnimeCover
 import tachiyomi.domain.anime.model.Anime
+import tachiyomi.domain.anime.model.AnimeCover
 import tachiyomi.presentation.core.components.Badge
 import tachiyomi.presentation.core.i18n.stringResource
 import tachiyomi.presentation.core.util.plus
 
 @Composable
 fun BrowseSourceComfortableGrid(
-    mangaList: LazyPagingItems<StateFlow</* SY --> */Pair<Anime, RaisedSearchMetadata?>/* SY <-- */>>,
+    animeList: LazyPagingItems<StateFlow</* SY --> */Pair<Anime, RaisedSearchMetadata?>/* SY <-- */>>,
     columns: GridCells,
     contentPadding: PaddingValues,
-    onMangaClick: (Anime) -> Unit,
-    onMangaLongClick: (Anime) -> Unit,
+    onAnimeClick: (Anime) -> Unit,
+    onAnimeLongClick: (Anime) -> Unit,
     // KMK -->
     selection: List<Anime>,
     usePanoramaCover: Boolean = false,
@@ -45,34 +45,34 @@ fun BrowseSourceComfortableGrid(
         verticalArrangement = Arrangement.spacedBy(CommonAnimeItemDefaults.GridVerticalSpacer),
         horizontalArrangement = Arrangement.spacedBy(CommonAnimeItemDefaults.GridHorizontalSpacer),
     ) {
-        if (mangaList.loadState.prepend is LoadState.Loading) {
+        if (animeList.loadState.prepend is LoadState.Loading) {
             item(span = { GridItemSpan(maxLineSpan) }) {
                 BrowseSourceLoadingItem()
             }
         }
 
-        items(count = mangaList.itemCount) { index ->
+        items(count = animeList.itemCount) { index ->
             // SY -->
-            val pair by mangaList[index]?.collectAsState() ?: return@items
-            val manga = pair.first
+            val pair by animeList[index]?.collectAsState() ?: return@items
+            val anime = pair.first
             val metadata = pair.second
             // SY <--
 
             BrowseSourceComfortableGridItem(
-                manga = manga,
+                anime = anime,
                 // SY -->
                 metadata = metadata,
                 // SY <--
-                onClick = { onMangaClick(manga) },
-                onLongClick = { onMangaLongClick(manga) },
+                onClick = { onAnimeClick(anime) },
+                onLongClick = { onAnimeLongClick(anime) },
                 // KMK -->
-                isSelected = selection.fastAny { selected -> selected.id == manga.id },
+                isSelected = selection.fastAny { selected -> selected.id == anime.id },
                 usePanoramaCover = usePanoramaCover,
                 // KMK <--
             )
         }
 
-        if (mangaList.loadState.refresh is LoadState.Loading || mangaList.loadState.append is LoadState.Loading) {
+        if (animeList.loadState.refresh is LoadState.Loading || animeList.loadState.append is LoadState.Loading) {
             item(span = { GridItemSpan(maxLineSpan) }) {
                 BrowseSourceLoadingItem()
             }
@@ -82,7 +82,7 @@ fun BrowseSourceComfortableGrid(
 
 @Composable
 internal fun BrowseSourceComfortableGridItem(
-    manga: Anime,
+    anime: Anime,
     // SY -->
     metadata: RaisedSearchMetadata?,
     // SY <--
@@ -94,22 +94,22 @@ internal fun BrowseSourceComfortableGridItem(
     // KMK <--
 ) {
     AnimeComfortableGridItem(
-        title = manga.title,
+        title = anime.title,
         coverData = AnimeCover(
-            animeId = manga.id,
-            sourceId = manga.source,
-            isAnimeFavorite = manga.favorite,
-            ogUrl = manga.thumbnailUrl,
-            lastModified = manga.coverLastModified,
+            animeId = anime.id,
+            sourceId = anime.source,
+            isAnimeFavorite = anime.favorite,
+            ogUrl = anime.thumbnailUrl,
+            lastModified = anime.coverLastModified,
         ),
         // KMK -->
         isSelected = isSelected,
         usePanoramaCover = usePanoramaCover,
         fitToPanoramaCover = true,
         // KMK <--
-        coverAlpha = if (manga.favorite) CommonAnimeItemDefaults.BrowseFavoriteCoverAlpha else 1f,
+        coverAlpha = if (anime.favorite) CommonAnimeItemDefaults.BrowseFavoriteCoverAlpha else 1f,
         coverBadgeStart = {
-            InLibraryBadge(enabled = manga.favorite)
+            InLibraryBadge(enabled = anime.favorite)
         },
         // SY -->
         coverBadgeEnd = {

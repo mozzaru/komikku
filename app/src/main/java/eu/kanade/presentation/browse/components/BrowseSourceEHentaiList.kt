@@ -48,7 +48,7 @@ import kotlinx.coroutines.flow.StateFlow
 import tachiyomi.core.common.i18n.pluralStringResource
 import tachiyomi.core.common.util.lang.withIOContext
 import tachiyomi.domain.anime.model.Anime
-import tachiyomi.domain.anime.model.asMangaCover
+import tachiyomi.domain.anime.model.asAnimeCover
 import tachiyomi.i18n.sy.SYMR
 import tachiyomi.presentation.core.components.BadgeGroup
 import tachiyomi.presentation.core.components.material.padding
@@ -60,10 +60,10 @@ import java.time.ZoneId
 
 @Composable
 fun BrowseSourceEHentaiList(
-    mangaList: LazyPagingItems<StateFlow</* SY --> */Pair<Anime, RaisedSearchMetadata?>/* SY <-- */>>,
+    animeList: LazyPagingItems<StateFlow</* SY --> */Pair<Anime, RaisedSearchMetadata?>/* SY <-- */>>,
     contentPadding: PaddingValues,
-    onMangaClick: (Anime) -> Unit,
-    onMangaLongClick: (Anime) -> Unit,
+    onAnimeClick: (Anime) -> Unit,
+    onAnimeLongClick: (Anime) -> Unit,
     // KMK -->
     selection: List<Anime>,
     // KMK <--
@@ -72,13 +72,13 @@ fun BrowseSourceEHentaiList(
         contentPadding = contentPadding,
     ) {
         item {
-            if (mangaList.loadState.prepend is LoadState.Loading) {
+            if (animeList.loadState.prepend is LoadState.Loading) {
                 BrowseSourceLoadingItem()
             }
         }
 
-        items(count = mangaList.itemCount) { index ->
-            val pair by mangaList[index]?.collectAsState() ?: return@items
+        items(count = animeList.itemCount) { index ->
+            val pair by animeList[index]?.collectAsState() ?: return@items
             val manga = pair.first
             val metadata = pair.second
 
@@ -87,8 +87,8 @@ fun BrowseSourceEHentaiList(
                 // SY -->
                 metadata = metadata,
                 // SY <--
-                onClick = { onMangaClick(manga) },
-                onLongClick = { onMangaLongClick(manga) },
+                onClick = { onAnimeClick(manga) },
+                onLongClick = { onAnimeLongClick(manga) },
                 // KMK -->
                 isSelected = selection.fastAny { selected -> selected.id == manga.id },
                 // KMK <--
@@ -96,7 +96,7 @@ fun BrowseSourceEHentaiList(
         }
 
         item {
-            if (mangaList.loadState.refresh is LoadState.Loading || mangaList.loadState.append is LoadState.Loading) {
+            if (animeList.loadState.refresh is LoadState.Loading || animeList.loadState.append is LoadState.Loading) {
                 BrowseSourceLoadingItem()
             }
         }
@@ -118,7 +118,7 @@ fun BrowseSourceEHentaiListItem(
 ) {
     if (metadata !is EHentaiSearchMetadata) return
     // KMK -->
-    val coverData = manga.asMangaCover()
+    val coverData = manga.asAnimeCover()
     val bgColor = coverData.dominantCoverColors?.first?.let { Color(it) }.takeIf { libraryColored }
     val onBgColor = coverData.dominantCoverColors?.second.takeIf { libraryColored }
     val coverAlpha = if (manga.favorite) CommonAnimeItemDefaults.BrowseFavoriteCoverAlpha else 1f

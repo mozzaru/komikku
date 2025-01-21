@@ -66,7 +66,7 @@ fun MigrateAnimeScreen(
     onMultiMigrateClicked: (() -> Unit),
     onSelectAll: (Boolean) -> Unit,
     onInvertSelection: () -> Unit,
-    onMangaSelected: (MigrateAnimeItem, Boolean, Boolean, Boolean) -> Unit,
+    onAnimeSelected: (MigrateAnimeItem, Boolean, Boolean, Boolean) -> Unit,
 ) {
     BackHandler(enabled = state.selectionMode, onBack = { onSelectAll(false) })
 
@@ -134,7 +134,7 @@ fun MigrateAnimeScreen(
             onClickItem = onClickItem,
             onClickCover = onClickCover,
             // KMK -->
-            onMangaSelected = onMangaSelected,
+            onAnimeSelected = onAnimeSelected,
             listState = listState,
             // KMK <--
         )
@@ -148,7 +148,7 @@ private fun MigrateAnimeContent(
     onClickItem: (MigrateAnimeItem) -> Unit,
     onClickCover: (Anime) -> Unit,
     // KMK -->
-    onMangaSelected: (MigrateAnimeItem, Boolean, Boolean, Boolean) -> Unit,
+    onAnimeSelected: (MigrateAnimeItem, Boolean, Boolean, Boolean) -> Unit,
     listState: LazyListState,
 ) {
     FastScrollLazyColumn(
@@ -158,11 +158,11 @@ private fun MigrateAnimeContent(
         // KMK <--
         items(items = state.titles) {
             MigrateAnimeItem(
-                manga = it.anime,
+                anime = it.anime,
                 onClickItem = {
                     // KMK -->
                     when {
-                        state.selectionMode -> onMangaSelected(it, !it.selected, true, false)
+                        state.selectionMode -> onAnimeSelected(it, !it.selected, true, false)
                         // KMK <--
                         else -> onClickItem(it)
                     }
@@ -171,7 +171,7 @@ private fun MigrateAnimeContent(
                     onClickCover(it.anime)
                     // KMK -->
                 }.takeIf { !state.selectionMode },
-                onLongClick = { onMangaSelected(it, !it.selected, true, true) },
+                onLongClick = { onAnimeSelected(it, !it.selected, true, true) },
                 selected = it.selected,
                 modifier = Modifier.animateItemFastScroll(),
                 // KMK <--
@@ -182,7 +182,7 @@ private fun MigrateAnimeContent(
 
 @Composable
 private fun MigrateAnimeItem(
-    manga: Anime,
+    anime: Anime,
     onClickItem: () -> Unit,
     onClickCover: (() -> Unit)?,
     // KMK -->
@@ -193,7 +193,7 @@ private fun MigrateAnimeItem(
 ) {
     BaseAnimeListItem(
         modifier = modifier,
-        anime = manga,
+        anime = anime,
         onClickItem = onClickItem,
         onClickCover = { onClickCover?.invoke() },
         // KMK -->

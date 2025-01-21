@@ -85,7 +85,7 @@ fun RelatedAnimesComfortableGrid(
                 ) { index ->
                     val manga by getManga(relatedAnime.mangaList[index])
                     BrowseSourceComfortableGridItem(
-                        manga = manga,
+                        anime = manga,
                         onClick = { onMangaClick(manga) },
                         onLongClick = { onMangaLongClick(manga) },
                         isSelected = selection.fastAny { selected -> selected.id == manga.id },

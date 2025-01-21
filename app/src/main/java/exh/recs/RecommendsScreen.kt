@@ -107,7 +107,7 @@ class RecommendsScreen(val mangaId: Long, val sourceId: Long) : Screen() {
         ) { paddingValues ->
             BrowseSourceContent(
                 source = screenModel.source,
-                mangaList = mangaList,
+                animeList = mangaList,
                 columns = screenModel.getColumnsPreference(LocalConfiguration.current.orientation),
                 // SY -->
                 ehentaiBrowseDisplayMode = false,
@@ -118,7 +118,7 @@ class RecommendsScreen(val mangaId: Long, val sourceId: Long) : Screen() {
                 onWebViewClick = null,
                 onHelpClick = null,
                 onLocalSourceHelpClick = null,
-                onMangaClick = {
+                onAnimeClick = {
                     // KMK -->
                     scope.launchIO {
                         val manga = screenModel.networkToLocalAnime.getLocal(it)
@@ -130,7 +130,7 @@ class RecommendsScreen(val mangaId: Long, val sourceId: Long) : Screen() {
                         }
                     }
                 },
-                onMangaLongClick = {
+                onAnimeLongClick = {
                     // KMK -->
                     scope.launchIO {
                         val manga = screenModel.networkToLocalAnime.getLocal(it)

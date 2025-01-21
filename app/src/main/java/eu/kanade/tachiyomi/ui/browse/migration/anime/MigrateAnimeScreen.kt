@@ -71,7 +71,7 @@ data class MigrateAnimeScreen(
             },
             onSelectAll = screenModel::toggleAllSelection,
             onInvertSelection = screenModel::invertSelection,
-            onMangaSelected = screenModel::toggleSelection,
+            onAnimeSelected = screenModel::toggleSelection,
             // KMK <--
         )
 

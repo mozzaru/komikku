@@ -322,7 +322,7 @@ data class BrowseSourceScreen(
         ) { paddingValues ->
             BrowseSourceContent(
                 source = screenModel.source,
-                mangaList = mangaList,
+                animeList = mangaList,
                 columns = screenModel.getColumnsPreference(LocalConfiguration.current.orientation),
                 // SY -->
                 ehentaiBrowseDisplayMode = screenModel.ehentaiBrowseDisplayMode,
@@ -333,7 +333,7 @@ data class BrowseSourceScreen(
                 onWebViewClick = onWebViewClick,
                 onHelpClick = { uriHandler.openUri(Constants.URL_HELP) },
                 onLocalSourceHelpClick = onHelpClick,
-                onMangaClick = {
+                onAnimeClick = {
                     // KMK -->
                     scope.launchIO {
                         val manga = screenModel.networkToLocalAnime.getLocal(it)
@@ -355,7 +355,7 @@ data class BrowseSourceScreen(
                         }
                     }
                 },
-                onMangaLongClick = {
+                onAnimeLongClick = {
                     // KMK -->
                     scope.launchIO {
                         val manga = screenModel.networkToLocalAnime.getLocal(it)
@@ -458,7 +458,7 @@ data class BrowseSourceScreen(
                     onConfirm = {
                         screenModel.changeMangaFavorite(dialog.manga)
                     },
-                    mangaToRemove = dialog.manga,
+                    animeToRemove = dialog.manga,
                 )
             }
             is BrowseSourceScreenModel.Dialog.ChangeMangaCategory -> {

@@ -112,7 +112,7 @@ class MangaDexFollowsScreen(private val sourceId: Long) : Screen() {
         ) { paddingValues ->
             BrowseSourceContent(
                 source = screenModel.source,
-                mangaList = mangaList,
+                animeList = mangaList,
                 columns = screenModel.getColumnsPreference(LocalConfiguration.current.orientation),
                 // SY -->
                 ehentaiBrowseDisplayMode = screenModel.ehentaiBrowseDisplayMode,
@@ -123,7 +123,7 @@ class MangaDexFollowsScreen(private val sourceId: Long) : Screen() {
                 onWebViewClick = null,
                 onHelpClick = null,
                 onLocalSourceHelpClick = null,
-                onMangaClick = {
+                onAnimeClick = {
                     // KMK -->
                     scope.launchIO {
                         val manga = screenModel.networkToLocalAnime.getLocal(it)
@@ -135,7 +135,7 @@ class MangaDexFollowsScreen(private val sourceId: Long) : Screen() {
                         }
                     }
                 },
-                onMangaLongClick = {
+                onAnimeLongClick = {
                     // KMK -->
                     scope.launchIO {
                         val manga = screenModel.networkToLocalAnime.getLocal(it)
@@ -193,7 +193,7 @@ class MangaDexFollowsScreen(private val sourceId: Long) : Screen() {
                     onConfirm = {
                         screenModel.changeMangaFavorite(dialog.manga)
                     },
-                    mangaToRemove = dialog.manga,
+                    animeToRemove = dialog.manga,
                 )
             }
             is BrowseSourceScreenModel.Dialog.ChangeMangaCategory -> {

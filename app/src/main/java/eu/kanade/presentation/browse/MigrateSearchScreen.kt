@@ -23,7 +23,7 @@ fun MigrateSearchScreen(
     onSearch: (String) -> Unit,
     onChangeSearchFilter: (SourceFilter) -> Unit,
     onToggleResults: () -> Unit,
-    getManga: @Composable (Anime) -> State<Anime>,
+    getAnime: @Composable (Anime) -> State<Anime>,
     onClickSource: (CatalogueSource) -> Unit,
     onClickItem: (Anime) -> Unit,
     onLongClickItem: (Anime) -> Unit,
@@ -49,8 +49,8 @@ fun MigrateSearchScreen(
                         state.filteredItems.forEach { (_, result) ->
                             when (result) {
                                 is SearchItemResult.Success -> {
-                                    result.result.forEach { manga ->
-                                        bulkFavoriteScreenModel.select(manga)
+                                    result.result.forEach { anime ->
+                                        bulkFavoriteScreenModel.select(anime)
                                     }
                                 }
                                 else -> {}
@@ -92,7 +92,7 @@ fun MigrateSearchScreen(
             fromSourceId = fromSourceId,
             items = state.filteredItems,
             contentPadding = paddingValues,
-            getManga = getManga,
+            getAnime = getAnime,
             onClickSource = onClickSource,
             onClickItem = onClickItem,
             onLongClickItem = onLongClickItem,

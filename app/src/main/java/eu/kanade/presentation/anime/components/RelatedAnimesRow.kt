@@ -22,7 +22,7 @@ import eu.kanade.presentation.browse.components.EmptyResultItem
 import eu.kanade.presentation.browse.components.GlobalSearchLoadingResultItem
 import eu.kanade.tachiyomi.ui.anime.RelatedAnime
 import tachiyomi.domain.anime.model.Anime
-import tachiyomi.domain.anime.model.asMangaCover
+import tachiyomi.domain.anime.model.asAnimeCover
 import tachiyomi.presentation.core.components.material.padding
 
 @Composable
@@ -70,7 +70,7 @@ fun RelatedAnimeCardRow(
             val manga by getManga(it)
             AnimeItem(
                 title = manga.title,
-                cover = manga.asMangaCover(),
+                cover = manga.asAnimeCover(),
                 isFavorite = manga.favorite,
                 onClick = { onMangaClick(manga) },
                 onLongClick = { onMangaLongClick(manga) },

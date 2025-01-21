@@ -148,7 +148,7 @@ data class SourceSearchScreen(
             }
             BrowseSourceContent(
                 source = screenModel.source,
-                mangaList = mangaList,
+                animeList = mangaList,
                 columns = screenModel.getColumnsPreference(LocalConfiguration.current.orientation),
                 // SY -->
                 ehentaiBrowseDisplayMode = screenModel.ehentaiBrowseDisplayMode,
@@ -168,7 +168,7 @@ data class SourceSearchScreen(
                 },
                 onHelpClick = { uriHandler.openUri(Constants.URL_HELP) },
                 onLocalSourceHelpClick = { uriHandler.openUri(LocalSource.HELP_URL) },
-                onMangaClick = {
+                onAnimeClick = {
                     // KMK -->
                     scope.launchIO {
                         val manga = screenModel.networkToLocalAnime.getLocal(it)
@@ -180,7 +180,7 @@ data class SourceSearchScreen(
                         }
                     }
                 },
-                onMangaLongClick = {
+                onAnimeLongClick = {
                     // KMK -->
                     scope.launchIO {
                         val manga = screenModel.networkToLocalAnime.getLocal(it)

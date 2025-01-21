@@ -131,7 +131,7 @@ import tachiyomi.domain.anime.model.CustomAnimeInfo
 import tachiyomi.domain.anime.model.MergeAnimeSettingsUpdate
 import tachiyomi.domain.anime.model.MergedAnimeReference
 import tachiyomi.domain.anime.model.applyFilter
-import tachiyomi.domain.anime.model.asMangaCover
+import tachiyomi.domain.anime.model.asAnimeCover
 import tachiyomi.domain.anime.repository.AnimeRepository
 import tachiyomi.domain.category.interactor.GetCategories
 import tachiyomi.domain.category.interactor.SetAnimeCategories
@@ -521,7 +521,7 @@ class AnimeScreenModel(
                     screenModelScope.launchIO {
                         if (it == null) return@launchIO
                         val animeCover = when (model) {
-                            is Anime -> model.asMangaCover()
+                            is Anime -> model.asAnimeCover()
                             is AnimeCover -> model
                             else -> return@launchIO
                         }
@@ -1828,7 +1828,7 @@ class AnimeScreenModel(
              * a list of <keyword, related mangas>
              */
             val relatedAnimeCollection: List<RelatedAnime>? = null,
-            val seedColor: Color? = anime.asMangaCover().vibrantCoverColor?.let { Color(it) },
+            val seedColor: Color? = anime.asAnimeCover().vibrantCoverColor?.let { Color(it) },
             // KMK <--
         ) : State {
             // KMK -->

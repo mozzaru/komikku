@@ -84,7 +84,7 @@ fun RelatedAnimesCompactGrid(
                 ) { index ->
                     val manga by getManga(relatedAnime.mangaList[index])
                     BrowseSourceCompactGridItem(
-                        manga = manga,
+                        anime = manga,
                         onClick = { onMangaClick(manga) },
                         onLongClick = { onMangaLongClick(manga) },
                         isSelected = selection.fastAny { selected -> selected.id == manga.id },

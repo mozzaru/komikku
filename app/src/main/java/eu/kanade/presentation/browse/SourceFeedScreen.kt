@@ -284,7 +284,7 @@ fun SourceFeedItem(
         else -> {
             GlobalSearchCardRow(
                 titles = item.results.orEmpty(),
-                getManga = getMangaState,
+                getAnime = getMangaState,
                 onClick = onClickManga,
                 // KMK -->
                 onLongClick = onLongClickManga,

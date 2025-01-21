@@ -59,8 +59,8 @@ fun GlobalSearchScreen(
                         state.filteredItems.forEach { (_, result) ->
                             when (result) {
                                 is SearchItemResult.Success -> {
-                                    result.result.forEach { manga ->
-                                        bulkFavoriteScreenModel.select(manga)
+                                    result.result.forEach { anime ->
+                                        bulkFavoriteScreenModel.select(anime)
                                     }
                                 }
                                 else -> {}
@@ -101,7 +101,7 @@ fun GlobalSearchScreen(
         GlobalSearchContent(
             items = state.filteredItems,
             contentPadding = paddingValues,
-            getManga = getAnime,
+            getAnime = getAnime,
             onClickSource = onClickSource,
             onClickItem = onClickItem,
             onLongClickItem = onLongClickItem,
@@ -116,7 +116,7 @@ fun GlobalSearchScreen(
 internal fun GlobalSearchContent(
     items: ImmutableMap<CatalogueSource, SearchItemResult>,
     contentPadding: PaddingValues,
-    getManga: @Composable (Anime) -> State<Anime>,
+    getAnime: @Composable (Anime) -> State<Anime>,
     onClickSource: (CatalogueSource) -> Unit,
     onClickItem: (Anime) -> Unit,
     onLongClickItem: (Anime) -> Unit,
@@ -164,7 +164,7 @@ internal fun GlobalSearchContent(
                         is SearchItemResult.Success -> {
                             GlobalSearchCardRow(
                                 titles = result.result,
-                                getManga = getManga,
+                                getAnime = getAnime,
                                 onClick = onClickItem,
                                 onLongClick = onLongClickItem,
                                 // KMK -->

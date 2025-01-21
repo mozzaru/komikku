@@ -176,7 +176,7 @@ fun FeedItem(
         else -> {
             GlobalSearchCardRow(
                 titles = item.results,
-                getManga = getMangaState,
+                getAnime = getMangaState,
                 onClick = onClickManga,
                 // KMK -->
                 onLongClick = onLongClickManga,

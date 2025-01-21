@@ -25,7 +25,7 @@ import tachiyomi.presentation.core.i18n.stringResource
 fun RemoveAnimeDialog(
     onDismissRequest: () -> Unit,
     onConfirm: () -> Unit,
-    mangaToRemove: Anime,
+    animeToRemove: Anime,
 ) {
     AlertDialog(
         onDismissRequest = onDismissRequest,
@@ -48,7 +48,7 @@ fun RemoveAnimeDialog(
             Text(text = stringResource(MR.strings.are_you_sure))
         },
         text = {
-            Text(text = stringResource(MR.strings.remove_manga, mangaToRemove.title))
+            Text(text = stringResource(MR.strings.remove_manga, animeToRemove.title))
         },
     )
 }

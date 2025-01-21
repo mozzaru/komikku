@@ -21,9 +21,9 @@ import eu.kanade.domain.ui.UiPreferences
 import eu.kanade.presentation.anime.components.RatioSwitchToPanorama
 import eu.kanade.presentation.library.components.AnimeComfortableGridItem
 import eu.kanade.presentation.library.components.CommonAnimeItemDefaults
-import tachiyomi.domain.anime.model.AnimeCover
 import tachiyomi.domain.anime.model.Anime
-import tachiyomi.domain.anime.model.asMangaCover
+import tachiyomi.domain.anime.model.AnimeCover
+import tachiyomi.domain.anime.model.asAnimeCover
 import tachiyomi.i18n.MR
 import tachiyomi.presentation.core.components.material.padding
 import tachiyomi.presentation.core.i18n.stringResource
@@ -34,7 +34,7 @@ import uy.kohesive.injekt.api.get
 @Composable
 fun GlobalSearchCardRow(
     titles: List<Anime>,
-    getManga: @Composable (Anime) -> State<Anime>,
+    getAnime: @Composable (Anime) -> State<Anime>,
     onClick: (Anime) -> Unit,
     onLongClick: (Anime) -> Unit,
     // KMK -->
@@ -51,10 +51,10 @@ fun GlobalSearchCardRow(
         horizontalArrangement = Arrangement.spacedBy(MaterialTheme.padding.extraSmall),
     ) {
         items(titles) {
-            val title by getManga(it)
+            val title by getAnime(it)
             AnimeItem(
                 title = title.title,
-                cover = title.asMangaCover(),
+                cover = title.asAnimeCover(),
                 isFavorite = title.favorite,
                 onClick = { onClick(title) },
                 onLongClick = { onLongClick(title) },

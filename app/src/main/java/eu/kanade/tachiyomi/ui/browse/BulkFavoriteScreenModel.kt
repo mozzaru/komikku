@@ -470,7 +470,7 @@ fun RemoveAnimeDialog(bulkFavoriteScreenModel: BulkFavoriteScreenModel) {
         onConfirm = {
             bulkFavoriteScreenModel.changeMangaFavorite(dialog.manga)
         },
-        mangaToRemove = dialog.manga,
+        animeToRemove = dialog.manga,
     )
 }
 

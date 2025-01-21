@@ -35,7 +35,7 @@ import okio.source
 import tachiyomi.core.common.util.system.logcat
 import tachiyomi.domain.anime.model.AnimeCover
 import tachiyomi.domain.anime.model.Anime
-import tachiyomi.domain.anime.model.asMangaCover
+import tachiyomi.domain.anime.model.asAnimeCover
 import tachiyomi.domain.source.service.SourceManager
 import uy.kohesive.injekt.Injekt
 import uy.kohesive.injekt.api.get
@@ -374,7 +374,7 @@ class AnimeCoverFetcher(
             return AnimeCoverFetcher(
                 // KMK -->
                 // url = data.thumbnailUrl,
-                animeCover = data.asMangaCover(),
+                animeCover = data.asAnimeCover(),
                 // KMK <--
                 isLibraryManga = data.favorite,
                 options = options,

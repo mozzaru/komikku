@@ -137,7 +137,7 @@ import tachiyomi.core.common.util.lang.launchNonCancellable
 import tachiyomi.core.common.util.lang.withUIContext
 import tachiyomi.core.common.util.system.logcat
 import tachiyomi.domain.anime.model.AnimeCover
-import tachiyomi.domain.anime.model.asMangaCover
+import tachiyomi.domain.anime.model.asAnimeCover
 import tachiyomi.domain.source.service.SourceManager
 import tachiyomi.i18n.MR
 import tachiyomi.i18n.kmk.KMR
@@ -779,12 +779,12 @@ class ReaderActivity : BaseActivity() {
     @Composable
     private fun seedColorState(): ComposeColor? {
         val state by viewModel.state.collectAsState()
-        return state.manga?.asMangaCover()?.vibrantCoverColor?.let { ComposeColor(it) }
+        return state.manga?.asAnimeCover()?.vibrantCoverColor?.let { ComposeColor(it) }
             ?: seedColorStatic()
     }
 
     private fun seedColorStatic(): ComposeColor? {
-        return viewModel.manga?.asMangaCover()?.vibrantCoverColor?.let { ComposeColor(it) }
+        return viewModel.manga?.asAnimeCover()?.vibrantCoverColor?.let { ComposeColor(it) }
             ?: intent.extras?.getLong("manga")?.takeIf { it > 0 }
                 ?.let { AnimeCover.vibrantCoverColorMap[it] }
                 ?.let { ComposeColor(it) }
