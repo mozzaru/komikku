@@ -86,7 +86,7 @@ data object UpdatesTab : Tab {
             onUpdateLibrary = screenModel::updateLibrary,
             onDownloadChapter = screenModel::downloadChapters,
             onMultiBookmarkClicked = screenModel::bookmarkUpdates,
-            onMultiMarkAsReadClicked = screenModel::markUpdatesRead,
+            onMultiMarkAsReadClicked = screenModel::markUpdatesSeen,
             onMultiDeleteClicked = screenModel::showConfirmDeleteChapters,
             onUpdateSelected = screenModel::toggleSelection,
             onOpenChapter = {

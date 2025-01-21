@@ -107,7 +107,7 @@ class SYDomainModule : InjektModule {
         addFactory { GetSeenAnimeNotInLibraryView(get()) }
 
         // Required for [MetadataSource]
-        addFactory<MetadataSource.GetMangaId> { GetAnime(get()) }
+        addFactory<MetadataSource.GetAnimeId> { GetAnime(get()) }
         addFactory<MetadataSource.GetFlatMetadataById> { GetFlatMetadataById(get()) }
         addFactory<MetadataSource.InsertFlatMetadata> { InsertFlatMetadata(get()) }
 

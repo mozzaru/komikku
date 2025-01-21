@@ -11,8 +11,8 @@ import eu.kanade.tachiyomi.source.CatalogueSource
 import eu.kanade.tachiyomi.source.model.FilterList
 import eu.kanade.tachiyomi.source.model.MangasPage
 import eu.kanade.tachiyomi.source.model.Page
-import eu.kanade.tachiyomi.source.model.SEpisode
-import eu.kanade.tachiyomi.source.model.SAnime
+import eu.kanade.tachiyomi.animesource.model.SEpisode
+import eu.kanade.tachiyomi.animesource.model.SAnime
 import exh.log.maybeInjectEHLogger
 import exh.pref.DelegateSourcePreferences
 import exh.source.DelegatedHttpSource
@@ -622,7 +622,7 @@ abstract class HttpSource : CatalogueSource {
      * @param chapter the chapter to be added.
      * @param manga the manga of the chapter.
      */
-    open fun prepareNewChapter(chapter: SEpisode, manga: SAnime) {}
+    open fun prepareNewEpisode(chapter: SEpisode, manga: SAnime) {}
 
     /**
      * Returns the list of filters for the source.

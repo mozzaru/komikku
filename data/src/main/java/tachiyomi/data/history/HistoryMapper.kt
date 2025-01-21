@@ -14,7 +14,7 @@ object HistoryMapper {
     ): History = History(
         id = id,
         chapterId = chapterId,
-        readAt = readAt,
+        seenAt = readAt,
         readDuration = readDuration,
     )
 

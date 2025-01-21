@@ -95,13 +95,13 @@ class EditMergedSettingsHeaderAdapter(private val state: EditMergedSettingsState
                 itemView.context,
                 android.R.layout.simple_spinner_item,
                 mergedMangas.map {
-                    sourceManager.getOrStub(it.second.mangaSourceId).toString() + " " + it.first?.title
+                    sourceManager.getOrStub(it.second.animeSourceId).toString() + " " + it.first?.title
                 },
             )
             mangaInfoAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
             binding.mangaInfoSpinner.adapter = mangaInfoAdapter
 
-            mergedMangas.indexOfFirst { it.second.isInfoManga }.let {
+            mergedMangas.indexOfFirst { it.second.isInfoAnime }.let {
                 if (it != -1) {
                     binding.mangaInfoSpinner.setSelection(it)
                 } else {
@@ -118,16 +118,16 @@ class EditMergedSettingsHeaderAdapter(private val state: EditMergedSettingsState
                 ) {
                     state.mergedMangas = state.mergedMangas.map { (manga, reference) ->
                         manga to reference.copy(
-                            isInfoManga = reference.id == mergedMangas.getOrNull(position)?.second?.id,
+                            isInfoAnime = reference.id == mergedMangas.getOrNull(position)?.second?.id,
                         )
                     }
                 }
 
                 override fun onNothingSelected(parent: AdapterView<*>?) {
-                    mergedMangas.find { it.second.isInfoManga }?.second?.let { newInfoManga ->
+                    mergedMangas.find { it.second.isInfoAnime }?.second?.let { newInfoManga ->
                         state.mergedMangas = state.mergedMangas.map { (manga, reference) ->
                             manga to reference.copy(
-                                isInfoManga = reference.id == newInfoManga.id,
+                                isInfoAnime = reference.id == newInfoManga.id,
                             )
                         }
                     }

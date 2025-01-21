@@ -22,8 +22,8 @@ import tachiyomi.presentation.core.i18n.stringResource
 @Composable
 fun EpisodeHeader(
     enabled: Boolean,
-    chapterCount: Int?,
-    missingChapterCount: Int,
+    episodeCount: Int?,
+    missingEpisodeCount: Int,
     onClick: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
@@ -45,16 +45,16 @@ fun EpisodeHeader(
             verticalArrangement = Arrangement.spacedBy(MaterialTheme.padding.extraSmall),
         ) {
             Text(
-                text = if (chapterCount == null) {
+                text = if (episodeCount == null) {
                     stringResource(MR.strings.chapters)
                 } else {
-                    pluralStringResource(MR.plurals.manga_num_chapters, count = chapterCount, chapterCount)
+                    pluralStringResource(MR.plurals.manga_num_chapters, count = episodeCount, episodeCount)
                 },
                 style = MaterialTheme.typography.titleMedium,
                 color = MaterialTheme.colorScheme.onBackground,
             )
 
-            MissingEpisodesWarning(missingChapterCount)
+            MissingEpisodesWarning(missingEpisodeCount)
         }
     }
 }

@@ -7,6 +7,6 @@ class DeleteEpisodes(
 ) {
 
     suspend fun await(chapters: List<Long>) {
-        episodeRepository.removeChaptersWithIds(chapters)
+        episodeRepository.removeEpisodesWithIds(chapters)
     }
 }

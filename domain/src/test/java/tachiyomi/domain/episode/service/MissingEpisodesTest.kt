@@ -52,6 +52,6 @@ class MissingEpisodesTest {
     }
 
     private fun chapter(number: Double) = Episode.create().copy(
-        chapterNumber = number,
+        episodeNumber = number,
     )
 }

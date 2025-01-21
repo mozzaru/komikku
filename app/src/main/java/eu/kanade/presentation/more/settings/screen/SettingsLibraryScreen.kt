@@ -35,7 +35,7 @@ import tachiyomi.domain.library.service.LibraryPreferences.Companion.DEVICE_CHAR
 import tachiyomi.domain.library.service.LibraryPreferences.Companion.DEVICE_NETWORK_NOT_METERED
 import tachiyomi.domain.library.service.LibraryPreferences.Companion.DEVICE_ONLY_ON_WIFI
 import tachiyomi.domain.library.service.LibraryPreferences.Companion.MANGA_HAS_UNREAD
-import tachiyomi.domain.library.service.LibraryPreferences.Companion.MANGA_NON_COMPLETED
+import tachiyomi.domain.library.service.LibraryPreferences.Companion.ANIME_NON_COMPLETED
 import tachiyomi.domain.library.service.LibraryPreferences.Companion.MANGA_NON_READ
 import tachiyomi.domain.library.service.LibraryPreferences.Companion.MANGA_OUTSIDE_RELEASE_PERIOD
 import tachiyomi.i18n.MR
@@ -218,12 +218,12 @@ object SettingsLibraryScreen : SearchableSettings {
                     subtitle = stringResource(MR.strings.pref_library_update_refresh_metadata_summary),
                 ),
                 Preference.PreferenceItem.MultiSelectListPreference(
-                    pref = libraryPreferences.autoUpdateMangaRestrictions(),
+                    pref = libraryPreferences.autoUpdateAnimeRestrictions(),
                     title = stringResource(MR.strings.pref_library_update_smart_update),
                     entries = persistentMapOf(
                         MANGA_HAS_UNREAD to stringResource(MR.strings.pref_update_only_completely_read),
                         MANGA_NON_READ to stringResource(MR.strings.pref_update_only_started),
-                        MANGA_NON_COMPLETED to stringResource(MR.strings.pref_update_only_non_completed),
+                        ANIME_NON_COMPLETED to stringResource(MR.strings.pref_update_only_non_completed),
                         MANGA_OUTSIDE_RELEASE_PERIOD to stringResource(MR.strings.pref_update_only_in_release_period),
                     ),
                 ),
@@ -259,13 +259,13 @@ object SettingsLibraryScreen : SearchableSettings {
                     pref = libraryPreferences.swipeToStartAction(),
                     title = stringResource(MR.strings.pref_chapter_swipe_start),
                     entries = persistentMapOf(
-                        LibraryPreferences.ChapterSwipeAction.Disabled to
+                        LibraryPreferences.EpisodeSwipeAction.Disabled to
                             stringResource(MR.strings.disabled),
-                        LibraryPreferences.ChapterSwipeAction.ToggleBookmark to
+                        LibraryPreferences.EpisodeSwipeAction.ToggleBookmark to
                             stringResource(MR.strings.action_bookmark),
-                        LibraryPreferences.ChapterSwipeAction.ToggleRead to
+                        LibraryPreferences.EpisodeSwipeAction.ToggleSeen to
                             stringResource(MR.strings.action_mark_as_read),
-                        LibraryPreferences.ChapterSwipeAction.Download to
+                        LibraryPreferences.EpisodeSwipeAction.Download to
                             stringResource(MR.strings.action_download),
                     ),
                 ),
@@ -273,13 +273,13 @@ object SettingsLibraryScreen : SearchableSettings {
                     pref = libraryPreferences.swipeToEndAction(),
                     title = stringResource(MR.strings.pref_chapter_swipe_end),
                     entries = persistentMapOf(
-                        LibraryPreferences.ChapterSwipeAction.Disabled to
+                        LibraryPreferences.EpisodeSwipeAction.Disabled to
                             stringResource(MR.strings.disabled),
-                        LibraryPreferences.ChapterSwipeAction.ToggleBookmark to
+                        LibraryPreferences.EpisodeSwipeAction.ToggleBookmark to
                             stringResource(MR.strings.action_bookmark),
-                        LibraryPreferences.ChapterSwipeAction.ToggleRead to
+                        LibraryPreferences.EpisodeSwipeAction.ToggleSeen to
                             stringResource(MR.strings.action_mark_as_read),
-                        LibraryPreferences.ChapterSwipeAction.Download to
+                        LibraryPreferences.EpisodeSwipeAction.Download to
                             stringResource(MR.strings.action_download),
                     ),
                 ),

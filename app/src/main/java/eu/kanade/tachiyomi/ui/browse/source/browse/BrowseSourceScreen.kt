@@ -436,7 +436,7 @@ data class BrowseSourceScreen(
                 DuplicateAnimeDialog(
                     onDismissRequest = onDismissRequest,
                     onConfirm = { screenModel.addFavorite(dialog.manga) },
-                    onOpenManga = { navigator.push(AnimeScreen(dialog.duplicate.id)) },
+                    onOpenAnime = { navigator.push(AnimeScreen(dialog.duplicate.id)) },
                     onMigrate = {
                         // SY -->
                         PreMigrationScreen.navigateToMigration(

@@ -34,7 +34,7 @@ import androidx.compose.ui.tooling.preview.PreviewLightDark
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import eu.kanade.presentation.theme.TachiyomiPreviewTheme
-import eu.kanade.tachiyomi.data.database.models.toDomainChapter
+import eu.kanade.tachiyomi.data.database.models.toDomainEpisode
 import eu.kanade.tachiyomi.ui.reader.model.ChapterTransition
 import eu.kanade.tachiyomi.ui.reader.model.ReaderChapter
 import kotlinx.collections.immutable.persistentMapOf
@@ -51,8 +51,8 @@ fun ChapterTransition(
     currChapterDownloaded: Boolean,
     goingToChapterDownloaded: Boolean,
 ) {
-    val currChapter = transition.from.episode.toDomainChapter()
-    val goingToChapter = transition.to?.episode?.toDomainChapter()
+    val currChapter = transition.from.episode.toDomainEpisode()
+    val goingToChapter = transition.to?.episode?.toDomainEpisode()
 
     ProvideTextStyle(MaterialTheme.typography.bodyMedium) {
         when (transition) {
@@ -277,11 +277,11 @@ private const val DOWNLOADED_ICON_ID = "downloaded"
 
 private fun previewChapter(name: String, scanlator: String, chapterNumber: Double) = Episode.create().copy(
     id = 0L,
-    mangaId = 0L,
+    animeId = 0L,
     url = "",
     name = name,
     scanlator = scanlator,
-    chapterNumber = chapterNumber,
+    episodeNumber = chapterNumber,
 )
 private val FakeEpisode = previewChapter(
     name = "Vol.1, Ch.1 - Fake Episode Title",

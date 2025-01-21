@@ -2,7 +2,7 @@ package eu.kanade.domain.anime.model
 
 import eu.kanade.domain.base.BasePreferences
 import eu.kanade.tachiyomi.data.cache.CoverCache
-import eu.kanade.tachiyomi.source.model.SAnime
+import eu.kanade.tachiyomi.animesource.model.SAnime
 import eu.kanade.tachiyomi.ui.reader.setting.ReaderOrientation
 import eu.kanade.tachiyomi.ui.reader.setting.ReadingMode
 import mihon.core.archive.CbzCrypto
@@ -25,13 +25,13 @@ val Anime.downloadedFilter: TriState
     get() {
         if (forceDownloaded()) return TriState.ENABLED_IS
         return when (downloadedFilterRaw) {
-            Anime.CHAPTER_SHOW_DOWNLOADED -> TriState.ENABLED_IS
-            Anime.CHAPTER_SHOW_NOT_DOWNLOADED -> TriState.ENABLED_NOT
+            Anime.EPISODE_SHOW_DOWNLOADED -> TriState.ENABLED_IS
+            Anime.EPISODE_SHOW_NOT_DOWNLOADED -> TriState.ENABLED_NOT
             else -> TriState.DISABLED
         }
     }
 fun Anime.chaptersFiltered(): Boolean {
-    return unreadFilter != TriState.DISABLED ||
+    return unseenFilter != TriState.DISABLED ||
         downloadedFilter != TriState.DISABLED ||
         bookmarkedFilter != TriState.DISABLED
 }
@@ -39,7 +39,7 @@ fun Anime.forceDownloaded(): Boolean {
     return favorite && Injekt.get<BasePreferences>().downloadedOnly().get()
 }
 
-fun Anime.toSManga(): SAnime = SAnime.create().also {
+fun Anime.toSAnime(): SAnime = SAnime.create().also {
     it.url = url
     it.title = title
     it.artist = artist
@@ -79,7 +79,7 @@ fun Anime.copyFrom(other: SAnime): Anime {
     )
 }
 
-fun SAnime.toDomainManga(sourceId: Long): Anime {
+fun SAnime.toDomainAnime(sourceId: Long): Anime {
     return Anime.create().copy(
         url = url,
         // SY -->
@@ -102,18 +102,18 @@ fun Anime.hasCustomCover(coverCache: CoverCache = Injekt.get()): Boolean {
 }
 
 /**
- * Creates a ComicInfo instance based on the manga and episode metadata.
+ * Creates a ComicInfo instance based on the anime and episode metadata.
  */
 fun getComicInfo(
-    manga: Anime,
+    anime: Anime,
     episode: Episode,
     urls: List<String>,
     categories: List<String>?,
     sourceName: String,
 ) = ComicInfo(
     title = ComicInfo.Title(episode.name),
-    series = ComicInfo.Series(manga.title),
-    number = episode.chapterNumber.takeIf { it >= 0 }?.let {
+    series = ComicInfo.Series(anime.title),
+    number = episode.episodeNumber.takeIf { it >= 0 }?.let {
         if ((it.rem(1) == 0.0)) {
             ComicInfo.Number(it.toInt().toString())
         } else {
@@ -121,13 +121,13 @@ fun getComicInfo(
         }
     },
     web = ComicInfo.Web(urls.joinToString(" ")),
-    summary = manga.description?.let { ComicInfo.Summary(it) },
-    writer = manga.author?.let { ComicInfo.Writer(it) },
-    penciller = manga.artist?.let { ComicInfo.Penciller(it) },
+    summary = anime.description?.let { ComicInfo.Summary(it) },
+    writer = anime.author?.let { ComicInfo.Writer(it) },
+    penciller = anime.artist?.let { ComicInfo.Penciller(it) },
     translator = episode.scanlator?.let { ComicInfo.Translator(it) },
-    genre = manga.genre?.let { ComicInfo.Genre(it.joinToString()) },
+    genre = anime.genre?.let { ComicInfo.Genre(it.joinToString()) },
     publishingStatus = ComicInfo.PublishingStatusTachiyomi(
-        ComicInfoPublishingStatus.toComicInfoValue(manga.status),
+        ComicInfoPublishingStatus.toComicInfoValue(anime.status),
     ),
     categories = categories?.let { ComicInfo.CategoriesTachiyomi(it.joinToString()) },
     source = ComicInfo.SourceMihon(sourceName),

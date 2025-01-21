@@ -227,7 +227,7 @@ class ChapterCache(
     }
 
     private fun getKey(episode: Episode): String {
-        return "${episode.mangaId}${episode.url}"
+        return "${episode.animeId}${episode.url}"
     }
 }
 

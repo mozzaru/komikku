@@ -82,12 +82,12 @@ import coil3.request.crossfade
 import eu.kanade.domain.ui.UiPreferences
 import eu.kanade.presentation.components.DropdownMenu
 import eu.kanade.tachiyomi.R
-import eu.kanade.tachiyomi.source.model.SAnime
+import eu.kanade.tachiyomi.animesource.model.SAnime
 import eu.kanade.tachiyomi.util.system.copyToClipboard
 import tachiyomi.domain.anime.interactor.FetchInterval
 import tachiyomi.domain.anime.model.Anime
 import tachiyomi.domain.library.service.LibraryPreferences
-import tachiyomi.domain.library.service.LibraryPreferences.Companion.MANGA_NON_COMPLETED
+import tachiyomi.domain.library.service.LibraryPreferences.Companion.ANIME_NON_COMPLETED
 import tachiyomi.i18n.MR
 import tachiyomi.i18n.kmk.KMR
 import tachiyomi.i18n.sy.SYMR
@@ -104,7 +104,7 @@ import uy.kohesive.injekt.api.get
 import java.time.Instant
 import java.time.temporal.ChronoUnit
 import kotlin.math.roundToInt
-import tachiyomi.domain.anime.model.AnimeCover as DomainMangaCover
+import tachiyomi.domain.anime.model.AnimeCover as DomainAnimeCover
 
 private val whitespaceLineRegex = Regex("[\\r\\n]{2,}", setOf(RegexOption.MULTILINE))
 
@@ -112,7 +112,7 @@ private val whitespaceLineRegex = Regex("[\\r\\n]{2,}", setOf(RegexOption.MULTIL
 fun AnimeInfoBox(
     isTabletUi: Boolean,
     appBarPadding: Dp,
-    manga: Anime,
+    anime: Anime,
     sourceName: String,
     isStubSource: Boolean,
     onCoverClick: () -> Unit,
@@ -121,12 +121,12 @@ fun AnimeInfoBox(
     // KMK -->
     librarySearch: (query: String) -> Unit,
     onSourceClick: () -> Unit,
-    onCoverLoaded: (DomainMangaCover) -> Unit,
+    onCoverLoaded: (DomainAnimeCover) -> Unit,
     coverRatio: MutableFloatState,
     // KMK <--
 ) {
     // KMK -->
-    val usePanoramaCover by Injekt.get<UiPreferences>().usePanoramaCoverMangaInfo().collectAsState()
+    val usePanoramaCover by Injekt.get<UiPreferences>().usePanoramaCoverAnimeInfo().collectAsState()
     // KMK <--
     Box(modifier = modifier) {
         // Backdrop
@@ -136,7 +136,7 @@ fun AnimeInfoBox(
         )
         AsyncImage(
             model = ImageRequest.Builder(LocalContext.current)
-                .data(manga)
+                .data(anime)
                 .crossfade(true)
                 .build(),
             contentDescription = null,
@@ -168,12 +168,12 @@ fun AnimeInfoBox(
                 .alpha(0.2f),
         )
 
-        // Manga & source info
+        // Anime & source info
         CompositionLocalProvider(LocalContentColor provides MaterialTheme.colorScheme.onSurface) {
             if (!isTabletUi) {
                 AnimeAndSourceTitlesSmall(
                     appBarPadding = appBarPadding,
-                    manga = manga,
+                    anime = anime,
                     sourceName = sourceName,
                     isStubSource = isStubSource,
                     onCoverClick = onCoverClick,
@@ -189,7 +189,7 @@ fun AnimeInfoBox(
             } else {
                 AnimeAndSourceTitlesLarge(
                     appBarPadding = appBarPadding,
-                    manga = manga,
+                    anime = anime,
                     sourceName = sourceName,
                     isStubSource = isStubSource,
                     onCoverClick = onCoverClick,
@@ -230,8 +230,8 @@ fun AnimeActionRow(
 ) {
     // KMK -->
     val libraryPreferences: LibraryPreferences = Injekt.get()
-    val restrictions = libraryPreferences.autoUpdateMangaRestrictions().get()
-    val notSkipCompleted = MANGA_NON_COMPLETED !in restrictions || status != SAnime.COMPLETED.toLong()
+    val restrictions = libraryPreferences.autoUpdateAnimeRestrictions().get()
+    val notSkipCompleted = ANIME_NON_COMPLETED !in restrictions || status != SAnime.COMPLETED.toLong()
     val selectedInterval by remember(interval) { mutableIntStateOf(if (interval < 0) -interval else 0) }
     // KMK <--
     val defaultActionButtonColor = MaterialTheme.colorScheme.onSurface.copy(alpha = DISABLED_ALPHA)
@@ -305,6 +305,7 @@ fun AnimeActionRow(
             color = if (trackingCount == 0) defaultActionButtonColor else MaterialTheme.colorScheme.primary,
             onClick = onTrackingClicked,
         )
+
         if (onWebViewClicked != null) {
             AnimeActionButton(
                 title = stringResource(MR.strings.action_web_view),
@@ -465,7 +466,7 @@ fun ExpandableAnimeDescription(
 @Composable
 private fun AnimeAndSourceTitlesLarge(
     appBarPadding: Dp,
-    manga: Anime,
+    anime: Anime,
     sourceName: String,
     isStubSource: Boolean,
     onCoverClick: () -> Unit,
@@ -473,7 +474,7 @@ private fun AnimeAndSourceTitlesLarge(
     // KMK -->
     librarySearch: (query: String) -> Unit,
     onSourceClick: () -> Unit,
-    onCoverLoaded: (DomainMangaCover) -> Unit,
+    onCoverLoaded: (DomainAnimeCover) -> Unit,
     coverRatio: MutableFloatState,
     usePanoramaCover: Boolean = false,
     // KMK <--
@@ -489,16 +490,16 @@ private fun AnimeAndSourceTitlesLarge(
             AnimeCover.Panorama(
                 modifier = Modifier.fillMaxWidth(0.65f),
                 data = ImageRequest.Builder(LocalContext.current)
-                    .data(manga)
+                    .data(anime)
                     .crossfade(true)
                     .build(),
                 contentDescription = stringResource(MR.strings.manga_cover),
                 onClick = onCoverClick,
                 // KMK -->
-                onCoverLoaded = { mangaCover, result ->
+                onCoverLoaded = { animeCover, result ->
                     val image = result.result.image
                     coverRatio.floatValue = image.height.toFloat() / image.width
-                    onCoverLoaded(mangaCover)
+                    onCoverLoaded(animeCover)
                 },
                 // KMK <--
             )
@@ -507,26 +508,26 @@ private fun AnimeAndSourceTitlesLarge(
             AnimeCover.Book(
                 modifier = Modifier.fillMaxWidth(0.65f),
                 data = ImageRequest.Builder(LocalContext.current)
-                    .data(manga)
+                    .data(anime)
                     .crossfade(true)
                     .build(),
                 contentDescription = stringResource(MR.strings.manga_cover),
                 onClick = onCoverClick,
                 // KMK -->
-                onCoverLoaded = { mangaCover, result ->
+                onCoverLoaded = { animeCover, result ->
                     val image = result.result.image
                     coverRatio.floatValue = image.height.toFloat() / image.width
-                    onCoverLoaded(mangaCover)
+                    onCoverLoaded(animeCover)
                 },
                 // KMK <--
             )
         }
         Spacer(modifier = Modifier.height(16.dp))
         AnimeContentInfo(
-            title = manga.title,
-            author = manga.author,
-            artist = manga.artist,
-            status = manga.status,
+            title = anime.title,
+            author = anime.author,
+            artist = anime.artist,
+            status = anime.status,
             sourceName = sourceName,
             isStubSource = isStubSource,
             doSearch = doSearch,
@@ -542,7 +543,7 @@ private fun AnimeAndSourceTitlesLarge(
 @Composable
 private fun AnimeAndSourceTitlesSmall(
     appBarPadding: Dp,
-    manga: Anime,
+    anime: Anime,
     sourceName: String,
     isStubSource: Boolean,
     onCoverClick: () -> Unit,
@@ -550,7 +551,7 @@ private fun AnimeAndSourceTitlesSmall(
     // KMK -->
     librarySearch: (query: String) -> Unit,
     onSourceClick: () -> Unit,
-    onCoverLoaded: (DomainMangaCover) -> Unit,
+    onCoverLoaded: (DomainAnimeCover) -> Unit,
     coverRatio: MutableFloatState,
     usePanoramaCover: Boolean = false,
     // KMK <--
@@ -571,16 +572,16 @@ private fun AnimeAndSourceTitlesSmall(
                     .align(Alignment.CenterVertically),
                 // KMK <--
                 data = ImageRequest.Builder(LocalContext.current)
-                    .data(manga)
+                    .data(anime)
                     .crossfade(true)
                     .build(),
                 contentDescription = stringResource(MR.strings.manga_cover),
                 onClick = onCoverClick,
                 // KMK -->
-                onCoverLoaded = { mangaCover, result ->
+                onCoverLoaded = { animeCover, result ->
                     val image = result.result.image
                     coverRatio.floatValue = image.height.toFloat() / image.width
-                    onCoverLoaded(mangaCover)
+                    onCoverLoaded(animeCover)
                 },
                 // KMK <--
             )
@@ -593,16 +594,16 @@ private fun AnimeAndSourceTitlesSmall(
                     .align(Alignment.CenterVertically),
                 // KMK <--
                 data = ImageRequest.Builder(LocalContext.current)
-                    .data(manga)
+                    .data(anime)
                     .crossfade(true)
                     .build(),
                 contentDescription = stringResource(MR.strings.manga_cover),
                 onClick = onCoverClick,
                 // KMK -->
-                onCoverLoaded = { mangaCover, result ->
+                onCoverLoaded = { animeCover, result ->
                     val image = result.result.image
                     coverRatio.floatValue = image.height.toFloat() / image.width
-                    onCoverLoaded(mangaCover)
+                    onCoverLoaded(animeCover)
                 },
                 // KMK <--
             )
@@ -611,10 +612,10 @@ private fun AnimeAndSourceTitlesSmall(
             verticalArrangement = Arrangement.spacedBy(2.dp),
         ) {
             AnimeContentInfo(
-                title = manga.title,
-                author = manga.author,
-                artist = manga.artist,
-                status = manga.status,
+                title = anime.title,
+                author = anime.author,
+                artist = anime.artist,
+                status = anime.status,
                 sourceName = sourceName,
                 isStubSource = isStubSource,
                 doSearch = doSearch,

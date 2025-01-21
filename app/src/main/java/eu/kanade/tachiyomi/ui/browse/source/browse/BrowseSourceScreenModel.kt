@@ -16,7 +16,7 @@ import cafe.adriel.voyager.core.model.screenModelScope
 import dev.icerock.moko.resources.StringResource
 import eu.kanade.core.preference.asState
 import eu.kanade.domain.anime.interactor.UpdateAnime
-import eu.kanade.domain.anime.model.toDomainManga
+import eu.kanade.domain.anime.model.toDomainAnime
 import eu.kanade.domain.base.BasePreferences
 import eu.kanade.domain.source.interactor.GetExhSavedSearch
 import eu.kanade.domain.source.service.SourcePreferences
@@ -212,7 +212,7 @@ open class BrowseSourceScreenModel(
             }.flow.map { pagingData ->
                 pagingData.map { (it, metadata) ->
                     // KMK -->
-                    it.toDomainManga(sourceId)
+                    it.toDomainAnime(sourceId)
                         .let { manga ->
                             getAnime.subscribe(manga.url, manga.source)
                                 .map { it ?: manga }

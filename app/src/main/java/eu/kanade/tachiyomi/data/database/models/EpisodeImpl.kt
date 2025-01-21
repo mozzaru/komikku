@@ -6,7 +6,7 @@ class EpisodeImpl : Episode {
 
     override var id: Long? = null
 
-    override var manga_id: Long? = null
+    override var anime_id: Long? = null
 
     override lateinit var url: String
 
@@ -14,17 +14,17 @@ class EpisodeImpl : Episode {
 
     override var scanlator: String? = null
 
-    override var read: Boolean = false
+    override var seen: Boolean = false
 
     override var bookmark: Boolean = false
 
-    override var last_page_read: Int = 0
+    override var last_second_seen: Int = 0
 
     override var date_fetch: Long = 0
 
     override var date_upload: Long = 0
 
-    override var chapter_number: Float = 0f
+    override var episode_number: Float = 0f
 
     override var source_order: Int = 0
 

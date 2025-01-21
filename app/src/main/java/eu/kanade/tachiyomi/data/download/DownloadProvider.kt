@@ -173,7 +173,7 @@ class DownloadProvider(
         }
     }
 
-    fun isChapterDirNameChanged(oldEpisode: Episode, newEpisode: Episode): Boolean {
+    fun isEpisodeDirNameChanged(oldEpisode: Episode, newEpisode: Episode): Boolean {
         return oldEpisode.name != newEpisode.name ||
             oldEpisode.scanlator?.takeIf { it.isNotBlank() } != newEpisode.scanlator?.takeIf { it.isNotBlank() }
     }

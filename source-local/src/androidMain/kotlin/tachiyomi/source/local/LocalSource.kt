@@ -8,8 +8,8 @@ import eu.kanade.tachiyomi.source.UnmeteredSource
 import eu.kanade.tachiyomi.source.model.FilterList
 import eu.kanade.tachiyomi.source.model.MangasPage
 import eu.kanade.tachiyomi.source.model.Page
-import eu.kanade.tachiyomi.source.model.SEpisode
-import eu.kanade.tachiyomi.source.model.SAnime
+import eu.kanade.tachiyomi.animesource.model.SEpisode
+import eu.kanade.tachiyomi.animesource.model.SAnime
 import eu.kanade.tachiyomi.util.lang.compareToCaseInsensitiveNaturalOrder
 import kotlinx.coroutines.async
 import kotlinx.coroutines.awaitAll
@@ -338,8 +338,8 @@ actual class LocalSource(
                         chapterFile.nameWithoutExtension
                     }.orEmpty()
                     date_upload = chapterFile.lastModified()
-                    chapter_number = EpisodeRecognition
-                        .parseChapterNumber(manga.title, this.name, this.chapter_number.toDouble())
+                    episode_number = EpisodeRecognition
+                        .parseEpisodeNumber(manga.title, this.name, this.episode_number.toDouble())
                         .toFloat()
 
                     val format = Format.valueOf(chapterFile)
@@ -351,7 +351,7 @@ actual class LocalSource(
                 }
             }
             .sortedWith { c1, c2 ->
-                val c = c2.chapter_number.compareTo(c1.chapter_number)
+                val c = c2.episode_number.compareTo(c1.episode_number)
                 if (c == 0) c2.name.compareToCaseInsensitiveNaturalOrder(c1.name) else c
             }
 

@@ -19,7 +19,7 @@ class AnimeRepositoryImpl(
     private val handler: DatabaseHandler,
 ) : AnimeRepository {
 
-    override suspend fun getMangaById(id: Long): Anime {
+    override suspend fun getAnimeById(id: Long): Anime {
         return handler.awaitOne { animesQueries.getAnimeById(id, AnimeMapper::mapAnime) }
     }
 
@@ -128,7 +128,7 @@ class AnimeRepositoryImpl(
                 calculateInterval = manga.fetchInterval.toLong(),
                 initialized = manga.initialized,
                 viewerFlags = manga.viewerFlags,
-                chapterFlags = manga.chapterFlags,
+                chapterFlags = manga.episodeFlags,
                 coverLastModified = manga.coverLastModified,
                 dateAdded = manga.dateAdded,
                 updateStrategy = manga.updateStrategy,

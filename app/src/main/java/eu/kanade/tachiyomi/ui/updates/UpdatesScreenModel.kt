@@ -115,7 +115,7 @@ class UpdatesScreenModel(
         return this
             .map { update ->
                 val activeDownload = downloadManager.getQueuedDownloadOrNull(update.episodeId)
-                val downloaded = downloadManager.isChapterDownloaded(
+                val downloaded = downloadManager.isEpisodeDownloaded(
                     update.chapterName,
                     update.scanlator,
                     // SY -->
@@ -204,14 +204,14 @@ class UpdatesScreenModel(
     }
 
     /**
-     * Mark the selected updates list as read/unread.
+     * Mark the selected updates list as seen/unseen.
      * @param updates the list of selected updates.
-     * @param read whether to mark episodes as read or unread.
+     * @param seen whether to mark episodes as seen or unseen.
      */
-    fun markUpdatesRead(updates: List<UpdatesItem>, read: Boolean) {
+    fun markUpdatesSeen(updates: List<UpdatesItem>, seen: Boolean) {
         screenModelScope.launchIO {
             setSeenStatus.await(
-                read = read,
+                seen = seen,
                 episodes = updates
                     .mapNotNull { getEpisode.await(it.update.episodeId) }
                     .toTypedArray(),
@@ -266,7 +266,7 @@ class UpdatesScreenModel(
                     val manga = getAnime.await(mangaId) ?: return@forEach
                     val source = sourceManager.get(manga.source) ?: return@forEach
                     val chapters = updates.mapNotNull { getEpisode.await(it.update.episodeId) }
-                    downloadManager.deleteChapters(
+                    downloadManager.deleteEpisodes(
                         chapters,
                         manga,
                         source,

@@ -2,7 +2,7 @@ package exh.metadata.metadata
 
 import android.content.Context
 import androidx.core.net.toUri
-import eu.kanade.tachiyomi.source.model.SAnime
+import eu.kanade.tachiyomi.animesource.model.SAnime
 import eu.kanade.tachiyomi.source.model.copy
 import exh.metadata.MetadataUtil
 import exh.util.nullIfEmpty
@@ -46,7 +46,7 @@ class TsuminoSearchMetadata : RaisedSearchMetadata() {
 
     var character: List<String> = emptyList()
 
-    override fun createMangaInfo(manga: SAnime): SAnime {
+    override fun createAnimeInfo(manga: SAnime): SAnime {
         val title = title
         val cover = tmId?.let { BASE_URL.replace("www", "content") + thumbUrlFromId(it.toString()) }
 

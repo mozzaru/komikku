@@ -7,8 +7,8 @@ import eu.kanade.tachiyomi.R
 import eu.kanade.tachiyomi.data.track.mdlist.MdList
 import eu.kanade.tachiyomi.data.track.myanimelist.dto.MALOAuth
 import eu.kanade.tachiyomi.network.POST
-import eu.kanade.tachiyomi.source.model.SEpisode
-import eu.kanade.tachiyomi.source.model.SAnime
+import eu.kanade.tachiyomi.animesource.model.SEpisode
+import eu.kanade.tachiyomi.animesource.model.SAnime
 import eu.kanade.tachiyomi.source.online.all.MangaDex
 import eu.kanade.tachiyomi.util.PkceUtil
 import exh.md.dto.MangaAttributesDto
@@ -121,14 +121,14 @@ class MdUtil {
                 } else {*/
                 it.name
                 /*}*/
-            }.sortedByDescending { it.chapter_number }
+            }.sortedByDescending { it.episode_number }
 
             remove0ChaptersFromCount.firstOrNull()?.let { chapter ->
-                val chpNumber = chapter.chapter_number.floor()
+                val chpNumber = chapter.episode_number.floor()
                 val allChapters = (1..chpNumber).toMutableSet()
 
                 remove0ChaptersFromCount.forEach {
-                    allChapters.remove(it.chapter_number.floor())
+                    allChapters.remove(it.episode_number.floor())
                 }
 
                 if (allChapters.isEmpty()) return null

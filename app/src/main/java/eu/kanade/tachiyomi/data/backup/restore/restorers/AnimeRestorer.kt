@@ -155,7 +155,7 @@ class AnimeRestorer(
                 calculateInterval = null,
                 initialized = manga.initialized,
                 viewer = manga.viewerFlags,
-                chapterFlags = manga.chapterFlags,
+                chapterFlags = manga.episodeFlags,
                 coverLastModified = manga.coverLastModified,
                 dateAdded = manga.dateAdded,
                 mangaId = manga.id,
@@ -183,7 +183,7 @@ class AnimeRestorer(
 
         val (existingChapters, newChapters) = backupEpisodes
             .mapNotNull { backupChapter ->
-                val chapter = backupChapter.toChapterImpl().copy(mangaId = manga.id)
+                val chapter = backupChapter.toChapterImpl().copy(animeId = manga.id)
                 val dbChapter = dbChaptersByUrl[chapter.url]
 
                 when {
@@ -203,16 +203,16 @@ class AnimeRestorer(
             episode.copy(
                 id = dbEpisode.id,
                 bookmark = episode.bookmark || dbEpisode.bookmark,
-                read = episode.read,
-                lastPageRead = episode.lastPageRead,
+                seen = episode.seen,
+                lastSecondSeen = episode.lastSecondSeen,
                 sourceOrder = episode.sourceOrder,
             )
         } else {
             episode.copyFrom(dbEpisode).let {
                 when {
-                    dbEpisode.read && !it.read -> it.copy(read = true, lastPageRead = dbEpisode.lastPageRead)
-                    it.lastPageRead == 0L && dbEpisode.lastPageRead != 0L -> it.copy(
-                        lastPageRead = dbEpisode.lastPageRead,
+                    dbEpisode.seen && !it.seen -> it.copy(seen = true, lastSecondSeen = dbEpisode.lastSecondSeen)
+                    it.lastSecondSeen == 0L && dbEpisode.lastSecondSeen != 0L -> it.copy(
+                        lastSecondSeen = dbEpisode.lastSecondSeen,
                     )
                     else -> it
                 }
@@ -226,7 +226,7 @@ class AnimeRestorer(
     private fun Episode.forComparison() =
         this.copy(
             id = 0L,
-            mangaId = 0L,
+            animeId = 0L,
             dateFetch = 0L,
             // KMK -->
             // dateUpload = 0L, some time source loses dateUpload so we overwrite with backup
@@ -240,14 +240,14 @@ class AnimeRestorer(
         handler.await(true) {
             episodes.forEach { chapter ->
                 episodesQueries.insert(
-                    chapter.mangaId,
+                    chapter.animeId,
                     chapter.url,
                     chapter.name,
                     chapter.scanlator,
-                    chapter.read,
+                    chapter.seen,
                     chapter.bookmark,
-                    chapter.lastPageRead,
-                    chapter.chapterNumber,
+                    chapter.lastSecondSeen,
+                    chapter.episodeNumber,
                     chapter.sourceOrder,
                     chapter.dateFetch,
                     chapter.dateUpload,
@@ -265,9 +265,9 @@ class AnimeRestorer(
                     url = null,
                     name = null,
                     scanlator = null,
-                    read = chapter.read,
+                    read = chapter.seen,
                     bookmark = chapter.bookmark,
-                    lastPageRead = chapter.lastPageRead,
+                    lastPageRead = chapter.lastSecondSeen,
                     chapterNumber = null,
                     sourceOrder = if (isSync) chapter.sourceOrder else null,
                     dateFetch = null,
@@ -305,7 +305,7 @@ class AnimeRestorer(
                 calculateInterval = 0L,
                 initialized = manga.initialized,
                 viewerFlags = manga.viewerFlags,
-                chapterFlags = manga.chapterFlags,
+                chapterFlags = manga.episodeFlags,
                 coverLastModified = manga.coverLastModified,
                 dateAdded = manga.dateAdded,
                 updateStrategy = manga.updateStrategy,
@@ -399,7 +399,7 @@ class AnimeRestorer(
             item.copy(
                 id = dbHistory._id,
                 chapterId = dbHistory.chapter_id,
-                readAt = max(item.readAt?.time ?: 0L, dbHistory.last_read?.time ?: 0L)
+                seenAt = max(item.seenAt?.time ?: 0L, dbHistory.last_read?.time ?: 0L)
                     .takeIf { it > 0L }
                     ?.let { Date(it) },
                 readDuration = max(item.readDuration, dbHistory.time_read) - dbHistory.time_read,
@@ -411,7 +411,7 @@ class AnimeRestorer(
                 toUpdate.forEach {
                     historyQueries.upsert(
                         it.chapterId,
-                        it.readAt,
+                        it.seenAt,
                         it.readDuration,
                     )
                 }
@@ -429,7 +429,7 @@ class AnimeRestorer(
                     ?: // New track
                     return@mapNotNull track.copy(
                         id = 0, // Let DB assign new ID
-                        mangaId = manga.id,
+                        animeId = manga.id,
                     )
 
                 if (track.forComparison() == dbTrack.forComparison()) {
@@ -441,7 +441,7 @@ class AnimeRestorer(
                 dbTrack.copy(
                     remoteId = track.remoteId,
                     libraryId = track.libraryId,
-                    lastChapterRead = max(dbTrack.lastChapterRead, track.lastChapterRead),
+                    lastEpisodeSeen = max(dbTrack.lastEpisodeSeen, track.lastEpisodeSeen),
                 )
             }
             .partition { it.id > 0 }
@@ -453,13 +453,13 @@ class AnimeRestorer(
             handler.await(true) {
                 existingTracks.forEach { track ->
                     anime_syncQueries.update(
-                        track.mangaId,
+                        track.animeId,
                         track.trackerId,
                         track.remoteId,
                         track.libraryId,
                         track.title,
-                        track.lastChapterRead,
-                        track.totalChapters,
+                        track.lastEpisodeSeen,
+                        track.totalEpisodes,
                         track.status,
                         track.score,
                         track.remoteUrl,
@@ -495,7 +495,7 @@ class AnimeRestorer(
             // Store the inserted id in the backupMergedMangaReference
             if (dbMergedMangaReferences.none {
                     backupMergedMangaReference.mergeUrl == it.mergeUrl &&
-                        backupMergedMangaReference.mangaUrl == it.mangaUrl
+                        backupMergedMangaReference.mangaUrl == it.animeUrl
                 }
             ) {
                 // Let the db assign the id
@@ -509,7 +509,7 @@ class AnimeRestorer(
                 backupMergedMangaReference.getMergedMangaReference().run {
                     handler.await {
                         mergedQueries.insert(
-                            infoManga = isInfoManga,
+                            infoManga = isInfoAnime,
                             getChapterUpdates = getChapterUpdates,
                             chapterSortMode = chapterSortMode.toLong(),
                             chapterPriority = chapterPriority.toLong(),
@@ -517,8 +517,8 @@ class AnimeRestorer(
                             mergeId = mergeMangaId,
                             mergeUrl = mergeUrl,
                             mangaId = mergedManga.id,
-                            mangaUrl = mangaUrl,
-                            mangaSource = mangaSourceId,
+                            mangaUrl = animeUrl,
+                            mangaSource = animeSourceId,
                         )
                     }
                 }
@@ -561,7 +561,7 @@ class AnimeRestorer(
     }
     // SY <--
 
-    private fun Track.forComparison() = this.copy(id = 0L, mangaId = 0L)
+    private fun Track.forComparison() = this.copy(id = 0L, animeId = 0L)
 
     /**
      * Restores the excluded scanlators for the manga.

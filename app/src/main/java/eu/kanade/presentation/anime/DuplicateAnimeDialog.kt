@@ -52,7 +52,7 @@ import uy.kohesive.injekt.api.get
 fun DuplicateAnimeDialog(
     onDismissRequest: () -> Unit,
     onConfirm: () -> Unit,
-    onOpenManga: () -> Unit,
+    onOpenAnime: () -> Unit,
     onMigrate: () -> Unit,
     // KMK -->
     duplicate: Anime,
@@ -128,7 +128,7 @@ fun DuplicateAnimeDialog(
                 icon = Icons.Outlined.Book,
                 onPreferenceClick = {
                     onDismissRequest()
-                    onOpenManga()
+                    onOpenAnime()
                 },
             )
 

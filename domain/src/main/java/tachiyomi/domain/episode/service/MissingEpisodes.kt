@@ -40,7 +40,7 @@ fun List<Double>.missingEpisodesCount(): Int {
 fun calculateEpisodeGap(higherEpisode: Episode?, lowerEpisode: Episode?): Int {
     if (higherEpisode == null || lowerEpisode == null) return 0
     if (!higherEpisode.isRecognizedNumber || !lowerEpisode.isRecognizedNumber) return 0
-    return calculateEpisodeGap(higherEpisode.chapterNumber, lowerEpisode.chapterNumber)
+    return calculateEpisodeGap(higherEpisode.episodeNumber, lowerEpisode.episodeNumber)
 }
 
 fun calculateEpisodeGap(higherChapterNumber: Double, lowerChapterNumber: Double): Int {

@@ -53,7 +53,7 @@ SELECT *
 FROM episodes
 WHERE _id = :id;
 
-getEpisodesByMangaId:
+getEpisodesByAnimeId:
 SELECT C.*
 FROM episodes C
 LEFT JOIN excluded_scanlators ES
@@ -65,12 +65,12 @@ AND (
     OR ES.scanlator IS NULL
 );
 
-getScanlatorsByMangaId:
+getScanlatorsByAnimeId:
 SELECT scanlator
 FROM episodes
 WHERE manga_id = :mangaId;
 
-getBookmarkedEpisodesByMangaId:
+getBookmarkedEpisodesByAnimeId:
 SELECT *
 FROM episodes
 WHERE bookmark

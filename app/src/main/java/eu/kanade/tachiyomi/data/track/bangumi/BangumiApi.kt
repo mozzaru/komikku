@@ -60,7 +60,7 @@ class BangumiApi(
 
             // episode update
             val body = FormBody.Builder()
-                .add("watched_eps", track.last_chapter_read.toInt().toString())
+                .add("watched_eps", track.last_episode_seen.toInt().toString())
                 .build()
             authClient.newCall(
                 POST("$API_URL/subject/${track.remote_id}/update/watched_eps", body = body),
@@ -123,7 +123,7 @@ class BangumiApi(
                         if (it.code == 400) return@let null
 
                         track.status = it.status?.id!!
-                        track.last_chapter_read = it.epStatus!!.toDouble()
+                        track.last_episode_seen = it.epStatus!!.toDouble()
                         track.score = it.rating!!
                         track
                     }

@@ -30,7 +30,7 @@ object EpisodeRecognition {
      */
     private val unwantedWhiteSpace = Regex("""\s(?=extra|special|omake)""")
 
-    fun parseChapterNumber(
+    fun parseEpisodeNumber(
         mangaTitle: String,
         chapterName: String,
         chapterNumber: Double? = null,

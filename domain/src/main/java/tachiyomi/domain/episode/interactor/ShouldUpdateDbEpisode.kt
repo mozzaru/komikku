@@ -8,7 +8,7 @@ class ShouldUpdateDbEpisode {
         return dbEpisode.scanlator != sourceEpisode.scanlator ||
             dbEpisode.name != sourceEpisode.name ||
             dbEpisode.dateUpload != sourceEpisode.dateUpload ||
-            dbEpisode.chapterNumber != sourceEpisode.chapterNumber ||
+            dbEpisode.episodeNumber != sourceEpisode.episodeNumber ||
             dbEpisode.sourceOrder != sourceEpisode.sourceOrder
     }
 }

@@ -1,7 +1,7 @@
 package tachiyomi.domain.history.interactor
 
 import exh.source.MERGED_SOURCE_ID
-import exh.source.isEhBasedManga
+import exh.source.isEhBasedAnime
 import tachiyomi.domain.anime.interactor.GetAnime
 import tachiyomi.domain.episode.interactor.GetEpisodesByAnimeId
 import tachiyomi.domain.episode.interactor.GetMergedEpisodesByAnimeId
@@ -33,17 +33,17 @@ class GetNextEpisodes(
                 .sortedWith(getEpisodeSort(manga, sortDescending = false))
 
             return if (onlyUnread) {
-                chapters.filterNot { it.read }
+                chapters.filterNot { it.seen }
             } else {
                 chapters
             }
         }
-        if (manga.isEhBasedManga()) {
+        if (manga.isEhBasedAnime()) {
             val chapters = getEpisodesByAnimeId.await(mangaId, applyScanlatorFilter = true)
                 .sortedWith(getEpisodeSort(manga, sortDescending = false))
 
             return if (onlyUnread) {
-                chapters.takeLast(1).takeUnless { it.firstOrNull()?.read == true }.orEmpty()
+                chapters.takeLast(1).takeUnless { it.firstOrNull()?.seen == true }.orEmpty()
             } else {
                 chapters
             }
@@ -54,7 +54,7 @@ class GetNextEpisodes(
             .sortedWith(getEpisodeSort(manga, sortDescending = false))
 
         return if (onlyUnread) {
-            chapters.filterNot { it.read }
+            chapters.filterNot { it.seen }
         } else {
             chapters
         }
@@ -77,7 +77,7 @@ class GetNextEpisodes(
         // - The current chapter if it isn't completely read
         // - The chapters after the current chapter if the current one is completely read
         val fromChapter = chapters.getOrNull(currChapterIndex)
-        return if (fromChapter != null && !fromChapter.read) {
+        return if (fromChapter != null && !fromChapter.seen) {
             nextChapters
         } else {
             nextChapters.drop(1)

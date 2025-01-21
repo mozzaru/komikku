@@ -24,7 +24,7 @@ fun Source.isEhBasedSource() = id == EH_SOURCE_ID || id == EXH_SOURCE_ID
 
 fun Source.isMdBasedSource() = id in mangaDexSourceIds
 
-fun Anime.isEhBasedManga() = source == EH_SOURCE_ID || source == EXH_SOURCE_ID
+fun Anime.isEhBasedAnime() = source == EH_SOURCE_ID || source == EXH_SOURCE_ID
 
 fun Source.getMainSource(): Source = if (this is EnhancedHttpSource) {
     this.source()

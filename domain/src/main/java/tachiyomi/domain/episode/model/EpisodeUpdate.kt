@@ -3,9 +3,9 @@ package tachiyomi.domain.episode.model
 data class EpisodeUpdate(
     val id: Long,
     val mangaId: Long? = null,
-    val read: Boolean? = null,
+    val seen: Boolean? = null,
     val bookmark: Boolean? = null,
-    val lastPageRead: Long? = null,
+    val lastSecondSeen: Long? = null,
     val dateFetch: Long? = null,
     val sourceOrder: Long? = null,
     val url: String? = null,
@@ -19,16 +19,16 @@ data class EpisodeUpdate(
 fun Episode.toEpisodeUpdate(): EpisodeUpdate {
     return EpisodeUpdate(
         id,
-        mangaId,
-        read,
+        animeId,
+        seen,
         bookmark,
-        lastPageRead,
+        lastSecondSeen,
         dateFetch,
         sourceOrder,
         url,
         name,
         dateUpload,
-        chapterNumber,
+        episodeNumber,
         scanlator,
         version,
     )

@@ -20,12 +20,13 @@ import androidx.work.WorkerParameters
 import androidx.work.workDataOf
 import eu.kanade.domain.anime.interactor.UpdateAnime
 import eu.kanade.domain.anime.model.copyFrom
-import eu.kanade.domain.anime.model.toSManga
+import eu.kanade.domain.anime.model.toSAnime
 import eu.kanade.domain.episode.interactor.SetSeenStatus
 import eu.kanade.domain.episode.interactor.SyncEpisodesWithSource
 import eu.kanade.domain.sync.SyncPreferences
 import eu.kanade.domain.track.model.toDbTrack
 import eu.kanade.domain.track.model.toDomainTrack
+import eu.kanade.tachiyomi.animesource.model.SAnime
 import eu.kanade.tachiyomi.data.LibraryUpdateStatus
 import eu.kanade.tachiyomi.data.cache.CoverCache
 import eu.kanade.tachiyomi.data.download.DownloadManager
@@ -33,7 +34,6 @@ import eu.kanade.tachiyomi.data.notification.Notifications
 import eu.kanade.tachiyomi.data.sync.SyncDataJob
 import eu.kanade.tachiyomi.data.track.TrackStatus
 import eu.kanade.tachiyomi.data.track.TrackerManager
-import eu.kanade.tachiyomi.source.model.SAnime
 import eu.kanade.tachiyomi.source.model.UpdateStrategy
 import eu.kanade.tachiyomi.source.online.all.MergedSource
 import eu.kanade.tachiyomi.util.prepUpdateCover
@@ -85,7 +85,7 @@ import tachiyomi.domain.library.service.LibraryPreferences.Companion.DEVICE_CHAR
 import tachiyomi.domain.library.service.LibraryPreferences.Companion.DEVICE_NETWORK_NOT_METERED
 import tachiyomi.domain.library.service.LibraryPreferences.Companion.DEVICE_ONLY_ON_WIFI
 import tachiyomi.domain.library.service.LibraryPreferences.Companion.MANGA_HAS_UNREAD
-import tachiyomi.domain.library.service.LibraryPreferences.Companion.MANGA_NON_COMPLETED
+import tachiyomi.domain.library.service.LibraryPreferences.Companion.ANIME_NON_COMPLETED
 import tachiyomi.domain.library.service.LibraryPreferences.Companion.MANGA_NON_READ
 import tachiyomi.domain.library.service.LibraryPreferences.Companion.MANGA_OUTSIDE_RELEASE_PERIOD
 import tachiyomi.domain.libraryUpdateError.interactor.DeleteLibraryUpdateErrors
@@ -186,7 +186,7 @@ class LibraryUpdateJob(private val context: Context, workerParams: WorkerParamet
         return withIOContext {
             try {
                 when (target) {
-                    Target.CHAPTERS -> updateChapterList()
+                    Target.CHAPTERS -> updateEpisodeList()
                     Target.COVERS -> updateCovers()
                     // SY -->
                     Target.SYNC_FOLLOWS -> syncFollows()
@@ -262,7 +262,7 @@ class LibraryUpdateJob(private val context: Context, workerParams: WorkerParamet
             when (group) {
                 LibraryGroup.BY_TRACK_STATUS -> {
                     val trackingExtra = groupExtra?.toIntOrNull() ?: -1
-                    val tracks = getTracks.await().groupBy { it.mangaId }
+                    val tracks = getTracks.await().groupBy { it.animeId }
 
                     libraryManga.filter { (manga) ->
                         val status = tracks[manga.id]?.firstNotNullOfOrNull { track ->
@@ -295,7 +295,7 @@ class LibraryUpdateJob(private val context: Context, workerParams: WorkerParamet
             // SY <--
         }
 
-        val restrictions = libraryPreferences.autoUpdateMangaRestrictions().get()
+        val restrictions = libraryPreferences.autoUpdateAnimeRestrictions().get()
         val skippedUpdates = mutableListOf<Pair<Anime, String?>>()
         val (_, fetchWindowUpperBound) = fetchInterval.getWindow(ZonedDateTime.now())
 
@@ -313,7 +313,7 @@ class LibraryUpdateJob(private val context: Context, workerParams: WorkerParamet
                         false
                     }
 
-                    MANGA_NON_COMPLETED in restrictions && it.manga.status.toInt() == SAnime.COMPLETED -> {
+                    ANIME_NON_COMPLETED in restrictions && it.manga.status.toInt() == SAnime.COMPLETED -> {
                         skippedUpdates.add(it.manga to context.stringResource(MR.strings.skipped_reason_completed))
                         false
                     }
@@ -364,7 +364,7 @@ class LibraryUpdateJob(private val context: Context, workerParams: WorkerParamet
      *
      * @return an observable delivering the progress of each update.
      */
-    private suspend fun updateChapterList() {
+    private suspend fun updateEpisodeList() {
         val semaphore = Semaphore(5)
         val progressCount = AtomicInteger(0)
         val currentlyUpdatingManga = CopyOnWriteArrayList<Anime>()
@@ -428,12 +428,12 @@ class LibraryUpdateJob(private val context: Context, workerParams: WorkerParamet
                                             .sortedByDescending { it.sourceOrder }.run {
                                                 if (libraryPreferences.libraryReadDuplicateChapters().get()) {
                                                     val readChapters = getEpisodesByAnimeId.await(manga.id).filter {
-                                                        it.read
+                                                        it.seen
                                                     }
                                                     val newReadChapters = this.filter { chapter ->
-                                                        chapter.chapterNumber >= 0 &&
+                                                        chapter.episodeNumber >= 0 &&
                                                             readChapters.any {
-                                                                it.chapterNumber == chapter.chapterNumber
+                                                                it.episodeNumber == chapter.episodeNumber
                                                             }
                                                     }
 
@@ -514,7 +514,7 @@ class LibraryUpdateJob(private val context: Context, workerParams: WorkerParamet
         if (manga.source == MERGED_SOURCE_ID) {
             val downloadingManga = runBlocking { getMergedAnimeForDownloading.await(manga.id) }
                 .associateBy { it.id }
-            episodes.groupBy { it.mangaId }
+            episodes.groupBy { it.animeId }
                 .forEach {
                     downloadManager.downloadChapters(
                         downloadingManga[it.key] ?: return@forEach,
@@ -540,7 +540,7 @@ class LibraryUpdateJob(private val context: Context, workerParams: WorkerParamet
 
         // Update manga metadata if needed
         if (libraryPreferences.autoUpdateMetadata().get()) {
-            val networkManga = source.getMangaDetails(manga.toSManga())
+            val networkManga = source.getMangaDetails(manga.toSAnime())
             updateAnime.awaitUpdateFromSource(manga, networkManga, manualFetch = false, coverCache)
         }
 
@@ -548,7 +548,7 @@ class LibraryUpdateJob(private val context: Context, workerParams: WorkerParamet
             return source.fetchChaptersAndSync(manga, false)
         }
 
-        val chapters = source.getChapterList(manga.toSManga())
+        val chapters = source.getChapterList(manga.toSAnime())
 
         // Get manga from database to account for if it was removed during the update and
         // to get latest data so it doesn't get overwritten later on
@@ -579,7 +579,7 @@ class LibraryUpdateJob(private val context: Context, workerParams: WorkerParamet
                                 ) {
                                     val source = sourceManager.get(manga.source) ?: return@withUpdateNotification
                                     try {
-                                        val networkManga = source.getMangaDetails(manga.toSManga())
+                                        val networkManga = source.getMangaDetails(manga.toSAnime())
                                         val updatedManga = manga.prepUpdateCover(
                                             coverCache,
                                             networkManga,
@@ -648,7 +648,7 @@ class LibraryUpdateJob(private val context: Context, workerParams: WorkerParamet
                 }
 
                 updateAnime.awaitUpdateFromSource(dbManga, networkManga, true)
-                metadata.mangaId = dbManga.id
+                metadata.animeId = dbManga.id
                 insertFlatMetadata.await(metadata)
             }
 

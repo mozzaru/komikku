@@ -214,13 +214,13 @@ class NotificationReceiver : BroadcastReceiver() {
         launchIO {
             val toUpdate = chapterUrls.mapNotNull { getEpisode.await(it, mangaId) }
                 .map {
-                    val chapter = it.copy(read = true)
-                    if (downloadPreferences.removeAfterMarkedAsRead().get()) {
+                    val chapter = it.copy(seen = true)
+                    if (downloadPreferences.removeAfterMarkedAsSeen().get()) {
                         val manga = getAnime.await(mangaId)
                         if (manga != null) {
                             val source = sourceManager.get(manga.source)
                             if (source != null) {
-                                downloadManager.deleteChapters(listOf(it), manga, source)
+                                downloadManager.deleteEpisodes(listOf(it), manga, source)
                             }
                         }
                     }

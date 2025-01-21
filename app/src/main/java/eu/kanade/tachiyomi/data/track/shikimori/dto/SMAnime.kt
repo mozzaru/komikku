@@ -22,7 +22,7 @@ data class SMAnime(
         return TrackSearch.create(trackId).apply {
             remote_id = this@SMAnime.id
             title = name
-            total_chapters = chapters
+            total_episodes = chapters
             cover_url = ShikimoriApi.BASE_URL + image.preview
             summary = ""
             score = this@SMAnime.score

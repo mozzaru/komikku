@@ -46,43 +46,43 @@ import tachiyomi.presentation.core.i18n.stringResource
 import tachiyomi.presentation.core.util.selectedBackground
 
 @Composable
-fun AnimeChapterListItem(
+fun AnimeEpisodeListItem(
     title: String,
     date: String?,
-    readProgress: String?,
+    watchProgress: String?,
     scanlator: String?,
     // SY -->
     sourceName: String?,
     // SY <--
-    read: Boolean,
+    seen: Boolean,
     bookmark: Boolean,
     selected: Boolean,
     downloadIndicatorEnabled: Boolean,
     downloadStateProvider: () -> Download.State,
     downloadProgressProvider: () -> Int,
-    chapterSwipeStartAction: LibraryPreferences.ChapterSwipeAction,
-    chapterSwipeEndAction: LibraryPreferences.ChapterSwipeAction,
+    episodeSwipeStartAction: LibraryPreferences.EpisodeSwipeAction,
+    episodeSwipeEndAction: LibraryPreferences.EpisodeSwipeAction,
     onLongClick: () -> Unit,
     onClick: () -> Unit,
     onDownloadClick: ((EpisodeDownloadAction) -> Unit)?,
-    onChapterSwipe: (LibraryPreferences.ChapterSwipeAction) -> Unit,
+    onEpisodeSwipe: (LibraryPreferences.EpisodeSwipeAction) -> Unit,
     modifier: Modifier = Modifier,
 ) {
     val start = getSwipeAction(
-        action = chapterSwipeStartAction,
-        read = read,
+        action = episodeSwipeStartAction,
+        seen = seen,
         bookmark = bookmark,
         downloadState = downloadStateProvider(),
         background = MaterialTheme.colorScheme.primaryContainer,
-        onSwipe = { onChapterSwipe(chapterSwipeStartAction) },
+        onSwipe = { onEpisodeSwipe(episodeSwipeStartAction) },
     )
     val end = getSwipeAction(
-        action = chapterSwipeEndAction,
-        read = read,
+        action = episodeSwipeEndAction,
+        seen = seen,
         bookmark = bookmark,
         downloadState = downloadStateProvider(),
         background = MaterialTheme.colorScheme.primaryContainer,
-        onSwipe = { onChapterSwipe(chapterSwipeEndAction) },
+        onSwipe = { onEpisodeSwipe(episodeSwipeEndAction) },
     )
 
     SwipeableActionsBox(
@@ -110,7 +110,7 @@ fun AnimeChapterListItem(
                     verticalAlignment = Alignment.CenterVertically,
                 ) {
                     var textHeight by remember { mutableIntStateOf(0) }
-                    if (!read) {
+                    if (!seen) {
                         Icon(
                             imageVector = Icons.Filled.Circle,
                             contentDescription = stringResource(MR.strings.unread),
@@ -135,7 +135,7 @@ fun AnimeChapterListItem(
                         maxLines = 1,
                         overflow = TextOverflow.Ellipsis,
                         onTextLayout = { textHeight = it.size.height },
-                        color = LocalContentColor.current.copy(alpha = if (read) DISABLED_ALPHA else 1f),
+                        color = LocalContentColor.current.copy(alpha = if (seen) DISABLED_ALPHA else 1f),
                     )
                 }
 
@@ -143,7 +143,7 @@ fun AnimeChapterListItem(
                     val subtitleStyle = MaterialTheme.typography.bodySmall
                         .merge(
                             color = LocalContentColor.current
-                                .copy(alpha = if (read) DISABLED_ALPHA else SECONDARY_ALPHA),
+                                .copy(alpha = if (seen) DISABLED_ALPHA else SECONDARY_ALPHA),
                         )
                     ProvideTextStyle(value = subtitleStyle) {
                         if (date != null) {
@@ -152,16 +152,16 @@ fun AnimeChapterListItem(
                                 maxLines = 1,
                                 overflow = TextOverflow.Ellipsis,
                             )
-                            if (readProgress != null ||
+                            if (watchProgress != null ||
                                 scanlator != null/* SY --> */ ||
                                 sourceName != null/* SY <-- */
                             ) {
                                 DotSeparatorText()
                             }
                         }
-                        if (readProgress != null) {
+                        if (watchProgress != null) {
                             Text(
-                                text = readProgress,
+                                text = watchProgress,
                                 maxLines = 1,
                                 overflow = TextOverflow.Ellipsis,
                                 color = LocalContentColor.current.copy(alpha = DISABLED_ALPHA),
@@ -201,27 +201,27 @@ fun AnimeChapterListItem(
 }
 
 private fun getSwipeAction(
-    action: LibraryPreferences.ChapterSwipeAction,
-    read: Boolean,
+    action: LibraryPreferences.EpisodeSwipeAction,
+    seen: Boolean,
     bookmark: Boolean,
     downloadState: Download.State,
     background: Color,
     onSwipe: () -> Unit,
 ): me.saket.swipe.SwipeAction? {
     return when (action) {
-        LibraryPreferences.ChapterSwipeAction.ToggleRead -> swipeAction(
-            icon = if (!read) Icons.Outlined.Done else Icons.Outlined.RemoveDone,
+        LibraryPreferences.EpisodeSwipeAction.ToggleSeen -> swipeAction(
+            icon = if (!seen) Icons.Outlined.Done else Icons.Outlined.RemoveDone,
             background = background,
-            isUndo = read,
+            isUndo = seen,
             onSwipe = onSwipe,
         )
-        LibraryPreferences.ChapterSwipeAction.ToggleBookmark -> swipeAction(
+        LibraryPreferences.EpisodeSwipeAction.ToggleBookmark -> swipeAction(
             icon = if (!bookmark) Icons.Outlined.BookmarkAdd else Icons.Outlined.BookmarkRemove,
             background = background,
             isUndo = bookmark,
             onSwipe = onSwipe,
         )
-        LibraryPreferences.ChapterSwipeAction.Download -> swipeAction(
+        LibraryPreferences.EpisodeSwipeAction.Download -> swipeAction(
             icon = when (downloadState) {
                 Download.State.NOT_DOWNLOADED, Download.State.ERROR -> Icons.Outlined.Download
                 Download.State.QUEUE, Download.State.DOWNLOADING -> Icons.Outlined.FileDownloadOff
@@ -230,7 +230,7 @@ private fun getSwipeAction(
             background = background,
             onSwipe = onSwipe,
         )
-        LibraryPreferences.ChapterSwipeAction.Disabled -> null
+        LibraryPreferences.EpisodeSwipeAction.Disabled -> null
     }
 }
 

@@ -1,6 +1,6 @@
 package exh.md.similar
 
-import eu.kanade.domain.anime.model.toSManga
+import eu.kanade.domain.anime.model.toSAnime
 import eu.kanade.tachiyomi.source.model.MangasPage
 import eu.kanade.tachiyomi.source.model.MetadataMangasPage
 import eu.kanade.tachiyomi.source.online.all.MangaDex
@@ -17,8 +17,8 @@ class MangaDexSimilarPagingSource(val manga: Anime, val mangadex: MangaDex) : So
 
     override suspend fun requestNextPage(currentPage: Int): MangasPage {
         val mangasPage = coroutineScope {
-            val similarPageDef = async { mangadex.getMangaSimilar(manga.toSManga()) }
-            val relatedPageDef = async { mangadex.getMangaRelated(manga.toSManga()) }
+            val similarPageDef = async { mangadex.getMangaSimilar(manga.toSAnime()) }
+            val relatedPageDef = async { mangadex.getMangaRelated(manga.toSAnime()) }
             val similarPage = similarPageDef.await()
             val relatedPage = relatedPageDef.await()
 

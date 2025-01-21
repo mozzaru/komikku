@@ -67,13 +67,13 @@ class KomgaApi(
                 track.apply {
                     cover_url = "$url/thumbnail"
                     tracking_url = url
-                    total_chapters = progress.maxNumberSort.toLong()
+                    total_episodes = progress.maxNumberSort.toLong()
                     status = when (progress.booksCount) {
                         progress.booksUnreadCount -> Komga.UNREAD
                         progress.booksReadCount -> Komga.COMPLETED
                         else -> Komga.READING
                     }
-                    last_chapter_read = progress.lastReadContinuousNumberSort
+                    last_episode_seen = progress.lastReadContinuousNumberSort
                 }
             } catch (e: Exception) {
                 logcat(LogPriority.WARN, e) { "Could not get item: $url" }
@@ -83,9 +83,9 @@ class KomgaApi(
 
     suspend fun updateProgress(track: Track): Track {
         val payload = if (track.tracking_url.contains("/api/v1/series/")) {
-            json.encodeToString(ReadProgressUpdateV2Dto(track.last_chapter_read))
+            json.encodeToString(ReadProgressUpdateV2Dto(track.last_episode_seen))
         } else {
-            json.encodeToString(ReadProgressUpdateDto(track.last_chapter_read.toInt()))
+            json.encodeToString(ReadProgressUpdateDto(track.last_episode_seen.toInt()))
         }
         client.newCall(
             Request.Builder()

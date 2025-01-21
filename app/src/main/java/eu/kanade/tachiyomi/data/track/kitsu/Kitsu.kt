@@ -80,13 +80,13 @@ class Kitsu(id: Long) : BaseTracker(id, "Kitsu"), DeletableTracker {
     override suspend fun update(track: Track, didReadChapter: Boolean): Track {
         if (track.status != COMPLETED) {
             if (didReadChapter) {
-                if (track.last_chapter_read.toLong() == track.total_chapters && track.total_chapters > 0) {
+                if (track.last_episode_seen.toLong() == track.total_episodes && track.total_episodes > 0) {
                     track.status = COMPLETED
-                    track.finished_reading_date = System.currentTimeMillis()
+                    track.finished_watching_date = System.currentTimeMillis()
                 } else {
                     track.status = READING
-                    if (track.last_chapter_read == 1.0) {
-                        track.started_reading_date = System.currentTimeMillis()
+                    if (track.last_episode_seen == 1.0) {
+                        track.started_watching_date = System.currentTimeMillis()
                     }
                 }
             }
@@ -124,7 +124,7 @@ class Kitsu(id: Long) : BaseTracker(id, "Kitsu"), DeletableTracker {
     override suspend fun refresh(track: Track): Track {
         val remoteTrack = api.getLibManga(track)
         track.copyPersonalFrom(remoteTrack)
-        track.total_chapters = remoteTrack.total_chapters
+        track.total_episodes = remoteTrack.total_episodes
         return track
     }
 
@@ -161,6 +161,6 @@ class Kitsu(id: Long) : BaseTracker(id, "Kitsu"), DeletableTracker {
     }
 
     // KMK -->
-    override fun hasNotStartedReading(status: Long): Boolean = status == PLAN_TO_READ
+    override fun hasNotStartedWatching(status: Long): Boolean = status == PLAN_TO_READ
     // KMK <--
 }

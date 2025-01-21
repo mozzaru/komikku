@@ -11,7 +11,7 @@ import eu.kanade.presentation.more.stats.StatsScreenState
 import eu.kanade.presentation.more.stats.data.StatsData
 import eu.kanade.tachiyomi.data.download.DownloadManager
 import eu.kanade.tachiyomi.data.track.TrackerManager
-import eu.kanade.tachiyomi.source.model.SAnime
+import eu.kanade.tachiyomi.animesource.model.SAnime
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.launchIn
@@ -23,7 +23,7 @@ import tachiyomi.domain.history.interactor.GetTotalWatchDuration
 import tachiyomi.domain.library.model.LibraryAnime
 import tachiyomi.domain.library.service.LibraryPreferences
 import tachiyomi.domain.library.service.LibraryPreferences.Companion.MANGA_HAS_UNREAD
-import tachiyomi.domain.library.service.LibraryPreferences.Companion.MANGA_NON_COMPLETED
+import tachiyomi.domain.library.service.LibraryPreferences.Companion.ANIME_NON_COMPLETED
 import tachiyomi.domain.library.service.LibraryPreferences.Companion.MANGA_NON_READ
 import tachiyomi.domain.track.interactor.GetTracks
 import tachiyomi.domain.track.model.Track
@@ -124,12 +124,12 @@ class StatsScreenModel(
             emptyList()
         }
 
-        val updateRestrictions = preferences.autoUpdateMangaRestrictions().get()
+        val updateRestrictions = preferences.autoUpdateAnimeRestrictions().get()
         return includedManga
             .fastFilterNot { it.manga.id in excludedMangaIds }
             .fastDistinctBy { it.manga.id }
             .fastCountNot {
-                (MANGA_NON_COMPLETED in updateRestrictions && it.manga.status.toInt() == SAnime.COMPLETED) ||
+                (ANIME_NON_COMPLETED in updateRestrictions && it.manga.status.toInt() == SAnime.COMPLETED) ||
                     (MANGA_HAS_UNREAD in updateRestrictions && it.unreadCount != 0L) ||
                     (MANGA_NON_READ in updateRestrictions && it.totalChapters > 0 && !it.hasStarted)
             }

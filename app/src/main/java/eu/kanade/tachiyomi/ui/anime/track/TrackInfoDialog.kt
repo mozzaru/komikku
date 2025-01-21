@@ -348,11 +348,11 @@ private data class TrackChapterSelectorScreen(
     private class Model(
         private val track: Track,
         private val tracker: Tracker,
-    ) : StateScreenModel<Model.State>(State(track.lastChapterRead.toInt())) {
+    ) : StateScreenModel<Model.State>(State(track.lastEpisodeSeen.toInt())) {
 
         fun getRange(): Iterable<Int> {
-            val endRange = if (track.totalChapters > 0) {
-                track.totalChapters
+            val endRange = if (track.totalEpisodes > 0) {
+                track.totalEpisodes
             } else {
                 10000
             }
@@ -365,7 +365,7 @@ private data class TrackChapterSelectorScreen(
 
         fun setChapter() {
             screenModelScope.launchNonCancellable {
-                tracker.setRemoteLastChapterRead(track.toDbTrack(), state.value.selection)
+                tracker.setRemoteLastEpisodeSeen(track.toDbTrack(), state.value.selection)
             }
         }
 

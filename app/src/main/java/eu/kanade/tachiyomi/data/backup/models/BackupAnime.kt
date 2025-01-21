@@ -71,7 +71,7 @@ data class BackupAnime(
             source = this@BackupAnime.source,
             dateAdded = this@BackupAnime.dateAdded,
             viewerFlags = (this@BackupAnime.viewer_flags ?: this@BackupAnime.viewer).toLong(),
-            chapterFlags = this@BackupAnime.chapterFlags.toLong(),
+            episodeFlags = this@BackupAnime.chapterFlags.toLong(),
             updateStrategy = this@BackupAnime.updateStrategy,
             lastModifiedAt = this@BackupAnime.lastModifiedAt,
             favoriteModifiedAt = this@BackupAnime.favoriteModifiedAt,

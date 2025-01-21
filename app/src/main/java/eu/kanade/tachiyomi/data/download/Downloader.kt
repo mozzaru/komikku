@@ -3,7 +3,7 @@ package eu.kanade.tachiyomi.data.download
 import android.content.Context
 import com.hippo.unifile.UniFile
 import eu.kanade.domain.anime.model.getComicInfo
-import eu.kanade.domain.episode.model.toSChapter
+import eu.kanade.domain.episode.model.toSEpisode
 import eu.kanade.domain.source.service.SourcePreferences
 import eu.kanade.tachiyomi.data.cache.ChapterCache
 import eu.kanade.tachiyomi.data.download.model.Download
@@ -356,7 +356,7 @@ class Downloader(
             // If the page list already exists, start from the file
             val pageList = download.pages ?: run {
                 // Otherwise, pull page list from network and add them to download object
-                val pages = download.source.getPageList(download.episode.toSChapter())
+                val pages = download.source.getPageList(download.episode.toSEpisode())
 
                 if (pages.isEmpty()) {
                     throw Exception(context.stringResource(MR.strings.page_list_empty_error))
@@ -655,7 +655,7 @@ class Downloader(
             .mapNotNull { track ->
                 track.remoteUrl.takeUnless { url -> url.isBlank() }?.trim()
             }
-            .plus(source.getChapterUrl(episode.toSChapter()).trim())
+            .plus(source.getChapterUrl(episode.toSEpisode()).trim())
             .distinct()
 
         val comicInfo = getComicInfo(

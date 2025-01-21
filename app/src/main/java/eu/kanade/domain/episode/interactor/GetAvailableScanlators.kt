@@ -13,12 +13,12 @@ class GetAvailableScanlators(
     }
 
     suspend fun await(mangaId: Long): Set<String> {
-        return repository.getScanlatorsByMangaId(mangaId)
+        return repository.getScanlatorsByAnimeId(mangaId)
             .cleanupAvailableScanlators()
     }
 
     fun subscribe(mangaId: Long): Flow<Set<String>> {
-        return repository.getScanlatorsByMangaIdAsFlow(mangaId)
+        return repository.getScanlatorsByAnimeIdAsFlow(mangaId)
             .map { it.cleanupAvailableScanlators() }
     }
 

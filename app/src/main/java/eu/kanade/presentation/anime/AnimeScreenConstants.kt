@@ -1,11 +1,11 @@
 package eu.kanade.presentation.anime
 
 enum class DownloadAction {
-    NEXT_1_CHAPTER,
-    NEXT_5_CHAPTERS,
-    NEXT_10_CHAPTERS,
-    NEXT_25_CHAPTERS,
-    UNREAD_CHAPTERS,
+    NEXT_1_EPISODE,
+    NEXT_5_EPISODES,
+    NEXT_10_EPISODES,
+    NEXT_25_EPISODES,
+    UNSEEN_EPISODES,
 }
 
 enum class EditCoverAction {
@@ -25,15 +25,15 @@ enum class AnimeScreenItem {
 
     // SY -->
     INFO_BUTTONS,
-    CHAPTER_PREVIEW_LOADING,
-    CHAPTER_PREVIEW_ROW,
-    CHAPTER_PREVIEW_MORE,
-
+    EPISODE_PREVIEW_LOADING,
+    EPISODE_PREVIEW_ROW,
+    EPISODE_PREVIEW_MORE,
     // SY <--
-    CHAPTER_HEADER,
-    CHAPTER,
+
+    EPISODE_HEADER,
+    EPISODE,
 
     // KMK -->
-    RELATED_MANGAS,
+    RELATED_ANIMES,
     // KMK <--
 }

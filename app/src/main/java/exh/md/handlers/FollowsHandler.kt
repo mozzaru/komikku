@@ -3,7 +3,7 @@ package exh.md.handlers
 import eu.kanade.tachiyomi.data.database.models.Track
 import eu.kanade.tachiyomi.data.track.TrackerManager
 import eu.kanade.tachiyomi.source.model.MetadataMangasPage
-import eu.kanade.tachiyomi.source.model.SAnime
+import eu.kanade.tachiyomi.animesource.model.SAnime
 import exh.md.dto.MangaDataDto
 import exh.md.dto.PersonalRatingDto
 import exh.md.dto.ReadingStatusDto
@@ -86,7 +86,7 @@ class FollowsHandler(
     /*suspend fun updateReadingProgress(track: Track): Boolean {
         return true
         return withIOContext {
-            val mangaID = getMangaId(track.tracking_url)
+            val mangaID = getAnimeId(track.tracking_url)
             val formBody = FormBody.Builder()
                 .add("volume", "0")
                 .add("episode", track.last_chapter_read.toString())

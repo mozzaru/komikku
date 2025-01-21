@@ -3,7 +3,7 @@ package exh
 import android.content.Context
 import androidx.core.net.toUri
 import eu.kanade.domain.anime.interactor.UpdateAnime
-import eu.kanade.domain.anime.model.toSManga
+import eu.kanade.domain.anime.model.toSAnime
 import eu.kanade.domain.episode.interactor.SyncEpisodesWithSource
 import eu.kanade.domain.source.service.SourcePreferences
 import eu.kanade.tachiyomi.source.online.UrlImportableSource
@@ -144,7 +144,7 @@ class GalleryAdder(
                 )
 
             // Fetch and copy details
-            val newManga = retry(retry) { source.getMangaDetails(manga.toSManga()) }
+            val newManga = retry(retry) { source.getMangaDetails(manga.toSAnime()) }
             updateAnime.awaitUpdateFromSource(manga, newManga, false)
             manga = getAnime.await(manga.id)!!
 
@@ -157,9 +157,9 @@ class GalleryAdder(
             try {
                 val chapterList = retry(retry) {
                     if (source is EHentai) {
-                        source.getChapterList(manga.toSManga(), throttleFunc)
+                        source.getChapterList(manga.toSAnime(), throttleFunc)
                     } else {
-                        source.getChapterList(manga.toSManga())
+                        source.getChapterList(manga.toSAnime())
                     }
                 }
 

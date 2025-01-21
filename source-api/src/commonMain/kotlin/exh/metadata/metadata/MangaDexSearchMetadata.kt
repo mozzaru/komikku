@@ -1,7 +1,7 @@
 package exh.metadata.metadata
 
 import android.content.Context
-import eu.kanade.tachiyomi.source.model.SAnime
+import eu.kanade.tachiyomi.animesource.model.SAnime
 import eu.kanade.tachiyomi.source.model.copy
 import exh.md.utils.MangaDexRelation
 import kotlinx.serialization.Serializable
@@ -46,7 +46,7 @@ class MangaDexSearchMetadata : RaisedSearchMetadata() {
 
     // var maxChapterNumber: Int? = null
 
-    override fun createMangaInfo(manga: SAnime): SAnime {
+    override fun createAnimeInfo(manga: SAnime): SAnime {
         val key = mdUuid?.let { "/manga/$it" }
 
         val title = title

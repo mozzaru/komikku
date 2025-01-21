@@ -75,16 +75,16 @@ class AnimeMergeRepositoryImpl(
     override suspend fun insert(reference: MergedAnimeReference): Long? {
         return handler.awaitOneOrNullExecutable {
             mergedQueries.insert(
-                infoManga = reference.isInfoManga,
+                infoManga = reference.isInfoAnime,
                 getChapterUpdates = reference.getChapterUpdates,
                 chapterSortMode = reference.chapterSortMode.toLong(),
                 chapterPriority = reference.chapterPriority.toLong(),
                 downloadChapters = reference.downloadChapters,
                 mergeId = reference.mergeId!!,
                 mergeUrl = reference.mergeUrl,
-                mangaId = reference.mangaId,
-                mangaUrl = reference.mangaUrl,
-                mangaSource = reference.mangaSourceId,
+                mangaId = reference.animeId,
+                mangaUrl = reference.animeUrl,
+                mangaSource = reference.animeSourceId,
             )
             mergedQueries.selectLastInsertedRowId()
         }
@@ -94,16 +94,16 @@ class AnimeMergeRepositoryImpl(
         handler.await(true) {
             references.forEach { reference ->
                 mergedQueries.insert(
-                    infoManga = reference.isInfoManga,
+                    infoManga = reference.isInfoAnime,
                     getChapterUpdates = reference.getChapterUpdates,
                     chapterSortMode = reference.chapterSortMode.toLong(),
                     chapterPriority = reference.chapterPriority.toLong(),
                     downloadChapters = reference.downloadChapters,
                     mergeId = reference.mergeId!!,
                     mergeUrl = reference.mergeUrl,
-                    mangaId = reference.mangaId,
-                    mangaUrl = reference.mangaUrl,
-                    mangaSource = reference.mangaSourceId,
+                    mangaId = reference.animeId,
+                    mangaUrl = reference.animeUrl,
+                    mangaSource = reference.animeSourceId,
                 )
             }
         }

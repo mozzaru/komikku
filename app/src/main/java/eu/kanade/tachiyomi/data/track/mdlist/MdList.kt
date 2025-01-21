@@ -9,7 +9,7 @@ import eu.kanade.tachiyomi.data.track.BaseTracker
 import eu.kanade.tachiyomi.data.track.model.TrackMangaMetadata
 import eu.kanade.tachiyomi.data.track.model.TrackSearch
 import eu.kanade.tachiyomi.source.model.FilterList
-import eu.kanade.tachiyomi.source.model.SAnime
+import eu.kanade.tachiyomi.animesource.model.SAnime
 import exh.md.network.MangaDexAuthInterceptor
 import exh.md.utils.FollowStatus
 import exh.md.utils.MdUtil
@@ -89,12 +89,12 @@ class MdList(id: Long) : BaseTracker(id, "MDList") {
             /*if (followStatus != FollowStatus.UNFOLLOWED) {
                 if (track.total_chapters != 0 && track.last_chapter_read == track.total_chapters) {
                     track.status = FollowStatus.COMPLETED.int
-                    mdex.updateFollowStatus(MdUtil.getMangaId(track.tracking_url), FollowStatus.COMPLETED)
+                    mdex.updateFollowStatus(MdUtil.getAnimeId(track.tracking_url), FollowStatus.COMPLETED)
                 }
                 if (followStatus == FollowStatus.PLAN_TO_READ && track.last_chapter_read > 0) {
                     val newFollowStatus = FollowStatus.READING
                     track.status = FollowStatus.READING.int
-                    mdex.updateFollowStatus(MdUtil.getMangaId(track.tracking_url), newFollowStatus)
+                    mdex.updateFollowStatus(MdUtil.getAnimeId(track.tracking_url), newFollowStatus)
                     remoteTrack.status = newFollowStatus.int
                 }
 
@@ -139,7 +139,7 @@ class MdList(id: Long) : BaseTracker(id, "MDList") {
 
     fun createInitialTracker(dbManga: Anime, mdManga: Anime = dbManga): Track {
         return Track.create(id).apply {
-            manga_id = dbManga.id
+            anime_id = dbManga.id
             status = FollowStatus.UNFOLLOWED.long
             tracking_url = MdUtil.baseUrl + mdManga.url
             title = mdManga.title
@@ -197,6 +197,6 @@ class MdList(id: Long) : BaseTracker(id, "MDList") {
     class MangaDexNotFoundException : Exception("Mangadex not enabled")
 
     // KMK -->
-    override fun hasNotStartedReading(status: Long): Boolean = status == FollowStatus.PLAN_TO_READ.long
+    override fun hasNotStartedWatching(status: Long): Boolean = status == FollowStatus.PLAN_TO_READ.long
     // KMK <--
 }

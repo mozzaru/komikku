@@ -1,6 +1,6 @@
 package eu.kanade.tachiyomi.ui.reader.model
 
-import eu.kanade.domain.episode.model.toDbChapter
+import eu.kanade.domain.episode.model.toDbEpisode
 import eu.kanade.tachiyomi.data.database.models.Episode
 import eu.kanade.tachiyomi.ui.reader.loader.PageLoader
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -24,7 +24,7 @@ data class ReaderChapter(val episode: Episode) {
 
     private var references = 0
 
-    constructor(episode: tachiyomi.domain.episode.model.Episode) : this(episode.toDbChapter())
+    constructor(episode: tachiyomi.domain.episode.model.Episode) : this(episode.toDbEpisode())
 
     fun ref() {
         references++

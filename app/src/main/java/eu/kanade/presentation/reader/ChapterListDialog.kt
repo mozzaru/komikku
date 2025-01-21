@@ -12,7 +12,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
-import eu.kanade.presentation.anime.components.AnimeChapterListItem
+import eu.kanade.presentation.anime.components.AnimeEpisodeListItem
 import eu.kanade.presentation.components.AdaptiveSheet
 import eu.kanade.tachiyomi.data.download.DownloadManager
 import eu.kanade.tachiyomi.data.download.model.Download
@@ -20,7 +20,7 @@ import eu.kanade.tachiyomi.ui.reader.chapter.ReaderChapterItem
 import eu.kanade.tachiyomi.ui.reader.setting.ReaderSettingsScreenModel
 import eu.kanade.tachiyomi.util.lang.toRelativeString
 import exh.metadata.MetadataUtil
-import exh.source.isEhBasedManga
+import exh.source.isEhBasedAnime
 import kotlinx.collections.immutable.ImmutableList
 import kotlinx.coroutines.flow.filter
 import kotlinx.coroutines.flow.map
@@ -71,7 +71,7 @@ fun ChapterListDialog(
                 val downloaded = if (chapterItem.manga.isLocal()) {
                     true
                 } else {
-                    downloadManager.isChapterDownloaded(
+                    downloadManager.isEpisodeDownloaded(
                         chapterItem.episode.name,
                         chapterItem.episode.scanlator,
                         chapterItem.manga.ogTitle,
@@ -83,13 +83,13 @@ fun ChapterListDialog(
                     downloaded -> Download.State.DOWNLOADED
                     else -> Download.State.NOT_DOWNLOADED
                 }
-                AnimeChapterListItem(
+                AnimeEpisodeListItem(
                     title = chapterItem.episode.name,
                     date = chapterItem.episode.dateUpload
                         .takeIf { it > 0L }
                         ?.let {
                             // SY -->
-                            if (manga?.isEhBasedManga() == true) {
+                            if (manga?.isEhBasedAnime() == true) {
                                 MetadataUtil.EX_DATE_FORMAT
                                     .format(ZonedDateTime.ofInstant(Instant.ofEpochMilli(it), ZoneId.systemDefault()))
                             } else {
@@ -100,21 +100,21 @@ fun ChapterListDialog(
                             }
                             // SY <--
                         },
-                    readProgress = null,
+                    watchProgress = null,
                     scanlator = chapterItem.episode.scanlator,
                     sourceName = null,
-                    read = chapterItem.episode.read,
+                    seen = chapterItem.episode.seen,
                     bookmark = chapterItem.episode.bookmark,
                     selected = false,
                     downloadIndicatorEnabled = false,
                     downloadStateProvider = { downloadState },
                     downloadProgressProvider = { progress },
-                    chapterSwipeStartAction = LibraryPreferences.ChapterSwipeAction.ToggleBookmark,
-                    chapterSwipeEndAction = LibraryPreferences.ChapterSwipeAction.ToggleBookmark,
+                    episodeSwipeStartAction = LibraryPreferences.EpisodeSwipeAction.ToggleBookmark,
+                    episodeSwipeEndAction = LibraryPreferences.EpisodeSwipeAction.ToggleBookmark,
                     onLongClick = { /*TODO*/ },
                     onClick = { onClickChapter(chapterItem.episode) },
                     onDownloadClick = null,
-                    onChapterSwipe = {
+                    onEpisodeSwipe = {
                         onBookmark(chapterItem.episode)
                     },
                 )

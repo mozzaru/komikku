@@ -193,7 +193,7 @@ private fun MigrateAnimeItem(
 ) {
     BaseAnimeListItem(
         modifier = modifier,
-        manga = manga,
+        anime = manga,
         onClickItem = onClickItem,
         onClickCover = { onClickCover?.invoke() },
         // KMK -->

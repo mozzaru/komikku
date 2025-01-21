@@ -447,7 +447,7 @@ fun AddDuplicateAnimeDialog(bulkFavoriteScreenModel: BulkFavoriteScreenModel) {
     DuplicateAnimeDialog(
         onDismissRequest = bulkFavoriteScreenModel::dismissDialog,
         onConfirm = { bulkFavoriteScreenModel.addFavorite(dialog.manga) },
-        onOpenManga = { navigator.push(AnimeScreen(dialog.duplicate.id)) },
+        onOpenAnime = { navigator.push(AnimeScreen(dialog.duplicate.id)) },
         onMigrate = {
             PreMigrationScreen.navigateToMigration(
                 Injekt.get<UnsortedPreferences>().skipPreMigration().get(),

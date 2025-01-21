@@ -72,7 +72,7 @@ class MangaUpdatesApi(
             .let {
                 if (it.code == 200) {
                     track.status = status
-                    track.last_chapter_read = 1.0
+                    track.last_episode_seen = 1.0
                 }
             }
     }
@@ -85,7 +85,7 @@ class MangaUpdatesApi(
                 }
                 put("list_id", track.status)
                 putJsonObject("status") {
-                    put("chapter", track.last_chapter_read.toInt())
+                    put("chapter", track.last_episode_seen.toInt())
                 }
             }
         }

@@ -10,21 +10,21 @@ class SetAnimeViewerFlags(
 ) {
 
     suspend fun awaitSetReadingMode(id: Long, flag: Long) {
-        val manga = animeRepository.getMangaById(id)
+        val anime = animeRepository.getAnimeById(id)
         animeRepository.update(
             AnimeUpdate(
                 id = id,
-                viewerFlags = manga.viewerFlags.setFlag(flag, ReadingMode.MASK.toLong()),
+                viewerFlags = anime.viewerFlags.setFlag(flag, ReadingMode.MASK.toLong()),
             ),
         )
     }
 
     suspend fun awaitSetOrientation(id: Long, flag: Long) {
-        val manga = animeRepository.getMangaById(id)
+        val anime = animeRepository.getAnimeById(id)
         animeRepository.update(
             AnimeUpdate(
                 id = id,
-                viewerFlags = manga.viewerFlags.setFlag(flag, ReaderOrientation.MASK.toLong()),
+                viewerFlags = anime.viewerFlags.setFlag(flag, ReaderOrientation.MASK.toLong()),
             ),
         )
     }

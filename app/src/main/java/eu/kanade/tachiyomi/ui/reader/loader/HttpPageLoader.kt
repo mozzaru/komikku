@@ -2,7 +2,7 @@ package eu.kanade.tachiyomi.ui.reader.loader
 
 import eu.kanade.domain.source.service.SourcePreferences
 import eu.kanade.tachiyomi.data.cache.ChapterCache
-import eu.kanade.tachiyomi.data.database.models.toDomainChapter
+import eu.kanade.tachiyomi.data.database.models.toDomainEpisode
 import eu.kanade.tachiyomi.source.model.Page
 import eu.kanade.tachiyomi.source.online.HttpSource
 import eu.kanade.tachiyomi.ui.reader.model.ReaderChapter
@@ -82,7 +82,7 @@ internal class HttpPageLoader(
      */
     override suspend fun getPages(): List<ReaderPage> {
         val pages = try {
-            chapterCache.getPageListFromCache(chapter.episode.toDomainChapter()!!)
+            chapterCache.getPageListFromCache(chapter.episode.toDomainEpisode()!!)
         } catch (e: Throwable) {
             if (e is CancellationException) {
                 throw e
@@ -171,7 +171,7 @@ internal class HttpPageLoader(
                 try {
                     // Convert to pages without reader information
                     val pagesToSave = pages.map { Page(it.index, it.url, it.imageUrl) }
-                    chapterCache.putPageListToCache(chapter.episode.toDomainChapter()!!, pagesToSave)
+                    chapterCache.putPageListToCache(chapter.episode.toDomainEpisode()!!, pagesToSave)
                 } catch (e: Throwable) {
                     if (e is CancellationException) {
                         throw e

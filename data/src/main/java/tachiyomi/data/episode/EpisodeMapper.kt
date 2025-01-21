@@ -3,7 +3,7 @@ package tachiyomi.data.episode
 import tachiyomi.domain.episode.model.Episode
 
 object EpisodeMapper {
-    fun mapChapter(
+    fun mapEpisode(
         id: Long,
         mangaId: Long,
         url: String,
@@ -22,16 +22,16 @@ object EpisodeMapper {
         isSyncing: Long,
     ): Episode = Episode(
         id = id,
-        mangaId = mangaId,
-        read = read,
+        animeId = mangaId,
+        seen = read,
         bookmark = bookmark,
-        lastPageRead = lastPageRead,
+        lastSecondSeen = lastPageRead,
         dateFetch = dateFetch,
         sourceOrder = sourceOrder,
         url = url,
         name = name,
         dateUpload = dateUpload,
-        chapterNumber = chapterNumber,
+        episodeNumber = chapterNumber,
         scanlator = scanlator,
         lastModifiedAt = lastModifiedAt,
         version = version,

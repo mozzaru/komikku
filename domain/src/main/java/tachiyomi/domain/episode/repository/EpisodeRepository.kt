@@ -12,34 +12,34 @@ interface EpisodeRepository {
 
     suspend fun updateAll(episodeUpdates: List<EpisodeUpdate>)
 
-    suspend fun removeChaptersWithIds(chapterIds: List<Long>)
+    suspend fun removeEpisodesWithIds(episodeIds: List<Long>)
 
-    suspend fun getChapterByMangaId(mangaId: Long, applyScanlatorFilter: Boolean = false): List<Episode>
+    suspend fun getEpisodeByAnimeId(animeId: Long, applyScanlatorFilter: Boolean = false): List<Episode>
 
-    suspend fun getScanlatorsByMangaId(mangaId: Long): List<String>
+    suspend fun getScanlatorsByAnimeId(animeId: Long): List<String>
 
-    fun getScanlatorsByMangaIdAsFlow(mangaId: Long): Flow<List<String>>
+    fun getScanlatorsByAnimeIdAsFlow(animeId: Long): Flow<List<String>>
 
-    suspend fun getBookmarkedChaptersByMangaId(mangaId: Long): List<Episode>
+    suspend fun getBookmarkedEpisodesByAnimeId(animeId: Long): List<Episode>
 
-    suspend fun getChapterById(id: Long): Episode?
+    suspend fun getEpisodeById(id: Long): Episode?
 
-    suspend fun getChapterByMangaIdAsFlow(mangaId: Long, applyScanlatorFilter: Boolean = false): Flow<List<Episode>>
+    suspend fun getEpisodeByAnimeIdAsFlow(animeId: Long, applyScanlatorFilter: Boolean = false): Flow<List<Episode>>
 
-    suspend fun getChapterByUrlAndMangaId(url: String, mangaId: Long): Episode?
+    suspend fun getEpisodeByUrlAndAnimeId(url: String, animeId: Long): Episode?
 
     // SY -->
-    suspend fun getChapterByUrl(url: String): List<Episode>
+    suspend fun getEpisodeByUrl(url: String): List<Episode>
 
-    suspend fun getMergedChapterByMangaId(mangaId: Long, applyScanlatorFilter: Boolean = false): List<Episode>
+    suspend fun getMergedEpisodeByAnimeId(animeId: Long, applyScanlatorFilter: Boolean = false): List<Episode>
 
-    suspend fun getMergedChapterByMangaIdAsFlow(
-        mangaId: Long,
+    suspend fun getMergedEpisodeByAnimeIdAsFlow(
+        animeId: Long,
         applyScanlatorFilter: Boolean = false,
     ): Flow<List<Episode>>
 
-    suspend fun getScanlatorsByMergeId(mangaId: Long): List<String>
+    suspend fun getScanlatorsByMergeId(animeId: Long): List<String>
 
-    fun getScanlatorsByMergeIdAsFlow(mangaId: Long): Flow<List<String>>
+    fun getScanlatorsByMergeIdAsFlow(animeId: Long): Flow<List<String>>
     // SY <--
 }

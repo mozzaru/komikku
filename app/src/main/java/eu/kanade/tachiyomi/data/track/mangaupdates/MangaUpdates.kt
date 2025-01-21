@@ -138,6 +138,6 @@ class MangaUpdates(id: Long) : BaseTracker(id, "MangaUpdates"), DeletableTracker
     }
 
     // KMK -->
-    override fun hasNotStartedReading(status: Long): Boolean = status == WISH_LIST
+    override fun hasNotStartedWatching(status: Long): Boolean = status == WISH_LIST
     // KMK <--
 }

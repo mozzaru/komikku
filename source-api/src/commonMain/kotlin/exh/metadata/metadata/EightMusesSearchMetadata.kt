@@ -1,7 +1,7 @@
 package exh.metadata.metadata
 
 import android.content.Context
-import eu.kanade.tachiyomi.source.model.SAnime
+import eu.kanade.tachiyomi.animesource.model.SAnime
 import eu.kanade.tachiyomi.source.model.copy
 import exh.util.nullIfEmpty
 import kotlinx.serialization.Serializable
@@ -17,7 +17,7 @@ class EightMusesSearchMetadata : RaisedSearchMetadata() {
 
     var thumbnailUrl: String? = null
 
-    override fun createMangaInfo(manga: SAnime): SAnime {
+    override fun createAnimeInfo(manga: SAnime): SAnime {
         val key = path.joinToString("/", prefix = "/")
 
         val title = title

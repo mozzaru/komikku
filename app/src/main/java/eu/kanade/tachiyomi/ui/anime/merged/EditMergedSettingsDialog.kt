@@ -23,7 +23,7 @@ import androidx.recyclerview.widget.ConcatAdapter
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import eu.kanade.tachiyomi.databinding.EditMergedSettingsDialogBinding
-import eu.kanade.tachiyomi.ui.anime.MergedMangaData
+import eu.kanade.tachiyomi.ui.anime.MergedAnimeData
 import eu.kanade.tachiyomi.util.system.toast
 import exh.source.MERGED_SOURCE_ID
 import tachiyomi.domain.anime.model.Anime
@@ -55,9 +55,9 @@ class EditMergedSettingsState(
             onDismissRequest()
         }
         mergedMangas += mergedReferences.filter {
-            it.mangaSourceId != MERGED_SOURCE_ID
-        }.map { reference -> mergedManga.firstOrNull { it.id == reference.mangaId } to reference }
-        mergeReference = mergedReferences.firstOrNull { it.mangaSourceId == MERGED_SOURCE_ID }
+            it.animeSourceId != MERGED_SOURCE_ID
+        }.map { reference -> mergedManga.firstOrNull { it.id == reference.animeId } to reference }
+        mergeReference = mergedReferences.firstOrNull { it.animeSourceId == MERGED_SOURCE_ID }
 
         val isPriorityOrder =
             mergeReference?.let { it.chapterSortMode == MergedAnimeReference.CHAPTER_SORT_PRIORITY } ?: false
@@ -172,7 +172,7 @@ class EditMergedSettingsState(
 @Composable
 fun EditMergedSettingsDialog(
     onDismissRequest: () -> Unit,
-    mergedData: MergedMangaData,
+    mergedData: MergedAnimeData,
     onDeleteClick: (MergedAnimeReference) -> Unit,
     onPositiveClick: (List<MergedAnimeReference>) -> Unit,
 ) {
@@ -201,7 +201,7 @@ fun EditMergedSettingsDialog(
                 AndroidView(
                     factory = { factoryContext ->
                         val binding = EditMergedSettingsDialogBinding.inflate(LayoutInflater.from(factoryContext))
-                        state.onViewCreated(factoryContext, binding, mergedData.manga.values.toList(), mergedData.references)
+                        state.onViewCreated(factoryContext, binding, mergedData.anime.values.toList(), mergedData.references)
                         binding.root
                     },
                     modifier = Modifier.fillMaxWidth(),

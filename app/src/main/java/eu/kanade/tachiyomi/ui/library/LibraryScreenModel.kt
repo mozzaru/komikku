@@ -33,7 +33,7 @@ import eu.kanade.tachiyomi.data.download.DownloadManager
 import eu.kanade.tachiyomi.data.track.TrackStatus
 import eu.kanade.tachiyomi.data.track.TrackerManager
 import eu.kanade.tachiyomi.source.Source
-import eu.kanade.tachiyomi.source.model.SAnime
+import eu.kanade.tachiyomi.animesource.model.SAnime
 import eu.kanade.tachiyomi.source.online.HttpSource
 import eu.kanade.tachiyomi.source.online.all.MergedSource
 import eu.kanade.tachiyomi.util.episode.getNextUnseen
@@ -49,7 +49,7 @@ import exh.search.SearchEngine
 import exh.search.Text
 import exh.source.EH_SOURCE_ID
 import exh.source.MERGED_SOURCE_ID
-import exh.source.isEhBasedManga
+import exh.source.isEhBasedAnime
 import exh.source.isMetadataSource
 import exh.source.mangaDexSourceIds
 import exh.source.nHentaiSourceIds
@@ -508,7 +508,7 @@ class LibraryScreenModel(
             libraryPreferences.downloadBadge().changes(),
             libraryPreferences.localBadge().changes(),
             libraryPreferences.languageBadge().changes(),
-            libraryPreferences.autoUpdateMangaRestrictions().changes(),
+            libraryPreferences.autoUpdateAnimeRestrictions().changes(),
 
             preferences.downloadedOnly().changes(),
             libraryPreferences.filterDownloaded().changes(),
@@ -719,11 +719,11 @@ class LibraryScreenModel(
         val selection = state.value.selection
         val mangas = selection.map { it.manga }.toList()
         when (action) {
-            DownloadAction.NEXT_1_CHAPTER -> downloadUnreadChapters(mangas, 1)
-            DownloadAction.NEXT_5_CHAPTERS -> downloadUnreadChapters(mangas, 5)
-            DownloadAction.NEXT_10_CHAPTERS -> downloadUnreadChapters(mangas, 10)
-            DownloadAction.NEXT_25_CHAPTERS -> downloadUnreadChapters(mangas, 25)
-            DownloadAction.UNREAD_CHAPTERS -> downloadUnreadChapters(mangas, null)
+            DownloadAction.NEXT_1_EPISODE -> downloadUnreadChapters(mangas, 1)
+            DownloadAction.NEXT_5_EPISODES -> downloadUnreadChapters(mangas, 5)
+            DownloadAction.NEXT_10_EPISODES -> downloadUnreadChapters(mangas, 10)
+            DownloadAction.NEXT_25_EPISODES -> downloadUnreadChapters(mangas, 25)
+            DownloadAction.UNSEEN_EPISODES -> downloadUnreadChapters(mangas, null)
         }
         clearSelection()
     }
@@ -743,12 +743,12 @@ class LibraryScreenModel(
                         .associateBy { it.id }
                     getNextEpisodes.await(manga.id)
                         .let { if (amount != null) it.take(amount) else it }
-                        .groupBy { it.mangaId }
+                        .groupBy { it.animeId }
                         .forEach ab@{ (mangaId, chapters) ->
                             val mergedManga = mergedMangas[mangaId] ?: return@ab
                             val downloadChapters = chapters.fastFilterNot { chapter ->
                                 downloadManager.queueState.value.fastAny { chapter.id == it.episode.id } ||
-                                    downloadManager.isChapterDownloaded(
+                                    downloadManager.isEpisodeDownloaded(
                                         chapter.name,
                                         chapter.scanlator,
                                         mergedManga.ogTitle,
@@ -766,7 +766,7 @@ class LibraryScreenModel(
                 val chapters = getNextEpisodes.await(manga.id)
                     .fastFilterNot { chapter ->
                         downloadManager.getQueuedDownloadOrNull(chapter.id) != null ||
-                            downloadManager.isChapterDownloaded(
+                            downloadManager.isEpisodeDownloaded(
                                 chapter.name,
                                 chapter.scanlator,
                                 // SY -->
@@ -786,7 +786,7 @@ class LibraryScreenModel(
     // SY -->
     fun cleanTitles() {
         state.value.selection.fastFilter {
-            it.manga.isEhBasedManga() ||
+            it.manga.isEhBasedAnime() ||
                 it.manga.source in nHentaiSourceIds
         }.fastForEach { (manga) ->
             val editedTitle = manga.title.replace("\\[.*?]".toRegex(), "").trim().replace("\\(.*?\\)".toRegex(), "").trim().replace("\\{.*?\\}".toRegex(), "").trim().let {
@@ -852,8 +852,8 @@ class LibraryScreenModel(
         screenModelScope.launchNonCancellable {
             mangas.forEach { manga ->
                 setSeenStatus.await(
-                    manga = manga.manga,
-                    read = read,
+                    anime = manga.manga,
+                    seen = read,
                 )
             }
         }
@@ -987,7 +987,7 @@ class LibraryScreenModel(
             val parsedQuery = searchEngine.parseQuery(query)
             val mangaWithMetaIds = getIdsOfFavoriteAnimeWithMetadata.await()
             val tracks = if (loggedInTrackServices.isNotEmpty()) {
-                getTracks.await().groupBy { it.mangaId }
+                getTracks.await().groupBy { it.animeId }
             } else {
                 emptyMap()
             }
@@ -1290,7 +1290,7 @@ class LibraryScreenModel(
         val context = preferences.context
         return when (groupType) {
             LibraryGroup.BY_TRACK_STATUS -> {
-                val tracks = runBlocking { getTracks.await() }.groupBy { it.mangaId }
+                val tracks = runBlocking { getTracks.await() }.groupBy { it.animeId }
                 libraryManga.groupBy { item ->
                     val status = tracks[item.libraryAnime.manga.id]?.firstNotNullOfOrNull { track ->
                         TrackStatus.parseTrackerStatus(trackerManager, track.trackerId, track.status)
@@ -1474,7 +1474,7 @@ class LibraryScreenModel(
         // SY -->
         val showCleanTitles: Boolean by lazy {
             selection.any {
-                it.manga.isEhBasedManga() ||
+                it.manga.isEhBasedAnime() ||
                     it.manga.source in nHentaiSourceIds
             }
         }

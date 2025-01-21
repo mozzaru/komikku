@@ -2,6 +2,8 @@
 
 package eu.kanade.tachiyomi.source.model
 
+import eu.kanade.tachiyomi.animesource.model.SEpisode
+
 class SEpisodeImpl : SEpisode {
 
     override lateinit var url: String
@@ -10,7 +12,7 @@ class SEpisodeImpl : SEpisode {
 
     override var date_upload: Long = 0
 
-    override var chapter_number: Float = -1f
+    override var episode_number: Float = -1f
 
     override var scanlator: String? = null
 }

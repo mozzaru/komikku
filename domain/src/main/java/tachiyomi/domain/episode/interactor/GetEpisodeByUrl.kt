@@ -11,7 +11,7 @@ class GetEpisodeByUrl(
 
     suspend fun await(url: String): List<Episode> {
         return try {
-            episodeRepository.getChapterByUrl(url)
+            episodeRepository.getEpisodeByUrl(url)
         } catch (e: Exception) {
             logcat(LogPriority.ERROR, e)
             emptyList()

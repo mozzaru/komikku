@@ -22,7 +22,7 @@ import tachiyomi.presentation.core.util.selectedBackground
 
 @Composable
 fun BaseAnimeListItem(
-    manga: Anime,
+    anime: Anime,
     modifier: Modifier = Modifier,
     onClickItem: () -> Unit = {},
     onClickCover: () -> Unit = onClickItem,
@@ -30,9 +30,9 @@ fun BaseAnimeListItem(
     onLongClick: () -> Unit = onClickItem,
     selected: Boolean,
     // KMK <--
-    cover: @Composable RowScope.() -> Unit = { defaultCover(manga, onClickCover) },
+    cover: @Composable RowScope.() -> Unit = { defaultCover(anime, onClickCover) },
     actions: @Composable RowScope.() -> Unit = {},
-    content: @Composable RowScope.() -> Unit = { defaultContent(manga) },
+    content: @Composable RowScope.() -> Unit = { defaultContent(anime) },
 ) {
     // KMK -->
     val haptic = LocalHapticFeedback.current
@@ -61,12 +61,12 @@ fun BaseAnimeListItem(
     }
 }
 
-private val defaultCover: @Composable RowScope.(Anime, () -> Unit) -> Unit = { manga, onClick ->
+private val defaultCover: @Composable RowScope.(Anime, () -> Unit) -> Unit = { anime, onClick ->
     AnimeCover.Square(
         modifier = Modifier
             .padding(vertical = MaterialTheme.padding.small)
             .fillMaxHeight(),
-        data = manga,
+        data = anime,
         onClick = onClick,
         // KMK -->
         size = AnimeCover.Size.Big,

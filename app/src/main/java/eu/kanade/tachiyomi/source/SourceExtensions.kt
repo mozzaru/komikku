@@ -7,7 +7,7 @@ import tachiyomi.source.local.isLocal
 import uy.kohesive.injekt.Injekt
 import uy.kohesive.injekt.api.get
 
-fun Source.getNameForMangaInfo(
+fun Source.getNameForAnimeInfo(
     // SY -->
     mergeSources: List<Source>? = null,
     // SY <--

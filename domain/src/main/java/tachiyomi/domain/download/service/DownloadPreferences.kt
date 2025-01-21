@@ -19,7 +19,7 @@ class DownloadPreferences(
 
     fun removeAfterReadSlots() = preferenceStore.getInt("remove_after_read_slots", -1)
 
-    fun removeAfterMarkedAsRead() = preferenceStore.getBoolean(
+    fun removeAfterMarkedAsSeen() = preferenceStore.getBoolean(
         "pref_remove_after_marked_as_read_key",
         false,
     )

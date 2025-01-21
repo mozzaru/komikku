@@ -154,7 +154,7 @@ class KavitaApi(private val client: OkHttpClient, interceptor: KavitaInterceptor
             track.apply {
                 cover_url = seriesDto.thumbnail_url.toString()
                 tracking_url = url
-                total_chapters = getTotalChapters(url)
+                total_episodes = getTotalChapters(url)
 
                 title = seriesDto.name
                 status = when (seriesDto.pagesRead) {
@@ -162,7 +162,7 @@ class KavitaApi(private val client: OkHttpClient, interceptor: KavitaInterceptor
                     0 -> Kavita.UNREAD
                     else -> Kavita.READING
                 }
-                last_chapter_read = getLatestChapterRead(url)
+                last_episode_seen = getLatestChapterRead(url)
             }
         } catch (e: Exception) {
             logcat(LogPriority.WARN, e) { "Could not get item: $url" }
@@ -175,7 +175,7 @@ class KavitaApi(private val client: OkHttpClient, interceptor: KavitaInterceptor
             track.tracking_url,
         )}/Tachiyomi/mark-chapter-until-as-read?seriesId=${getIdFromUrl(
             track.tracking_url,
-        )}&chapterNumber=${track.last_chapter_read}"
+        )}&chapterNumber=${track.last_episode_seen}"
         authClient.newCall(
             POST(requestUrl, body = "{}".toRequestBody("application/json; charset=utf-8".toMediaTypeOrNull())),
         )

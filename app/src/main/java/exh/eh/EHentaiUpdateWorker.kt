@@ -17,7 +17,7 @@ import androidx.work.WorkerParameters
 import com.elvishew.xlog.Logger
 import com.elvishew.xlog.XLog
 import eu.kanade.domain.anime.interactor.UpdateAnime
-import eu.kanade.domain.anime.model.toSManga
+import eu.kanade.domain.anime.model.toSAnime
 import eu.kanade.domain.episode.interactor.SyncEpisodesWithSource
 import eu.kanade.tachiyomi.data.library.LibraryUpdateNotifier
 import eu.kanade.tachiyomi.data.notification.Notifications
@@ -243,10 +243,10 @@ class EHentaiUpdateWorker(private val context: Context, workerParams: WorkerPara
             ?: throw GalleryNotUpdatedException(false, IllegalStateException("Missing EH-based source (${manga.source})!"))
 
         try {
-            val updatedManga = source.getMangaDetails(manga.toSManga())
+            val updatedManga = source.getMangaDetails(manga.toSAnime())
             updateAnime.awaitUpdateFromSource(manga, updatedManga, false)
 
-            val newChapters = source.getChapterList(manga.toSManga())
+            val newChapters = source.getChapterList(manga.toSAnime())
 
             val new = syncEpisodesWithSource.await(newChapters, manga, source)
             return new to getEpisodesByAnimeId.await(manga.id)

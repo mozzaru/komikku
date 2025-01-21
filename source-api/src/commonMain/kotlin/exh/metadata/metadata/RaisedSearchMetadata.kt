@@ -1,7 +1,7 @@
 package exh.metadata.metadata
 
 import android.content.Context
-import eu.kanade.tachiyomi.source.model.SAnime
+import eu.kanade.tachiyomi.animesource.model.SAnime
 import exh.metadata.metadata.base.FlatMetadata
 import exh.metadata.metadata.base.RaisedTag
 import exh.metadata.metadata.base.RaisedTitle
@@ -19,7 +19,7 @@ import kotlin.reflect.KProperty
 @Serializable
 sealed class RaisedSearchMetadata {
     @Transient
-    var mangaId: Long = -1
+    var animeId: Long = -1
 
     @Transient
     var uploader: String? = null
@@ -50,11 +50,11 @@ sealed class RaisedSearchMetadata {
     }
 
     /*open fun copyTo(manga: SAnime) {
-        val infoManga = createMangaInfo(manga.copy())
+        val infoManga = createAnimeInfo(manga.copy())
         manga.copyFrom(infoManga)
     }*/
 
-    abstract fun createMangaInfo(manga: SAnime): SAnime
+    abstract fun createAnimeInfo(manga: SAnime): SAnime
 
     fun tagsToGenreString() = tags.toGenreString()
 
@@ -86,12 +86,12 @@ sealed class RaisedSearchMetadata {
     }
 
     fun flatten(): FlatMetadata {
-        require(mangaId != -1L)
+        require(animeId != -1L)
 
         val extra = raiseFlattenJson.encodeToString(this)
         return FlatMetadata(
             SearchMetadata(
-                mangaId,
+                animeId,
                 uploader,
                 extra,
                 indexedExtra,
@@ -100,7 +100,7 @@ sealed class RaisedSearchMetadata {
             tags.map {
                 SearchTag(
                     null,
-                    mangaId,
+                    animeId,
                     it.namespace,
                     it.name,
                     it.type,
@@ -109,7 +109,7 @@ sealed class RaisedSearchMetadata {
             titles.map {
                 SearchTitle(
                     null,
-                    mangaId,
+                    animeId,
                     it.title,
                     it.type,
                 )
@@ -118,7 +118,7 @@ sealed class RaisedSearchMetadata {
     }
 
     fun fillBaseFields(metadata: FlatMetadata) {
-        mangaId = metadata.metadata.mangaId
+        animeId = metadata.metadata.mangaId
         uploader = metadata.metadata.uploader
         indexedExtra = metadata.metadata.indexedExtra
 

@@ -4,7 +4,7 @@ import eu.kanade.tachiyomi.source.CatalogueSource
 import eu.kanade.tachiyomi.source.model.FilterList
 import eu.kanade.tachiyomi.source.model.MangasPage
 import eu.kanade.tachiyomi.source.model.MetadataMangasPage
-import eu.kanade.tachiyomi.source.model.SAnime
+import eu.kanade.tachiyomi.animesource.model.SAnime
 import exh.metadata.metadata.RaisedSearchMetadata
 
 abstract class EHentaiPagingSource(override val source: CatalogueSource) : SourcePagingSource(source) {

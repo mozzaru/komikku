@@ -1,7 +1,7 @@
 package exh.util
 
 import android.content.Context
-import eu.kanade.domain.anime.model.toSManga
+import eu.kanade.domain.anime.model.toSAnime
 import eu.kanade.tachiyomi.source.model.MangasPage
 import eu.kanade.tachiyomi.source.online.UrlImportableSource
 import exh.GalleryAddEvent
@@ -29,7 +29,7 @@ fun UrlImportableSource.urlImportFetchSearchManga(
                 .map { res ->
                     MangasPage(
                         if (res is GalleryAddEvent.Success) {
-                            listOf(res.manga.toSManga())
+                            listOf(res.manga.toSAnime())
                         } else {
                             emptyList()
                         },
@@ -59,7 +59,7 @@ suspend fun UrlImportableSource.urlImportFetchSearchMangaSuspend(
 
             MangasPage(
                 if (res is GalleryAddEvent.Success) {
-                    listOf(res.manga.toSManga())
+                    listOf(res.manga.toSAnime())
                 } else {
                     emptyList()
                 },

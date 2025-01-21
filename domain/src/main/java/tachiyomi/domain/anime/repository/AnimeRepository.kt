@@ -7,7 +7,7 @@ import tachiyomi.domain.library.model.LibraryAnime
 
 interface AnimeRepository {
 
-    suspend fun getMangaById(id: Long): Anime
+    suspend fun getAnimeById(id: Long): Anime
 
     suspend fun getMangaByIdAsFlow(id: Long): Flow<Anime>
 

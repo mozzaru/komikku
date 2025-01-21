@@ -137,7 +137,7 @@ data object HistoryTab : Tab {
 
     private suspend fun openChapter(context: Context, episode: Episode?) {
         if (episode != null) {
-            val intent = ReaderActivity.newIntent(context, episode.mangaId, episode.id)
+            val intent = ReaderActivity.newIntent(context, episode.animeId, episode.id)
             context.startActivity(intent)
         } else {
             snackbarHostState.showSnackbar(context.stringResource(MR.strings.no_next_chapter))

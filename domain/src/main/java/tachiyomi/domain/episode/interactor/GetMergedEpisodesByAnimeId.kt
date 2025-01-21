@@ -34,7 +34,7 @@ class GetMergedEpisodesByAnimeId(
         applyScanlatorFilter: Boolean = false,
     ): Flow<List<Episode>> {
         return try {
-            episodeRepository.getMergedChapterByMangaIdAsFlow(mangaId, applyScanlatorFilter)
+            episodeRepository.getMergedEpisodeByAnimeIdAsFlow(mangaId, applyScanlatorFilter)
                 .combine(getMergedReferencesById.subscribe(mangaId)) { chapters, references ->
                     transformMergedChapters(references, chapters, dedupe)
                 }
@@ -49,7 +49,7 @@ class GetMergedEpisodesByAnimeId(
         applyScanlatorFilter: Boolean = false,
     ): List<Episode> {
         return try {
-            episodeRepository.getMergedChapterByMangaId(mangaId, applyScanlatorFilter)
+            episodeRepository.getMergedEpisodeByAnimeId(mangaId, applyScanlatorFilter)
         } catch (e: Exception) {
             logcat(LogPriority.ERROR, e)
             emptyList()
@@ -68,17 +68,17 @@ class GetMergedEpisodesByAnimeId(
         mangaReferences: List<MergedAnimeReference>,
         episodeList: List<Episode>,
     ): List<Episode> {
-        return when (mangaReferences.firstOrNull { it.mangaSourceId == MERGED_SOURCE_ID }?.chapterSortMode) {
+        return when (mangaReferences.firstOrNull { it.animeSourceId == MERGED_SOURCE_ID }?.chapterSortMode) {
             MergedAnimeReference.CHAPTER_SORT_NO_DEDUPE, MergedAnimeReference.CHAPTER_SORT_NONE -> episodeList
             MergedAnimeReference.CHAPTER_SORT_PRIORITY -> dedupeByPriority(mangaReferences, episodeList)
             MergedAnimeReference.CHAPTER_SORT_MOST_CHAPTERS -> {
                 findSourceWithMostChapters(episodeList)?.let { mangaId ->
-                    episodeList.filter { it.mangaId == mangaId }
+                    episodeList.filter { it.animeId == mangaId }
                 } ?: episodeList
             }
             MergedAnimeReference.CHAPTER_SORT_HIGHEST_CHAPTER_NUMBER -> {
                 findSourceWithHighestChapterNumber(episodeList)?.let { mangaId ->
-                    episodeList.filter { it.mangaId == mangaId }
+                    episodeList.filter { it.animeId == mangaId }
                 } ?: episodeList
             }
             else -> episodeList
@@ -86,11 +86,11 @@ class GetMergedEpisodesByAnimeId(
     }
 
     private fun findSourceWithMostChapters(episodeList: List<Episode>): Long? {
-        return episodeList.groupBy { it.mangaId }.maxByOrNull { it.value.size }?.key
+        return episodeList.groupBy { it.animeId }.maxByOrNull { it.value.size }?.key
     }
 
     private fun findSourceWithHighestChapterNumber(episodeList: List<Episode>): Long? {
-        return episodeList.maxByOrNull { it.chapterNumber }?.mangaId
+        return episodeList.maxByOrNull { it.episodeNumber }?.animeId
     }
 
     private fun dedupeByPriority(
@@ -100,10 +100,10 @@ class GetMergedEpisodesByAnimeId(
         val sortedEpisodeList = mutableListOf<Episode>()
 
         var existingChapterIndex: Int
-        episodeList.groupBy { it.mangaId }
+        episodeList.groupBy { it.animeId }
             .entries
             .sortedBy { (mangaId) ->
-                mangaReferences.find { it.mangaId == mangaId }?.chapterPriority ?: Int.MAX_VALUE
+                mangaReferences.find { it.animeId == mangaId }?.chapterPriority ?: Int.MAX_VALUE
             }
             .forEach { (_, chapters) ->
                 existingChapterIndex = -1
@@ -113,9 +113,9 @@ class GetMergedEpisodesByAnimeId(
                         existingChapterIndex = sortedEpisodeList.indexOfFirst {
                             // check if the chapter is not already there
                             it.isRecognizedNumber &&
-                                it.chapterNumber == chapter.chapterNumber &&
+                                it.episodeNumber == chapter.episodeNumber &&
                                 // allow multiple chapters of the same number from the same source
-                                it.mangaId != chapter.mangaId
+                                it.animeId != chapter.animeId
                         }
                         if (existingChapterIndex == -1) {
                             sortedEpisodeList.add(oldChapterIndex + 1, chapter)

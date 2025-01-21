@@ -76,9 +76,9 @@ fun AnimeBottomActionMenu(
     modifier: Modifier = Modifier,
     onBookmarkClicked: (() -> Unit)? = null,
     onRemoveBookmarkClicked: (() -> Unit)? = null,
-    onMarkAsReadClicked: (() -> Unit)? = null,
-    onMarkAsUnreadClicked: (() -> Unit)? = null,
-    onMarkPreviousAsReadClicked: (() -> Unit)? = null,
+    onMarkAsSeenClicked: (() -> Unit)? = null,
+    onMarkAsUnseenClicked: (() -> Unit)? = null,
+    onMarkPreviousAsSeenClicked: (() -> Unit)? = null,
     onDownloadClicked: (() -> Unit)? = null,
     onDeleteClicked: (() -> Unit)? = null,
 ) {
@@ -132,31 +132,31 @@ fun AnimeBottomActionMenu(
                         onClick = onRemoveBookmarkClicked,
                     )
                 }
-                if (onMarkAsReadClicked != null) {
+                if (onMarkAsSeenClicked != null) {
                     Button(
                         title = stringResource(MR.strings.action_mark_as_read),
                         icon = Icons.Outlined.DoneAll,
                         toConfirm = confirm[2],
                         onLongClick = { onLongClickItem(2) },
-                        onClick = onMarkAsReadClicked,
+                        onClick = onMarkAsSeenClicked,
                     )
                 }
-                if (onMarkAsUnreadClicked != null) {
+                if (onMarkAsUnseenClicked != null) {
                     Button(
                         title = stringResource(MR.strings.action_mark_as_unread),
                         icon = Icons.Outlined.RemoveDone,
                         toConfirm = confirm[3],
                         onLongClick = { onLongClickItem(3) },
-                        onClick = onMarkAsUnreadClicked,
+                        onClick = onMarkAsUnseenClicked,
                     )
                 }
-                if (onMarkPreviousAsReadClicked != null) {
+                if (onMarkPreviousAsSeenClicked != null) {
                     Button(
                         title = stringResource(MR.strings.action_mark_previous_as_read),
                         icon = ImageVector.vectorResource(R.drawable.ic_done_prev_24dp),
                         toConfirm = confirm[4],
                         onLongClick = { onLongClickItem(4) },
-                        onClick = onMarkPreviousAsReadClicked,
+                        onClick = onMarkPreviousAsSeenClicked,
                     )
                 }
                 if (onDownloadClicked != null) {
@@ -253,8 +253,8 @@ internal fun RowScope.Button(
 fun LibraryBottomActionMenu(
     visible: Boolean,
     onChangeCategoryClicked: () -> Unit,
-    onMarkAsReadClicked: () -> Unit,
-    onMarkAsUnreadClicked: () -> Unit,
+    onMarkAsSeenClicked: () -> Unit,
+    onMarkAsUnseenClicked: () -> Unit,
     onDownloadClicked: ((DownloadAction) -> Unit)?,
     onDeleteClicked: () -> Unit,
     // SY -->
@@ -350,14 +350,14 @@ fun LibraryBottomActionMenu(
                     icon = Icons.Outlined.DoneAll,
                     toConfirm = confirm[1],
                     onLongClick = { onLongClickItem(1) },
-                    onClick = onMarkAsReadClicked,
+                    onClick = onMarkAsSeenClicked,
                 )
                 Button(
                     title = stringResource(MR.strings.action_mark_as_unread),
                     icon = Icons.Outlined.RemoveDone,
                     toConfirm = confirm[2],
                     onLongClick = { onLongClickItem(2) },
-                    onClick = onMarkAsUnreadClicked,
+                    onClick = onMarkAsUnseenClicked,
                 )
                 // SY -->
                 if (showOverflow) {

@@ -2,9 +2,8 @@
 
 package eu.kanade.tachiyomi.source.model
 
+import eu.kanade.tachiyomi.animesource.model.SEpisode
 import java.io.Serializable
-
-typealias SEpisode = SChapter
 
 interface SChapter : Serializable {
 
@@ -14,7 +13,7 @@ interface SChapter : Serializable {
 
     var date_upload: Long
 
-    var chapter_number: Float
+    var episode_number: Float
 
     var scanlator: String?
 
@@ -22,7 +21,7 @@ interface SChapter : Serializable {
         name = other.name
         url = other.url
         date_upload = other.date_upload
-        chapter_number = other.chapter_number
+        episode_number = other.episode_number
         scanlator = other.scanlator
     }
 
@@ -43,7 +42,7 @@ interface SChapter : Serializable {
                 this.name = name
                 this.url = url
                 this.date_upload = date_upload
-                this.chapter_number = chapter_number
+                this.episode_number = chapter_number
                 this.scanlator = scanlator
             }
         }

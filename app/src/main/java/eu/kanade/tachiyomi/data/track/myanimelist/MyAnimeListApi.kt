@@ -111,7 +111,7 @@ class MyAnimeListApi(
                             remote_id = it.id
                             title = it.title
                             summary = it.synopsis
-                            total_chapters = it.numChapters
+                            total_episodes = it.numChapters
                             score = it.mean
                             cover_url = (it.covers?.large ?: it.covers?.medium).orEmpty()
                             tracking_url = "https://myanimelist.net/manga/$remote_id"
@@ -130,11 +130,11 @@ class MyAnimeListApi(
                 .add("status", track.toMyAnimeListStatus() ?: "reading")
                 .add("is_rereading", (track.status == MyAnimeList.REREADING).toString())
                 .add("score", track.score.toString())
-                .add("num_chapters_read", track.last_chapter_read.toInt().toString())
-            convertToIsoDate(track.started_reading_date)?.let {
+                .add("num_chapters_read", track.last_episode_seen.toInt().toString())
+            convertToIsoDate(track.started_watching_date)?.let {
                 formBodyBuilder.add("start_date", it)
             }
-            convertToIsoDate(track.finished_reading_date)?.let {
+            convertToIsoDate(track.finished_watching_date)?.let {
                 formBodyBuilder.add("finish_date", it)
             }
 
@@ -170,7 +170,7 @@ class MyAnimeListApi(
                     .awaitSuccess()
                     .parseAs<MALListItem>()
                     .let { item ->
-                        track.total_chapters = item.numChapters
+                        track.total_episodes = item.numChapters
                         item.myListStatus?.let { parseMangaItem(it, track) }
                     }
             }
@@ -255,10 +255,10 @@ class MyAnimeListApi(
         return track.apply {
             val isRereading = listStatus.isRereading
             status = if (isRereading) MyAnimeList.REREADING else getStatus(listStatus.status)
-            last_chapter_read = listStatus.numChaptersRead
+            last_episode_seen = listStatus.numChaptersRead
             score = listStatus.score.toDouble()
-            listStatus.startDate?.let { started_reading_date = parseDate(it) }
-            listStatus.finishDate?.let { finished_reading_date = parseDate(it) }
+            listStatus.startDate?.let { started_watching_date = parseDate(it) }
+            listStatus.finishDate?.let { finished_watching_date = parseDate(it) }
         }
     }
 

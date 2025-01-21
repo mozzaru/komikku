@@ -1,7 +1,7 @@
 package exh.md.handlers
 
-import eu.kanade.tachiyomi.source.model.SEpisode
-import eu.kanade.tachiyomi.source.model.SAnime
+import eu.kanade.tachiyomi.animesource.model.SEpisode
+import eu.kanade.tachiyomi.animesource.model.SAnime
 import exh.log.xLogE
 import exh.md.dto.ChapterDataDto
 import exh.md.dto.ChapterDto
@@ -55,11 +55,11 @@ class ApiMangaParser(
 
         parseIntoMetadata(metadata, input, simpleChapters, statistics, coverFileName, coverQuality, altTitlesInDesc)
         if (mangaId != null) {
-            metadata.mangaId = mangaId
+            metadata.animeId = mangaId
             insertFlatMetadata.await(metadata.flatten())
         }
 
-        return metadata.createMangaInfo(manga)
+        return metadata.createAnimeInfo(manga)
     }
 
     fun parseIntoMetadata(

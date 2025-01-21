@@ -1,7 +1,7 @@
 package eu.kanade.tachiyomi.source.online
 
 import eu.kanade.tachiyomi.source.CatalogueSource
-import eu.kanade.tachiyomi.source.model.SAnime
+import eu.kanade.tachiyomi.animesource.model.SAnime
 import exh.metadata.metadata.RaisedSearchMetadata
 import exh.metadata.metadata.base.FlatMetadata
 import rx.Completable
@@ -16,7 +16,7 @@ import kotlin.reflect.KClass
  * LEWD!
  */
 interface MetadataSource<M : RaisedSearchMetadata, I> : CatalogueSource {
-    interface GetMangaId {
+    interface GetAnimeId {
         suspend fun awaitId(url: String, sourceId: Long): Long?
     }
     interface InsertFlatMetadata {
@@ -25,7 +25,7 @@ interface MetadataSource<M : RaisedSearchMetadata, I> : CatalogueSource {
     interface GetFlatMetadataById {
         suspend fun await(id: Long): FlatMetadata?
     }
-    val getMangaId: GetMangaId get() = Injekt.get()
+    val getAnimeId: GetAnimeId get() = Injekt.get()
     val insertFlatMetadata: InsertFlatMetadata get() = Injekt.get()
     val getFlatMetadataById: GetFlatMetadataById get() = Injekt.get()
 
@@ -45,32 +45,32 @@ interface MetadataSource<M : RaisedSearchMetadata, I> : CatalogueSource {
     fun newMetaInstance(): M
 
     /**
-     * Parses metadata from the input and then copies it into the manga
+     * Parses metadata from the input and then copies it into the anime
      *
      * Will also save the metadata to the DB if possible
      */
     @Suppress("DeprecatedCallableAddReplaceWith")
-    @Deprecated("Use the MangaInfo variant")
-    fun parseToMangaCompletable(manga: SAnime, input: I): Completable = runAsObservable {
-        parseToManga(manga, input)
+    @Deprecated("Use the AnimeInfo variant")
+    fun parseToAnimeCompletable(anime: SAnime, input: I): Completable = runAsObservable {
+        parseToAnime(anime, input)
     }.toCompletable()
 
-    suspend fun parseToManga(manga: SAnime, input: I): SAnime {
-        val mangaId = manga.id()
-        val metadata = if (mangaId != null) {
-            val flatMetadata = getFlatMetadataById.await(mangaId)
+    suspend fun parseToAnime(anime: SAnime, input: I): SAnime {
+        val animeId = anime.id()
+        val metadata = if (animeId != null) {
+            val flatMetadata = getFlatMetadataById.await(animeId)
             flatMetadata?.raise(metaClass) ?: newMetaInstance()
         } else {
             newMetaInstance()
         }
 
         parseIntoMetadata(metadata, input)
-        if (mangaId != null) {
-            metadata.mangaId = mangaId
+        if (animeId != null) {
+            metadata.animeId = animeId
             insertFlatMetadata.await(metadata)
         }
 
-        return metadata.createMangaInfo(manga)
+        return metadata.createAnimeInfo(anime)
     }
 
     /**
@@ -81,10 +81,10 @@ interface MetadataSource<M : RaisedSearchMetadata, I> : CatalogueSource {
      * also be saved to the DB.
      */
     @Suppress("DeprecatedCallableAddReplaceWith")
-    @Deprecated("use fetchOrLoadMetadata made for MangaInfo")
-    fun getOrLoadMetadata(mangaId: Long?, inputProducer: () -> Single<I>): Single<M> =
+    @Deprecated("use fetchOrLoadMetadata made for AnimeInfo")
+    fun getOrLoadMetadata(animeId: Long?, inputProducer: () -> Single<I>): Single<M> =
         runAsObservable {
-            fetchOrLoadMetadata(mangaId) { inputProducer().toObservable().awaitSingle() }
+            fetchOrLoadMetadata(animeId) { inputProducer().toObservable().awaitSingle() }
         }.toSingle()
 
     /**
@@ -94,9 +94,9 @@ interface MetadataSource<M : RaisedSearchMetadata, I> : CatalogueSource {
      * If the metadata needs to be parsed from the input producer, the resulting parsed metadata will
      * also be saved to the DB.
      */
-    suspend fun fetchOrLoadMetadata(mangaId: Long?, inputProducer: suspend () -> I): M {
-        val meta = if (mangaId != null) {
-            val flatMetadata = getFlatMetadataById.await(mangaId)
+    suspend fun fetchOrLoadMetadata(animeId: Long?, inputProducer: suspend () -> I): M {
+        val meta = if (animeId != null) {
+            val flatMetadata = getFlatMetadataById.await(animeId)
             flatMetadata?.raise(metaClass)
         } else {
             null
@@ -105,13 +105,13 @@ interface MetadataSource<M : RaisedSearchMetadata, I> : CatalogueSource {
         return meta ?: inputProducer().let { input ->
             val newMeta = newMetaInstance()
             parseIntoMetadata(newMeta, input)
-            if (mangaId != null) {
-                newMeta.mangaId = mangaId
+            if (animeId != null) {
+                newMeta.animeId = animeId
                 insertFlatMetadata.await(newMeta)
             }
             newMeta
         }
     }
 
-    suspend fun SAnime.id() = getMangaId.awaitId(url, id)
+    suspend fun SAnime.id() = getAnimeId.awaitId(url, id)
 }

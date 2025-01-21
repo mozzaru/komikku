@@ -63,13 +63,13 @@ class ChapterLoader(
 
                 // If the episode is partially read, set the starting page to the last the user read
                 // otherwise use the requested page.
-                if (!chapter.episode.read /* --> EH */ ||
+                if (!chapter.episode.seen /* --> EH */ ||
                     readerPrefs
                         .preserveReadingPosition()
                         .get() ||
                     page != null // <-- EH
                 ) {
-                    chapter.requestedPage = /* SY --> */ page ?: /* SY <-- */ chapter.episode.last_page_read
+                    chapter.requestedPage = /* SY --> */ page ?: /* SY <-- */ chapter.episode.last_second_seen
                 }
 
                 chapter.state = ReaderChapter.State.Loaded(pages)
@@ -92,7 +92,7 @@ class ChapterLoader(
      */
     private fun getPageLoader(chapter: ReaderChapter): PageLoader {
         val dbChapter = chapter.episode
-        val isDownloaded = downloadManager.isChapterDownloaded(
+        val isDownloaded = downloadManager.isEpisodeDownloaded(
             chapterName = dbChapter.name,
             chapterScanlator = dbChapter.scanlator, /* SY --> */
             mangaTitle = manga.ogTitle /* SY <-- */,
@@ -103,12 +103,12 @@ class ChapterLoader(
             // SY -->
             source is MergedSource -> {
                 val mangaReference = mergedReferences.firstOrNull {
-                    it.mangaId == chapter.episode.manga_id
+                    it.animeId == chapter.episode.anime_id
                 } ?: error("Merge reference null")
-                val source = sourceManager.get(mangaReference.mangaSourceId)
-                    ?: error("Source ${mangaReference.mangaSourceId} was null")
-                val manga = mergedManga[chapter.episode.manga_id] ?: error("Manga for merged episode was null")
-                val isMergedMangaDownloaded = downloadManager.isChapterDownloaded(
+                val source = sourceManager.get(mangaReference.animeSourceId)
+                    ?: error("Source ${mangaReference.animeSourceId} was null")
+                val manga = mergedManga[chapter.episode.anime_id] ?: error("Manga for merged episode was null")
+                val isMergedMangaDownloaded = downloadManager.isEpisodeDownloaded(
                     chapterName = chapter.episode.name,
                     chapterScanlator = chapter.episode.scanlator,
                     mangaTitle = manga.ogTitle,

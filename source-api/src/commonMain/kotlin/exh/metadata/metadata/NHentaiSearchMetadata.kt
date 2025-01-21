@@ -1,7 +1,7 @@
 package exh.metadata.metadata
 
 import android.content.Context
-import eu.kanade.tachiyomi.source.model.SAnime
+import eu.kanade.tachiyomi.animesource.model.SAnime
 import eu.kanade.tachiyomi.source.model.copy
 import exh.metadata.MetadataUtil
 import kotlinx.serialization.Serializable
@@ -45,7 +45,7 @@ class NHentaiSearchMetadata : RaisedSearchMetadata() {
 
     var preferredTitle: Int? = null
 
-    override fun createMangaInfo(manga: SAnime): SAnime {
+    override fun createAnimeInfo(manga: SAnime): SAnime {
         val key = nhId?.let { nhIdToPath(it) }
 
         val cover = if (mediaId != null) {

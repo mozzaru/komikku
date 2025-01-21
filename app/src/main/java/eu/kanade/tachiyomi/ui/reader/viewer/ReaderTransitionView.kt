@@ -45,7 +45,7 @@ class ReaderTransitionView @JvmOverloads constructor(
                 currChapterDownloaded = transition.from.pageLoader?.isLocal == true,
                 goingToChapterDownloaded = manga.isLocal() ||
                     transition.to?.episode?.let { goingToChapter ->
-                        downloadManager.isChapterDownloaded(
+                        downloadManager.isEpisodeDownloaded(
                             chapterName = goingToChapter.name,
                             chapterScanlator = goingToChapter.scanlator,
                             mangaTitle = /* SY --> */ manga.ogTitle, /* SY <-- */

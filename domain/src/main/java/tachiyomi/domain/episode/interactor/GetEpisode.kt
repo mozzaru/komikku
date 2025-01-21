@@ -11,7 +11,7 @@ class GetEpisode(
 
     suspend fun await(id: Long): Episode? {
         return try {
-            episodeRepository.getChapterById(id)
+            episodeRepository.getEpisodeById(id)
         } catch (e: Exception) {
             logcat(LogPriority.ERROR, e)
             null
@@ -20,7 +20,7 @@ class GetEpisode(
 
     suspend fun await(url: String, mangaId: Long): Episode? {
         return try {
-            episodeRepository.getChapterByUrlAndMangaId(url, mangaId)
+            episodeRepository.getEpisodeByUrlAndAnimeId(url, mangaId)
         } catch (e: Exception) {
             logcat(LogPriority.ERROR, e)
             null

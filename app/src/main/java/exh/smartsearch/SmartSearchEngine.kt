@@ -1,9 +1,9 @@
 package exh.smartsearch
 
-import eu.kanade.domain.anime.model.toDomainManga
+import eu.kanade.domain.anime.model.toDomainAnime
 import eu.kanade.tachiyomi.source.CatalogueSource
 import eu.kanade.tachiyomi.source.model.FilterList
-import eu.kanade.tachiyomi.source.model.SAnime
+import eu.kanade.tachiyomi.animesource.model.SAnime
 import info.debatty.java.stringsimilarity.NormalizedLevenshtein
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.async
@@ -43,7 +43,7 @@ class SmartSearchEngine(
             }.flatMap { it.await() }
         }
 
-        return eligibleManga.maxByOrNull { it.dist }?.manga?.toDomainManga(source.id)
+        return eligibleManga.maxByOrNull { it.dist }?.manga?.toDomainAnime(source.id)
     }
 
     suspend fun normalSearch(source: CatalogueSource, title: String): Anime? {
@@ -67,7 +67,7 @@ class SmartSearchEngine(
             }
         }
 
-        return eligibleManga.maxByOrNull { it.dist }?.manga?.toDomainManga(source.id)
+        return eligibleManga.maxByOrNull { it.dist }?.manga?.toDomainAnime(source.id)
     }
 
     private fun getSmartSearchQueries(cleanedTitle: String): List<String> {

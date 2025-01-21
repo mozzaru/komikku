@@ -17,7 +17,7 @@ import exh.eh.EHentaiUpdateWorker
 import exh.log.xLog
 import exh.source.EH_SOURCE_ID
 import exh.source.EXH_SOURCE_ID
-import exh.source.isEhBasedManga
+import exh.source.isEhBasedAnime
 import exh.util.ignore
 import exh.util.wifiManager
 import kotlinx.coroutines.CoroutineScope
@@ -101,7 +101,7 @@ class FavoritesSyncHelper(val context: Context) {
         val libraryManga = getLibraryAnime.await()
         val seenManga = HashSet<Long>(libraryManga.size)
         libraryManga.forEach { (manga) ->
-            if (!manga.isEhBasedManga()) return@forEach
+            if (!manga.isEhBasedAnime()) return@forEach
 
             if (manga.id in seenManga) {
                 val inCategories = getCategories.await(manga.id)

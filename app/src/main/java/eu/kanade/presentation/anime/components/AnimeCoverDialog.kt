@@ -58,7 +58,7 @@ import tachiyomi.presentation.core.util.clickableNoIndication
 
 @Composable
 fun AnimeCoverDialog(
-    manga: Anime,
+    anime: Anime,
     isCustomCover: Boolean,
     snackbarHostState: SnackbarHostState,
     onShareClick: () -> Unit,
@@ -126,7 +126,7 @@ fun AnimeCoverDialog(
                                 ),
                             ),
                         )
-                        if (onEditClick != null) {
+                        if (onEditClick != null && anime.favorite) {
                             Box {
                                 var expanded by remember { mutableStateOf(false) }
                                 IconButton(
@@ -203,7 +203,7 @@ fun AnimeCoverDialog(
                     },
                     update = { view ->
                         val request = ImageRequest.Builder(view.context)
-                            .data(manga)
+                            .data(anime)
                             .size(Size.ORIGINAL)
                             .memoryCachePolicy(CachePolicy.DISABLED)
                             .target { image ->

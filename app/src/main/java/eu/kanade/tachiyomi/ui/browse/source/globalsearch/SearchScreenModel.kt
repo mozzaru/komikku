@@ -5,7 +5,7 @@ import androidx.compose.runtime.Immutable
 import androidx.compose.runtime.produceState
 import cafe.adriel.voyager.core.model.StateScreenModel
 import cafe.adriel.voyager.core.model.screenModelScope
-import eu.kanade.domain.anime.model.toDomainManga
+import eu.kanade.domain.anime.model.toDomainAnime
 import eu.kanade.domain.source.service.SourcePreferences
 import eu.kanade.presentation.util.ioCoroutineScope
 import eu.kanade.tachiyomi.extension.ExtensionManager
@@ -189,7 +189,7 @@ abstract class SearchScreenModel(
 
                         val titles = page.mangas.map {
                             // KMK -->
-                            it.toDomainManga(source.id)
+                            it.toDomainAnime(source.id)
                             // KMK <--
                         }
 

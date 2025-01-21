@@ -23,7 +23,7 @@ data class ALAnime(
     fun toTrack() = TrackSearch.create(TrackerManager.ANILIST).apply {
         remote_id = remoteId
         title = this@ALAnime.title
-        total_chapters = totalChapters
+        total_episodes = totalChapters
         cover_url = imageUrl
         summary = description?.htmlDecode() ?: ""
         score = averageScore.toDouble()
@@ -55,11 +55,11 @@ data class ALUserAnime(
         title = manga.title
         status = toTrackStatus()
         score = scoreRaw.toDouble()
-        started_reading_date = startDateFuzzy
-        finished_reading_date = completedDateFuzzy
-        last_chapter_read = chaptersRead.toDouble()
+        started_watching_date = startDateFuzzy
+        finished_watching_date = completedDateFuzzy
+        last_episode_seen = chaptersRead.toDouble()
         library_id = libraryId
-        total_chapters = manga.totalChapters
+        total_episodes = manga.totalChapters
     }
 
     private fun toTrackStatus() = when (listStatus) {

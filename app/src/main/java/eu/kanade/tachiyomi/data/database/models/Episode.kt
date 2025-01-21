@@ -2,21 +2,21 @@
 
 package eu.kanade.tachiyomi.data.database.models
 
-import eu.kanade.tachiyomi.source.model.SEpisode
+import eu.kanade.tachiyomi.animesource.model.SEpisode
 import java.io.Serializable
-import tachiyomi.domain.episode.model.Episode as DomainChapter
+import tachiyomi.domain.episode.model.Episode as DomainEpisode
 
 interface Episode : SEpisode, Serializable {
 
     var id: Long?
 
-    var manga_id: Long?
+    var anime_id: Long?
 
-    var read: Boolean
+    var seen: Boolean
 
     var bookmark: Boolean
 
-    var last_page_read: Int
+    var last_second_seen: Int
 
     var date_fetch: Long
 
@@ -27,20 +27,20 @@ interface Episode : SEpisode, Serializable {
     var version: Long
 }
 
-fun Episode.toDomainChapter(): DomainChapter? {
-    if (id == null || manga_id == null) return null
-    return DomainChapter(
+fun Episode.toDomainEpisode(): DomainEpisode? {
+    if (id == null || anime_id == null) return null
+    return DomainEpisode(
         id = id!!,
-        mangaId = manga_id!!,
-        read = read,
+        animeId = anime_id!!,
+        seen = seen,
         bookmark = bookmark,
-        lastPageRead = last_page_read.toLong(),
+        lastSecondSeen = last_second_seen.toLong(),
         dateFetch = date_fetch,
         sourceOrder = source_order.toLong(),
         url = url,
         name = name,
         dateUpload = date_upload,
-        chapterNumber = chapter_number.toDouble(),
+        episodeNumber = episode_number.toDouble(),
         scanlator = scanlator,
         lastModifiedAt = last_modified,
         version = version,

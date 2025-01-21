@@ -138,8 +138,8 @@ fun LazyListScope.PagePreviewItems(
     when {
         pagePreviewState is PagePreviewState.Loading || maxWidth == Dp.Hairline -> {
             item(
-                key = AnimeScreenItem.CHAPTER_PREVIEW_LOADING,
-                contentType = AnimeScreenItem.CHAPTER_PREVIEW_LOADING,
+                key = AnimeScreenItem.EPISODE_PREVIEW_LOADING,
+                contentType = AnimeScreenItem.EPISODE_PREVIEW_LOADING,
             ) {
                 PagePreviewLoading(setMaxWidth = setMaxWidth)
             }
@@ -147,8 +147,8 @@ fun LazyListScope.PagePreviewItems(
         pagePreviewState is PagePreviewState.Success -> {
             val itemPerRowCount = (maxWidth / 120.dp).floor()
             items(
-                key = { "${AnimeScreenItem.CHAPTER_PREVIEW_ROW}-${it.hashCode()}" },
-                contentType = { AnimeScreenItem.CHAPTER_PREVIEW_ROW },
+                key = { "${AnimeScreenItem.EPISODE_PREVIEW_ROW}-${it.hashCode()}" },
+                contentType = { AnimeScreenItem.EPISODE_PREVIEW_ROW },
                 items = pagePreviewState.pagePreviews.take(rowCount * itemPerRowCount).chunked(itemPerRowCount),
             ) {
                 PagePreviewRow(
@@ -157,8 +157,8 @@ fun LazyListScope.PagePreviewItems(
                 )
             }
             item(
-                key = AnimeScreenItem.CHAPTER_PREVIEW_MORE,
-                contentType = AnimeScreenItem.CHAPTER_PREVIEW_MORE,
+                key = AnimeScreenItem.EPISODE_PREVIEW_MORE,
+                contentType = AnimeScreenItem.EPISODE_PREVIEW_MORE,
             ) {
                 PagePreviewMore(onMorePreviewsClicked)
             }

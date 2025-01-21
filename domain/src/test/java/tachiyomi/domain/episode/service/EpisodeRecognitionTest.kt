@@ -272,6 +272,6 @@ class EpisodeRecognitionTest {
     }
 
     private fun assertChapter(mangaTitle: String, name: String, expected: Double) {
-        EpisodeRecognition.parseChapterNumber(mangaTitle, name) shouldBe expected
+        EpisodeRecognition.parseEpisodeNumber(mangaTitle, name) shouldBe expected
     }
 }

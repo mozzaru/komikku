@@ -73,7 +73,7 @@ class AnimeBackupCreator(
         if (options.chapters) {
             // Backup all the episodes
             handler.awaitList {
-                episodesQueries.getEpisodesByMangaId(
+                episodesQueries.getEpisodesByAnimeId(
                     mangaId = manga.id,
                     applyScanlatorFilter = 0, // false
                     mapper = backupEpisodeMapper,
@@ -103,7 +103,7 @@ class AnimeBackupCreator(
             if (historyByMangaId.isNotEmpty()) {
                 val history = historyByMangaId.map { history ->
                     val chapter = handler.awaitOne { episodesQueries.getEpisodeById(history.chapterId) }
-                    BackupHistory(chapter.url, history.readAt?.time ?: 0L, history.readDuration)
+                    BackupHistory(chapter.url, history.seenAt?.time ?: 0L, history.readDuration)
                 }
                 if (history.isNotEmpty()) {
                     mangaObject.history = history
@@ -130,7 +130,7 @@ private fun Anime.toBackupManga(/* SY --> */customAnimeInfo: CustomAnimeInfo?/* 
         dateAdded = this.dateAdded,
         viewer = (this.viewerFlags.toInt() and ReadingMode.MASK),
         viewer_flags = this.viewerFlags.toInt(),
-        chapterFlags = this.chapterFlags.toInt(),
+        chapterFlags = this.episodeFlags.toInt(),
         updateStrategy = this.updateStrategy,
         lastModifiedAt = this.lastModifiedAt,
         favoriteModifiedAt = this.favoriteModifiedAt,

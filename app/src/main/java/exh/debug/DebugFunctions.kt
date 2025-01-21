@@ -2,7 +2,7 @@ package exh.debug
 
 import android.app.Application
 import eu.kanade.domain.anime.interactor.UpdateAnime
-import eu.kanade.domain.anime.model.toSManga
+import eu.kanade.domain.anime.model.toSAnime
 import eu.kanade.tachiyomi.BuildConfig
 import eu.kanade.tachiyomi.data.backup.models.Backup
 import eu.kanade.tachiyomi.data.library.LibraryUpdateJob
@@ -97,7 +97,7 @@ object DebugFunctions {
                     EH_SOURCE_ID -> eh
                     EXH_SOURCE_ID -> ex
                     else -> return@forEach
-                }?.getMangaDetails(manga.toSManga()) ?: return@forEach
+                }?.getMangaDetails(manga.toSAnime()) ?: return@forEach
 
                 updateAnime.awaitUpdateFromSource(manga, networkManga, true)
             }

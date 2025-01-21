@@ -61,11 +61,11 @@ class LibraryPreferences(
             DEVICE_ONLY_ON_WIFI,
         ),
     )
-    fun autoUpdateMangaRestrictions() = preferenceStore.getStringSet(
+    fun autoUpdateAnimeRestrictions() = preferenceStore.getStringSet(
         "library_update_manga_restriction",
         setOf(
             MANGA_HAS_UNREAD,
-            MANGA_NON_COMPLETED,
+            ANIME_NON_COMPLETED,
             MANGA_NON_READ,
             MANGA_OUTSIDE_RELEASE_PERIOD,
         ),
@@ -187,27 +187,27 @@ class LibraryPreferences(
     // and upload date
     fun sortChapterBySourceOrNumber() = preferenceStore.getLong(
         "default_chapter_sort_by_source_or_number",
-        Anime.CHAPTER_SORTING_SOURCE,
+        Anime.EPISODE_SORTING_SOURCE,
     )
 
     fun displayChapterByNameOrNumber() = preferenceStore.getLong(
         "default_chapter_display_by_name_or_number",
-        Anime.CHAPTER_DISPLAY_NAME,
+        Anime.EPISODE_DISPLAY_NAME,
     )
 
     fun sortChapterByAscendingOrDescending() = preferenceStore.getLong(
         "default_chapter_sort_by_ascending_or_descending",
-        Anime.CHAPTER_SORT_DESC,
+        Anime.EPISODE_SORT_DESC,
     )
 
     fun setChapterSettingsDefault(manga: Anime) {
-        filterChapterByRead().set(manga.unreadFilterRaw)
+        filterChapterByRead().set(manga.unseenFilterRaw)
         filterChapterByDownloaded().set(manga.downloadedFilterRaw)
         filterChapterByBookmarked().set(manga.bookmarkedFilterRaw)
         sortChapterBySourceOrNumber().set(manga.sorting)
         displayChapterByNameOrNumber().set(manga.displayMode)
         sortChapterByAscendingOrDescending().set(
-            if (manga.sortDescending()) Anime.CHAPTER_SORT_DESC else Anime.CHAPTER_SORT_ASC,
+            if (manga.sortDescending()) Anime.EPISODE_SORT_DESC else Anime.EPISODE_SORT_ASC,
         )
     }
 
@@ -219,18 +219,18 @@ class LibraryPreferences(
 
     fun swipeToStartAction() = preferenceStore.getEnum(
         "pref_chapter_swipe_end_action",
-        ChapterSwipeAction.ToggleBookmark,
+        EpisodeSwipeAction.ToggleBookmark,
     )
 
     fun swipeToEndAction() = preferenceStore.getEnum(
         "pref_chapter_swipe_start_action",
-        ChapterSwipeAction.ToggleRead,
+        EpisodeSwipeAction.ToggleSeen,
     )
 
     // endregion
 
-    enum class ChapterSwipeAction {
-        ToggleRead,
+    enum class EpisodeSwipeAction {
+        ToggleSeen,
         ToggleBookmark,
         Download,
         Disabled,
@@ -251,7 +251,7 @@ class LibraryPreferences(
         const val DEVICE_NETWORK_NOT_METERED = "network_not_metered"
         const val DEVICE_CHARGING = "ac"
 
-        const val MANGA_NON_COMPLETED = "manga_ongoing"
+        const val ANIME_NON_COMPLETED = "manga_ongoing"
         const val MANGA_HAS_UNREAD = "manga_fully_read"
         const val MANGA_NON_READ = "manga_started"
         const val MANGA_OUTSIDE_RELEASE_PERIOD = "manga_outside_release_period"

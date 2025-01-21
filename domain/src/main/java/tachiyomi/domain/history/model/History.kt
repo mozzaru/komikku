@@ -5,14 +5,14 @@ import java.util.Date
 data class History(
     val id: Long,
     val chapterId: Long,
-    val readAt: Date?,
+    val seenAt: Date?,
     val readDuration: Long,
 ) {
     companion object {
         fun create() = History(
             id = -1L,
             chapterId = -1L,
-            readAt = null,
+            seenAt = null,
             readDuration = -1L,
         )
     }

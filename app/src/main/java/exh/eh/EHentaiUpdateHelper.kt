@@ -58,7 +58,7 @@ class EHentaiUpdateHelper(context: Context) {
         // Find other chains
         val chains = episodes
             .flatMap { chapter ->
-                getEpisodeByUrl.await(chapter.url).map { it.mangaId }
+                getEpisodeByUrl.await(chapter.url).map { it.animeId }
             }
             .distinct()
             .mapNotNull { mangaId ->
@@ -188,11 +188,11 @@ class EHentaiUpdateHelper(context: Context) {
         val newHistory = currentEpisodes.mapNotNull { chapter ->
             val newHistory = history[chapter.url]
                 ?.maxByOrNull {
-                    it.readAt?.time ?: 0
+                    it.seenAt?.time ?: 0
                 }
-                ?.takeIf { it.chapterId != chapter.id && it.readAt != null }
+                ?.takeIf { it.chapterId != chapter.id && it.seenAt != null }
             if (newHistory != null) {
-                HistoryUpdate(chapter.id, newHistory.readAt!!, newHistory.readDuration)
+                HistoryUpdate(chapter.id, newHistory.seenAt!!, newHistory.readDuration)
             } else {
                 null
             }
@@ -214,20 +214,20 @@ class EHentaiUpdateHelper(context: Context) {
                 chain.episodes
             }
             .fold(accepted.episodes) { curChapters, chapter ->
-                val newLastPageRead = chainsAsEpisodes.maxOfOrNull { it.lastPageRead }
+                val newLastPageRead = chainsAsEpisodes.maxOfOrNull { it.lastSecondSeen }
 
                 if (curChapters.any { it.url == chapter.url }) {
                     curChapters.map {
                         if (it.url == chapter.url) {
-                            val read = it.read || chapter.read
-                            var lastPageRead = it.lastPageRead.coerceAtLeast(chapter.lastPageRead)
+                            val read = it.seen || chapter.seen
+                            var lastPageRead = it.lastSecondSeen.coerceAtLeast(chapter.lastSecondSeen)
                             if (newLastPageRead != null && lastPageRead <= 0) {
                                 lastPageRead = newLastPageRead
                             }
                             val bookmark = it.bookmark || chapter.bookmark
                             it.copy(
-                                read = read,
-                                lastPageRead = lastPageRead,
+                                seen = read,
+                                lastSecondSeen = lastPageRead,
                                 bookmark = bookmark,
                             )
                         } else {
@@ -238,19 +238,19 @@ class EHentaiUpdateHelper(context: Context) {
                     new = true
                     curChapters + Episode(
                         id = -1,
-                        mangaId = accepted.manga.id,
+                        animeId = accepted.manga.id,
                         url = chapter.url,
                         name = chapter.name,
-                        read = chapter.read,
+                        seen = chapter.seen,
                         bookmark = chapter.bookmark,
-                        lastPageRead = if (newLastPageRead != null && chapter.lastPageRead <= 0) {
+                        lastSecondSeen = if (newLastPageRead != null && chapter.lastSecondSeen <= 0) {
                             newLastPageRead
                         } else {
-                            chapter.lastPageRead
+                            chapter.lastSecondSeen
                         },
                         dateFetch = chapter.dateFetch,
                         dateUpload = chapter.dateUpload,
-                        chapterNumber = -1.0,
+                        episodeNumber = -1.0,
                         scanlator = null,
                         sourceOrder = -1,
                         lastModifiedAt = 0,
@@ -270,7 +270,7 @@ class EHentaiUpdateHelper(context: Context) {
                         -1L -> newEpisodes.add(
                             chapter.copy(
                                 name = name,
-                                chapterNumber = chapterNumber,
+                                episodeNumber = chapterNumber,
                                 sourceOrder = sourceOrder,
                             ),
                         )
@@ -278,7 +278,7 @@ class EHentaiUpdateHelper(context: Context) {
                             EpisodeUpdate(
                                 id = chapter.id,
                                 name = name.takeUnless { chapter.name == it },
-                                chapterNumber = chapterNumber.takeUnless { chapter.chapterNumber == it },
+                                chapterNumber = chapterNumber.takeUnless { chapter.episodeNumber == it },
                                 sourceOrder = sourceOrder.takeUnless { chapter.sourceOrder == it },
                             ),
                         )

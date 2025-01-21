@@ -37,7 +37,7 @@ class Bangumi(id: Long) : BaseTracker(id, "Bangumi") {
     override suspend fun update(track: Track, didReadChapter: Boolean): Track {
         if (track.status != COMPLETED) {
             if (didReadChapter) {
-                if (track.last_chapter_read.toLong() == track.total_chapters && track.total_chapters > 0) {
+                if (track.last_episode_seen.toLong() == track.total_episodes && track.total_episodes > 0) {
                     track.status = COMPLETED
                 } else {
                     track.status = READING
@@ -60,8 +60,8 @@ class Bangumi(id: Long) : BaseTracker(id, "Bangumi") {
             }
 
             track.score = statusTrack.score
-            track.last_chapter_read = statusTrack.last_chapter_read
-            track.total_chapters = remoteTrack.total_chapters
+            track.last_episode_seen = statusTrack.last_episode_seen
+            track.total_episodes = remoteTrack.total_episodes
             refresh(track)
         } else {
             // Set default fields if it's not found in the list
@@ -84,7 +84,7 @@ class Bangumi(id: Long) : BaseTracker(id, "Bangumi") {
         val remoteStatusTrack = api.statusLibManga(track) ?: throw Exception("Could not find manga")
         track.copyPersonalFrom(remoteStatusTrack)
         api.findLibManga(track)?.let { remoteTrack ->
-            track.total_chapters = remoteTrack.total_chapters
+            track.total_episodes = remoteTrack.total_episodes
         }
         return track
     }
@@ -155,6 +155,6 @@ class Bangumi(id: Long) : BaseTracker(id, "Bangumi") {
     }
 
     // KMK -->
-    override fun hasNotStartedReading(status: Long): Boolean = status == PLAN_TO_READ
+    override fun hasNotStartedWatching(status: Long): Boolean = status == PLAN_TO_READ
     // KMK <--
 }

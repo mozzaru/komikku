@@ -18,8 +18,8 @@ import eu.kanade.tachiyomi.source.model.FilterList
 import eu.kanade.tachiyomi.source.model.MangasPage
 import eu.kanade.tachiyomi.source.model.MetadataMangasPage
 import eu.kanade.tachiyomi.source.model.Page
-import eu.kanade.tachiyomi.source.model.SEpisode
-import eu.kanade.tachiyomi.source.model.SAnime
+import eu.kanade.tachiyomi.animesource.model.SEpisode
+import eu.kanade.tachiyomi.animesource.model.SAnime
 import eu.kanade.tachiyomi.source.model.copy
 import eu.kanade.tachiyomi.source.online.HttpSource
 import eu.kanade.tachiyomi.source.online.MetadataSource
@@ -631,7 +631,7 @@ class EHentai(
 
                     pre.flatMap {
                         @Suppress("DEPRECATION")
-                        parseToMangaCompletable(manga, it).andThen(
+                        parseToAnimeCompletable(manga, it).andThen(
                             Observable.just(
                                 manga.apply {
                                     initialized = true
@@ -668,7 +668,7 @@ class EHentai(
             } else {
                 doc
             }
-            return parseToManga(manga, pre)
+            return parseToAnime(manga, pre)
         } else {
             response.close()
 

@@ -23,15 +23,15 @@ data class KitsuListSearchResult(
         return TrackSearch.create(TrackerManager.KITSU).apply {
             remote_id = userData.id
             title = manga.canonicalTitle
-            total_chapters = manga.chapterCount ?: 0
+            total_episodes = manga.chapterCount ?: 0
             cover_url = manga.posterImage?.original ?: ""
             summary = manga.synopsis ?: ""
             tracking_url = KitsuApi.mangaUrl(remote_id)
             publishing_status = manga.status
             publishing_type = manga.mangaType ?: ""
             start_date = userDataAttrs.startedAt ?: ""
-            started_reading_date = KitsuDateHelper.parse(userDataAttrs.startedAt)
-            finished_reading_date = KitsuDateHelper.parse(userDataAttrs.finishedAt)
+            started_watching_date = KitsuDateHelper.parse(userDataAttrs.startedAt)
+            finished_watching_date = KitsuDateHelper.parse(userDataAttrs.finishedAt)
             status = when (userDataAttrs.status) {
                 "current" -> Kitsu.READING
                 "completed" -> Kitsu.COMPLETED
@@ -41,7 +41,7 @@ data class KitsuListSearchResult(
                 else -> throw Exception("Unknown status")
             }
             score = userDataAttrs.ratingTwenty?.let { it / 2.0 } ?: 0.0
-            last_chapter_read = userDataAttrs.progress.toDouble()
+            last_episode_seen = userDataAttrs.progress.toDouble()
         }
     }
 }

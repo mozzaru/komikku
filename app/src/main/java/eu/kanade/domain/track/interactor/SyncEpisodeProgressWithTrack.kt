@@ -22,7 +22,7 @@ class SyncEpisodeProgressWithTrack(
     val trackPreferences: TrackPreferences = Injekt.get()
 
     suspend fun await(
-        mangaId: Long,
+        animeId: Long,
         remoteTrack: Track,
         tracker: Tracker,
     ): Int? {
@@ -33,44 +33,44 @@ class SyncEpisodeProgressWithTrack(
         // <-- KKM
 
         // Current episodes in database, sort by source's order because database's order is a mess
-        val dbChapters = getEpisodesByAnimeId.await(mangaId)
+        val dbEpisodes = getEpisodesByAnimeId.await(animeId)
             // KMK -->
             .sortedByDescending { it.sourceOrder }
             // KMK <--
             .filter { it.isRecognizedNumber }
 
-        val sortedChapters = dbChapters
-            .sortedBy { it.chapterNumber }
+        val sortedEpisodes = dbEpisodes
+            .sortedBy { it.episodeNumber }
 
         // KMK -->
-        var lastCheckChapter: Double
-        var checkingChapter = 0.0
+        var lastCheckEpisode: Double
+        var checkingEpisode = 0.0
 
         /**
-         * Chapters to update to follow tracker: only continuous incremental episodes
-         * any abnormal episode number will stop it from updating read status further.
-         * Some mangas has name such as Volume 2 Episode 1 which will corrupt the order
-         * if we sort by chapterNumber.
+         * Episodes to update to follow tracker: only continuous incremental episodes
+         * any abnormal episode number will stop it from updating seen status further.
+         * Some animes has name such as Volume 2 Episode 1 which will corrupt the order
+         * if we sort by episodeNumber.
          */
-        val episodeUpdates = dbChapters
-            .takeWhile { chapter ->
-                lastCheckChapter = checkingChapter
-                checkingChapter = chapter.chapterNumber
-                chapter.chapterNumber >= lastCheckChapter && chapter.chapterNumber <= remoteTrack.lastChapterRead
+        val episodeUpdates = dbEpisodes
+            .takeWhile { episode ->
+                lastCheckEpisode = checkingEpisode
+                checkingEpisode = episode.episodeNumber
+                episode.episodeNumber >= lastCheckEpisode && episode.episodeNumber <= remoteTrack.lastEpisodeSeen
             }
-            .filter { chapter -> !chapter.read }
+            .filter { episode -> !episode.seen }
             // KMK <--
-            .map { it.copy(read = true).toEpisodeUpdate() }
+            .map { it.copy(seen = true).toEpisodeUpdate() }
 
-        // only take into account continuous reading
-        val localLastRead = sortedChapters.takeWhile { it.read }.lastOrNull()?.chapterNumber ?: 0F
-        // Tracker will update to latest read episode
-        val lastRead = max(remoteTrack.lastChapterRead, localLastRead.toDouble())
-        val updatedTrack = remoteTrack.copy(lastChapterRead = lastRead)
+        // only take into account continuous watching
+        val localLastSeen = sortedEpisodes.takeWhile { it.seen }.lastOrNull()?.episodeNumber ?: 0F
+        // Tracker will update to latest seen episode
+        val lastSeen = max(remoteTrack.lastEpisodeSeen, localLastSeen.toDouble())
+        val updatedTrack = remoteTrack.copy(lastEpisodeSeen = lastSeen)
 
         try {
-            // Update Tracker to localLastRead if needed
-            if (lastRead > remoteTrack.lastChapterRead) {
+            // Update Tracker to localLastSeen if needed
+            if (lastSeen > remoteTrack.lastEpisodeSeen) {
                 tracker.update(updatedTrack.toDbTrack())
                 // update Track in database
                 insertTrack.await(updatedTrack)
@@ -79,10 +79,10 @@ class SyncEpisodeProgressWithTrack(
             // Always update local episodes following Tracker even past episodes
             if (episodeUpdates.isNotEmpty() &&
                 trackPreferences.autoSyncProgressFromTrackers().get() &&
-                !tracker.hasNotStartedReading(remoteTrack.status)
+                !tracker.hasNotStartedWatching(remoteTrack.status)
             ) {
                 updateEpisode.awaitAll(episodeUpdates)
-                return lastRead.toInt()
+                return lastSeen.toInt()
             }
             // KMK <--
         } catch (e: Throwable) {

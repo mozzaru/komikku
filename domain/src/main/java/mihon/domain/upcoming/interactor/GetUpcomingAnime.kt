@@ -1,6 +1,6 @@
 package mihon.domain.upcoming.interactor
 
-import eu.kanade.tachiyomi.source.model.SAnime
+import eu.kanade.tachiyomi.animesource.model.SAnime
 import eu.kanade.tachiyomi.source.model.UpdateStrategy
 import kotlinx.coroutines.flow.Flow
 import tachiyomi.domain.anime.interactor.GetLibraryAnime
@@ -8,7 +8,7 @@ import tachiyomi.domain.anime.model.Anime
 import tachiyomi.domain.anime.repository.AnimeRepository
 import tachiyomi.domain.library.service.LibraryPreferences
 import tachiyomi.domain.library.service.LibraryPreferences.Companion.MANGA_HAS_UNREAD
-import tachiyomi.domain.library.service.LibraryPreferences.Companion.MANGA_NON_COMPLETED
+import tachiyomi.domain.library.service.LibraryPreferences.Companion.ANIME_NON_COMPLETED
 import tachiyomi.domain.library.service.LibraryPreferences.Companion.MANGA_NON_READ
 import tachiyomi.domain.library.service.LibraryPreferences.Companion.MANGA_OUTSIDE_RELEASE_PERIOD
 import uy.kohesive.injekt.Injekt
@@ -54,7 +54,7 @@ class GetUpcomingAnime(
         val listToUpdate = includedManga
             .filterNot { it.manga.id in excludedMangaIds }
 
-        val restrictions = libraryPreferences.autoUpdateMangaRestrictions().get()
+        val restrictions = libraryPreferences.autoUpdateAnimeRestrictions().get()
         val today = LocalDate.now().atStartOfDay(ZoneId.systemDefault()).toEpochSecond() * 1000
 
         return listToUpdate
@@ -63,7 +63,7 @@ class GetUpcomingAnime(
                 when {
                     it.manga.updateStrategy != UpdateStrategy.ALWAYS_UPDATE -> false
 
-                    MANGA_NON_COMPLETED in restrictions && it.manga.status.toInt() == SAnime.COMPLETED -> false
+                    ANIME_NON_COMPLETED in restrictions && it.manga.status.toInt() == SAnime.COMPLETED -> false
 
                     MANGA_HAS_UNREAD in restrictions && it.unreadCount != 0L -> false
 

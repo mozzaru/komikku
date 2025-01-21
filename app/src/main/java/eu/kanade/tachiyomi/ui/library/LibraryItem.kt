@@ -25,7 +25,7 @@ data class LibraryItem(
     //  * @return true if the manga matches the query, false otherwise.
     //  */
     // fun matches(constraint: String): Boolean {
-    //     val sourceName by lazy { sourceManager.getOrStub(libraryAnime.manga.source).getNameForMangaInfo() }
+    //     val sourceName by lazy { sourceManager.getOrStub(libraryAnime.manga.source).getNameForAnimeInfo() }
     //     return libraryAnime.manga.title.contains(constraint, true) ||
     //         (libraryAnime.manga.author?.contains(constraint, true) ?: false) ||
     //         (libraryAnime.manga.artist?.contains(constraint, true) ?: false) ||

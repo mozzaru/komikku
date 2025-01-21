@@ -3,7 +3,7 @@ package eu.kanade.tachiyomi.util.episode
 import eu.kanade.domain.episode.model.applyFilters
 import eu.kanade.tachiyomi.data.download.DownloadManager
 import eu.kanade.tachiyomi.ui.anime.EpisodeList
-import exh.source.isEhBasedManga
+import exh.source.isEhBasedAnime
 import tachiyomi.domain.anime.model.Anime
 import tachiyomi.domain.episode.model.Episode
 
@@ -17,18 +17,18 @@ fun List<Episode>.getNextUnseen(
 ): Episode? {
     return applyFilters(manga, downloadManager/* SY --> */, mergedManga/* SY <-- */).let { chapters ->
         // SY -->
-        if (manga.isEhBasedManga()) {
+        if (manga.isEhBasedAnime()) {
             return@let if (manga.sortDescending()) {
-                chapters.firstOrNull()?.takeUnless { it.read }
+                chapters.firstOrNull()?.takeUnless { it.seen }
             } else {
-                chapters.lastOrNull()?.takeUnless { it.read }
+                chapters.lastOrNull()?.takeUnless { it.seen }
             }
         }
         // SY <--
         if (manga.sortDescending()) {
-            chapters.findLast { !it.read }
+            chapters.findLast { !it.seen }
         } else {
-            chapters.find { !it.read }
+            chapters.find { !it.seen }
         }
     }
 }
@@ -39,18 +39,18 @@ fun List<Episode>.getNextUnseen(
 fun List<EpisodeList.Item>.getNextUnseen(manga: Anime): Episode? {
     return applyFilters(manga).let { chapters ->
         // SY -->
-        if (manga.isEhBasedManga()) {
+        if (manga.isEhBasedAnime()) {
             return@let if (manga.sortDescending()) {
-                chapters.firstOrNull()?.takeUnless { it.episode.read }
+                chapters.firstOrNull()?.takeUnless { it.episode.seen }
             } else {
-                chapters.lastOrNull()?.takeUnless { it.episode.read }
+                chapters.lastOrNull()?.takeUnless { it.episode.seen }
             }
         }
         // SY <--
         if (manga.sortDescending()) {
-            chapters.findLast { !it.episode.read }
+            chapters.findLast { !it.episode.seen }
         } else {
-            chapters.find { !it.episode.read }
+            chapters.find { !it.episode.seen }
         }
     }?.episode
 }

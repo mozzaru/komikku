@@ -192,7 +192,7 @@ class DownloadManager(
      * @param sourceId the id of the source of the episode.
      * @param skipCache whether to skip the directory cache and check in the filesystem.
      */
-    fun isChapterDownloaded(
+    fun isEpisodeDownloaded(
         chapterName: String,
         chapterScanlator: String?,
         mangaTitle: String,
@@ -229,7 +229,7 @@ class DownloadManager(
      * @param manga the manga of the episodes.
      * @param source the source of the episodes.
      */
-    fun deleteChapters(
+    fun deleteEpisodes(
         episodes: List<Episode>,
         manga: Anime,
         source: Source,
@@ -342,7 +342,7 @@ class DownloadManager(
         filesWithNoChapter.forEach { it.delete() }
 
         if (removeRead) {
-            val readChapters = allEpisodes.filter { it.read }
+            val readChapters = allEpisodes.filter { it.seen }
             val readChapterDirs = provider.findChapterDirs(readChapters, manga, source)
             readChapterDirs.second.forEach { it.delete() }
             cleaned += readChapterDirs.second.size
@@ -379,7 +379,7 @@ class DownloadManager(
         val pendingChapters = pendingDeleter.getPendingChapters()
         for ((manga, chapters) in pendingChapters) {
             val source = sourceManager.get(manga.source) ?: continue
-            deleteChapters(chapters, manga, source)
+            deleteEpisodes(chapters, manga, source)
         }
     }
 
@@ -417,7 +417,7 @@ class DownloadManager(
      * @param oldEpisode the existing episode with the old name.
      * @param newEpisode the target episode with the new name.
      */
-    suspend fun renameChapter(source: Source, manga: Anime, oldEpisode: Episode, newEpisode: Episode) {
+    suspend fun renameEpisode(source: Source, manga: Anime, oldEpisode: Episode, newEpisode: Episode) {
         val oldNames = provider.getValidChapterDirNames(oldEpisode.name, oldEpisode.scanlator)
         val mangaDir = provider.getMangaDir(/* SY --> */ manga.ogTitle /* SY <-- */, source)
 
@@ -461,7 +461,7 @@ class DownloadManager(
                 .map { it.id }
                 .ifEmpty { listOf(0) }
             if (categoriesForManga.intersect(categoriesToExclude).isNotEmpty()) {
-                episodes.filterNot { it.read }
+                episodes.filterNot { it.seen }
             } else {
                 episodes
             }
@@ -508,7 +508,7 @@ class DownloadManager(
             )
         }
 
-    fun renameMangaDir(oldTitle: String, newTitle: String, source: Long) {
+    fun renameAnimeDir(oldTitle: String, newTitle: String, source: Long) {
         val sourceDir = provider.findSourceDir(sourceManager.getOrStub(source)) ?: return
         val mangaDir = sourceDir.findFile(DiskUtil.buildValidFilename(oldTitle)) ?: return
         mangaDir.renameTo(DiskUtil.buildValidFilename(newTitle))

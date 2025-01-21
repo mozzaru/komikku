@@ -57,7 +57,7 @@ class AnilistApi(val client: OkHttpClient, interceptor: AnilistInterceptor) {
                 put("query", query)
                 putJsonObject("variables") {
                     put("mangaId", track.remote_id)
-                    put("progress", track.last_chapter_read.toInt())
+                    put("progress", track.last_episode_seen.toInt())
                     put("status", track.toApiStatus())
                 }
             }
@@ -100,11 +100,11 @@ class AnilistApi(val client: OkHttpClient, interceptor: AnilistInterceptor) {
                 put("query", query)
                 putJsonObject("variables") {
                     put("listId", track.library_id)
-                    put("progress", track.last_chapter_read.toInt())
+                    put("progress", track.last_episode_seen.toInt())
                     put("status", track.toApiStatus())
                     put("score", track.score.toInt())
-                    put("startedAt", createDate(track.started_reading_date))
-                    put("completedAt", createDate(track.finished_reading_date))
+                    put("startedAt", createDate(track.started_watching_date))
+                    put("completedAt", createDate(track.finished_watching_date))
                 }
             }
             authClient.newCall(POST(API_URL, body = payload.toString().toRequestBody(jsonMime)))

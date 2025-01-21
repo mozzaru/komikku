@@ -170,7 +170,7 @@ object DownloadQueueScreen : Screen() {
                                             text = { Text(text = stringResource(MR.strings.action_asc)) },
                                             onClick = {
                                                 screenModel.reorderQueue(
-                                                    { it.download.episode.chapterNumber },
+                                                    { it.download.episode.episodeNumber },
                                                     false,
                                                 )
                                                 closeMenu()
@@ -180,7 +180,7 @@ object DownloadQueueScreen : Screen() {
                                             text = { Text(text = stringResource(MR.strings.action_desc)) },
                                             onClick = {
                                                 screenModel.reorderQueue(
-                                                    { it.download.episode.chapterNumber },
+                                                    { it.download.episode.episodeNumber },
                                                     true,
                                                 )
                                                 closeMenu()

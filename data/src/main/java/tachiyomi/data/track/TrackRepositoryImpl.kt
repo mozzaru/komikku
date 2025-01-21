@@ -66,13 +66,13 @@ class TrackRepositoryImpl(
         handler.await(inTransaction = true) {
             tracks.forEach { mangaTrack ->
                 anime_syncQueries.insert(
-                    mangaId = mangaTrack.mangaId,
+                    mangaId = mangaTrack.animeId,
                     syncId = mangaTrack.trackerId,
                     remoteId = mangaTrack.remoteId,
                     libraryId = mangaTrack.libraryId,
                     title = mangaTrack.title,
-                    lastChapterRead = mangaTrack.lastChapterRead,
-                    totalChapters = mangaTrack.totalChapters,
+                    lastChapterRead = mangaTrack.lastEpisodeSeen,
+                    totalChapters = mangaTrack.totalEpisodes,
                     status = mangaTrack.status,
                     score = mangaTrack.score,
                     remoteUrl = mangaTrack.remoteUrl,

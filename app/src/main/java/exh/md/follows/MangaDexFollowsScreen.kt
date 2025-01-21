@@ -173,7 +173,7 @@ class MangaDexFollowsScreen(private val sourceId: Long) : Screen() {
                 DuplicateAnimeDialog(
                     onDismissRequest = onDismissRequest,
                     onConfirm = { screenModel.addFavorite(dialog.manga) },
-                    onOpenManga = { navigator.push(AnimeScreen(dialog.duplicate.id)) },
+                    onOpenAnime = { navigator.push(AnimeScreen(dialog.duplicate.id)) },
                     onMigrate = {
                         PreMigrationScreen.navigateToMigration(
                             Injekt.get<UnsortedPreferences>().skipPreMigration().get(),

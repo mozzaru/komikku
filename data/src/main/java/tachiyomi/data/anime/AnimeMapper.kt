@@ -45,7 +45,7 @@ object AnimeMapper {
         fetchInterval = calculateInterval.toInt(),
         dateAdded = dateAdded,
         viewerFlags = viewerFlags,
-        chapterFlags = chapterFlags,
+        episodeFlags = chapterFlags,
         coverLastModified = coverLastModified,
         url = url,
         // SY -->
@@ -149,7 +149,7 @@ object AnimeMapper {
                 nextUpdate = libraryView.next_update ?: 0,
                 dateAdded = libraryView.date_added,
                 viewerFlags = libraryView.viewer,
-                chapterFlags = libraryView.chapter_flags,
+                episodeFlags = libraryView.chapter_flags,
                 coverLastModified = libraryView.cover_last_modified,
                 url = libraryView.url,
                 ogTitle = libraryView.title,

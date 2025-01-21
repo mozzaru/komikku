@@ -1,8 +1,8 @@
 package exh.md.handlers
 
 import eu.kanade.tachiyomi.data.database.models.Track
-import eu.kanade.tachiyomi.source.model.SEpisode
-import eu.kanade.tachiyomi.source.model.SAnime
+import eu.kanade.tachiyomi.animesource.model.SEpisode
+import eu.kanade.tachiyomi.animesource.model.SAnime
 import exh.md.dto.ChapterDataDto
 import exh.md.service.MangaDexService
 import exh.md.utils.MdConstants
@@ -108,7 +108,7 @@ class MangaHandler(
     suspend fun getTrackingInfo(track: Track): Pair<Track, MangaDexSearchMetadata?> {
         return withIOContext {
             /*val metadata = async {
-                val mangaUrl = MdUtil.buildMangaUrl(MdUtil.getMangaId(track.tracking_url))
+                val mangaUrl = MdUtil.buildMangaUrl(MdUtil.getAnimeId(track.tracking_url))
                 val manga = MangaInfo(mangaUrl, track.title)
                 val response = client.newCall(mangaRequest(manga)).await()
                 val metadata = MangaDexSearchMetadata()

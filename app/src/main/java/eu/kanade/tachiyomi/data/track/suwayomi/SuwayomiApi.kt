@@ -66,9 +66,9 @@ class SuwayomiApi(private val trackId: Long) {
             cover_url = "$url/thumbnail"
             summary = manga.description.orEmpty()
             tracking_url = url
-            total_chapters = manga.chapterCount
+            total_episodes = manga.chapterCount
             publishing_status = manga.status
-            last_chapter_read = manga.lastChapterRead?.chapterNumber ?: 0.0
+            last_episode_seen = manga.lastChapterRead?.chapterNumber ?: 0.0
             status = when (manga.unreadCount) {
                 manga.chapterCount -> Suwayomi.UNREAD
                 0L -> Suwayomi.COMPLETED
@@ -84,7 +84,7 @@ class SuwayomiApi(private val trackId: Long) {
                 .awaitSuccess()
                 .parseAs<List<ChapterDataClass>>()
         }
-        val lastChapterIndex = chapters.first { it.chapterNumber == track.last_chapter_read }.index
+        val lastChapterIndex = chapters.first { it.chapterNumber == track.last_episode_seen }.index
 
         client.newCall(
             PUT(

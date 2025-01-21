@@ -79,7 +79,7 @@ data class Download(
             sourceManager: SourceManager = Injekt.get(),
         ): Download? {
             val chapter = getEpisode.await(chapterId) ?: return null
-            val manga = getAnime.await(chapter.mangaId) ?: return null
+            val manga = getAnime.await(chapter.animeId) ?: return null
             val source = sourceManager.get(manga.source) as? HttpSource ?: return null
 
             return Download(source, manga, chapter)

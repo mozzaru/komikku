@@ -11,7 +11,7 @@ class GetEpisodesByAnimeId(
 
     suspend fun await(mangaId: Long, applyScanlatorFilter: Boolean = false): List<Episode> {
         return try {
-            episodeRepository.getChapterByMangaId(mangaId, applyScanlatorFilter)
+            episodeRepository.getEpisodeByAnimeId(mangaId, applyScanlatorFilter)
         } catch (e: Exception) {
             logcat(LogPriority.ERROR, e)
             emptyList()

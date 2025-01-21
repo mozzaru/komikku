@@ -39,7 +39,7 @@ fun Anime.toAnimeUpdate(): AnimeUpdate {
         fetchInterval = fetchInterval,
         dateAdded = dateAdded,
         viewerFlags = viewerFlags,
-        chapterFlags = chapterFlags,
+        chapterFlags = episodeFlags,
         coverLastModified = coverLastModified,
         url = url,
         // SY -->

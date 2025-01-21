@@ -51,31 +51,31 @@ class MergedMangaRewriteMigration : Migration {
                     } ?: mergedManga.first
                     mergedAnimeReferences += MergedAnimeReference(
                         id = -1,
-                        isInfoManga = false,
+                        isInfoAnime = false,
                         getChapterUpdates = false,
                         chapterSortMode = 0,
                         chapterPriority = 0,
                         downloadChapters = false,
                         mergeId = newFirst.id,
                         mergeUrl = newFirst.url,
-                        mangaId = newFirst.id,
-                        mangaUrl = newFirst.url,
-                        mangaSourceId = MERGED_SOURCE_ID,
+                        animeId = newFirst.id,
+                        animeUrl = newFirst.url,
+                        animeSourceId = MERGED_SOURCE_ID,
                     )
                     mergedManga.second.children.distinct().forEachIndexed { index, mangaSource ->
                         val load = mangaSource.load(getAnime, sourceManager) ?: return@forEachIndexed
                         mergedAnimeReferences += MergedAnimeReference(
                             id = -1,
-                            isInfoManga = index == 0,
+                            isInfoAnime = index == 0,
                             getChapterUpdates = true,
                             chapterSortMode = 0,
                             chapterPriority = 0,
                             downloadChapters = true,
                             mergeId = newFirst.id,
                             mergeUrl = newFirst.url,
-                            mangaId = load.manga.id,
-                            mangaUrl = load.manga.url,
-                            mangaSourceId = load.source.id,
+                            animeId = load.manga.id,
+                            animeUrl = load.manga.url,
+                            animeSourceId = load.source.id,
                         )
                     }
                 }
@@ -92,7 +92,7 @@ class MergedMangaRewriteMigration : Migration {
                     handler.awaitList {
                         ehQueries.getChaptersByMangaIds(
                             mergedMangas.map { it.id },
-                            EpisodeMapper::mapChapter,
+                            EpisodeMapper::mapEpisode,
                         )
                     }
 
@@ -100,7 +100,7 @@ class MergedMangaRewriteMigration : Migration {
                     handler.awaitList {
                         ehQueries.getChaptersByMangaIds(
                             loadedMangaList.map { it.manga.id },
-                            EpisodeMapper::mapChapter,
+                            EpisodeMapper::mapEpisode,
                         )
                     }
 
@@ -110,7 +110,7 @@ class MergedMangaRewriteMigration : Migration {
                     }?.let { it to chapter }
                 }
                 val parsedChapters = chapters.filter {
-                    it.read || it.lastPageRead != 0L
+                    it.seen || it.lastSecondSeen != 0L
                 }.mapNotNull { chapter -> readUrlConfig(chapter.url)?.let { chapter to it } }
                 val chaptersToUpdate = mutableListOf<EpisodeUpdate>()
                 parsedChapters.forEach { parsedChapter ->
@@ -121,8 +121,8 @@ class MergedMangaRewriteMigration : Migration {
                     }?.let {
                         chaptersToUpdate += EpisodeUpdate(
                             it.second.id,
-                            read = parsedChapter.first.read,
-                            lastPageRead = parsedChapter.first.lastPageRead,
+                            seen = parsedChapter.first.seen,
+                            lastSecondSeen = parsedChapter.first.lastSecondSeen,
                         )
                     }
                 }

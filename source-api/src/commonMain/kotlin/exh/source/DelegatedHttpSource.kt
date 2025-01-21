@@ -3,8 +3,8 @@ package exh.source
 import eu.kanade.tachiyomi.source.model.FilterList
 import eu.kanade.tachiyomi.source.model.MangasPage
 import eu.kanade.tachiyomi.source.model.Page
-import eu.kanade.tachiyomi.source.model.SEpisode
-import eu.kanade.tachiyomi.source.model.SAnime
+import eu.kanade.tachiyomi.animesource.model.SEpisode
+import eu.kanade.tachiyomi.animesource.model.SAnime
 import eu.kanade.tachiyomi.source.online.HttpSource
 import okhttp3.OkHttpClient
 import okhttp3.Request
@@ -328,9 +328,9 @@ abstract class DelegatedHttpSource(val delegate: HttpSource) : HttpSource() {
      * @param chapter the chapter to be added.
      * @param manga the manga of the chapter.
      */
-    override fun prepareNewChapter(chapter: SEpisode, manga: SAnime) {
+    override fun prepareNewEpisode(chapter: SEpisode, manga: SAnime) {
         ensureDelegateCompatible()
-        return delegate.prepareNewChapter(chapter, manga)
+        return delegate.prepareNewEpisode(chapter, manga)
     }
 
     /**

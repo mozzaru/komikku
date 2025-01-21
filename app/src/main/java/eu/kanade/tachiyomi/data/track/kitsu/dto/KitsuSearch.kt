@@ -39,7 +39,7 @@ data class KitsuAlgoliaSearchItem(
         return TrackSearch.create(TrackerManager.KITSU).apply {
             remote_id = this@KitsuAlgoliaSearchItem.id
             title = canonicalTitle
-            total_chapters = chapterCount ?: 0
+            total_episodes = chapterCount ?: 0
             cover_url = posterImage?.original ?: ""
             summary = synopsis ?: ""
             tracking_url = KitsuApi.mangaUrl(remote_id)

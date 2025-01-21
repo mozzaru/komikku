@@ -3,8 +3,8 @@ package exh.source
 import eu.kanade.tachiyomi.source.model.FilterList
 import eu.kanade.tachiyomi.source.model.MangasPage
 import eu.kanade.tachiyomi.source.model.Page
-import eu.kanade.tachiyomi.source.model.SEpisode
-import eu.kanade.tachiyomi.source.model.SAnime
+import eu.kanade.tachiyomi.animesource.model.SEpisode
+import eu.kanade.tachiyomi.animesource.model.SAnime
 import eu.kanade.tachiyomi.source.online.HttpSource
 import exh.pref.DelegateSourcePreferences
 import okhttp3.Response
@@ -279,8 +279,8 @@ class EnhancedHttpSource(
      * @param chapter the chapter to be added.
      * @param manga the manga of the chapter.
      */
-    override fun prepareNewChapter(chapter: SEpisode, manga: SAnime) =
-        source().prepareNewChapter(chapter, manga)
+    override fun prepareNewEpisode(chapter: SEpisode, manga: SAnime) =
+        source().prepareNewEpisode(chapter, manga)
 
     /**
      * Returns the list of filters for the source.

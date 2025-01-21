@@ -28,47 +28,47 @@ class SetSeenStatus(
     // SY <--
 ) {
 
-    private val mapper = { episode: Episode, read: Boolean ->
+    private val mapper = { episode: Episode, seen: Boolean ->
         EpisodeUpdate(
-            read = read,
-            lastPageRead = if (!read) 0 else null,
+            seen = seen,
+            lastSecondSeen = if (!seen) 0 else null,
             id = episode.id,
         )
     }
 
     /**
-     * Mark episodes as read/unread, also delete downloaded episodes if 'After manually marked as read' is set.
+     * Mark episodes as seen/unseen, also delete downloaded episodes if 'After manually marked as seen' is set.
      *
      * Called from:
-     *  - [LibraryScreenModel]: Manually select mangas & mark as read
-     *  - [AnimeScreenModel.markChaptersRead]: Manually select episodes & mark as read or swipe episode as read
-     *  - [UpdatesScreenModel.markUpdatesRead]: Manually select episodes & mark as read
-     *  - [LibraryUpdateJob.updateChapterList]: when a manga is updated and has new episode but already read,
-     *  it will mark that new **duplicated** episode as read & delete downloading/downloaded -> should be treat as
+     *  - [LibraryScreenModel]: Manually select animes & mark as seen
+     *  - [AnimeScreenModel.markEpisodesSeen]: Manually select episodes & mark as seen or swipe episode as seen
+     *  - [UpdatesScreenModel.markUpdatesSeen]: Manually select episodes & mark as seen
+     *  - [LibraryUpdateJob.updateEpisodeList]: when a anime is updated and has new episode but already seen,
+     *  it will mark that new **duplicated** episode as seen & delete downloading/downloaded -> should be treat as
      *  automatically ~ no auto delete
-     *  - [ReaderViewModel.updateChapterProgress]: mark **duplicated** episode as read after finish reading -> should be
-     *  treated as not manually mark as read so not auto-delete (there are cases where episode number is mistaken by volume number)
+     *  - [ReaderViewModel.updateChapterProgress]: mark **duplicated** episode as seen after finish watching -> should be
+     *  treated as not manually mark as seen so not auto-delete (there are cases where episode number is mistaken by volume number)
      */
     suspend fun await(
-        read: Boolean,
+        seen: Boolean,
         vararg episodes: Episode,
         // KMK -->
         manually: Boolean = true,
         // KMK <--
     ): Result = withNonCancellableContext {
-        val chaptersToUpdate = episodes.filter {
-            when (read) {
-                true -> !it.read
-                false -> it.read || it.lastPageRead > 0
+        val episodesToUpdate = episodes.filter {
+            when (seen) {
+                true -> !it.seen
+                false -> it.seen || it.lastSecondSeen > 0
             }
         }
-        if (chaptersToUpdate.isEmpty()) {
-            return@withNonCancellableContext Result.NoChapters
+        if (episodesToUpdate.isEmpty()) {
+            return@withNonCancellableContext Result.NoEpisodes
         }
 
         try {
             episodeRepository.updateAll(
-                chaptersToUpdate.map { mapper(it, read) },
+                episodesToUpdate.map { mapper(it, seen) },
             )
         } catch (e: Exception) {
             logcat(LogPriority.ERROR, e)
@@ -79,18 +79,18 @@ class SetSeenStatus(
             // KMK -->
             manually &&
             // KMK <--
-            read &&
-            downloadPreferences.removeAfterMarkedAsRead().get()
+            seen &&
+            downloadPreferences.removeAfterMarkedAsSeen().get()
         ) {
-            chaptersToUpdate
+            episodesToUpdate
                 // KMK -->
-                .map { it.copy(read = true) } // mark as read so it will respect category exclusion
+                .map { it.copy(seen = true) } // mark as seen so it will respect category exclusion
                 // KMK <--
-                .groupBy { it.mangaId }
-                .forEach { (mangaId, chapters) ->
+                .groupBy { it.animeId }
+                .forEach { (animeId, episodes) ->
                     deleteDownload.awaitAll(
-                        manga = animeRepository.getMangaById(mangaId),
-                        episodes = chapters.toTypedArray(),
+                        anime = animeRepository.getAnimeById(animeId),
+                        episodes = episodes.toTypedArray(),
                     )
                 }
         }
@@ -98,35 +98,35 @@ class SetSeenStatus(
         Result.Success
     }
 
-    suspend fun await(mangaId: Long, read: Boolean): Result = withNonCancellableContext {
+    suspend fun await(animeId: Long, seen: Boolean): Result = withNonCancellableContext {
         await(
-            read = read,
+            seen = seen,
             episodes = episodeRepository
-                .getChapterByMangaId(mangaId)
+                .getEpisodeByAnimeId(animeId)
                 .toTypedArray(),
         )
     }
 
     // SY -->
-    private suspend fun awaitMerged(mangaId: Long, read: Boolean) = withNonCancellableContext f@{
+    private suspend fun awaitMerged(animeId: Long, seen: Boolean) = withNonCancellableContext f@{
         return@f await(
-            read = read,
+            seen = seen,
             episodes = getMergedEpisodesByAnimeId
-                .await(mangaId, dedupe = false)
+                .await(animeId, dedupe = false)
                 .toTypedArray(),
         )
     }
 
-    suspend fun await(manga: Anime, read: Boolean) = if (manga.source == MERGED_SOURCE_ID) {
-        awaitMerged(manga.id, read)
+    suspend fun await(anime: Anime, seen: Boolean) = if (anime.source == MERGED_SOURCE_ID) {
+        awaitMerged(anime.id, seen)
     } else {
-        await(manga.id, read)
+        await(anime.id, seen)
     }
     // SY <--
 
     sealed interface Result {
         data object Success : Result
-        data object NoChapters : Result
+        data object NoEpisodes : Result
         data class InternalError(val error: Throwable) : Result
     }
 }

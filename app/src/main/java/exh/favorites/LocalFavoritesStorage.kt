@@ -1,10 +1,10 @@
 package exh.favorites
 
-import eu.kanade.domain.anime.model.toDomainManga
+import eu.kanade.domain.anime.model.toDomainAnime
 import eu.kanade.tachiyomi.source.online.all.EHentai
 import exh.metadata.metadata.EHentaiSearchMetadata
 import exh.source.EXH_SOURCE_ID
-import exh.source.isEhBasedManga
+import exh.source.isEhBasedAnime
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.asFlow
 import kotlinx.coroutines.flow.filter
@@ -39,7 +39,7 @@ class LocalFavoritesStorage(
     suspend fun getChangedRemoteEntries(entries: List<EHentai.ParsedManga>) = entries
         .asFlow()
         .map {
-            it.fav to it.manga.toDomainManga(EXH_SOURCE_ID).copy(
+            it.fav to it.manga.toDomainAnime(EXH_SOURCE_ID).copy(
                 favorite = true,
                 dateAdded = System.currentTimeMillis(),
             )
@@ -131,7 +131,7 @@ class LocalFavoritesStorage(
         }
 
     private fun validateDbManga(manga: Anime) =
-        manga.favorite && manga.isEhBasedManga()
+        manga.favorite && manga.isEhBasedAnime()
 
     companion object {
         const val MAX_CATEGORIES = 9

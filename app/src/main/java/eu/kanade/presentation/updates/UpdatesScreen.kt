@@ -241,10 +241,10 @@ private fun UpdatesBottomBar(
         onRemoveBookmarkClicked = {
             onMultiBookmarkClicked.invoke(selected, false)
         }.takeIf { selected.fastAll { it.update.bookmark } },
-        onMarkAsReadClicked = {
+        onMarkAsSeenClicked = {
             onMultiMarkAsReadClicked(selected, true)
         }.takeIf { selected.fastAny { !it.update.read } },
-        onMarkAsUnreadClicked = {
+        onMarkAsUnseenClicked = {
             onMultiMarkAsReadClicked(selected, false)
         }.takeIf { selected.fastAny { it.update.read || it.update.lastPageRead > 0L } },
         onDownloadClicked = {

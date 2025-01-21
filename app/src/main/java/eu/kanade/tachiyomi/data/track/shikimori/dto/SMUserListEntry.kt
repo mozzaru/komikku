@@ -16,9 +16,9 @@ data class SMUserListEntry(
         return Track.create(trackId).apply {
             title = manga.name
             remote_id = this@SMUserListEntry.id
-            total_chapters = manga.chapters
+            total_episodes = manga.chapters
             library_id = this@SMUserListEntry.id
-            last_chapter_read = this@SMUserListEntry.chapters
+            last_episode_seen = this@SMUserListEntry.chapters
             score = this@SMUserListEntry.score.toDouble()
             status = toTrackStatus(this@SMUserListEntry.status)
             tracking_url = ShikimoriApi.BASE_URL + manga.url

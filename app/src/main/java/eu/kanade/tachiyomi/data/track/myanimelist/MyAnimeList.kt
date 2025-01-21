@@ -79,13 +79,13 @@ class MyAnimeList(id: Long) : BaseTracker(id, "MyAnimeList"), DeletableTracker {
     override suspend fun update(track: Track, didReadChapter: Boolean): Track {
         if (track.status != COMPLETED) {
             if (didReadChapter) {
-                if (track.last_chapter_read.toLong() == track.total_chapters && track.total_chapters > 0) {
+                if (track.last_episode_seen.toLong() == track.total_episodes && track.total_episodes > 0) {
                     track.status = COMPLETED
-                    track.finished_reading_date = System.currentTimeMillis()
+                    track.finished_watching_date = System.currentTimeMillis()
                 } else if (track.status != REREADING) {
                     track.status = READING
-                    if (track.last_chapter_read == 1.0) {
-                        track.started_reading_date = System.currentTimeMillis()
+                    if (track.last_episode_seen == 1.0) {
+                        track.started_watching_date = System.currentTimeMillis()
                     }
                 }
             }
@@ -182,6 +182,6 @@ class MyAnimeList(id: Long) : BaseTracker(id, "MyAnimeList"), DeletableTracker {
     }
 
     // KMK -->
-    override fun hasNotStartedReading(status: Long): Boolean = status == PLAN_TO_READ
+    override fun hasNotStartedWatching(status: Long): Boolean = status == PLAN_TO_READ
     // KMK <--
 }

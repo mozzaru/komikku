@@ -6,7 +6,7 @@ import androidx.compose.runtime.produceState
 import androidx.compose.ui.util.fastAny
 import cafe.adriel.voyager.core.model.StateScreenModel
 import cafe.adriel.voyager.core.model.screenModelScope
-import eu.kanade.domain.anime.model.toDomainManga
+import eu.kanade.domain.anime.model.toDomainAnime
 import eu.kanade.domain.source.service.SourcePreferences
 import eu.kanade.presentation.browse.FeedItemUI
 import eu.kanade.tachiyomi.source.CatalogueSource
@@ -319,7 +319,7 @@ open class FeedScreenModel(
                         itemUI.copy(
                             results = page.map {
                                 // KMK -->
-                                it.toDomainManga(itemUI.source!!.id)
+                                it.toDomainAnime(itemUI.source!!.id)
                             }
                                 .filter { !hideInLibraryFeedItems.get() || !it.favorite },
                             // KMK <--

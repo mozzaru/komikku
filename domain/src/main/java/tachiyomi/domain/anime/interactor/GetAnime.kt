@@ -9,11 +9,11 @@ import tachiyomi.domain.anime.repository.AnimeRepository
 
 class GetAnime(
     private val animeRepository: AnimeRepository,
-) : MetadataSource.GetMangaId {
+) : MetadataSource.GetAnimeId {
 
     suspend fun await(id: Long): Anime? {
         return try {
-            animeRepository.getMangaById(id)
+            animeRepository.getAnimeById(id)
         } catch (e: Exception) {
             logcat(LogPriority.ERROR, e)
             null
