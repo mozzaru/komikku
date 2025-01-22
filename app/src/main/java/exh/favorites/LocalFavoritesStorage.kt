@@ -36,10 +36,10 @@ class LocalFavoritesStorage(
         .parseToFavoriteEntries()
         .getChangedEntries()
 
-    suspend fun getChangedRemoteEntries(entries: List<EHentai.ParsedManga>) = entries
+    suspend fun getChangedRemoteEntries(entries: List<EHentai.ParsedAnime>) = entries
         .asFlow()
         .map {
-            it.fav to it.manga.toDomainAnime(EXH_SOURCE_ID).copy(
+            it.fav to it.anime.toDomainAnime(EXH_SOURCE_ID).copy(
                 favorite = true,
                 dateAdded = System.currentTimeMillis(),
             )

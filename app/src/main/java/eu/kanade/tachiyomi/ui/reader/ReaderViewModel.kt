@@ -200,7 +200,7 @@ class ReaderViewModel @JvmOverloads constructor(
             val chapterManga = mangaMap?.get(episode.animeId) ?: manga
             return downloadManager.isEpisodeDownloaded(
                 chapterName = episode.name,
-                chapterScanlator = episode.scanlator,
+                episodeScanlator = episode.scanlator,
                 mangaTitle = chapterManga.ogTitle,
                 sourceId = chapterManga.source,
             )

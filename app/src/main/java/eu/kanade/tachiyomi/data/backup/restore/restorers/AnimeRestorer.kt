@@ -89,7 +89,7 @@ class AnimeRestorer(
 
             restoreMangaDetails(
                 manga = restoredManga,
-                chapters = backupAnime.chapters,
+                chapters = backupAnime.episodes,
                 categories = backupAnime.categories,
                 backupCategories = backupCategories,
                 history = backupAnime.history,
@@ -115,9 +115,9 @@ class AnimeRestorer(
 
     private suspend fun restoreExistingManga(manga: Anime, dbManga: Anime): Anime {
         return if (manga.version > dbManga.version) {
-            updateManga(dbManga.copyFrom(manga).copy(id = dbManga.id))
+            updateAnime(dbManga.copyFrom(manga).copy(id = dbManga.id))
         } else {
-            updateManga(manga.copyFrom(dbManga).copy(id = dbManga.id))
+            updateAnime(manga.copyFrom(dbManga).copy(id = dbManga.id))
         }
     }
 
@@ -137,7 +137,7 @@ class AnimeRestorer(
         )
     }
 
-    suspend fun updateManga(manga: Anime): Anime {
+    suspend fun updateAnime(manga: Anime): Anime {
         handler.await(true) {
             animesQueries.update(
                 source = manga.source,

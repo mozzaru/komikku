@@ -8,14 +8,14 @@ internal class HistoryWithRelationsProvider : PreviewParameterProvider<HistoryWi
 
     private val simple = HistoryWithRelations(
         id = 1L,
-        chapterId = 2L,
-        mangaId = 3L,
+        episodeId = 2L,
+        animeId = 3L,
         // SY -->
         ogTitle = "Test Title",
         // SY <--
-        chapterNumber = 10.2,
-        readAt = Date(1697247357L),
-        readDuration = 123L,
+        episodeNumber = 10.2,
+        seenAt = Date(1697247357L),
+        watchDuration = 123L,
         coverData = tachiyomi.domain.anime.model.AnimeCover(
             animeId = 3L,
             sourceId = 4L,
@@ -27,14 +27,14 @@ internal class HistoryWithRelationsProvider : PreviewParameterProvider<HistoryWi
 
     private val historyWithoutReadAt = HistoryWithRelations(
         id = 1L,
-        chapterId = 2L,
-        mangaId = 3L,
+        episodeId = 2L,
+        animeId = 3L,
         // SY -->
         ogTitle = "Test Title",
         // SY <--
-        chapterNumber = 10.2,
-        readAt = null,
-        readDuration = 123L,
+        episodeNumber = 10.2,
+        seenAt = null,
+        watchDuration = 123L,
         coverData = tachiyomi.domain.anime.model.AnimeCover(
             animeId = 3L,
             sourceId = 4L,
@@ -46,14 +46,14 @@ internal class HistoryWithRelationsProvider : PreviewParameterProvider<HistoryWi
 
     private val historyWithNegativeChapterNumber = HistoryWithRelations(
         id = 1L,
-        chapterId = 2L,
-        mangaId = 3L,
+        episodeId = 2L,
+        animeId = 3L,
         // SY -->
         ogTitle = "Test Title",
         // SY <--
-        chapterNumber = -2.0,
-        readAt = Date(1697247357L),
-        readDuration = 123L,
+        episodeNumber = -2.0,
+        seenAt = Date(1697247357L),
+        watchDuration = 123L,
         coverData = tachiyomi.domain.anime.model.AnimeCover(
             animeId = 3L,
             sourceId = 4L,

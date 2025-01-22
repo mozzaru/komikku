@@ -152,7 +152,7 @@ class EHentaiUpdateHelper(context: Context) {
             Triple(newAccepted, toDiscard, newChapters)
         } else {
             /*val notNeeded = chains.filter { it.manga.id != accepted.manga.id }
-            val (newChapters, new) = getChapterList(accepted, notNeeded, chainsAsChapters)
+            val (newChapters, new) = getEpisodeList(accepted, notNeeded, chainsAsChapters)
             val newAccepted = ChapterChain(accepted.manga, newChapters)
 
             // Insert new episodes for accepted manga

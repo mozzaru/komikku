@@ -141,18 +141,18 @@ class Tester {
 
         val (remoteAdded, remoteRemoved) = storage.getChangedRemoteEntries(
             listOf(
-                EHentai.ParsedManga(
+                EHentai.ParsedAnime(
                     0,
                     SAnime("/g/gid/token", "a"),
                     EHentaiSearchMetadata(),
                 ),
-                EHentai.ParsedManga(
+                EHentai.ParsedAnime(
                     0,
                     SAnime("/g/gid2/token2", "a"),
                     EHentaiSearchMetadata(),
                 ),
                 // added on remote
-                EHentai.ParsedManga(
+                EHentai.ParsedAnime(
                     0,
                     SAnime("/g/gid5/token5", "a"),
                     EHentaiSearchMetadata(),

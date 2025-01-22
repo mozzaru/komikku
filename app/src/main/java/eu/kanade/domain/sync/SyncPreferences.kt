@@ -49,7 +49,7 @@ class SyncPreferences(
         return SyncSettings(
             libraryEntries = preferenceStore.getBoolean("library_entries", true).get(),
             categories = preferenceStore.getBoolean("categories", true).get(),
-            chapters = preferenceStore.getBoolean("episodes", true).get(),
+            episodes = preferenceStore.getBoolean("episodes", true).get(),
             tracking = preferenceStore.getBoolean("tracking", true).get(),
             history = preferenceStore.getBoolean("history", true).get(),
             appSettings = preferenceStore.getBoolean("appSettings", true).get(),
@@ -59,7 +59,7 @@ class SyncPreferences(
 
             // SY -->
             customInfo = preferenceStore.getBoolean("customInfo", true).get(),
-            readEntries = preferenceStore.getBoolean("readEntries", true).get(),
+            seenEntries = preferenceStore.getBoolean("readEntries", true).get(),
             savedSearchesFeeds = preferenceStore.getBoolean("savedSearchesFeeds", true).get(),
             // SY <--
         )
@@ -68,7 +68,7 @@ class SyncPreferences(
     fun setSyncSettings(syncSettings: SyncSettings) {
         preferenceStore.getBoolean("library_entries", true).set(syncSettings.libraryEntries)
         preferenceStore.getBoolean("categories", true).set(syncSettings.categories)
-        preferenceStore.getBoolean("episodes", true).set(syncSettings.chapters)
+        preferenceStore.getBoolean("episodes", true).set(syncSettings.episodes)
         preferenceStore.getBoolean("tracking", true).set(syncSettings.tracking)
         preferenceStore.getBoolean("history", true).set(syncSettings.history)
         preferenceStore.getBoolean("appSettings", true).set(syncSettings.appSettings)
@@ -78,7 +78,7 @@ class SyncPreferences(
 
         // SY -->
         preferenceStore.getBoolean("customInfo", true).set(syncSettings.customInfo)
-        preferenceStore.getBoolean("readEntries", true).set(syncSettings.readEntries)
+        preferenceStore.getBoolean("readEntries", true).set(syncSettings.seenEntries)
         preferenceStore.getBoolean("savedSearchesFeeds", true).set(syncSettings.savedSearchesFeeds)
         // SY <--
     }

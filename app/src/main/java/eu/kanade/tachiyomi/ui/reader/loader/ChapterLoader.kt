@@ -94,7 +94,7 @@ class ChapterLoader(
         val dbChapter = chapter.episode
         val isDownloaded = downloadManager.isEpisodeDownloaded(
             chapterName = dbChapter.name,
-            chapterScanlator = dbChapter.scanlator, /* SY --> */
+            episodeScanlator = dbChapter.scanlator, /* SY --> */
             mangaTitle = manga.ogTitle /* SY <-- */,
             sourceId = manga.source,
             skipCache = true,
@@ -110,7 +110,7 @@ class ChapterLoader(
                 val manga = mergedManga[chapter.episode.anime_id] ?: error("Manga for merged episode was null")
                 val isMergedMangaDownloaded = downloadManager.isEpisodeDownloaded(
                     chapterName = chapter.episode.name,
-                    chapterScanlator = chapter.episode.scanlator,
+                    episodeScanlator = chapter.episode.scanlator,
                     mangaTitle = manga.ogTitle,
                     sourceId = manga.source,
                     skipCache = true,

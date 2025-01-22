@@ -5,6 +5,8 @@ import android.graphics.Bitmap
 import android.graphics.BitmapFactory
 import android.net.Uri
 import androidx.core.net.toUri
+import eu.kanade.tachiyomi.animesource.model.SAnime
+import eu.kanade.tachiyomi.animesource.model.SEpisode
 import eu.kanade.tachiyomi.network.GET
 import eu.kanade.tachiyomi.network.asObservableSuccess
 import eu.kanade.tachiyomi.network.await
@@ -18,8 +20,6 @@ import eu.kanade.tachiyomi.source.model.FilterList
 import eu.kanade.tachiyomi.source.model.MangasPage
 import eu.kanade.tachiyomi.source.model.MetadataMangasPage
 import eu.kanade.tachiyomi.source.model.Page
-import eu.kanade.tachiyomi.animesource.model.SEpisode
-import eu.kanade.tachiyomi.animesource.model.SAnime
 import eu.kanade.tachiyomi.source.model.copy
 import eu.kanade.tachiyomi.source.online.HttpSource
 import eu.kanade.tachiyomi.source.online.MetadataSource
@@ -123,11 +123,11 @@ class EHentai(
     /**
      * Gallery list entry
      */
-    data class ParsedManga(val fav: Int, val manga: SAnime, val metadata: EHentaiSearchMetadata)
+    data class ParsedAnime(val fav: Int, val anime: SAnime, val metadata: EHentaiSearchMetadata)
 
-    private fun extendedGenericMangaParse(doc: Document) = with(doc) {
-        // Parse mangas (supports compact + extended layout)
-        val parsedMangas = select(".itg > tbody > tr").filter { element ->
+    private fun extendedGenericAnimeParse(doc: Document) = with(doc) {
+        // Parse animes (supports compact + extended layout)
+        val parsedAnimes = select(".itg > tbody > tr").filter { element ->
             // Do not parse header and ads
             element.selectFirst("th") == null && element.selectFirst(".itd") == null
         }.map { body ->
@@ -141,11 +141,11 @@ class EHentai(
             val infoElements = infoElement?.select("div")
             val parsedTags = mutableListOf<RaisedTag>()
 
-            ParsedManga(
+            ParsedAnime(
                 fav = FAVORITES_BORDER_HEX_COLORS.indexOf(
                     favElement?.attr("style")?.substring(14, 17),
                 ),
-                manga = SAnime.create().apply {
+                anime = SAnime.create().apply {
                     // Get title
                     title = thumbnailElement.attr("title")
                     url = EHentaiSearchMetadata.normalizeUrl(linkElement.attr("href"))
@@ -244,15 +244,15 @@ class EHentai(
         val nextPage = if (parsedLocation?.pathSegments?.contains("toplist.php") == true) {
             ((parsedLocation.queryParameter("p")?.toLong() ?: 0) + 2).takeIf { it <= 200 }
         } else if (hasNextPage) {
-            parsedMangas.let { if (isReversed) it.first() else it.last() }
-                .manga
+            parsedAnimes.let { if (isReversed) it.first() else it.last() }
+                .anime
                 .url
                 .let { EHentaiSearchMetadata.galleryId(it).toLong() }
         } else {
             null
         }
 
-        parsedMangas.let { if (isReversed) it.reversed() else it } to nextPage
+        parsedAnimes.let { if (isReversed) it.reversed() else it } to nextPage
     }
 
     private fun getGenre(element: Element?): String? {
@@ -319,13 +319,13 @@ class EHentai(
     /**
      * Parse a list of galleries
      */
-    private fun genericMangaParse(
+    private fun genericAnimeParse(
         response: Response,
-    ) = extendedGenericMangaParse(response.asJsoup()).let { (parsedManga, nextPage) ->
+    ) = extendedGenericAnimeParse(response.asJsoup()).let { (parsedAnime, nextPage) ->
         MetadataMangasPage(
-            parsedManga.map { it.manga },
+            parsedAnime.map { it.anime },
             nextPage != null,
-            parsedManga.map { it.metadata },
+            parsedAnime.map { it.metadata },
             nextPage,
         )
     }
@@ -409,11 +409,11 @@ class EHentai(
         }
     }
 
-    @Deprecated("Use the 1.x API instead", replaceWith = ReplaceWith("getChapterList"))
+    @Deprecated("Use the 1.x API instead", replaceWith = ReplaceWith("getEpisodeList"))
     @Suppress("DEPRECATION")
     override fun fetchChapterList(manga: SAnime) = fetchChapterList(manga) {}
 
-    @Deprecated("Use the 1.x API instead", replaceWith = ReplaceWith("getChapterList"))
+    @Deprecated("Use the 1.x API instead", replaceWith = ReplaceWith("getEpisodeList"))
     fun fetchChapterList(manga: SAnime, throttleFunc: suspend () -> Unit) = runAsObservable {
         getChapterList(manga, throttleFunc)
     }
@@ -567,9 +567,9 @@ class EHentai(
 
     override fun latestUpdatesRequest(page: Int) = exGet(baseUrl, page)
 
-    override fun popularMangaParse(response: Response) = genericMangaParse(response)
-    override fun searchMangaParse(response: Response) = genericMangaParse(response)
-    override fun latestUpdatesParse(response: Response) = genericMangaParse(response)
+    override fun popularMangaParse(response: Response) = genericAnimeParse(response)
+    override fun searchMangaParse(response: Response) = genericAnimeParse(response)
+    override fun latestUpdatesParse(response: Response) = genericAnimeParse(response)
 
     private fun exGet(
         url: String,
@@ -841,9 +841,9 @@ class EHentai(
         throw UnsupportedOperationException("Unused method was called somehow!")
     }
 
-    suspend fun fetchFavorites(): Pair<List<ParsedManga>, List<String>> {
+    suspend fun fetchFavorites(): Pair<List<ParsedAnime>, List<String>> {
         val favoriteUrl = "$baseUrl/favorites.php"
-        val result = mutableListOf<ParsedManga>()
+        val result = mutableListOf<ParsedAnime>()
         var page = 1
 
         var favNames: List<String>? = null
@@ -861,7 +861,7 @@ class EHentai(
             val doc = response2.asJsoup()
 
             // Parse favorites
-            val parsed = extendedGenericMangaParse(doc)
+            val parsed = extendedGenericAnimeParse(doc)
             result += parsed.first
 
             // Parse fav names
@@ -872,7 +872,7 @@ class EHentai(
             }
             // Next page
 
-            page = parsed.first.lastOrNull()?.manga?.url?.let { EHentaiSearchMetadata.galleryId(it) }?.toInt() ?: 0
+            page = parsed.first.lastOrNull()?.anime?.url?.let { EHentaiSearchMetadata.galleryId(it) }?.toInt() ?: 0
         } while (parsed.second != null)
 
         return Pair(result.toList(), favNames.orEmpty())

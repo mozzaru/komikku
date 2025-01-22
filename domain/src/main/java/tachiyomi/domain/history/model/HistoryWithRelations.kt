@@ -7,21 +7,21 @@ import java.util.Date
 
 data class HistoryWithRelations(
     val id: Long,
-    val chapterId: Long,
-    val mangaId: Long,
+    val episodeId: Long,
+    val animeId: Long,
     // SY -->
     val ogTitle: String,
     // SY <--
-    val chapterNumber: Double,
-    val readAt: Date?,
-    val readDuration: Long,
+    val episodeNumber: Double,
+    val seenAt: Date?,
+    val watchDuration: Long,
     val coverData: AnimeCover,
 ) {
     // SY -->
-    val title: String = customMangaManager.get(mangaId)?.title ?: ogTitle
+    val title: String = customAnimeManager.get(animeId)?.title ?: ogTitle
 
     companion object {
-        private val customMangaManager: GetCustomAnimeInfo by injectLazy()
+        private val customAnimeManager: GetCustomAnimeInfo by injectLazy()
     }
     // SY <--
 }

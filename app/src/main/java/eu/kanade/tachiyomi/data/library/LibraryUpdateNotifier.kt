@@ -276,7 +276,7 @@ class LibraryUpdateNotifier(
             )
             // Download episodes action
             // Only add the action when episodes is within threshold
-            if (episodes.size <= Downloader.CHAPTERS_PER_SOURCE_QUEUE_WARNING_THRESHOLD) {
+            if (episodes.size <= Downloader.EPISODES_PER_SOURCE_QUEUE_WARNING_THRESHOLD) {
                 addAction(
                     android.R.drawable.stat_sys_download_done,
                     context.stringResource(MR.strings.action_download),

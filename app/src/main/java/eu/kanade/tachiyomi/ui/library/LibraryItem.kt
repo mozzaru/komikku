@@ -9,7 +9,7 @@ import uy.kohesive.injekt.api.get
 data class LibraryItem(
     val libraryAnime: LibraryAnime,
     val downloadCount: Long = -1,
-    val unreadCount: Long = -1,
+    val unseenCount: Long = -1,
     val isLocal: Boolean = false,
     val sourceLanguage: String = "",
     // KMK -->
@@ -19,21 +19,21 @@ data class LibraryItem(
     private val sourceManager: SourceManager = Injekt.get(),
 ) {
     // /**
-    //  * Checks if a query matches the manga
+    //  * Checks if a query matches the anime
     //  *
     //  * @param constraint the query to check.
-    //  * @return true if the manga matches the query, false otherwise.
+    //  * @return true if the anime matches the query, false otherwise.
     //  */
     // fun matches(constraint: String): Boolean {
-    //     val sourceName by lazy { sourceManager.getOrStub(libraryAnime.manga.source).getNameForAnimeInfo() }
-    //     return libraryAnime.manga.title.contains(constraint, true) ||
-    //         (libraryAnime.manga.author?.contains(constraint, true) ?: false) ||
-    //         (libraryAnime.manga.artist?.contains(constraint, true) ?: false) ||
-    //         (libraryAnime.manga.description?.contains(constraint, true) ?: false) ||
+    //     val sourceName by lazy { sourceManager.getOrStub(libraryAnime.anime.source).getNameForAnimeInfo() }
+    //     return libraryAnime.anime.title.contains(constraint, true) ||
+    //         (libraryAnime.anime.author?.contains(constraint, true) ?: false) ||
+    //         (libraryAnime.anime.artist?.contains(constraint, true) ?: false) ||
+    //         (libraryAnime.anime.description?.contains(constraint, true) ?: false) ||
     //         constraint.split(",").map { it.trim() }.all { subconstraint ->
     //             checkNegatableConstraint(subconstraint) {
     //                 sourceName.contains(it, true) ||
-    //                     (libraryAnime.manga.genre?.any { genre -> genre.equals(it, true) } ?: false)
+    //                     (libraryAnime.anime.genre?.any { genre -> genre.equals(it, true) } ?: false)
     //             }
     //         }
     // }

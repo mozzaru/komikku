@@ -15,8 +15,8 @@ import exh.source.getMainSource
 import tachiyomi.data.DatabaseHandler
 import tachiyomi.domain.anime.interactor.GetCustomAnimeInfo
 import tachiyomi.domain.anime.interactor.GetFlatMetadataById
-import tachiyomi.domain.anime.model.CustomAnimeInfo
 import tachiyomi.domain.anime.model.Anime
+import tachiyomi.domain.anime.model.CustomAnimeInfo
 import tachiyomi.domain.category.interactor.GetCategories
 import tachiyomi.domain.history.interactor.GetHistory
 import tachiyomi.domain.source.service.SourceManager
@@ -70,7 +70,7 @@ class AnimeBackupCreator(
             excluded_scanlatorsQueries.getExcludedScanlatorsByMangaId(manga.id)
         }
 
-        if (options.chapters) {
+        if (options.episodes) {
             // Backup all the episodes
             handler.awaitList {
                 episodesQueries.getEpisodesByAnimeId(
@@ -80,7 +80,7 @@ class AnimeBackupCreator(
                 )
             }
                 .takeUnless(List<BackupEpisode>::isEmpty)
-                ?.let { mangaObject.chapters = it }
+                ?.let { mangaObject.episodes = it }
         }
 
         if (options.categories) {

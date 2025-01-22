@@ -32,7 +32,7 @@ import java.io.IOException
  *
  * @param context the application context.
  */
-class ChapterCache(
+class EpisodeCache(
     private val context: Context,
     private val json: Json,
     // SY -->

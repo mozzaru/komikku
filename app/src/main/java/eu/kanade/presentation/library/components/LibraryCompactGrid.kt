@@ -47,7 +47,7 @@ internal fun LibraryCompactGrid(
                 ),
                 coverBadgeStart = {
                     DownloadsBadge(count = libraryItem.downloadCount)
-                    UnreadBadge(count = libraryItem.unreadCount)
+                    UnreadBadge(count = libraryItem.unseenCount)
                 },
                 coverBadgeEnd = {
                     LanguageBadge(
@@ -63,7 +63,7 @@ internal fun LibraryCompactGrid(
                 },
                 onLongClick = { onLongClick(libraryItem.libraryAnime) },
                 onClick = { onClick(libraryItem.libraryAnime) },
-                onClickContinueReading = if (onClickContinueReading != null && libraryItem.unreadCount > 0) {
+                onClickContinueReading = if (onClickContinueReading != null && libraryItem.unseenCount > 0) {
                     { onClickContinueReading(libraryItem.libraryAnime) }
                 } else {
                     null

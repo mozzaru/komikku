@@ -20,7 +20,7 @@ import uy.kohesive.injekt.api.get
 
 data class Download(
     val source: HttpSource,
-    val manga: Anime,
+    val anime: Anime,
     val episode: Episode,
 ) {
     var pages: List<Page>? = null
@@ -72,17 +72,17 @@ data class Download(
     }
 
     companion object {
-        suspend fun fromChapterId(
-            chapterId: Long,
+        suspend fun fromEpisodeId(
+            episodeId: Long,
             getEpisode: GetEpisode = Injekt.get(),
             getAnime: GetAnime = Injekt.get(),
             sourceManager: SourceManager = Injekt.get(),
         ): Download? {
-            val chapter = getEpisode.await(chapterId) ?: return null
-            val manga = getAnime.await(chapter.animeId) ?: return null
-            val source = sourceManager.get(manga.source) as? HttpSource ?: return null
+            val episode = getEpisode.await(episodeId) ?: return null
+            val anime = getAnime.await(episode.animeId) ?: return null
+            val source = sourceManager.get(anime.source) as? HttpSource ?: return null
 
-            return Download(source, manga, chapter)
+            return Download(source, anime, episode)
         }
     }
 }

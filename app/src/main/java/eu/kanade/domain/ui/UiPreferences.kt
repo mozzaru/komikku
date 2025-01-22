@@ -61,7 +61,7 @@ class UiPreferences(
 
     fun relatedAnimesInOverflow() = preferenceStore.getBoolean("related_mangas_in_overflow", false)
 
-    fun showHomeOnRelatedMangas() = preferenceStore.getBoolean("show_home_on_related_mangas", true)
+    fun showHomeOnRelatedAnimes() = preferenceStore.getBoolean("show_home_on_related_mangas", true)
 
     fun watchButtonPosition() = preferenceStore.getString("reading_button_position", FabPosition.End.toString())
 

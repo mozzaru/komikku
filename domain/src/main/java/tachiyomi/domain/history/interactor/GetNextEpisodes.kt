@@ -21,7 +21,7 @@ class GetNextEpisodes(
 
     suspend fun await(onlyUnread: Boolean = true): List<Episode> {
         val history = historyRepository.getLastHistory() ?: return emptyList()
-        return await(history.mangaId, history.chapterId, onlyUnread)
+        return await(history.animeId, history.episodeId, onlyUnread)
     }
 
     suspend fun await(mangaId: Long, onlyUnread: Boolean = true): List<Episode> {

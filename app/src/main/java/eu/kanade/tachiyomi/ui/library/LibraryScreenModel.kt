@@ -224,7 +224,7 @@ class LibraryScreenModel(
         combine(
             libraryPreferences.categoryTabs().changes(),
             libraryPreferences.categoryNumberOfItems().changes(),
-            libraryPreferences.showContinueReadingButton().changes(),
+            libraryPreferences.showContinueWatchingButton().changes(),
         ) { a, b, c -> arrayOf(a, b, c) }
             .onEach { (showCategoryTabs, showMangaCount, showMangaContinueButton) ->
                 mutableState.update { state ->
@@ -441,26 +441,26 @@ class LibraryScreenModel(
                 LibrarySort.Type.Alphabetical -> {
                     sortAlphabetically(i1, i2)
                 }
-                LibrarySort.Type.LastRead -> {
+                LibrarySort.Type.LastSeen -> {
                     i1.libraryAnime.lastRead.compareTo(i2.libraryAnime.lastRead)
                 }
                 LibrarySort.Type.LastUpdate -> {
                     i1.libraryAnime.manga.lastUpdate.compareTo(i2.libraryAnime.manga.lastUpdate)
                 }
-                LibrarySort.Type.UnreadCount -> when {
+                LibrarySort.Type.UnseenCount -> when {
                     // Ensure unread content comes first
                     i1.libraryAnime.unreadCount == i2.libraryAnime.unreadCount -> 0
                     i1.libraryAnime.unreadCount == 0L -> if (sort.isAscending) 1 else -1
                     i2.libraryAnime.unreadCount == 0L -> if (sort.isAscending) -1 else 1
                     else -> i1.libraryAnime.unreadCount.compareTo(i2.libraryAnime.unreadCount)
                 }
-                LibrarySort.Type.TotalChapters -> {
+                LibrarySort.Type.TotalEpisodes -> {
                     i1.libraryAnime.totalChapters.compareTo(i2.libraryAnime.totalChapters)
                 }
-                LibrarySort.Type.LatestChapter -> {
+                LibrarySort.Type.LatestEpisode -> {
                     i1.libraryAnime.latestUpload.compareTo(i2.libraryAnime.latestUpload)
                 }
-                LibrarySort.Type.ChapterFetchDate -> {
+                LibrarySort.Type.EpisodeFetchDate -> {
                     i1.libraryAnime.chapterFetchedAt.compareTo(i2.libraryAnime.chapterFetchedAt)
                 }
                 LibrarySort.Type.DateAdded -> {
@@ -512,7 +512,7 @@ class LibraryScreenModel(
 
             preferences.downloadedOnly().changes(),
             libraryPreferences.filterDownloaded().changes(),
-            libraryPreferences.filterUnread().changes(),
+            libraryPreferences.filterUnseen().changes(),
             libraryPreferences.filterStarted().changes(),
             libraryPreferences.filterBookmarked().changes(),
             libraryPreferences.filterCompleted().changes(),
@@ -529,7 +529,7 @@ class LibraryScreenModel(
                 downloadBadge = it[0] as Boolean,
                 localBadge = it[1] as Boolean,
                 languageBadge = it[2] as Boolean,
-                skipOutsideReleasePeriod = LibraryPreferences.MANGA_OUTSIDE_RELEASE_PERIOD in (it[3] as Set<*>),
+                skipOutsideReleasePeriod = LibraryPreferences.ANIME_OUTSIDE_RELEASE_PERIOD in (it[3] as Set<*>),
                 globalFilterDownloaded = it[4] as Boolean,
                 filterDownloaded = it[5] as TriState,
                 filterUnread = it[6] as TriState,
@@ -578,7 +578,7 @@ class LibraryScreenModel(
                         } else {
                             0
                         },
-                        unreadCount = libraryManga.unreadCount,
+                        unseenCount = libraryManga.unreadCount,
                         isLocal = if (prefs.localBadge) libraryManga.manga.isLocal() else false,
                         sourceLanguage = if (prefs.languageBadge) {
                             source.lang

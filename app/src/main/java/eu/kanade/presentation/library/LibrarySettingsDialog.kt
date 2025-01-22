@@ -103,7 +103,7 @@ private fun ColumnScope.FilterPage(
 ) {
     val filterDownloaded by screenModel.libraryPreferences.filterDownloaded().collectAsState()
     val downloadedOnly by screenModel.preferences.downloadedOnly().collectAsState()
-    val autoUpdateMangaRestrictions by screenModel.libraryPreferences.autoUpdateAnimeRestrictions().collectAsState()
+    val autoUpdateAnimeRestrictions by screenModel.libraryPreferences.autoUpdateAnimeRestrictions().collectAsState()
 
     TriStateItem(
         label = stringResource(MR.strings.label_downloaded),
@@ -115,11 +115,11 @@ private fun ColumnScope.FilterPage(
         enabled = !downloadedOnly,
         onClick = { screenModel.toggleFilter(LibraryPreferences::filterDownloaded) },
     )
-    val filterUnread by screenModel.libraryPreferences.filterUnread().collectAsState()
+    val filterUnseen by screenModel.libraryPreferences.filterUnseen().collectAsState()
     TriStateItem(
         label = stringResource(MR.strings.action_filter_unread),
-        state = filterUnread,
-        onClick = { screenModel.toggleFilter(LibraryPreferences::filterUnread) },
+        state = filterUnseen,
+        onClick = { screenModel.toggleFilter(LibraryPreferences::filterUnseen) },
     )
     val filterStarted by screenModel.libraryPreferences.filterStarted().collectAsState()
     TriStateItem(
@@ -142,7 +142,7 @@ private fun ColumnScope.FilterPage(
     // TODO: re-enable when custom intervals are ready for stable
     if (
         (isDevFlavor || isPreviewBuildType) &&
-        LibraryPreferences.MANGA_OUTSIDE_RELEASE_PERIOD in autoUpdateMangaRestrictions
+        LibraryPreferences.ANIME_OUTSIDE_RELEASE_PERIOD in autoUpdateAnimeRestrictions
     ) {
         val filterIntervalCustom by screenModel.libraryPreferences.filterIntervalCustom().collectAsState()
         TriStateItem(
@@ -228,12 +228,12 @@ private fun ColumnScope.SortPage(
         // SY <--
         listOfNotNull(
             MR.strings.action_sort_alpha to LibrarySort.Type.Alphabetical,
-            MR.strings.action_sort_total to LibrarySort.Type.TotalChapters,
-            MR.strings.action_sort_last_read to LibrarySort.Type.LastRead,
+            MR.strings.action_sort_total to LibrarySort.Type.TotalEpisodes,
+            MR.strings.action_sort_last_read to LibrarySort.Type.LastSeen,
             MR.strings.action_sort_last_manga_update to LibrarySort.Type.LastUpdate,
-            MR.strings.action_sort_unread_count to LibrarySort.Type.UnreadCount,
-            MR.strings.action_sort_latest_chapter to LibrarySort.Type.LatestChapter,
-            MR.strings.action_sort_chapter_fetch_date to LibrarySort.Type.ChapterFetchDate,
+            MR.strings.action_sort_unread_count to LibrarySort.Type.UnseenCount,
+            MR.strings.action_sort_latest_chapter to LibrarySort.Type.LatestEpisode,
+            MR.strings.action_sort_chapter_fetch_date to LibrarySort.Type.EpisodeFetchDate,
             MR.strings.action_sort_date_added to LibrarySort.Type.DateAdded,
             trackerMeanPair,
             // SY -->
@@ -356,7 +356,7 @@ private fun ColumnScope.DisplayPage(
     // KMK <--
     CheckboxItem(
         label = stringResource(MR.strings.action_display_show_continue_reading_button),
-        pref = screenModel.libraryPreferences.showContinueReadingButton(),
+        pref = screenModel.libraryPreferences.showContinueWatchingButton(),
     )
 
     HeadingItem(MR.strings.tabs_header)

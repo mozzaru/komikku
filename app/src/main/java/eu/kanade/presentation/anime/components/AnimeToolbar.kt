@@ -82,7 +82,7 @@ fun AnimeToolbar(
     fun onHomeClicked() = navigator?.popUntil { screen ->
         screen is SourceFeedScreen || screen is BrowseSourceScreen
     }
-    val isHomeEnabled = Injekt.get<UiPreferences>().showHomeOnRelatedMangas().get()
+    val isHomeEnabled = Injekt.get<UiPreferences>().showHomeOnRelatedAnimes().get()
     // KMK <--
     Column(
         modifier = modifier,

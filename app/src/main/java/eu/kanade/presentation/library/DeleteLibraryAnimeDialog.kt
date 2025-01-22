@@ -17,7 +17,7 @@ import tachiyomi.presentation.core.i18n.stringResource
 
 @Composable
 fun DeleteLibraryAnimeDialog(
-    containsLocalManga: Boolean,
+    containsLocalAnime: Boolean,
     onDismissRequest: () -> Unit,
     onConfirm: (Boolean, Boolean) -> Unit,
 ) {
@@ -25,7 +25,7 @@ fun DeleteLibraryAnimeDialog(
         mutableStateOf(
             buildList<CheckboxState.State<StringResource>> {
                 add(CheckboxState.State.None(MR.strings.manga_from_library))
-                if (!containsLocalManga) {
+                if (!containsLocalAnime) {
                     add(CheckboxState.State.None(MR.strings.downloaded_chapters))
                 }
             },

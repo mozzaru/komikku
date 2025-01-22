@@ -135,34 +135,34 @@ class DownloadCache(
     /**
      * Returns true if the episode is downloaded.
      *
-     * @param chapterName the name of the episode to query.
-     * @param chapterScanlator scanlator of the episode to query
-     * @param mangaTitle the title of the manga to query.
+     * @param episodeName the name of the episode to query.
+     * @param episodeScanlator scanlator of the episode to query
+     * @param animeTitle the title of the anime to query.
      * @param sourceId the id of the source of the episode.
      * @param skipCache whether to skip the directory cache and check in the filesystem.
      */
-    fun isChapterDownloaded(
-        chapterName: String,
-        chapterScanlator: String?,
-        mangaTitle: String,
+    fun isEpisodeDownloaded(
+        episodeName: String,
+        episodeScanlator: String?,
+        animeTitle: String,
         sourceId: Long,
         skipCache: Boolean,
     ): Boolean {
         if (skipCache) {
             val source = sourceManager.getOrStub(sourceId)
-            return provider.findChapterDir(chapterName, chapterScanlator, mangaTitle, source) != null
+            return provider.findEpisodeDir(episodeName, episodeScanlator, animeTitle, source) != null
         }
 
         renewCache()
 
         val sourceDir = rootDownloadsDir.sourceDirs[sourceId]
         if (sourceDir != null) {
-            val mangaDir = sourceDir.mangaDirs[provider.getMangaDirName(mangaTitle)]
-            if (mangaDir != null) {
-                return provider.getValidChapterDirNames(
-                    chapterName,
-                    chapterScanlator,
-                ).any { it in mangaDir.chapterDirs }
+            val animeDir = sourceDir.animeDirs[provider.getAnimeDirName(animeTitle)]
+            if (animeDir != null) {
+                return provider.getValidEpisodeDirNames(
+                    episodeName,
+                    episodeScanlator,
+                ).any { it in animeDir.episodeDirs }
             }
         }
         return false
@@ -175,29 +175,29 @@ class DownloadCache(
         renewCache()
 
         return rootDownloadsDir.sourceDirs.values.sumOf { sourceDir ->
-            sourceDir.mangaDirs.values.sumOf { mangaDir ->
-                mangaDir.chapterDirs.size
+            sourceDir.animeDirs.values.sumOf { animeDir ->
+                animeDir.episodeDirs.size
             }
         }
     }
 
     /**
-     * Returns the amount of downloaded episodes for a manga.
+     * Returns the amount of downloaded episodes for a anime.
      * This method is quick, but might count other junk files
      * It's still maybe useful while developing the clean-up features
      *
-     * @param manga the manga to check.
+     * @param anime the anime to check.
      */
-    fun getDownloadCount(manga: Anime): Int {
+    fun getDownloadCount(anime: Anime): Int {
         renewCache()
 
-        val sourceDir = rootDownloadsDir.sourceDirs[manga.source]
+        val sourceDir = rootDownloadsDir.sourceDirs[anime.source]
         if (sourceDir != null) {
-            val mangaDir = sourceDir.mangaDirs[
-                provider.getMangaDirName(/* SY --> */ manga.ogTitle /* SY <-- */),
+            val animeDir = sourceDir.animeDirs[
+                provider.getAnimeDirName(/* SY --> */ anime.ogTitle /* SY <-- */),
             ]
-            if (mangaDir != null) {
-                return mangaDir.chapterDirs.size
+            if (animeDir != null) {
+                return animeDir.episodeDirs.size
             }
         }
         return 0
@@ -206,31 +206,31 @@ class DownloadCache(
     /**
      * Adds a episode that has just been download to this cache.
      *
-     * @param chapterDirName the downloaded episode's directory name.
-     * @param mangaUniFile the directory of the manga.
-     * @param manga the manga of the episode.
+     * @param episodeDirName the downloaded episode's directory name.
+     * @param animeUniFile the directory of the anime.
+     * @param anime the anime of the episode.
      */
-    suspend fun addChapter(chapterDirName: String, mangaUniFile: UniFile, manga: Anime) {
+    suspend fun addEpisode(episodeDirName: String, animeUniFile: UniFile, anime: Anime) {
         rootDownloadsDirMutex.withLock {
             // Retrieve the cached source directory or cache a new one
-            var sourceDir = rootDownloadsDir.sourceDirs[manga.source]
+            var sourceDir = rootDownloadsDir.sourceDirs[anime.source]
             if (sourceDir == null) {
-                val source = sourceManager.get(manga.source) ?: return
+                val source = sourceManager.get(anime.source) ?: return
                 val sourceUniFile = provider.findSourceDir(source) ?: return
                 sourceDir = SourceDirectory(sourceUniFile)
-                rootDownloadsDir.sourceDirs += manga.source to sourceDir
+                rootDownloadsDir.sourceDirs += anime.source to sourceDir
             }
 
-            // Retrieve the cached manga directory or cache a new one
-            val mangaDirName = provider.getMangaDirName(/* SY --> */ manga.ogTitle /* SY <-- */)
-            var mangaDir = sourceDir.mangaDirs[mangaDirName]
-            if (mangaDir == null) {
-                mangaDir = MangaDirectory(mangaUniFile)
-                sourceDir.mangaDirs += mangaDirName to mangaDir
+            // Retrieve the cached anime directory or cache a new one
+            val animeDirName = provider.getAnimeDirName(/* SY --> */ anime.ogTitle /* SY <-- */)
+            var animeDir = sourceDir.animeDirs[animeDirName]
+            if (animeDir == null) {
+                animeDir = AnimeDirectory(animeUniFile)
+                sourceDir.animeDirs += animeDirName to animeDir
             }
 
             // Save the episode directory
-            mangaDir.chapterDirs += chapterDirName
+            animeDir.episodeDirs += episodeDirName
         }
 
         notifyChanges()
@@ -240,19 +240,19 @@ class DownloadCache(
      * Removes a episode that has been deleted from this cache.
      *
      * @param episode the episode to remove.
-     * @param manga the manga of the episode.
+     * @param anime the anime of the episode.
      */
-    suspend fun removeChapter(episode: Episode, manga: Anime) {
+    suspend fun removeEpisode(episode: Episode, anime: Anime) {
         rootDownloadsDirMutex.withLock {
-            val sourceDir = rootDownloadsDir.sourceDirs[manga.source] ?: return
-            val mangaDir = sourceDir.mangaDirs[
-                provider.getMangaDirName(
-                    /* SY --> */ manga.ogTitle, /* SY <-- */
+            val sourceDir = rootDownloadsDir.sourceDirs[anime.source] ?: return
+            val animeDir = sourceDir.animeDirs[
+                provider.getAnimeDirName(
+                    /* SY --> */ anime.ogTitle, /* SY <-- */
                 ),
             ] ?: return
-            provider.getValidChapterDirNames(episode.name, episode.scanlator).forEach {
-                if (it in mangaDir.chapterDirs) {
-                    mangaDir.chapterDirs -= it
+            provider.getValidEpisodeDirNames(episode.name, episode.scanlator).forEach {
+                if (it in animeDir.episodeDirs) {
+                    animeDir.episodeDirs -= it
                 }
             }
         }
@@ -261,13 +261,13 @@ class DownloadCache(
     }
 
     // SY -->
-    suspend fun removeFolders(folders: List<String>, manga: Anime) {
+    suspend fun removeFolders(folders: List<String>, anime: Anime) {
         rootDownloadsDirMutex.withLock {
-            val sourceDir = rootDownloadsDir.sourceDirs[manga.source] ?: return
-            val mangaDir = sourceDir.mangaDirs[provider.getMangaDirName(manga.ogTitle)] ?: return
-            folders.forEach { chapter ->
-                if (chapter in mangaDir.chapterDirs) {
-                    mangaDir.chapterDirs -= chapter
+            val sourceDir = rootDownloadsDir.sourceDirs[anime.source] ?: return
+            val animeDir = sourceDir.animeDirs[provider.getAnimeDirName(anime.ogTitle)] ?: return
+            folders.forEach { episode ->
+                if (episode in animeDir.episodeDirs) {
+                    animeDir.episodeDirs -= episode
                 }
             }
         }
@@ -279,20 +279,20 @@ class DownloadCache(
      * Removes a list of episodes that have been deleted from this cache.
      *
      * @param episodes the list of episode to remove.
-     * @param manga the manga of the episode.
+     * @param anime the anime of the episode.
      */
-    suspend fun removeChapters(episodes: List<Episode>, manga: Anime) {
+    suspend fun removeEpisodes(episodes: List<Episode>, anime: Anime) {
         rootDownloadsDirMutex.withLock {
-            val sourceDir = rootDownloadsDir.sourceDirs[manga.source] ?: return
-            val mangaDir = sourceDir.mangaDirs[
-                provider.getMangaDirName(
-                    /* SY --> */ manga.ogTitle, /* SY <-- */
+            val sourceDir = rootDownloadsDir.sourceDirs[anime.source] ?: return
+            val animeDir = sourceDir.animeDirs[
+                provider.getAnimeDirName(
+                    /* SY --> */ anime.ogTitle, /* SY <-- */
                 ),
             ] ?: return
-            episodes.forEach { chapter ->
-                provider.getValidChapterDirNames(chapter.name, chapter.scanlator).forEach {
-                    if (it in mangaDir.chapterDirs) {
-                        mangaDir.chapterDirs -= it
+            episodes.forEach { episode ->
+                provider.getValidEpisodeDirNames(episode.name, episode.scanlator).forEach {
+                    if (it in animeDir.episodeDirs) {
+                        animeDir.episodeDirs -= it
                     }
                 }
             }
@@ -302,16 +302,16 @@ class DownloadCache(
     }
 
     /**
-     * Removes a manga that has been deleted from this cache.
+     * Removes a anime that has been deleted from this cache.
      *
-     * @param manga the manga to remove.
+     * @param anime the anime to remove.
      */
-    suspend fun removeManga(manga: Anime) {
+    suspend fun removeAnime(anime: Anime) {
         rootDownloadsDirMutex.withLock {
-            val sourceDir = rootDownloadsDir.sourceDirs[manga.source] ?: return
-            val mangaDirName = provider.getMangaDirName(/* SY --> */ manga.ogTitle /* SY <-- */)
-            if (sourceDir.mangaDirs.containsKey(mangaDirName)) {
-                sourceDir.mangaDirs -= mangaDirName
+            val sourceDir = rootDownloadsDir.sourceDirs[anime.source] ?: return
+            val animeDirName = provider.getAnimeDirName(/* SY --> */ anime.ogTitle /* SY <-- */)
+            if (sourceDir.animeDirs.containsKey(animeDirName)) {
+                sourceDir.animeDirs -= animeDirName
             }
         }
 
@@ -395,19 +395,19 @@ class DownloadCache(
 
                 updatedRootDir.sourceDirs.values.map { sourceDir ->
                     async {
-                        sourceDir.mangaDirs = sourceDir.dir?.listFiles().orEmpty()
+                        sourceDir.animeDirs = sourceDir.dir?.listFiles().orEmpty()
                             .filter { it.isDirectory && !it.name.isNullOrBlank() }
-                            .associate { it.name!! to MangaDirectory(it) }
+                            .associate { it.name!! to AnimeDirectory(it) }
 
-                        sourceDir.mangaDirs.values.forEach { mangaDir ->
-                            val chapterDirs = mangaDir.dir?.listFiles().orEmpty()
+                        sourceDir.animeDirs.values.forEach { animeDir ->
+                            val episodeDirs = animeDir.dir?.listFiles().orEmpty()
                                 .mapNotNull {
                                     when {
                                         // Ignore incomplete downloads
                                         it.name?.endsWith(Downloader.TMP_DIR_SUFFIX) == true -> null
-                                        // Folder of images
+                                        // Folder of videos
                                         it.isDirectory -> it.name
-                                        // CBZ files
+                                        // MMP4 files
                                         it.isFile && it.extension == "cbz" -> it.nameWithoutExtension
                                         // Anything else is irrelevant
                                         else -> null
@@ -415,7 +415,7 @@ class DownloadCache(
                                 }
                                 .toMutableSet()
 
-                            mangaDir.chapterDirs = chapterDirs
+                            animeDir.episodeDirs = episodeDirs
                         }
                     }
                 }
@@ -490,17 +490,17 @@ private class RootDirectory(
 private class SourceDirectory(
     @Serializable(with = UniFileAsStringSerializer::class)
     val dir: UniFile?,
-    var mangaDirs: Map<String, MangaDirectory> = mapOf(),
+    var animeDirs: Map<String, AnimeDirectory> = mapOf(),
 )
 
 /**
- * Class to store the files under a manga directory.
+ * Class to store the files under a anime directory.
  */
 @Serializable
-private class MangaDirectory(
+private class AnimeDirectory(
     @Serializable(with = UniFileAsStringSerializer::class)
     val dir: UniFile?,
-    var chapterDirs: MutableSet<String> = mutableSetOf(),
+    var episodeDirs: MutableSet<String> = mutableSetOf(),
 )
 
 private object UniFileAsStringSerializer : KSerializer<UniFile?> {

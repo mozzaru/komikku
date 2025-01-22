@@ -50,7 +50,7 @@ import eu.kanade.presentation.more.settings.widget.PrefsHorizontalPadding
 import eu.kanade.presentation.util.relativeTimeSpanString
 import eu.kanade.tachiyomi.data.backup.create.BackupCreateJob
 import eu.kanade.tachiyomi.data.backup.restore.BackupRestoreJob
-import eu.kanade.tachiyomi.data.cache.ChapterCache
+import eu.kanade.tachiyomi.data.cache.EpisodeCache
 import eu.kanade.tachiyomi.data.cache.PagePreviewCache
 import eu.kanade.tachiyomi.data.sync.SyncDataJob
 import eu.kanade.tachiyomi.data.sync.SyncManager
@@ -294,9 +294,9 @@ object SettingsDataScreen : SearchableSettings {
         val scope = rememberCoroutineScope()
         val libraryPreferences = remember { Injekt.get<LibraryPreferences>() }
 
-        val chapterCache = remember { Injekt.get<ChapterCache>() }
+        val episodeCache = remember { Injekt.get<EpisodeCache>() }
         var cacheReadableSizeSema by remember { mutableIntStateOf(0) }
-        val cacheReadableSize = remember(cacheReadableSizeSema) { chapterCache.readableSize }
+        val cacheReadableSize = remember(cacheReadableSizeSema) { episodeCache.readableSize }
 
         // SY -->
         val pagePreviewCache = remember { Injekt.get<PagePreviewCache>() }
@@ -325,7 +325,7 @@ object SettingsDataScreen : SearchableSettings {
                     onClick = {
                         scope.launchNonCancellable {
                             try {
-                                val deletedFiles = chapterCache.clear()
+                                val deletedFiles = episodeCache.clear()
                                 withUIContext {
                                     context.toast(context.stringResource(MR.strings.cache_deleted, deletedFiles))
                                     cacheReadableSizeSema++

@@ -61,8 +61,8 @@ class HistoryScreenModel(
     private fun List<HistoryWithRelations>.toHistoryUiModels(): List<HistoryUiModel> {
         return map { HistoryUiModel.Item(it) }
             .insertSeparators { before, after ->
-                val beforeDate = before?.item?.readAt?.time?.toLocalDate()
-                val afterDate = after?.item?.readAt?.time?.toLocalDate()
+                val beforeDate = before?.item?.seenAt?.time?.toLocalDate()
+                val afterDate = after?.item?.seenAt?.time?.toLocalDate()
                 when {
                     beforeDate != afterDate && afterDate != null -> HistoryUiModel.Header(afterDate)
                     // Return null to avoid adding a separator between two items.

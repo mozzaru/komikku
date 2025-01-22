@@ -302,7 +302,7 @@ object SettingsAppearanceScreen : SearchableSettings {
                     subtitle = stringResource(KMR.strings.put_related_mangas_in_overflow_summary),
                 ),
                 Preference.PreferenceItem.SwitchPreference(
-                    pref = uiPreferences.showHomeOnRelatedMangas(),
+                    pref = uiPreferences.showHomeOnRelatedAnimes(),
                     title = stringResource(KMR.strings.pref_show_home_on_related_mangas),
                     subtitle = stringResource(KMR.strings.pref_show_home_on_related_mangas_summary),
                     enabled = sourcePreferences.relatedAnimes().get(),

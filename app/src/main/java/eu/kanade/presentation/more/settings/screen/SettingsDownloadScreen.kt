@@ -45,7 +45,7 @@ object SettingsDownloadScreen : SearchableSettings {
                 title = stringResource(MR.strings.connected_to_wifi),
             ),
             Preference.PreferenceItem.SwitchPreference(
-                pref = downloadPreferences.saveChaptersAsCBZ(),
+                pref = downloadPreferences.saveEpisodesAsCBZ(),
                 title = stringResource(MR.strings.save_chapter_as_cbz),
             ),
             Preference.PreferenceItem.SwitchPreference(

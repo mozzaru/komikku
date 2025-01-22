@@ -5,7 +5,7 @@ import com.hippo.unifile.UniFile
 import eu.kanade.domain.anime.model.getComicInfo
 import eu.kanade.domain.episode.model.toSEpisode
 import eu.kanade.domain.source.service.SourcePreferences
-import eu.kanade.tachiyomi.data.cache.ChapterCache
+import eu.kanade.tachiyomi.data.cache.EpisodeCache
 import eu.kanade.tachiyomi.data.download.model.Download
 import eu.kanade.tachiyomi.data.library.LibraryUpdateNotifier
 import eu.kanade.tachiyomi.data.notification.NotificationHandler
@@ -79,7 +79,7 @@ class Downloader(
     private val provider: DownloadProvider,
     private val cache: DownloadCache,
     private val sourceManager: SourceManager = Injekt.get(),
-    private val chapterCache: ChapterCache = Injekt.get(),
+    private val episodeCache: EpisodeCache = Injekt.get(),
     private val downloadPreferences: DownloadPreferences = Injekt.get(),
     private val xml: XML = Injekt.get(),
     private val getCategories: GetCategories = Injekt.get(),
@@ -122,8 +122,8 @@ class Downloader(
 
     init {
         launchNow {
-            val chapters = async { store.restore() }
-            addAllToQueue(chapters.await())
+            val episodes = async { store.restore() }
+            addAllToQueue(episodes.await())
         }
     }
 
@@ -245,7 +245,7 @@ class Downloader(
 
     private fun CoroutineScope.launchDownloadJob(download: Download) = launchIO {
         try {
-            downloadChapter(download)
+            downloadEpisode(download)
 
             // Remove successful download from queue
             if (download.status == Download.State.DOWNLOADED) {
@@ -273,30 +273,30 @@ class Downloader(
     /**
      * Creates a download object for every episode and adds them to the downloads queue.
      *
-     * @param manga the manga of the episodes to download.
+     * @param anime the anime of the episodes to download.
      * @param episodes the list of episodes to download.
      * @param autoStart whether to start the downloader after enqueing the episodes.
      */
-    fun queueChapters(manga: Anime, episodes: List<Episode>, autoStart: Boolean) {
+    fun queueEpisodes(anime: Anime, episodes: List<Episode>, autoStart: Boolean) {
         if (episodes.isEmpty()) return
 
-        val source = sourceManager.get(manga.source) as? HttpSource ?: return
+        val source = sourceManager.get(anime.source) as? HttpSource ?: return
         val wasEmpty = queueState.value.isEmpty()
-        val chaptersToQueue = episodes.asSequence()
+        val episodesToQueue = episodes.asSequence()
             // Filter out those already downloaded.
             .filter {
-                provider.findChapterDir(it.name, it.scanlator, /* SY --> */ manga.ogTitle /* SY <-- */, source) == null
+                provider.findEpisodeDir(it.name, it.scanlator, /* SY --> */ anime.ogTitle /* SY <-- */, source) == null
             }
             // Add episodes to queue from the start.
             .sortedByDescending { it.sourceOrder }
             // Filter out those already enqueued.
-            .filter { chapter -> queueState.value.none { it.episode.id == chapter.id } }
+            .filter { episode -> queueState.value.none { it.episode.id == episode.id } }
             // Create a download for each one.
-            .map { Download(source, manga, it) }
+            .map { Download(source, anime, it) }
             .toList()
 
-        if (chaptersToQueue.isNotEmpty()) {
-            addAllToQueue(chaptersToQueue)
+        if (episodesToQueue.isNotEmpty()) {
+            addAllToQueue(episodesToQueue)
 
             // Start downloader if needed
             if (autoStart && wasEmpty) {
@@ -308,7 +308,7 @@ class Downloader(
                     ?: 0
                 if (
                     queuedDownloads > DOWNLOADS_QUEUED_WARNING_THRESHOLD ||
-                    maxDownloadsFromSource > CHAPTERS_PER_SOURCE_QUEUE_WARNING_THRESHOLD
+                    maxDownloadsFromSource > EPISODES_PER_SOURCE_QUEUE_WARNING_THRESHOLD
                 ) {
                     notifier.onWarning(
                         context.stringResource(MR.strings.download_queue_size_warning),
@@ -326,31 +326,31 @@ class Downloader(
      *
      * @param download the episode to be downloaded.
      */
-    private suspend fun downloadChapter(download: Download) {
-        val mangaDir: UniFile
+    private suspend fun downloadEpisode(download: Download) {
+        val animeDir: UniFile
         try {
-            mangaDir = provider.getMangaDir(/* SY --> */ download.manga.ogTitle /* SY <-- */, download.source)
+            animeDir = provider.getAnimeDir(/* SY --> */ download.anime.ogTitle /* SY <-- */, download.source)
         } catch (error: Exception) {
             logcat(LogPriority.ERROR, error)
             download.status = Download.State.ERROR
-            notifier.onError(error.message, download.episode.name, download.manga.title, download.manga.id)
+            notifier.onError(error.message, download.episode.name, download.anime.title, download.anime.id)
             return
         }
 
-        val availSpace = DiskUtil.getAvailableStorageSpace(mangaDir)
+        val availSpace = DiskUtil.getAvailableStorageSpace(animeDir)
         if (availSpace != -1L && availSpace < MIN_DISK_SPACE) {
             download.status = Download.State.ERROR
             notifier.onError(
                 context.stringResource(MR.strings.download_insufficient_space),
                 download.episode.name,
-                download.manga.title,
-                download.manga.id,
+                download.anime.title,
+                download.anime.id,
             )
             return
         }
 
-        val chapterDirname = provider.getChapterDirName(download.episode.name, download.episode.scanlator)
-        val tmpDir = mangaDir.createDirectory(chapterDirname + TMP_DIR_SUFFIX)!!
+        val episodeDirname = provider.getEpisodeDirName(download.episode.name, download.episode.scanlator)
+        val tmpDir = animeDir.createDirectory(episodeDirname + TMP_DIR_SUFFIX)!!
 
         try {
             // If the page list already exists, start from the file
@@ -413,18 +413,18 @@ class Downloader(
 
             createComicInfoFile(
                 tmpDir,
-                download.manga,
+                download.anime,
                 download.episode,
                 download.source,
             )
 
             // Only rename the directory if it's downloaded
-            if (downloadPreferences.saveChaptersAsCBZ().get()) {
-                archiveChapter(mangaDir, chapterDirname, tmpDir)
+            if (downloadPreferences.saveEpisodesAsCBZ().get()) {
+                archiveEpisode(animeDir, episodeDirname, tmpDir)
             } else {
-                tmpDir.renameTo(chapterDirname)
+                tmpDir.renameTo(episodeDirname)
             }
-            cache.addChapter(chapterDirname, mangaDir, download.manga)
+            cache.addEpisode(episodeDirname, animeDir, download.anime)
 
             DiskUtil.createNoMediaFile(tmpDir, context)
 
@@ -434,7 +434,7 @@ class Downloader(
             // If the page list threw, it will resume here
             logcat(LogPriority.ERROR, error)
             download.status = Download.State.ERROR
-            notifier.onError(error.message, download.episode.name, download.manga.title, download.manga.id)
+            notifier.onError(error.message, download.episode.name, download.anime.title, download.anime.id)
         }
     }
 
@@ -467,8 +467,8 @@ class Downloader(
             // If the image is already downloaded, do nothing. Otherwise download from network
             val file = when {
                 imageFile != null -> imageFile
-                chapterCache.isImageInCache(page.imageUrl!!) ->
-                    copyImageFromCache(chapterCache.getImageFile(page.imageUrl!!), tmpDir, filename)
+                episodeCache.isImageInCache(page.imageUrl!!) ->
+                    copyImageFromCache(episodeCache.getImageFile(page.imageUrl!!), tmpDir, filename)
                 else -> downloadImage(page, download.source, tmpDir, filename, dataSaver)
             }
 
@@ -483,7 +483,7 @@ class Downloader(
             // Mark this page as error and allow to download the remaining
             page.progress = 0
             page.status = Page.State.ERROR
-            notifier.onError(e.message, download.episode.name, download.manga.title, download.manga.id)
+            notifier.onError(e.message, download.episode.name, download.anime.title, download.anime.id)
         }
     }
 
@@ -621,8 +621,8 @@ class Downloader(
     /**
      * Archive the episode pages as a CBZ.
      */
-    private fun archiveChapter(
-        mangaDir: UniFile,
+    private fun archiveEpisode(
+        animeDir: UniFile,
         dirname: String,
         tmpDir: UniFile,
     ) {
@@ -630,7 +630,7 @@ class Downloader(
         val encrypt = CbzCrypto.getPasswordProtectDlPref() && CbzCrypto.isPasswordSet()
         // SY <--
 
-        val zip = mangaDir.createFile("$dirname.cbz$TMP_DIR_SUFFIX")
+        val zip = animeDir.createFile("$dirname.cbz$TMP_DIR_SUFFIX")
         if (zip?.isFile != true) throw Exception("Failed to create CBZ file for downloaded episode")
         ZipWriter(context, zip, /* SY --> */ encrypt /* SY <-- */).use { writer ->
             tmpDir.listFiles()?.forEach { file ->
@@ -646,12 +646,12 @@ class Downloader(
      */
     private suspend fun createComicInfoFile(
         dir: UniFile,
-        manga: Anime,
+        anime: Anime,
         episode: Episode,
         source: HttpSource,
     ) {
-        val categories = getCategories.await(manga.id).map { it.name.trim() }.takeUnless { it.isEmpty() }
-        val urls = getTracks.await(manga.id)
+        val categories = getCategories.await(anime.id).map { it.name.trim() }.takeUnless { it.isEmpty() }
+        val urls = getTracks.await(anime.id)
             .mapNotNull { track ->
                 track.remoteUrl.takeUnless { url -> url.isBlank() }?.trim()
             }
@@ -659,7 +659,7 @@ class Downloader(
             .distinct()
 
         val comicInfo = getComicInfo(
-            manga,
+            anime,
             episode,
             urls,
             categories,
@@ -715,12 +715,12 @@ class Downloader(
     }
 
     fun removeFromQueue(episodes: List<Episode>) {
-        val chapterIds = episodes.map { it.id }
-        removeFromQueueIf { it.episode.id in chapterIds }
+        val episodeIds = episodes.map { it.id }
+        removeFromQueueIf { it.episode.id in episodeIds }
     }
 
-    fun removeFromQueue(manga: Anime) {
-        removeFromQueueIf { it.manga.id == manga.id }
+    fun removeFromQueue(anime: Anime) {
+        removeFromQueueIf { it.anime.id == anime.id }
     }
 
     private fun internalClearQueue() {
@@ -756,7 +756,7 @@ class Downloader(
     companion object {
         const val TMP_DIR_SUFFIX = "_tmp"
         const val WARNING_NOTIF_TIMEOUT_MS = 30_000L
-        const val CHAPTERS_PER_SOURCE_QUEUE_WARNING_THRESHOLD = 15
+        const val EPISODES_PER_SOURCE_QUEUE_WARNING_THRESHOLD = 15
         private const val DOWNLOADS_QUEUED_WARNING_THRESHOLD = 30
     }
 }

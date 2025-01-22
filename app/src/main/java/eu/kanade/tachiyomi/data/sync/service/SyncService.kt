@@ -149,7 +149,7 @@ abstract class SyncService(
                             "Keeping local version of ${local.title} with merged episodes."
                         }
                         updateCategories(
-                            local.copy(chapters = mergeChapters(local.chapters, remote.chapters)),
+                            local.copy(episodes = mergeChapters(local.episodes, remote.episodes)),
                             localCategoriesMapByOrder,
                         )
                     } else {
@@ -157,7 +157,7 @@ abstract class SyncService(
                             "Keeping remote version of ${remote.title} with merged episodes."
                         }
                         updateCategories(
-                            remote.copy(chapters = mergeChapters(local.chapters, remote.chapters)),
+                            remote.copy(episodes = mergeChapters(local.episodes, remote.episodes)),
                             remoteCategoriesMapByOrder,
                         )
                     }

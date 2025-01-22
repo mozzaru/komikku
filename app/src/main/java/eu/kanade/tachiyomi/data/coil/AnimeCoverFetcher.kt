@@ -33,8 +33,8 @@ import okio.buffer
 import okio.sink
 import okio.source
 import tachiyomi.core.common.util.system.logcat
-import tachiyomi.domain.anime.model.AnimeCover
 import tachiyomi.domain.anime.model.Anime
+import tachiyomi.domain.anime.model.AnimeCover
 import tachiyomi.domain.anime.model.asAnimeCover
 import tachiyomi.domain.source.service.SourceManager
 import uy.kohesive.injekt.Injekt
@@ -59,7 +59,7 @@ class AnimeCoverFetcher(
     private val url: String? = animeCover.url,
     // private val url: String?,
     // KMK <--
-    private val isLibraryManga: Boolean,
+    private val isLibraryAnime: Boolean,
     private val options: Options,
     private val coverFileLazy: Lazy<File?>,
     private val customCoverFileLazy: Lazy<File>,
@@ -134,7 +134,7 @@ class AnimeCoverFetcher(
 
     private suspend fun httpLoader(): FetchResult {
         // Only cache separately if it's a library item
-        val libraryCoverCacheFile = if (isLibraryManga) {
+        val libraryCoverCacheFile = if (isLibraryAnime) {
             coverFileLazy.value ?: error("No cover specified")
         } else {
             null
@@ -168,7 +168,7 @@ class AnimeCoverFetcher(
             val response = executeNetworkRequest()
             val responseBody = checkNotNull(response.body) { "Null response source" }
             try {
-                // Read from cover cache after library manga cover updated
+                // Read from cover cache after library anime cover updated
                 val responseCoverCache = writeResponseToCoverCache(response, libraryCoverCacheFile)
                 if (responseCoverCache != null) {
                     return fileLoader(responseCoverCache)
@@ -341,7 +341,7 @@ class AnimeCoverFetcher(
      * @param bufferedSource if not null then it will load bitmap from [BufferedSource], regardless of [ogFile]
      * @param ogFile if not null then it will load bitmap from [File]. If it's null then it will try to load bitmap
      *  from [CoverCache] using either [CoverCache.customCoverCacheDir] or [CoverCache.cacheDir]
-     * @param force if true then it will always re-calculate ratio & color for favorite mangas.
+     * @param force if true then it will always re-calculate ratio & color for favorite animes.
      */
     private fun setRatioAndColorsInScope(
         animeCover: AnimeCover,
@@ -363,7 +363,7 @@ class AnimeCoverFetcher(
         URL,
     }
 
-    class MangaFactory(
+    class AnimeFactory(
         private val callFactoryLazy: Lazy<Call.Factory>,
     ) : Fetcher.Factory<Anime> {
 
@@ -376,7 +376,7 @@ class AnimeCoverFetcher(
                 // url = data.thumbnailUrl,
                 animeCover = data.asAnimeCover(),
                 // KMK <--
-                isLibraryManga = data.favorite,
+                isLibraryAnime = data.favorite,
                 options = options,
                 coverFileLazy = lazy { coverCache.getCoverFile(data.thumbnailUrl) },
                 customCoverFileLazy = lazy { coverCache.getCustomCoverFile(data.id) },
@@ -388,7 +388,7 @@ class AnimeCoverFetcher(
         }
     }
 
-    class MangaCoverFactory(
+    class AnimeCoverFactory(
         private val callFactoryLazy: Lazy<Call.Factory>,
     ) : Fetcher.Factory<AnimeCover> {
 
@@ -401,7 +401,7 @@ class AnimeCoverFetcher(
                 // url = data.url,
                 animeCover = data,
                 // KMK <--
-                isLibraryManga = data.isAnimeFavorite,
+                isLibraryAnime = data.isAnimeFavorite,
                 options = options,
                 coverFileLazy = lazy { coverCache.getCoverFile(data.url) },
                 customCoverFileLazy = lazy { coverCache.getCustomCoverFile(data.animeId) },

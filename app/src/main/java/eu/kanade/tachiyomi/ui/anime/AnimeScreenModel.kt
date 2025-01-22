@@ -246,7 +246,7 @@ class AnimeScreenModel(
     private val skipFiltered by readerPreferences.skipFiltered().asState(screenModelScope)
 
     val isUpdateIntervalEnabled =
-        LibraryPreferences.MANGA_OUTSIDE_RELEASE_PERIOD in libraryPreferences.autoUpdateAnimeRestrictions().get()
+        LibraryPreferences.ANIME_OUTSIDE_RELEASE_PERIOD in libraryPreferences.autoUpdateAnimeRestrictions().get()
 
     private val selectedPositions: Array<Int> = arrayOf(-1, -1) // first and last selected index in list
     private val selectedChapterIds: HashSet<Long> = HashSet()
@@ -949,9 +949,9 @@ class AnimeScreenModel(
             downloadManager.statusFlow()
                 .filter {
                     /* SY --> */ if (isMergedSource) {
-                        it.manga.id in mergedIds
+                        it.anime.id in mergedIds
                     } else {
-                        /* SY <-- */ it.manga.id ==
+                        /* SY <-- */ it.anime.id ==
                             successState?.anime?.id
                     }
                 }
@@ -968,9 +968,9 @@ class AnimeScreenModel(
             downloadManager.progressFlow()
                 .filter {
                     /* SY --> */ if (isMergedSource) {
-                        it.manga.id in mergedIds
+                        it.anime.id in mergedIds
                     } else {
-                        /* SY <-- */ it.manga.id ==
+                        /* SY <-- */ it.anime.id ==
                             successState?.anime?.id
                     }
                 }

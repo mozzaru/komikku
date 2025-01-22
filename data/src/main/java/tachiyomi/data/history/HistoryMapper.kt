@@ -32,14 +32,14 @@ object HistoryMapper {
         readDuration: Long,
     ): HistoryWithRelations = HistoryWithRelations(
         id = historyId,
-        chapterId = chapterId,
-        mangaId = mangaId,
+        episodeId = chapterId,
+        animeId = mangaId,
         // SY -->
         ogTitle = title,
         // SY <--
-        chapterNumber = chapterNumber,
-        readAt = readAt,
-        readDuration = readDuration,
+        episodeNumber = chapterNumber,
+        seenAt = readAt,
+        watchDuration = readDuration,
         coverData = AnimeCover(
             animeId = mangaId,
             sourceId = sourceId,

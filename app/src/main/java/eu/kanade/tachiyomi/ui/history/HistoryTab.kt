@@ -94,7 +94,7 @@ data object HistoryTab : Tab {
                     onDismissRequest = onDismissRequest,
                     onDelete = { all ->
                         if (all) {
-                            screenModel.removeAllFromHistory(dialog.history.mangaId)
+                            screenModel.removeAllFromHistory(dialog.history.animeId)
                         } else {
                             screenModel.removeFromHistory(dialog.history)
                         }

@@ -89,12 +89,12 @@ class BackupCreator(
                 throw IllegalStateException(context.stringResource(MR.strings.create_backup_file_error))
             }
 
-            val nonFavoriteManga = if (options.readEntries) animeRepository.getReadMangaNotInLibrary() else emptyList()
+            val nonFavoriteManga = if (options.seenEntries) animeRepository.getReadMangaNotInLibrary() else emptyList()
             // SY -->
             val mergedManga = getMergedAnime.await()
             // SY <--
             val backupManga =
-                backupMangas(getFavorites.await() + nonFavoriteManga /* SY --> */ + mergedManga /* SY <-- */, options)
+                backupAnimes(getFavorites.await() + nonFavoriteManga /* SY --> */ + mergedManga /* SY <-- */, options)
 
             val backup = Backup(
                 backupAnime = backupManga,
@@ -149,7 +149,7 @@ class BackupCreator(
         return categoriesBackupCreator()
     }
 
-    suspend fun backupMangas(mangas: List<Anime>, options: BackupOptions): List<BackupAnime> {
+    suspend fun backupAnimes(mangas: List<Anime>, options: BackupOptions): List<BackupAnime> {
         if (!options.libraryEntries) return emptyList()
 
         return animeBackupCreator(mangas, options)

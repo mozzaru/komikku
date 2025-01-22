@@ -67,13 +67,13 @@ class LibraryPreferences(
             MANGA_HAS_UNREAD,
             ANIME_NON_COMPLETED,
             MANGA_NON_READ,
-            MANGA_OUTSIDE_RELEASE_PERIOD,
+            ANIME_OUTSIDE_RELEASE_PERIOD,
         ),
     )
 
     fun autoUpdateMetadata() = preferenceStore.getBoolean("auto_update_metadata", false)
 
-    fun showContinueReadingButton() = preferenceStore.getBoolean(
+    fun showContinueWatchingButton() = preferenceStore.getBoolean(
         "display_continue_reading_button",
         false,
     )
@@ -85,7 +85,7 @@ class LibraryPreferences(
         TriState.DISABLED,
     )
 
-    fun filterUnread() = preferenceStore.getEnum("pref_filter_library_unread_v2", TriState.DISABLED)
+    fun filterUnseen() = preferenceStore.getEnum("pref_filter_library_unread_v2", TriState.DISABLED)
 
     fun filterStarted() = preferenceStore.getEnum(
         "pref_filter_library_started_v2",
@@ -254,6 +254,6 @@ class LibraryPreferences(
         const val ANIME_NON_COMPLETED = "manga_ongoing"
         const val MANGA_HAS_UNREAD = "manga_fully_read"
         const val MANGA_NON_READ = "manga_started"
-        const val MANGA_OUTSIDE_RELEASE_PERIOD = "manga_outside_release_period"
+        const val ANIME_OUTSIDE_RELEASE_PERIOD = "manga_outside_release_period"
     }
 }

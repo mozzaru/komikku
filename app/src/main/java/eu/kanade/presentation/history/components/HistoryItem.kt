@@ -57,14 +57,14 @@ fun HistoryItem(
         verticalAlignment = Alignment.CenterVertically,
     ) {
         // KMK -->
-        val mangaCover = history.coverData
+        val animeCover = history.coverData
         val coverIsWide = coverRatio.floatValue <= RatioSwitchToPanorama
-        val bgColor = mangaCover.dominantCoverColors?.first?.let { Color(it) }
-        val onBgColor = mangaCover.dominantCoverColors?.second
+        val bgColor = animeCover.dominantCoverColors?.first?.let { Color(it) }
+        val onBgColor = animeCover.dominantCoverColors?.second
         if (usePanoramaCover && coverIsWide) {
             AnimeCover.Panorama(
                 modifier = Modifier.fillMaxHeight(),
-                data = mangaCover,
+                data = animeCover,
                 onClick = onClickCover,
                 // KMK -->
                 bgColor = bgColor,
@@ -80,7 +80,7 @@ fun HistoryItem(
             // KMK <--
             AnimeCover.Book(
                 modifier = Modifier.fillMaxHeight(),
-                data = mangaCover,
+                data = animeCover,
                 onClick = onClickCover,
                 // KMK -->
                 bgColor = bgColor,
@@ -106,16 +106,16 @@ fun HistoryItem(
                 overflow = TextOverflow.Ellipsis,
                 style = textStyle,
             )
-            val readAt = remember { history.readAt?.toTimestampString() ?: "" }
+            val seenAt = remember { history.seenAt?.toTimestampString() ?: "" }
             Text(
-                text = if (history.chapterNumber > -1) {
+                text = if (history.episodeNumber > -1) {
                     stringResource(
                         MR.strings.recent_manga_time,
-                        formatEpisodeNumber(history.chapterNumber),
-                        readAt,
+                        formatEpisodeNumber(history.episodeNumber),
+                        seenAt,
                     )
                 } else {
-                    readAt
+                    seenAt
                 },
                 modifier = Modifier.padding(top = 4.dp),
                 style = textStyle,

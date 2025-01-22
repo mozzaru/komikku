@@ -25,7 +25,7 @@ data class BackupAnime(
     @ProtoNumber(13) var dateAdded: Long = 0,
     @ProtoNumber(14) var viewer: Int = 0, // Replaced by viewer_flags
     // @ProtoNumber(15) val flags: Int = 0, 1.x value, not used in 0.x
-    @ProtoNumber(16) var chapters: List<BackupEpisode> = emptyList(),
+    @ProtoNumber(16) var episodes: List<BackupEpisode> = emptyList(),
     @ProtoNumber(17) var categories: List<Long> = emptyList(),
     @ProtoNumber(18) var tracking: List<BackupTracking> = emptyList(),
     // Bump by 100 for values that are not saved/implemented in 1.x but are used in 0.x
@@ -54,7 +54,7 @@ data class BackupAnime(
     @ProtoNumber(804) var customDescription: String? = null,
     @ProtoNumber(805) var customGenre: List<String>? = null,
 
-) {
+    ) {
     fun getMangaImpl(): Anime {
         return Anime.create().copy(
             url = this@BackupAnime.url,
