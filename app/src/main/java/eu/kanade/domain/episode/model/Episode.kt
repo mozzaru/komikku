@@ -1,6 +1,6 @@
 package eu.kanade.domain.episode.model
 
-import eu.kanade.tachiyomi.animesource.model.SEpisode
+import eu.kanade.tachiyomi.source.model.SEpisode
 import eu.kanade.tachiyomi.data.database.models.EpisodeImpl
 import tachiyomi.domain.episode.model.Episode
 import eu.kanade.tachiyomi.data.database.models.Episode as DbEpisode

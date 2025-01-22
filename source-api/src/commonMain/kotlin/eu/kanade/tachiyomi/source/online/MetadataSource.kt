@@ -1,7 +1,7 @@
 package eu.kanade.tachiyomi.source.online
 
 import eu.kanade.tachiyomi.source.CatalogueSource
-import eu.kanade.tachiyomi.animesource.model.SAnime
+import eu.kanade.tachiyomi.source.model.SAnime
 import exh.metadata.metadata.RaisedSearchMetadata
 import exh.metadata.metadata.base.FlatMetadata
 import rx.Completable

@@ -48,7 +48,7 @@ import eu.kanade.domain.ui.UiPreferences
 import eu.kanade.presentation.anime.DownloadAction
 import eu.kanade.presentation.anime.components.EpisodeDownloadAction
 import eu.kanade.presentation.util.formattedMessage
-import eu.kanade.tachiyomi.animesource.model.SAnime
+import eu.kanade.tachiyomi.source.model.SAnime
 import eu.kanade.tachiyomi.data.coil.getBestColor
 import eu.kanade.tachiyomi.data.download.DownloadCache
 import eu.kanade.tachiyomi.data.download.DownloadManager

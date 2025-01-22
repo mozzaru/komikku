@@ -3,7 +3,7 @@ package exh.smartsearch
 import eu.kanade.domain.anime.model.toDomainAnime
 import eu.kanade.tachiyomi.source.CatalogueSource
 import eu.kanade.tachiyomi.source.model.FilterList
-import eu.kanade.tachiyomi.animesource.model.SAnime
+import eu.kanade.tachiyomi.source.model.SAnime
 import info.debatty.java.stringsimilarity.NormalizedLevenshtein
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.async

@@ -2,7 +2,7 @@ package eu.kanade.domain.anime.model
 
 import eu.kanade.domain.base.BasePreferences
 import eu.kanade.tachiyomi.data.cache.CoverCache
-import eu.kanade.tachiyomi.animesource.model.SAnime
+import eu.kanade.tachiyomi.source.model.SAnime
 import eu.kanade.tachiyomi.ui.reader.setting.ReaderOrientation
 import eu.kanade.tachiyomi.ui.reader.setting.ReadingMode
 import mihon.core.archive.CbzCrypto

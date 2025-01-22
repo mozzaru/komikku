@@ -2,9 +2,9 @@
 
 package eu.kanade.tachiyomi.source.model
 
-import eu.kanade.tachiyomi.animesource.model.SEpisode
 import java.io.Serializable
 
+typealias SEpisode = SChapter
 interface SChapter : Serializable {
 
     var url: String

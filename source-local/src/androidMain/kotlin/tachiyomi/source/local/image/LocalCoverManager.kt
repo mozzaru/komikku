@@ -2,7 +2,7 @@ package tachiyomi.source.local.image
 
 import android.content.Context
 import com.hippo.unifile.UniFile
-import eu.kanade.tachiyomi.animesource.model.SAnime
+import eu.kanade.tachiyomi.source.model.SAnime
 import eu.kanade.tachiyomi.util.storage.DiskUtil
 import mihon.core.archive.ZipWriter
 import tachiyomi.core.common.storage.nameWithoutExtension

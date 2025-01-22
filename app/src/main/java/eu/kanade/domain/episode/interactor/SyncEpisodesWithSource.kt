@@ -5,7 +5,7 @@ import eu.kanade.domain.anime.interactor.UpdateAnime
 import eu.kanade.domain.anime.model.toSAnime
 import eu.kanade.domain.episode.model.copyFromSEpisode
 import eu.kanade.domain.episode.model.toSEpisode
-import eu.kanade.tachiyomi.animesource.model.SEpisode
+import eu.kanade.tachiyomi.source.model.SEpisode
 import eu.kanade.tachiyomi.data.download.DownloadManager
 import eu.kanade.tachiyomi.data.download.DownloadProvider
 import eu.kanade.tachiyomi.source.Source

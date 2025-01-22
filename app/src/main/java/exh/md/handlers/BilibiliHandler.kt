@@ -5,7 +5,7 @@ import eu.kanade.tachiyomi.network.awaitSuccess
 import eu.kanade.tachiyomi.network.interceptor.rateLimit
 import eu.kanade.tachiyomi.network.parseAs
 import eu.kanade.tachiyomi.source.model.Page
-import eu.kanade.tachiyomi.animesource.model.SEpisode
+import eu.kanade.tachiyomi.source.model.SEpisode
 import exh.log.xLogD
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable

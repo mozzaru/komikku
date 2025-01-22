@@ -82,7 +82,7 @@ import coil3.request.crossfade
 import eu.kanade.domain.ui.UiPreferences
 import eu.kanade.presentation.components.DropdownMenu
 import eu.kanade.tachiyomi.R
-import eu.kanade.tachiyomi.animesource.model.SAnime
+import eu.kanade.tachiyomi.source.model.SAnime
 import eu.kanade.tachiyomi.util.system.copyToClipboard
 import tachiyomi.domain.anime.interactor.FetchInterval
 import tachiyomi.domain.anime.model.Anime

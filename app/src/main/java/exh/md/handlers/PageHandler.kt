@@ -6,7 +6,7 @@ import eu.kanade.tachiyomi.network.GET
 import eu.kanade.tachiyomi.network.newCachelessCallWithProgress
 import eu.kanade.tachiyomi.source.Source
 import eu.kanade.tachiyomi.source.model.Page
-import eu.kanade.tachiyomi.animesource.model.SEpisode
+import eu.kanade.tachiyomi.source.model.SEpisode
 import exh.log.xLogD
 import exh.md.dto.AtHomeDto
 import exh.md.service.MangaDexService

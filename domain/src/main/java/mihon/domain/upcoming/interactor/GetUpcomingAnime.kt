@@ -1,6 +1,6 @@
 package mihon.domain.upcoming.interactor
 
-import eu.kanade.tachiyomi.animesource.model.SAnime
+import eu.kanade.tachiyomi.source.model.SAnime
 import eu.kanade.tachiyomi.source.model.UpdateStrategy
 import kotlinx.coroutines.flow.Flow
 import tachiyomi.domain.anime.interactor.GetLibraryAnime

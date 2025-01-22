@@ -1,7 +1,7 @@
 package exh.metadata.metadata
 
 import android.content.Context
-import eu.kanade.tachiyomi.animesource.model.SAnime
+import eu.kanade.tachiyomi.source.model.SAnime
 import exh.metadata.metadata.base.FlatMetadata
 import exh.metadata.metadata.base.RaisedTag
 import exh.metadata.metadata.base.RaisedTitle
