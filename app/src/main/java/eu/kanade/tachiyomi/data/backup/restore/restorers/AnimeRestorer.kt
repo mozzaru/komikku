@@ -510,8 +510,8 @@ class AnimeRestorer(
                     handler.await {
                         mergedQueries.insert(
                             infoManga = isInfoAnime,
-                            getChapterUpdates = getChapterUpdates,
-                            chapterSortMode = chapterSortMode.toLong(),
+                            getChapterUpdates = getEpisodeUpdates,
+                            chapterSortMode = episodeSortMode.toLong(),
                             chapterPriority = chapterPriority.toLong(),
                             downloadChapters = downloadChapters,
                             mergeId = mergeMangaId,

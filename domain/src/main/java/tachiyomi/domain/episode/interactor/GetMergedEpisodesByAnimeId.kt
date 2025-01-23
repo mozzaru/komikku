@@ -68,7 +68,7 @@ class GetMergedEpisodesByAnimeId(
         mangaReferences: List<MergedAnimeReference>,
         episodeList: List<Episode>,
     ): List<Episode> {
-        return when (mangaReferences.firstOrNull { it.animeSourceId == MERGED_SOURCE_ID }?.chapterSortMode) {
+        return when (mangaReferences.firstOrNull { it.animeSourceId == MERGED_SOURCE_ID }?.episodeSortMode) {
             MergedAnimeReference.CHAPTER_SORT_NO_DEDUPE, MergedAnimeReference.CHAPTER_SORT_NONE -> episodeList
             MergedAnimeReference.CHAPTER_SORT_PRIORITY -> dedupeByPriority(mangaReferences, episodeList)
             MergedAnimeReference.CHAPTER_SORT_MOST_CHAPTERS -> {

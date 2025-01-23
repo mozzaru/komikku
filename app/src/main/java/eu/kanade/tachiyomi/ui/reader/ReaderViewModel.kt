@@ -815,7 +815,7 @@ class ReaderViewModel @JvmOverloads constructor(
         val source = getSource() ?: return null
 
         return try {
-            source.getChapterUrl(sEpisode)
+            source.getEpisodeUrl(sEpisode)
         } catch (e: Exception) {
             logcat(LogPriority.ERROR, e)
             null

@@ -12,14 +12,14 @@ interface UrlImportableSource : Source {
         return uri.host.orEmpty().lowercase() in matchingHosts
     }
 
-    fun mapUrlToChapterUrl(uri: Uri): String? = null
+    fun mapUrlToEpisodeUrl(uri: Uri): String? = null
 
-    suspend fun mapChapterUrlToMangaUrl(uri: Uri): String? = null
+    suspend fun mapEpisodeUrlToAnimeUrl(uri: Uri): String? = null
 
     // This method is allowed to block for IO if necessary
-    suspend fun mapUrlToMangaUrl(uri: Uri): String?
+    suspend fun mapUrlToAnimeUrl(uri: Uri): String?
 
-    fun cleanMangaUrl(url: String): String {
+    fun cleanAnimeUrl(url: String): String {
         return try {
             val uri = URI(url)
             var out = uri.path
@@ -35,7 +35,7 @@ interface UrlImportableSource : Source {
         }
     }
 
-    fun cleanChapterUrl(url: String): String {
+    fun cleanEpisodeUrl(url: String): String {
         return try {
             val uri = URI(url)
             var out = uri.path

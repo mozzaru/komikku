@@ -7,6 +7,7 @@ import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.serialization.Serializable
 import kotlinx.serialization.Transient
 
+typealias Video = Page
 @Serializable
 open class Page(
     val index: Int,
@@ -15,6 +16,7 @@ open class Page(
     var imageUrl: String? = null,
     @Transient var uri: Uri? = null, // Deprecated but can't be deleted due to extensions
 ) : ProgressListener {
+    var videoUrl: String? = imageUrl
 
     val number: Int
         get() = index + 1

@@ -60,7 +60,7 @@ class EditMergedSettingsState(
         mergeReference = mergedReferences.firstOrNull { it.animeSourceId == MERGED_SOURCE_ID }
 
         val isPriorityOrder =
-            mergeReference?.let { it.chapterSortMode == MergedAnimeReference.CHAPTER_SORT_PRIORITY } ?: false
+            mergeReference?.let { it.episodeSortMode == MergedAnimeReference.CHAPTER_SORT_PRIORITY } ?: false
 
         mergedMangaAdapter = EditMergedMangaAdapter(this, isPriorityOrder)
         mergedMangaHeaderAdapter = EditMergedSettingsHeaderAdapter(this, mergedMangaAdapter!!)
@@ -125,11 +125,11 @@ class EditMergedSettingsState(
                 it is EditMergedMangaHolder && it.reference.id == reference.id
             }?.let {
                 if (it is EditMergedMangaHolder) {
-                    it.updateChapterUpdatesIcon(!reference.getChapterUpdates)
+                    it.updateChapterUpdatesIcon(!reference.getEpisodeUpdates)
                 }
             } ?: context.toast(SYMR.strings.merged_chapter_updates_error)
 
-            manga to reference.copy(getChapterUpdates = !reference.getChapterUpdates)
+            manga to reference.copy(getEpisodeUpdates = !reference.getEpisodeUpdates)
         }
     }
 

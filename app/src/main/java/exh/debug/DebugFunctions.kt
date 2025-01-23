@@ -97,7 +97,7 @@ object DebugFunctions {
                     EH_SOURCE_ID -> eh
                     EXH_SOURCE_ID -> ex
                     else -> return@forEach
-                }?.getMangaDetails(manga.toSAnime()) ?: return@forEach
+                }?.getAnimeDetails(manga.toSAnime()) ?: return@forEach
 
                 updateAnime.awaitUpdateFromSource(manga, networkManga, true)
             }

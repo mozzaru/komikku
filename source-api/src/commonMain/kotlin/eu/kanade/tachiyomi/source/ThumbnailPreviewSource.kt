@@ -10,23 +10,23 @@ import kotlinx.serialization.Transient
 import okhttp3.CacheControl
 import okhttp3.Response
 
-interface PagePreviewSource : Source {
+interface ThumbnailPreviewSource : Source {
 
-    suspend fun getPagePreviewList(manga: SAnime, chapters: List<SEpisode>, page: Int): PagePreviewPage
+    suspend fun getThumbnailPreviewList(anime: SAnime, episodes: List<SEpisode>, page: Int): ThumbnailPreviewPage
 
-    suspend fun fetchPreviewImage(page: PagePreviewInfo, cacheControl: CacheControl? = null): Response
+    suspend fun fetchPreviewImage(thumbnail: ThumbnailPreviewInfo, cacheControl: CacheControl? = null): Response
 }
 
 @Serializable
-data class PagePreviewPage(
+data class ThumbnailPreviewPage(
     val page: Int,
-    val pagePreviews: List<PagePreviewInfo>,
+    val pagePreviews: List<ThumbnailPreviewInfo>,
     val hasNextPage: Boolean,
-    val pagePreviewPages: Int?,
+    val thumbnailPreviewPages: Int?,
 )
 
 @Serializable
-data class PagePreviewInfo(
+data class ThumbnailPreviewInfo(
     val index: Int,
     val imageUrl: String,
     @Transient

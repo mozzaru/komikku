@@ -2,7 +2,7 @@ package exh.md.handlers
 
 import eu.kanade.tachiyomi.data.database.models.Track
 import eu.kanade.tachiyomi.data.track.TrackerManager
-import eu.kanade.tachiyomi.source.model.MetadataMangasPage
+import eu.kanade.tachiyomi.source.model.MetadataAnimesPage
 import eu.kanade.tachiyomi.source.model.SAnime
 import exh.md.dto.MangaDataDto
 import exh.md.dto.PersonalRatingDto
@@ -25,19 +25,19 @@ class FollowsHandler(
     /**
      * fetch follows page
      */
-    suspend fun fetchFollows(page: Int): MetadataMangasPage {
+    suspend fun fetchFollows(page: Int): MetadataAnimesPage {
         return withIOContext {
             val follows = service.userFollowList(MdUtil.mangaLimit * page)
 
             if (follows.data.isEmpty()) {
-                return@withIOContext MetadataMangasPage(emptyList(), false, emptyList())
+                return@withIOContext MetadataAnimesPage(emptyList(), false, emptyList())
             }
 
             val hasMoreResults = follows.limit + follows.offset under follows.total
             val statusListResponse = service.readingStatusAllManga()
             val results = followsParseMangaPage(follows.data, statusListResponse.statuses)
 
-            MetadataMangasPage(results.map { it.first }, hasMoreResults, results.map { it.second })
+            MetadataAnimesPage(results.map { it.first }, hasMoreResults, results.map { it.second })
         }
     }
 

@@ -95,7 +95,7 @@ class GalleryAdder(
             }
 
             val realChapterUrl = try {
-                source.mapUrlToChapterUrl(uri)
+                source.mapUrlToEpisodeUrl(uri)
             } catch (e: Exception) {
                 logger.e(context.stringResource(SYMR.strings.gallery_adder_uri_map_to_chapter_error), e)
                 null
@@ -103,7 +103,7 @@ class GalleryAdder(
 
             val cleanedChapterUrl = if (realChapterUrl != null) {
                 try {
-                    source.cleanChapterUrl(realChapterUrl)
+                    source.cleanEpisodeUrl(realChapterUrl)
                 } catch (e: Exception) {
                     logger.e(context.stringResource(SYMR.strings.gallery_adder_uri_clean_error), e)
                     null
@@ -113,14 +113,14 @@ class GalleryAdder(
             }
 
             val chapterMangaUrl = if (realChapterUrl != null) {
-                source.mapChapterUrlToMangaUrl(realChapterUrl.toUri())
+                source.mapEpisodeUrlToAnimeUrl(realChapterUrl.toUri())
             } else {
                 null
             }
 
             // Map URL to manga URL
             val realMangaUrl = try {
-                chapterMangaUrl ?: source.mapUrlToMangaUrl(uri)
+                chapterMangaUrl ?: source.mapUrlToAnimeUrl(uri)
             } catch (e: Exception) {
                 logger.e(context.stringResource(SYMR.strings.gallery_adder_uri_map_to_gallery_error), e)
                 null
@@ -128,7 +128,7 @@ class GalleryAdder(
 
             // Clean URL
             val cleanedMangaUrl = try {
-                source.cleanMangaUrl(realMangaUrl)
+                source.cleanAnimeUrl(realMangaUrl)
             } catch (e: Exception) {
                 logger.e(context.stringResource(SYMR.strings.gallery_adder_uri_clean_error), e)
                 null
@@ -144,7 +144,7 @@ class GalleryAdder(
                 )
 
             // Fetch and copy details
-            val newManga = retry(retry) { source.getMangaDetails(manga.toSAnime()) }
+            val newManga = retry(retry) { source.getAnimeDetails(manga.toSAnime()) }
             updateAnime.awaitUpdateFromSource(manga, newManga, false)
             manga = getAnime.await(manga.id)!!
 
@@ -159,7 +159,7 @@ class GalleryAdder(
                     if (source is EHentai) {
                         source.getChapterList(manga.toSAnime(), throttleFunc)
                     } else {
-                        source.getChapterList(manga.toSAnime())
+                        source.getEpisodeList(manga.toSAnime())
                     }
                 }
 

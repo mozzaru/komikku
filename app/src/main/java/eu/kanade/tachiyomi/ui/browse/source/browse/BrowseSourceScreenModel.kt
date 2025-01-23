@@ -638,7 +638,7 @@ open class BrowseSourceScreenModel(
 
     fun onMangaDexRandom(onRandomFound: (String) -> Unit) {
         screenModelScope.launchIO {
-            val random = source.getMainSource<MangaDex>()?.fetchRandomMangaUrl()
+            val random = source.getMainSource<MangaDex>()?.fetchRandomAnimeUrl()
                 ?: return@launchIO
             onRandomFound(random)
         }

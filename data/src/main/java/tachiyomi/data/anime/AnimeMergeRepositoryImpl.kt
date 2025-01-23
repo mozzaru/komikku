@@ -76,8 +76,8 @@ class AnimeMergeRepositoryImpl(
         return handler.awaitOneOrNullExecutable {
             mergedQueries.insert(
                 infoManga = reference.isInfoAnime,
-                getChapterUpdates = reference.getChapterUpdates,
-                chapterSortMode = reference.chapterSortMode.toLong(),
+                getChapterUpdates = reference.getEpisodeUpdates,
+                chapterSortMode = reference.episodeSortMode.toLong(),
                 chapterPriority = reference.chapterPriority.toLong(),
                 downloadChapters = reference.downloadChapters,
                 mergeId = reference.mergeId!!,
@@ -95,8 +95,8 @@ class AnimeMergeRepositoryImpl(
             references.forEach { reference ->
                 mergedQueries.insert(
                     infoManga = reference.isInfoAnime,
-                    getChapterUpdates = reference.getChapterUpdates,
-                    chapterSortMode = reference.chapterSortMode.toLong(),
+                    getChapterUpdates = reference.getEpisodeUpdates,
+                    chapterSortMode = reference.episodeSortMode.toLong(),
                     chapterPriority = reference.chapterPriority.toLong(),
                     downloadChapters = reference.downloadChapters,
                     mergeId = reference.mergeId!!,

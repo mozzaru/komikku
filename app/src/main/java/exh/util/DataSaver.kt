@@ -22,12 +22,12 @@ interface DataSaver {
         }
 
         suspend fun HttpSource.getImage(page: Page, dataSaver: DataSaver): Response {
-            val imageUrl = page.imageUrl ?: return getImage(page)
-            page.imageUrl = dataSaver.compress(imageUrl)
+            val imageUrl = page.videoUrl ?: return getVideo(page)
+            page.videoUrl = dataSaver.compress(imageUrl)
             return try {
-                getImage(page)
+                getVideo(page)
             } finally {
-                page.imageUrl = imageUrl
+                page.videoUrl = imageUrl
             }
         }
     }

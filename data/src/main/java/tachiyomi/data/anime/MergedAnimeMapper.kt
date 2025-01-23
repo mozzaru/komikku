@@ -19,8 +19,8 @@ object MergedAnimeMapper {
         return MergedAnimeReference(
             id = id,
             isInfoAnime = isInfoManga,
-            getChapterUpdates = getChapterUpdates,
-            chapterSortMode = chapterSortMode.toInt(),
+            getEpisodeUpdates = getChapterUpdates,
+            episodeSortMode = chapterSortMode.toInt(),
             chapterPriority = chapterPriority.toInt(),
             downloadChapters = downloadChapters,
             mergeId = mergeId,

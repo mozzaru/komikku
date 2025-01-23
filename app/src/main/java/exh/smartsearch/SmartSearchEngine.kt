@@ -30,9 +30,9 @@ class SmartSearchEngine(
                         query
                     }
 
-                    val searchResults = source.getSearchManga(1, builtQuery, FilterList())
+                    val searchResults = source.getSearchAnime(1, builtQuery, FilterList())
 
-                    searchResults.mangas.map {
+                    searchResults.animes.map {
                         val cleanedMangaTitle = cleanSmartSearchTitle(it.originalTitle)
                         val normalizedDistance = normalizedLevenshtein.similarity(cleanedTitle, cleanedMangaTitle)
                         SearchEntry(it, normalizedDistance)
@@ -53,13 +53,13 @@ class SmartSearchEngine(
             } else {
                 title
             }
-            val searchResults = source.getSearchManga(1, searchQuery, FilterList())
+            val searchResults = source.getSearchAnime(1, searchQuery, FilterList())
 
-            if (searchResults.mangas.size == 1) {
-                return@supervisorScope listOf(SearchEntry(searchResults.mangas.first(), 0.0))
+            if (searchResults.animes.size == 1) {
+                return@supervisorScope listOf(SearchEntry(searchResults.animes.first(), 0.0))
             }
 
-            searchResults.mangas.map {
+            searchResults.animes.map {
                 val normalizedDistance = normalizedLevenshtein.similarity(title, it.originalTitle)
                 SearchEntry(it, normalizedDistance)
             }.filter { (_, normalizedDistance) ->

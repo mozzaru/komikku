@@ -42,7 +42,7 @@ class PageHandler(
                         chapterResponse.data.attributes.externalUrl,
                         dataSaver = dataSaver,
                     )
-                    /*episode.scanlator.equals("comikey", true) -> comikeyHandler.fetchPageList(
+                    /*episode.scanlator.equals("comikey", true) -> comikeyHandler.fetchVideoList(
                         chapterResponse.data.attributes.externalUrl
                     )*/
                     chapter.scanlator.equals("bilibili comics", true) -> bilibiliHandler.fetchPageList(
@@ -110,25 +110,25 @@ class PageHandler(
     }
 
     fun getImageCall(page: Page): Call? {
-        xLogD(page.imageUrl)
+        xLogD(page.videoUrl)
         return when {
-            page.imageUrl?.contains("mangaplus", true) == true -> {
-                mangaPlusHandler.client.newCachelessCallWithProgress(GET(page.imageUrl!!, headers), page)
+            page.videoUrl?.contains("mangaplus", true) == true -> {
+                mangaPlusHandler.client.newCachelessCallWithProgress(GET(page.videoUrl!!, headers), page)
             }
-            page.imageUrl?.contains("comikey", true) == true -> {
-                comikeyHandler.client.newCachelessCallWithProgress(GET(page.imageUrl!!, comikeyHandler.headers), page)
+            page.videoUrl?.contains("comikey", true) == true -> {
+                comikeyHandler.client.newCachelessCallWithProgress(GET(page.videoUrl!!, comikeyHandler.headers), page)
             }
-            page.imageUrl?.contains("/bfs/comic/", true) == true -> {
-                bilibiliHandler.client.newCachelessCallWithProgress(GET(page.imageUrl!!, bilibiliHandler.headers), page)
+            page.videoUrl?.contains("/bfs/comic/", true) == true -> {
+                bilibiliHandler.client.newCachelessCallWithProgress(GET(page.videoUrl!!, bilibiliHandler.headers), page)
             }
-            page.imageUrl?.contains("azuki", true) == true -> {
-                azukiHandler.client.newCachelessCallWithProgress(GET(page.imageUrl!!, azukiHandler.headers), page)
+            page.videoUrl?.contains("azuki", true) == true -> {
+                azukiHandler.client.newCachelessCallWithProgress(GET(page.videoUrl!!, azukiHandler.headers), page)
             }
-            page.imageUrl?.contains("mangahot", true) == true -> {
-                mangaHotHandler.client.newCachelessCallWithProgress(GET(page.imageUrl!!, mangaHotHandler.headers), page)
+            page.videoUrl?.contains("mangahot", true) == true -> {
+                mangaHotHandler.client.newCachelessCallWithProgress(GET(page.videoUrl!!, mangaHotHandler.headers), page)
             }
-            page.imageUrl?.contains("namicomi", true) == true -> {
-                mangaHotHandler.client.newCachelessCallWithProgress(GET(page.imageUrl!!, mangaHotHandler.headers), page)
+            page.videoUrl?.contains("namicomi", true) == true -> {
+                mangaHotHandler.client.newCachelessCallWithProgress(GET(page.videoUrl!!, mangaHotHandler.headers), page)
             }
             else -> null
         }

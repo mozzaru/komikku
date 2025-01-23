@@ -1,8 +1,8 @@
 package exh.md.similar
 
 import eu.kanade.domain.anime.model.toSAnime
-import eu.kanade.tachiyomi.source.model.MangasPage
-import eu.kanade.tachiyomi.source.model.MetadataMangasPage
+import eu.kanade.tachiyomi.source.model.AnimesPage
+import eu.kanade.tachiyomi.source.model.MetadataAnimesPage
 import eu.kanade.tachiyomi.source.online.all.MangaDex
 import kotlinx.coroutines.async
 import kotlinx.coroutines.coroutineScope
@@ -15,20 +15,20 @@ import tachiyomi.domain.anime.model.Anime
  */
 class MangaDexSimilarPagingSource(val manga: Anime, val mangadex: MangaDex) : SourcePagingSource(mangadex) {
 
-    override suspend fun requestNextPage(currentPage: Int): MangasPage {
+    override suspend fun requestNextPage(currentPage: Int): AnimesPage {
         val mangasPage = coroutineScope {
             val similarPageDef = async { mangadex.getMangaSimilar(manga.toSAnime()) }
             val relatedPageDef = async { mangadex.getMangaRelated(manga.toSAnime()) }
             val similarPage = similarPageDef.await()
             val relatedPage = relatedPageDef.await()
 
-            MetadataMangasPage(
-                relatedPage.mangas + similarPage.mangas,
+            MetadataAnimesPage(
+                relatedPage.animes + similarPage.animes,
                 false,
-                relatedPage.mangasMetadata + similarPage.mangasMetadata,
+                relatedPage.animesMetadata + similarPage.animesMetadata,
             )
         }
 
-        return mangasPage.takeIf { it.mangas.isNotEmpty() } ?: throw NoResultsException()
+        return mangasPage.takeIf { it.animes.isNotEmpty() } ?: throw NoResultsException()
     }
 }

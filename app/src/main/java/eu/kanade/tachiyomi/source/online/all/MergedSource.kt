@@ -44,46 +44,46 @@ class MergedSource : HttpSource() {
 
     override val baseUrl = ""
 
-    override fun popularMangaRequest(page: Int) = throw UnsupportedOperationException()
-    override fun popularMangaParse(response: Response) = throw UnsupportedOperationException()
-    override fun searchMangaRequest(
+    override fun popularAnimeRequest(page: Int) = throw UnsupportedOperationException()
+    override fun popularAnimeParse(response: Response) = throw UnsupportedOperationException()
+    override fun searchAnimeRequest(
         page: Int,
         query: String,
         filters: FilterList,
     ) = throw UnsupportedOperationException()
-    override fun searchMangaParse(response: Response) = throw UnsupportedOperationException()
+    override fun searchAnimeParse(response: Response) = throw UnsupportedOperationException()
     override fun latestUpdatesRequest(page: Int) = throw UnsupportedOperationException()
     override fun latestUpdatesParse(response: Response) = throw UnsupportedOperationException()
-    override fun mangaDetailsParse(response: Response) = throw UnsupportedOperationException()
-    override fun chapterListParse(response: Response) = throw UnsupportedOperationException()
-    override fun chapterPageParse(response: Response) = throw UnsupportedOperationException()
-    override fun pageListParse(response: Response) = throw UnsupportedOperationException()
-    override fun imageUrlParse(response: Response) = throw UnsupportedOperationException()
+    override fun animeDetailsParse(response: Response) = throw UnsupportedOperationException()
+    override fun episodeListParse(response: Response) = throw UnsupportedOperationException()
+    override fun episodePageParse(response: Response) = throw UnsupportedOperationException()
+    override fun videoListParse(response: Response) = throw UnsupportedOperationException()
+    override fun videoUrlParse(response: Response) = throw UnsupportedOperationException()
 
-    @Deprecated("Use the 1.x API instead", replaceWith = ReplaceWith("getChapterList"))
-    override fun fetchChapterList(manga: SAnime) = throw UnsupportedOperationException()
-    override suspend fun getChapterList(manga: SAnime) = throw UnsupportedOperationException()
-    override suspend fun getImage(page: Page): Response = throw UnsupportedOperationException()
+    @Deprecated("Use the 1.x API instead", replaceWith = ReplaceWith("getEpisodeList"))
+    override fun fetchEpisodeList(anime: SAnime) = throw UnsupportedOperationException()
+    override suspend fun getEpisodeList(manga: SAnime) = throw UnsupportedOperationException()
+    override suspend fun getVideo(video: Page): Response = throw UnsupportedOperationException()
 
-    @Deprecated("Use the non-RxJava API instead", replaceWith = ReplaceWith("getImageUrl"))
-    override fun fetchImageUrl(page: Page) = throw UnsupportedOperationException()
-    override suspend fun getImageUrl(page: Page) = throw UnsupportedOperationException()
+    @Deprecated("Use the non-RxJava API instead", replaceWith = ReplaceWith("getVideoUrl"))
+    override fun fetchVideoUrl(video: Page) = throw UnsupportedOperationException()
+    override suspend fun getVideoUrl(page: Page) = throw UnsupportedOperationException()
 
-    @Deprecated("Use the 1.x API instead", replaceWith = ReplaceWith("getPageList"))
-    override fun fetchPageList(chapter: SEpisode) = throw UnsupportedOperationException()
-    override suspend fun getPageList(chapter: SEpisode) = throw UnsupportedOperationException()
+    @Deprecated("Use the 1.x API instead", replaceWith = ReplaceWith("getVideoList"))
+    override fun fetchVideoList(episode: SEpisode) = throw UnsupportedOperationException()
+    override suspend fun getVideoList(chapter: SEpisode) = throw UnsupportedOperationException()
 
     @Deprecated("Use the non-RxJava API instead", replaceWith = ReplaceWith("getLatestUpdates"))
     override fun fetchLatestUpdates(page: Int) = throw UnsupportedOperationException()
     override suspend fun getLatestUpdates(page: Int) = throw UnsupportedOperationException()
 
-    @Deprecated("Use the non-RxJava API instead", replaceWith = ReplaceWith("getPopularManga"))
-    override fun fetchPopularManga(page: Int) = throw UnsupportedOperationException()
-    override suspend fun getPopularManga(page: Int) = throw UnsupportedOperationException()
+    @Deprecated("Use the non-RxJava API instead", replaceWith = ReplaceWith("getPopularAnime"))
+    override fun fetchPopularAnime(page: Int) = throw UnsupportedOperationException()
+    override suspend fun getPopularAnime(page: Int) = throw UnsupportedOperationException()
 
-    override suspend fun getMangaDetails(manga: SAnime): SAnime {
+    override suspend fun getAnimeDetails(anime: SAnime): SAnime {
         return withIOContext {
-            val mergedManga = requireNotNull(getAnime.await(manga.url, id)) { "merged manga not in db" }
+            val mergedManga = requireNotNull(getAnime.await(anime.url, id)) { "merged manga not in db" }
             val mangaReferences = getMergedReferencesById.await(mergedManga.id)
                 .apply {
                     require(isNotEmpty()) { "Manga references are empty, info unavailable, merge is likely corrupted" }
@@ -98,28 +98,28 @@ class MergedSource : HttpSource() {
                 getAnime.await(animeUrl, animeSourceId)?.toSAnime()
             }
             (dbManga ?: mergedManga.toSAnime()).copy(
-                url = manga.url,
+                url = anime.url,
             )
         }
     }
 
-    suspend fun fetchChaptersForMergedManga(
-        manga: Anime,
-        downloadChapters: Boolean = true,
+    suspend fun fetchEpisodesForMergedAnime(
+        anime: Anime,
+        downloadEpisodes: Boolean = true,
     ) {
-        fetchChaptersAndSync(manga, downloadChapters)
+        fetchEpisodesAndSync(anime, downloadEpisodes)
     }
 
-    suspend fun fetchChaptersAndSync(manga: Anime, downloadChapters: Boolean = true): List<Episode> {
-        val mangaReferences = getMergedReferencesById.await(manga.id)
-        require(mangaReferences.isNotEmpty()) {
-            "Manga references are empty, episodes unavailable, merge is likely corrupted"
+    suspend fun fetchEpisodesAndSync(anime: Anime, downloadEpisodes: Boolean = true): List<Episode> {
+        val animeReferences = getMergedReferencesById.await(anime.id)
+        require(animeReferences.isNotEmpty()) {
+            "Anime references are empty, episodes unavailable, merge is likely corrupted"
         }
 
         val semaphore = Semaphore(5)
         var exception: Exception? = null
         return supervisorScope {
-            mangaReferences
+            animeReferences
                 .groupBy(MergedAnimeReference::animeSourceId)
                 .minus(MERGED_SOURCE_ID)
                 .map { (_, values) ->
@@ -127,17 +127,17 @@ class MergedSource : HttpSource() {
                         semaphore.withPermit {
                             values.flatMap {
                                 try {
-                                    val (source, loadedManga, reference) = it.load()
-                                    if (loadedManga != null && reference.getChapterUpdates) {
-                                        val chapterList = source.getChapterList(loadedManga.toSAnime())
+                                    val (source, loadedAnime, reference) = it.load()
+                                    if (loadedAnime != null && reference.getEpisodeUpdates) {
+                                        val chapterList = source.getEpisodeList(loadedAnime.toSAnime())
                                         val results =
-                                            syncEpisodesWithSource.await(chapterList, loadedManga, source)
+                                            syncEpisodesWithSource.await(chapterList, loadedAnime, source)
 
-                                        if (downloadChapters && reference.downloadChapters) {
-                                            val chaptersToDownload = filterEpisodesForDownload.await(manga, results)
+                                        if (downloadEpisodes && reference.downloadChapters) {
+                                            val chaptersToDownload = filterEpisodesForDownload.await(anime, results)
                                             if (chaptersToDownload.isNotEmpty()) {
                                                 downloadManager.downloadChapters(
-                                                    loadedManga,
+                                                    loadedAnime,
                                                     chaptersToDownload,
                                                 )
                                             }
@@ -162,23 +162,23 @@ class MergedSource : HttpSource() {
         }
     }
 
-    suspend fun MergedAnimeReference.load(): LoadedMangaSource {
-        var manga = getAnime.await(animeUrl, animeSourceId)
-        val source = sourceManager.getOrStub(manga?.source ?: animeSourceId)
-        if (manga == null) {
-            val newManga = networkToLocalAnime.await(
+    suspend fun MergedAnimeReference.load(): LoadedAnimeSource {
+        var anime = getAnime.await(animeUrl, animeSourceId)
+        val source = sourceManager.getOrStub(anime?.source ?: animeSourceId)
+        if (anime == null) {
+            val newAnime = networkToLocalAnime.await(
                 Anime.create().copy(
                     source = animeSourceId,
                     url = animeUrl,
                 ),
             )
-            updateAnime.awaitUpdateFromSource(newManga, source.getMangaDetails(newManga.toSAnime()), false)
-            manga = getAnime.await(newManga.id)!!
+            updateAnime.awaitUpdateFromSource(newAnime, source.getAnimeDetails(newAnime.toSAnime()), false)
+            anime = getAnime.await(newAnime.id)!!
         }
-        return LoadedMangaSource(source, manga, this)
+        return LoadedAnimeSource(source, anime, this)
     }
 
-    data class LoadedMangaSource(val source: Source, val manga: Anime?, val reference: MergedAnimeReference)
+    data class LoadedAnimeSource(val source: Source, val anime: Anime?, val reference: MergedAnimeReference)
 
     override val lang = "all"
     override val supportsLatest = false

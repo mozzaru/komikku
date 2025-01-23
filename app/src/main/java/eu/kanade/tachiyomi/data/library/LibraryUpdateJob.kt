@@ -540,15 +540,15 @@ class LibraryUpdateJob(private val context: Context, workerParams: WorkerParamet
 
         // Update manga metadata if needed
         if (libraryPreferences.autoUpdateMetadata().get()) {
-            val networkManga = source.getMangaDetails(manga.toSAnime())
+            val networkManga = source.getAnimeDetails(manga.toSAnime())
             updateAnime.awaitUpdateFromSource(manga, networkManga, manualFetch = false, coverCache)
         }
 
         if (source is MergedSource) {
-            return source.fetchChaptersAndSync(manga, false)
+            return source.fetchEpisodesAndSync(manga, false)
         }
 
-        val chapters = source.getChapterList(manga.toSAnime())
+        val chapters = source.getEpisodeList(manga.toSAnime())
 
         // Get manga from database to account for if it was removed during the update and
         // to get latest data so it doesn't get overwritten later on
@@ -579,7 +579,7 @@ class LibraryUpdateJob(private val context: Context, workerParams: WorkerParamet
                                 ) {
                                     val source = sourceManager.get(manga.source) ?: return@withUpdateNotification
                                     try {
-                                        val networkManga = source.getMangaDetails(manga.toSAnime())
+                                        val networkManga = source.getAnimeDetails(manga.toSAnime())
                                         val updatedManga = manga.prepUpdateCover(
                                             coverCache,
                                             networkManga,

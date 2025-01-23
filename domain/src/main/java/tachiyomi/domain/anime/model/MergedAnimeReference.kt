@@ -8,10 +8,10 @@ data class MergedAnimeReference(
     val isInfoAnime: Boolean,
 
     // If false the anime will not grab chapter updates
-    val getChapterUpdates: Boolean,
+    val getEpisodeUpdates: Boolean,
 
-    // The mode in which the chapters are handeled, only set in the main merge reference
-    val chapterSortMode: Int,
+    // The mode in which the episodes are handled, only set in the main merge reference
+    val episodeSortMode: Int,
 
     // chapter priority the deduplication uses
     val chapterPriority: Int,

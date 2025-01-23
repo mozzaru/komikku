@@ -149,10 +149,10 @@ class MdList(id: Long) : BaseTracker(id, "MDList") {
     override suspend fun search(query: String): List<TrackSearch> {
         return withIOContext {
             val mdex = mdex ?: throw MangaDexNotFoundException()
-            mdex.getSearchManga(1, query, FilterList())
-                .mangas
+            mdex.getSearchAnime(1, query, FilterList())
+                .animes
                 .map {
-                    toTrackSearch(mdex.getMangaDetails(it))
+                    toTrackSearch(mdex.getAnimeDetails(it))
                 }
                 .distinct()
         }

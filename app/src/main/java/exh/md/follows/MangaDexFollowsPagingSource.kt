@@ -1,6 +1,6 @@
 package exh.md.follows
 
-import eu.kanade.tachiyomi.source.model.MangasPage
+import eu.kanade.tachiyomi.source.model.AnimesPage
 import eu.kanade.tachiyomi.source.online.all.MangaDex
 import tachiyomi.data.source.SourcePagingSource
 
@@ -9,7 +9,7 @@ import tachiyomi.data.source.SourcePagingSource
  */
 class MangaDexFollowsPagingSource(val mangadex: MangaDex) : SourcePagingSource(mangadex) {
 
-    override suspend fun requestNextPage(currentPage: Int): MangasPage {
+    override suspend fun requestNextPage(currentPage: Int): AnimesPage {
         return mangadex.fetchFollows(currentPage)
     }
 }

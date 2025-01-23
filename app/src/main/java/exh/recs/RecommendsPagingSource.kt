@@ -7,7 +7,7 @@ import eu.kanade.tachiyomi.network.POST
 import eu.kanade.tachiyomi.network.awaitSuccess
 import eu.kanade.tachiyomi.network.parseAs
 import eu.kanade.tachiyomi.source.CatalogueSource
-import eu.kanade.tachiyomi.source.model.MangasPage
+import eu.kanade.tachiyomi.source.model.AnimesPage
 import eu.kanade.tachiyomi.source.model.SAnime
 import exh.util.MangaType
 import exh.util.mangaType
@@ -271,7 +271,7 @@ open class RecommendsPagingSource(
     val trackerManager: TrackerManager by injectLazy()
     val getTracks: GetTracks by injectLazy()
 
-    override suspend fun requestNextPage(currentPage: Int): MangasPage {
+    override suspend fun requestNextPage(currentPage: Int): AnimesPage {
         if (smart) preferredApi = if (manga.mangaType() != MangaType.TYPE_MANGA) API.ANILIST else preferredApi
 
         val apiList = API_MAP.toList().sortedByDescending { it.first == preferredApi }
@@ -298,7 +298,7 @@ open class RecommendsPagingSource(
             }
         } ?: throw NoResultsException()
 
-        return MangasPage(recs, false)
+        return AnimesPage(recs, false)
     }
 
     companion object {

@@ -54,7 +54,7 @@ internal class DownloadPageLoader(
     private fun getPagesFromDirectory(): List<ReaderPage> {
         val pages = downloadManager.buildPageList(source, manga, chapter.episode.toDomainEpisode()!!)
         return pages.map { page ->
-            ReaderPage(page.index, page.url, page.imageUrl) {
+            ReaderPage(page.index, page.url, page.videoUrl) {
                 context.contentResolver.openInputStream(page.uri ?: Uri.EMPTY)!!
             }.apply {
                 status = Page.State.READY

@@ -87,12 +87,12 @@ internal class HttpPageLoader(
             if (e is CancellationException) {
                 throw e
             }
-            source.getPageList(chapter.episode)
+            source.getVideoList(chapter.episode)
         }
         // SY -->
         val rp = pages.mapIndexed { index, page ->
             // Don't trust sources and use our own indexing
-            ReaderPage(index, page.url, page.imageUrl)
+            ReaderPage(index, page.url, page.videoUrl)
         }
         if (readerPreferences.aggressivePageLoading().get()) {
             rp.forEach {
@@ -109,7 +109,7 @@ internal class HttpPageLoader(
      * Loads a page through the queue. Handles re-enqueueing pages if they were evicted from the cache.
      */
     override suspend fun loadPage(page: ReaderPage) = withIOContext {
-        val imageUrl = page.imageUrl
+        val imageUrl = page.videoUrl
 
         // Check if the image has been deleted
         if (page.status == Page.State.READY && imageUrl != null && !episodeCache.isImageInCache(imageUrl)) {
@@ -148,7 +148,7 @@ internal class HttpPageLoader(
         // EXH -->
         // Grab a new image URL on EXH sources
         if (source.isEhBasedSource()) {
-            page.imageUrl = null
+            page.videoUrl = null
         }
 
         if (readerPreferences.readerInstantRetry().get()) // EXH <--
@@ -170,7 +170,7 @@ internal class HttpPageLoader(
             launchIO {
                 try {
                     // Convert to pages without reader information
-                    val pagesToSave = pages.map { Page(it.index, it.url, it.imageUrl) }
+                    val pagesToSave = pages.map { Page(it.index, it.url, it.videoUrl) }
                     episodeCache.putPageListToCache(chapter.episode.toDomainEpisode()!!, pagesToSave)
                 } catch (e: Throwable) {
                     if (e is CancellationException) {
@@ -210,11 +210,11 @@ internal class HttpPageLoader(
      */
     private suspend fun internalLoadPage(page: ReaderPage) {
         try {
-            if (page.imageUrl.isNullOrEmpty()) {
+            if (page.videoUrl.isNullOrEmpty()) {
                 page.status = Page.State.LOAD_PAGE
-                page.imageUrl = source.getImageUrl(page)
+                page.videoUrl = source.getVideoUrl(page)
             }
-            val imageUrl = page.imageUrl!!
+            val imageUrl = page.videoUrl!!
 
             if (!episodeCache.isImageInCache(imageUrl)) {
                 page.status = Page.State.DOWNLOAD_IMAGE

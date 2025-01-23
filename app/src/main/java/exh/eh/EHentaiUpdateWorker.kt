@@ -243,10 +243,10 @@ class EHentaiUpdateWorker(private val context: Context, workerParams: WorkerPara
             ?: throw GalleryNotUpdatedException(false, IllegalStateException("Missing EH-based source (${manga.source})!"))
 
         try {
-            val updatedManga = source.getMangaDetails(manga.toSAnime())
+            val updatedManga = source.getAnimeDetails(manga.toSAnime())
             updateAnime.awaitUpdateFromSource(manga, updatedManga, false)
 
-            val newChapters = source.getChapterList(manga.toSAnime())
+            val newChapters = source.getEpisodeList(manga.toSAnime())
 
             val new = syncEpisodesWithSource.await(newChapters, manga, source)
             return new to getEpisodesByAnimeId.await(manga.id)

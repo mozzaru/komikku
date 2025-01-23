@@ -849,7 +849,7 @@ class ReaderActivity : BaseActivity() {
                 viewModel.manga?.let { m ->
                     val src = sourceManager.get(m.source)
                     if (src?.isEhBasedSource() == true) {
-                        page.imageUrl = null
+                        page.videoUrl = null
                     }
                 }
 
