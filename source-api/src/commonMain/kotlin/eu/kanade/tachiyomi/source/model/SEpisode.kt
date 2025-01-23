@@ -35,14 +35,14 @@ interface SChapter : Serializable {
             name: String,
             url: String,
             date_upload: Long = 0,
-            chapter_number: Float = -1F,
+            episode_number: Float = -1F,
             scanlator: String? = null,
         ): SEpisode {
             return create().apply {
                 this.name = name
                 this.url = url
                 this.date_upload = date_upload
-                this.episode_number = chapter_number
+                this.episode_number = episode_number
                 this.scanlator = scanlator
             }
         }

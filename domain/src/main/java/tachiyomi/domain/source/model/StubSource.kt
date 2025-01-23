@@ -1,9 +1,9 @@
 package tachiyomi.domain.source.model
 
 import eu.kanade.tachiyomi.source.Source
-import eu.kanade.tachiyomi.source.model.Page
-import eu.kanade.tachiyomi.source.model.SEpisode
 import eu.kanade.tachiyomi.source.model.SAnime
+import eu.kanade.tachiyomi.source.model.SEpisode
+import eu.kanade.tachiyomi.source.model.Video
 
 class StubSource(
     override val id: Long,
@@ -13,19 +13,19 @@ class StubSource(
 
     private val isInvalid: Boolean = name.isBlank() || lang.isBlank()
 
-    override suspend fun getMangaDetails(manga: SAnime): SAnime =
+    override suspend fun getAnimeDetails(anime: SAnime): SAnime =
         throw SourceNotInstalledException()
 
-    override suspend fun getChapterList(manga: SAnime): List<SEpisode> =
+    override suspend fun getEpisodeList(anime: SAnime): List<SEpisode> =
         throw SourceNotInstalledException()
-    override suspend fun getPageList(chapter: SEpisode): List<Page> =
+    override suspend fun getVideoList(episode: SEpisode): List<Video> =
         throw SourceNotInstalledException()
 
     // KMK -->
-    override suspend fun getRelatedMangaList(
-        manga: SAnime,
+    override suspend fun getRelatedAnimeList(
+        anime: SAnime,
         exceptionHandler: (Throwable) -> Unit,
-        pushResults: suspend (relatedManga: Pair<String, List<SAnime>>, completed: Boolean) -> Unit,
+        pushResults: suspend (relatedAnime: Pair<String, List<SAnime>>, completed: Boolean) -> Unit,
     ) = throw SourceNotInstalledException()
     // KMK <--
 

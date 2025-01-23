@@ -57,7 +57,7 @@ import eu.kanade.tachiyomi.data.track.EnhancedTracker
 import eu.kanade.tachiyomi.data.track.TrackerManager
 import eu.kanade.tachiyomi.data.track.mdlist.MdList
 import eu.kanade.tachiyomi.network.HttpException
-import eu.kanade.tachiyomi.source.PagePreviewSource
+import eu.kanade.tachiyomi.source.ThumbnailPreviewSource
 import eu.kanade.tachiyomi.source.Source
 import eu.kanade.tachiyomi.source.getNameForAnimeInfo
 import eu.kanade.tachiyomi.source.online.MetadataSource
@@ -464,7 +464,7 @@ class AnimeScreenModel(
                     showMergeWithAnother = smartSearched,
                     mergedData = mergedData,
                     meta = raiseMetadata(meta, source),
-                    pagePreviewsState = if (source.getMainSource() is PagePreviewSource) {
+                    pagePreviewsState = if (source.getMainSource() is ThumbnailPreviewSource) {
                         getPagePreviews(manga, source)
                         PagePreviewState.Loading
                     } else {
@@ -604,7 +604,7 @@ class AnimeScreenModel(
         val state = successState ?: return
         try {
             withIOContext {
-                val networkManga = state.source.getMangaDetails(state.anime.toSAnime())
+                val networkManga = state.source.getAnimeDetails(state.anime.toSAnime())
                 updateAnime.awaitUpdateFromSource(state.anime, networkManga, manualFetch)
             }
         } catch (e: Throwable) {
@@ -1147,7 +1147,7 @@ class AnimeScreenModel(
 
         try {
             if (state.source !is StubSource && relatedMangasEnabled) {
-                state.source.getRelatedMangaList(state.anime.toSAnime(), { e -> exceptionHandler(e) }) { pair, _ ->
+                state.source.getRelatedAnimeList(state.anime.toSAnime(), { e -> exceptionHandler(e) }) { pair, _ ->
                     /* Push found related mangas into collection */
                     val relatedAnime = RelatedAnime.Success.fromPair(pair) { mangaList ->
                         mangaList.map {

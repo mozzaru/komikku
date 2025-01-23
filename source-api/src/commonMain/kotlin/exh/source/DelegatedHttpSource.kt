@@ -1,10 +1,10 @@
 package exh.source
 
+import eu.kanade.tachiyomi.source.model.AnimesPage
 import eu.kanade.tachiyomi.source.model.FilterList
-import eu.kanade.tachiyomi.source.model.MangasPage
-import eu.kanade.tachiyomi.source.model.Page
-import eu.kanade.tachiyomi.source.model.SEpisode
 import eu.kanade.tachiyomi.source.model.SAnime
+import eu.kanade.tachiyomi.source.model.SEpisode
+import eu.kanade.tachiyomi.source.model.Video
 import eu.kanade.tachiyomi.source.online.HttpSource
 import okhttp3.OkHttpClient
 import okhttp3.Request
@@ -14,41 +14,41 @@ import rx.Observable
 @Suppress("OverridingDeprecatedMember", "DEPRECATION")
 abstract class DelegatedHttpSource(val delegate: HttpSource) : HttpSource() {
     /**
-     * Returns the request for the popular manga given the page.
+     * Returns the request for the popular anime given the page.
      *
      * @param page the page number to retrieve.
      */
-    override fun popularMangaRequest(page: Int) =
+    override fun popularAnimeRequest(page: Int) =
         throw UnsupportedOperationException("Should never be called!")
 
     /**
-     * Parses the response from the site and returns a [MangasPage] object.
+     * Parses the response from the site and returns a [AnimesPage] object.
      *
      * @param response the response from the site.
      */
-    override fun popularMangaParse(response: Response) =
+    override fun popularAnimeParse(response: Response) =
         throw UnsupportedOperationException("Should never be called!")
 
     /**
-     * Returns the request for the search manga given the page.
+     * Returns the request for the search anime given the page.
      *
      * @param page the page number to retrieve.
      * @param query the search query.
      * @param filters the list of filters to apply.
      */
-    override fun searchMangaRequest(page: Int, query: String, filters: FilterList) =
+    override fun searchAnimeRequest(page: Int, query: String, filters: FilterList) =
         throw UnsupportedOperationException("Should never be called!")
 
     /**
-     * Parses the response from the site and returns a [MangasPage] object.
+     * Parses the response from the site and returns a [AnimesPage] object.
      *
      * @param response the response from the site.
      */
-    override fun searchMangaParse(response: Response) =
+    override fun searchAnimeParse(response: Response) =
         throw UnsupportedOperationException("Should never be called!")
 
     /**
-     * Returns the request for latest manga given the page.
+     * Returns the request for latest anime given the page.
      *
      * @param page the page number to retrieve.
      */
@@ -56,7 +56,7 @@ abstract class DelegatedHttpSource(val delegate: HttpSource) : HttpSource() {
         throw UnsupportedOperationException("Should never be called!")
 
     /**
-     * Parses the response from the site and returns a [MangasPage] object.
+     * Parses the response from the site and returns a [AnimesPage] object.
      *
      * @param response the response from the site.
      */
@@ -64,19 +64,19 @@ abstract class DelegatedHttpSource(val delegate: HttpSource) : HttpSource() {
         throw UnsupportedOperationException("Should never be called!")
 
     /**
-     * Parses the response from the site and returns the details of a manga.
+     * Parses the response from the site and returns the details of a anime.
      *
      * @param response the response from the site.
      */
-    override fun mangaDetailsParse(response: Response) =
+    override fun animeDetailsParse(response: Response) =
         throw UnsupportedOperationException("Should never be called!")
 
     /**
-     * Parses the response from the site and returns a list of chapters.
+     * Parses the response from the site and returns a list of episodes.
      *
      * @param response the response from the site.
      */
-    override fun chapterListParse(response: Response) =
+    override fun episodeListParse(response: Response) =
         throw UnsupportedOperationException("Should never be called!")
 
     /**
@@ -84,23 +84,23 @@ abstract class DelegatedHttpSource(val delegate: HttpSource) : HttpSource() {
      *
      * @param response the response from the site.
      */
-    override fun chapterPageParse(response: Response) =
+    override fun episodePageParse(response: Response) =
         throw UnsupportedOperationException("Should never be called!")
 
     /**
-     * Parses the response from the site and returns a list of pages.
+     * Parses the response from the site and returns a list of videos.
      *
      * @param response the response from the site.
      */
-    override fun pageListParse(response: Response) =
+    override fun videoListParse(response: Response) =
         throw UnsupportedOperationException("Should never be called!")
 
     /**
-     * Parses the response from the site and returns the absolute url to the source image.
+     * Parses the response from the site and returns the absolute url to the source video.
      *
      * @param response the response from the site.
      */
-    override fun imageUrlParse(response: Response) =
+    override fun videoUrlParse(response: Response) =
         throw UnsupportedOperationException("Should never be called!")
 
     /**
@@ -149,188 +149,188 @@ abstract class DelegatedHttpSource(val delegate: HttpSource) : HttpSource() {
     override fun toString() = delegate.toString()
 
     /**
-     * Returns an observable containing a page with a list of manga. Normally it's not needed to
+     * Returns an observable containing a page with a list of anime. Normally it's not needed to
      * override this method.
      *
      * @param page the page number to retrieve.
      */
-    @Deprecated("Use the non-RxJava API instead", replaceWith = ReplaceWith("getPopularManga"))
-    override fun fetchPopularManga(page: Int): Observable<MangasPage> {
+    @Deprecated("Use the non-RxJava API instead", replaceWith = ReplaceWith("getPopularAnime(page)"))
+    override fun fetchPopularAnime(page: Int): Observable<AnimesPage> {
         ensureDelegateCompatible()
-        return delegate.fetchPopularManga(page)
+        return delegate.fetchPopularAnime(page)
     }
 
-    override suspend fun getPopularManga(page: Int): MangasPage {
+    override suspend fun getPopularAnime(page: Int): AnimesPage {
         ensureDelegateCompatible()
-        return delegate.getPopularManga(page)
+        return delegate.getPopularAnime(page)
     }
 
     /**
-     * Returns an observable containing a page with a list of manga. Normally it's not needed to
+     * Returns an observable containing a page with a list of anime. Normally it's not needed to
      * override this method.
      *
      * @param page the page number to retrieve.
      * @param query the search query.
      * @param filters the list of filters to apply.
      */
-    @Deprecated("Use the non-RxJava API instead", replaceWith = ReplaceWith("getSearchManga"))
-    override fun fetchSearchManga(page: Int, query: String, filters: FilterList): Observable<MangasPage> {
+    @Deprecated("Use the non-RxJava API instead", replaceWith = ReplaceWith("getSearchAnime(page, query, filters)"))
+    override fun fetchSearchAnime(page: Int, query: String, filters: FilterList): Observable<AnimesPage> {
         ensureDelegateCompatible()
-        return delegate.fetchSearchManga(page, query, filters)
+        return delegate.fetchSearchAnime(page, query, filters)
     }
 
-    override suspend fun getSearchManga(page: Int, query: String, filters: FilterList): MangasPage {
+    override suspend fun getSearchAnime(page: Int, query: String, filters: FilterList): AnimesPage {
         ensureDelegateCompatible()
-        return delegate.getSearchManga(page, query, filters)
+        return delegate.getSearchAnime(page, query, filters)
     }
 
     /**
-     * Returns an observable containing a page with a list of latest manga updates.
+     * Returns an observable containing a page with a list of latest anime updates.
      *
      * @param page the page number to retrieve.
      */
-    @Deprecated("Use the non-RxJava API instead", replaceWith = ReplaceWith("getLatestUpdates"))
-    override fun fetchLatestUpdates(page: Int): Observable<MangasPage> {
+    @Deprecated("Use the non-RxJava API instead", replaceWith = ReplaceWith("getLatestUpdates(page)"))
+    override fun fetchLatestUpdates(page: Int): Observable<AnimesPage> {
         ensureDelegateCompatible()
         return delegate.fetchLatestUpdates(page)
     }
 
-    override suspend fun getLatestUpdates(page: Int): MangasPage {
+    override suspend fun getLatestUpdates(page: Int): AnimesPage {
         ensureDelegateCompatible()
         return delegate.getLatestUpdates(page)
     }
 
     /**
-     * Returns an observable with the updated details for a manga. Normally it's not needed to
+     * Returns an observable with the updated details for a anime. Normally it's not needed to
      * override this method.
      *
-     * @param manga the manga to be updated.
+     * @param anime the anime to be updated.
      */
-    @Deprecated("Use the 1.x API instead", replaceWith = ReplaceWith("getMangaDetails"))
-    override fun fetchMangaDetails(manga: SAnime): Observable<SAnime> {
+    @Deprecated("Use the 1.x API instead", replaceWith = ReplaceWith("getAnimeDetails(anime)"))
+    override fun fetchAnimeDetails(anime: SAnime): Observable<SAnime> {
         ensureDelegateCompatible()
-        return delegate.fetchMangaDetails(manga)
+        return delegate.fetchAnimeDetails(anime)
     }
 
     /**
-     * [1.x API] Get the updated details for a manga.
+     * [1.x API] Get the updated details for a anime.
      */
-    override suspend fun getMangaDetails(manga: SAnime): SAnime {
+    override suspend fun getAnimeDetails(anime: SAnime): SAnime {
         ensureDelegateCompatible()
-        return delegate.getMangaDetails(manga)
+        return delegate.getAnimeDetails(anime)
     }
 
     /**
-     * Returns the request for the details of a manga. Override only if it's needed to change the
+     * Returns the request for the details of a anime. Override only if it's needed to change the
      * url, send different headers or request method like POST.
      *
-     * @param manga the manga to be updated.
+     * @param anime the anime to be updated.
      */
-    override fun mangaDetailsRequest(manga: SAnime): Request {
+    override fun animeDetailsRequest(anime: SAnime): Request {
         ensureDelegateCompatible()
-        return delegate.mangaDetailsRequest(manga)
+        return delegate.animeDetailsRequest(anime)
     }
 
     /**
-     * Returns an observable with the updated chapter list for a manga. Normally it's not needed to
-     * override this method.  If a manga is licensed an empty chapter list observable is returned
+     * Returns an observable with the updated episode list for a anime. Normally it's not needed to
+     * override this method.  If a anime is licensed an empty episode list observable is returned
      *
-     * @param manga the manga to look for chapters.
+     * @param anime the anime to look for episodes.
      */
-    @Deprecated("Use the 1.x API instead", replaceWith = ReplaceWith("getChapterList"))
-    override fun fetchChapterList(manga: SAnime): Observable<List<SEpisode>> {
+    @Deprecated("Use the 1.x API instead", replaceWith = ReplaceWith("getEpisodeList(anime)"))
+    override fun fetchEpisodeList(anime: SAnime): Observable<List<SEpisode>> {
         ensureDelegateCompatible()
-        return delegate.fetchChapterList(manga)
+        return delegate.fetchEpisodeList(anime)
     }
 
     /**
-     * [1.x API] Get all the available chapters for a manga.
+     * [1.x API] Get all the available episodes for a anime.
      */
-    override suspend fun getChapterList(manga: SAnime): List<SEpisode> {
+    override suspend fun getEpisodeList(anime: SAnime): List<SEpisode> {
         ensureDelegateCompatible()
-        return delegate.getChapterList(manga)
+        return delegate.getEpisodeList(anime)
     }
 
     /**
-     * Returns an observable with the page list for a chapter.
+     * Returns an observable with the video list for a episode.
      *
-     * @param chapter the chapter whose page list has to be fetched.
+     * @param episode the episode whose video list has to be fetched.
      */
-    @Deprecated("Use the 1.x API instead", replaceWith = ReplaceWith("getPageList"))
-    override fun fetchPageList(chapter: SEpisode): Observable<List<Page>> {
+    @Deprecated("Use the 1.x API instead", replaceWith = ReplaceWith("getVideoList(episode)"))
+    override fun fetchVideoList(episode: SEpisode): Observable<List<Video>> {
         ensureDelegateCompatible()
-        return delegate.fetchPageList(chapter)
+        return delegate.fetchVideoList(episode)
     }
 
     /**
-     * [1.x API] Get the list of pages a chapter has.
+     * [1.x API] Get the list of videos a episode has.
      */
-    override suspend fun getPageList(chapter: SEpisode): List<Page> {
+    override suspend fun getVideoList(episode: SEpisode): List<Video> {
         ensureDelegateCompatible()
-        return delegate.getPageList(chapter)
+        return delegate.getVideoList(episode)
     }
 
     /**
-     * Returns an observable with the page containing the source url of the image. If there's any
+     * Returns an observable with the video containing the source url of the video. If there's any
      * error, it will return null instead of throwing an exception.
      *
-     * @param page the page whose source image has to be fetched.
+     * @param video the video whose source video has to be fetched.
      */
-    @Deprecated("Use the non-RxJava API instead", replaceWith = ReplaceWith("getImageUrl"))
-    override fun fetchImageUrl(page: Page): Observable<String> {
+    @Deprecated("Use the non-RxJava API instead", replaceWith = ReplaceWith("getVideoUrl(video)"))
+    override fun fetchVideoUrl(video: Video): Observable<String> {
         ensureDelegateCompatible()
-        return delegate.fetchImageUrl(page)
+        return delegate.fetchVideoUrl(video)
     }
 
-    override suspend fun getImageUrl(page: Page): String {
+    override suspend fun getVideoUrl(video: Video): String {
         ensureDelegateCompatible()
-        return delegate.getImageUrl(page)
+        return delegate.getVideoUrl(video)
     }
 
     /**
-     * Returns the response of the source image.
+     * Returns the response of the source video.
      *
-     * @param page the page whose source image has to be downloaded.
+     * @param video the video whose source video has to be downloaded.
      */
-    override suspend fun getImage(page: Page): Response {
+    override suspend fun getVideo(video: Video): Response {
         ensureDelegateCompatible()
-        return delegate.getImage(page)
+        return delegate.getVideo(video)
     }
 
     /**
-     * Returns the url of the provided manga
-     *
-     * @since extensions-lib 1.4
-     * @param manga the manga
-     * @return url of the manga
-     */
-    override fun getMangaUrl(manga: SAnime): String {
-        ensureDelegateCompatible()
-        return delegate.getMangaUrl(manga)
-    }
-
-    /**
-     * Returns the url of the provided chapter
+     * Returns the url of the provided anime
      *
      * @since extensions-lib 1.4
-     * @param chapter the chapter
-     * @return url of the chapter
+     * @param anime the anime
+     * @return url of the anime
      */
-    override fun getChapterUrl(chapter: SEpisode): String {
+    override fun getAnimeUrl(anime: SAnime): String {
         ensureDelegateCompatible()
-        return delegate.getChapterUrl(chapter)
+        return delegate.getAnimeUrl(anime)
     }
 
     /**
-     * Called before inserting a new chapter into database. Use it if you need to override chapter
-     * fields, like the title or the chapter number. Do not change anything to [manga].
+     * Returns the url of the provided episode
      *
-     * @param chapter the chapter to be added.
-     * @param manga the manga of the chapter.
+     * @since extensions-lib 1.4
+     * @param episode the episode
+     * @return url of the episode
      */
-    override fun prepareNewEpisode(chapter: SEpisode, manga: SAnime) {
+    override fun getEpisodeUrl(episode: SEpisode): String {
         ensureDelegateCompatible()
-        return delegate.prepareNewEpisode(chapter, manga)
+        return delegate.getEpisodeUrl(episode)
+    }
+
+    /**
+     * Called before inserting a new episode into database. Use it if you need to override episode
+     * fields, like the title or the episode number. Do not change anything to [anime].
+     *
+     * @param episode the episode to be added.
+     * @param anime the anime of the episode.
+     */
+    override fun prepareNewEpisode(episode: SEpisode, anime: SAnime) {
+        ensureDelegateCompatible()
+        return delegate.prepareNewEpisode(episode, anime)
     }
 
     /**

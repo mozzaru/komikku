@@ -356,13 +356,13 @@ class Downloader(
             // If the page list already exists, start from the file
             val pageList = download.pages ?: run {
                 // Otherwise, pull page list from network and add them to download object
-                val pages = download.source.getPageList(download.episode.toSEpisode())
+                val videos = download.source.getVideoList(download.episode.toSEpisode())
 
-                if (pages.isEmpty()) {
+                if (videos.isEmpty()) {
                     throw Exception(context.stringResource(MR.strings.page_list_empty_error))
                 }
                 // Don't trust index from source
-                val reIndexedPages = pages.mapIndexed { index, page -> Page(index, page.url, page.imageUrl, page.uri) }
+                val reIndexedPages = videos.mapIndexed { index, video -> Page(index, video.url, video.videoUrl, video.uri) }
                 download.pages = reIndexedPages
                 reIndexedPages
             }
@@ -383,20 +383,20 @@ class Downloader(
             // Start downloading images, consider we can have downloaded images already
             // Concurrently do 2 pages at a time
             pageList.asFlow()
-                .flatMapMerge(concurrency = 2) { page ->
+                .flatMapMerge(concurrency = 2) { video ->
                     flow {
                         // Fetch image URL if necessary
-                        if (page.imageUrl.isNullOrEmpty()) {
-                            page.status = Page.State.LOAD_PAGE
+                        if (video.videoUrl.isNullOrEmpty()) {
+                            video.status = Page.State.LOAD_PAGE
                             try {
-                                page.imageUrl = download.source.getImageUrl(page)
+                                video.videoUrl = download.source.getVideoUrl(video)
                             } catch (e: Throwable) {
-                                page.status = Page.State.ERROR
+                                video.status = Page.State.ERROR
                             }
                         }
 
-                        withIOContext { getOrDownloadImage(page, download, tmpDir, dataSaver) }
-                        emit(page)
+                        withIOContext { getOrDownloadImage(video, download, tmpDir, dataSaver) }
+                        emit(video)
                     }.flowOn(Dispatchers.IO)
                 }
                 .collect {
@@ -447,7 +447,7 @@ class Downloader(
      */
     private suspend fun getOrDownloadImage(page: Page, download: Download, tmpDir: UniFile, dataSaver: DataSaver) {
         // If the image URL is empty, do nothing
-        if (page.imageUrl == null) {
+        if (page.videoUrl == null) {
             return
         }
 
@@ -467,8 +467,8 @@ class Downloader(
             // If the image is already downloaded, do nothing. Otherwise download from network
             val file = when {
                 imageFile != null -> imageFile
-                episodeCache.isImageInCache(page.imageUrl!!) ->
-                    copyImageFromCache(episodeCache.getImageFile(page.imageUrl!!), tmpDir, filename)
+                episodeCache.isImageInCache(page.videoUrl!!) ->
+                    copyImageFromCache(episodeCache.getImageFile(page.videoUrl!!), tmpDir, filename)
                 else -> downloadImage(page, download.source, tmpDir, filename, dataSaver)
             }
 
@@ -523,7 +523,7 @@ class Downloader(
                 if (attempt < 3) {
                     delay((2L shl attempt.toInt()) * 1000)
                     if (source.isEhBasedSource()) {
-                        page.imageUrl = source.getImageUrl(page)
+                        page.videoUrl = source.getVideoUrl(page)
                     }
                     true
                 } else {
@@ -655,7 +655,7 @@ class Downloader(
             .mapNotNull { track ->
                 track.remoteUrl.takeUnless { url -> url.isBlank() }?.trim()
             }
-            .plus(source.getChapterUrl(episode.toSEpisode()).trim())
+            .plus(source.getEpisodeUrl(episode.toSEpisode()).trim())
             .distinct()
 
         val comicInfo = getComicInfo(

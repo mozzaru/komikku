@@ -184,10 +184,10 @@ abstract class SearchScreenModel(
 
                     try {
                         val page = withContext(coroutineDispatcher) {
-                            source.getSearchManga(1, query, source.getFilterList())
+                            source.getSearchAnime(1, query, source.getFilterList())
                         }
 
-                        val titles = page.mangas.map {
+                        val titles = page.animes.map {
                             // KMK -->
                             it.toDomainAnime(source.id)
                             // KMK <--

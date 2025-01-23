@@ -4,7 +4,7 @@ import androidx.paging.PagingState
 import eu.kanade.tachiyomi.source.CatalogueSource
 import eu.kanade.tachiyomi.source.model.FilterList
 import eu.kanade.tachiyomi.source.model.MangasPage
-import eu.kanade.tachiyomi.source.model.MetadataMangasPage
+import eu.kanade.tachiyomi.source.model.MetadataAnimesPage
 import eu.kanade.tachiyomi.source.model.SAnime
 import exh.metadata.metadata.RaisedSearchMetadata
 import tachiyomi.core.common.util.lang.withIOContext
@@ -43,7 +43,7 @@ abstract class SourcePagingSource(
         val mangasPage = try {
             withIOContext {
                 requestNextPage(page.toInt())
-                    .takeIf { it.mangas.isNotEmpty() }
+                    .takeIf { it.animes.isNotEmpty() }
                     ?: throw NoResultsException()
             }
         } catch (e: Exception) {
@@ -63,15 +63,15 @@ abstract class SourcePagingSource(
         val page = params.key ?: 1
 
         // SY -->
-        val metadata = if (mangasPage is MetadataMangasPage) {
-            mangasPage.mangasMetadata
+        val metadata = if (mangasPage is MetadataAnimesPage) {
+            mangasPage.animesMetadata
         } else {
             emptyList()
         }
         // SY <--
 
         return LoadResult.Page(
-            data = mangasPage.mangas
+            data = mangasPage.animes
                 // SY -->
                 .mapIndexed { index, sManga -> sManga to metadata.getOrNull(index) },
             // SY <--

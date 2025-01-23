@@ -11,7 +11,7 @@ import coil3.request.Options
 import eu.kanade.domain.anime.model.PagePreview
 import eu.kanade.tachiyomi.data.cache.PagePreviewCache
 import eu.kanade.tachiyomi.network.await
-import eu.kanade.tachiyomi.source.PagePreviewSource
+import eu.kanade.tachiyomi.source.ThumbnailPreviewSource
 import eu.kanade.tachiyomi.source.online.HttpSource
 import logcat.LogPriority
 import okhttp3.CacheControl
@@ -40,7 +40,7 @@ class PagePreviewFetcher(
     private val isInCache: () -> Boolean,
     private val writeToCache: (Source) -> Unit,
     private val diskCacheKeyLazy: Lazy<String>,
-    private val sourceLazy: Lazy<PagePreviewSource?>,
+    private val sourceLazy: Lazy<ThumbnailPreviewSource?>,
     private val callFactoryLazy: Lazy<Call.Factory>,
     private val imageLoader: ImageLoader,
 ) : Fetcher {
@@ -248,7 +248,7 @@ class PagePreviewFetcher(
                 isInCache = { pagePreviewCache.isImageInCache(data.imageUrl) },
                 writeToCache = { pagePreviewCache.putImageToCache(data.imageUrl, it) },
                 diskCacheKeyLazy = lazy { imageLoader.components.key(data, options)!! },
-                sourceLazy = lazy { sourceManager.get(data.source) as? PagePreviewSource },
+                sourceLazy = lazy { sourceManager.get(data.source) as? ThumbnailPreviewSource },
                 callFactoryLazy = callFactoryLazy,
                 imageLoader = imageLoader,
             )

@@ -3,7 +3,7 @@ package tachiyomi.data.source
 import eu.kanade.tachiyomi.source.CatalogueSource
 import eu.kanade.tachiyomi.source.model.FilterList
 import eu.kanade.tachiyomi.source.model.MangasPage
-import eu.kanade.tachiyomi.source.model.MetadataMangasPage
+import eu.kanade.tachiyomi.source.model.MetadataAnimesPage
 import eu.kanade.tachiyomi.source.model.SAnime
 import exh.metadata.metadata.RaisedSearchMetadata
 
@@ -13,11 +13,11 @@ abstract class EHentaiPagingSource(override val source: CatalogueSource) : Sourc
         params: LoadParams<Long>,
         mangasPage: MangasPage,
     ): LoadResult.Page<Long, Pair<SAnime, RaisedSearchMetadata?>> {
-        mangasPage as MetadataMangasPage
-        val metadata = mangasPage.mangasMetadata
+        mangasPage as MetadataAnimesPage
+        val metadata = mangasPage.animesMetadata
 
         return LoadResult.Page(
-            data = mangasPage.mangas
+            data = mangasPage.animes
                 .mapIndexed { index, sManga -> sManga to metadata.getOrNull(index) },
             prevKey = null,
             nextKey = mangasPage.nextKey,

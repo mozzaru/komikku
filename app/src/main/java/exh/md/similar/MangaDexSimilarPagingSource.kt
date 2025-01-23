@@ -2,7 +2,7 @@ package exh.md.similar
 
 import eu.kanade.domain.anime.model.toSAnime
 import eu.kanade.tachiyomi.source.model.MangasPage
-import eu.kanade.tachiyomi.source.model.MetadataMangasPage
+import eu.kanade.tachiyomi.source.model.MetadataAnimesPage
 import eu.kanade.tachiyomi.source.online.all.MangaDex
 import kotlinx.coroutines.async
 import kotlinx.coroutines.coroutineScope
@@ -22,13 +22,13 @@ class MangaDexSimilarPagingSource(val manga: Anime, val mangadex: MangaDex) : So
             val similarPage = similarPageDef.await()
             val relatedPage = relatedPageDef.await()
 
-            MetadataMangasPage(
-                relatedPage.mangas + similarPage.mangas,
+            MetadataAnimesPage(
+                relatedPage.animes + similarPage.animes,
                 false,
-                relatedPage.mangasMetadata + similarPage.mangasMetadata,
+                relatedPage.animesMetadata + similarPage.animesMetadata,
             )
         }
 
-        return mangasPage.takeIf { it.mangas.isNotEmpty() } ?: throw NoResultsException()
+        return mangasPage.takeIf { it.animes.isNotEmpty() } ?: throw NoResultsException()
     }
 }

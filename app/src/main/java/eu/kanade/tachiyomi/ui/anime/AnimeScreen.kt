@@ -600,7 +600,7 @@ class AnimeScreen(
         val source = source_ as? HttpSource ?: return null
 
         return try {
-            source.getMangaUrl(manga.toSAnime())
+            source.getAnimeUrl(manga.toSAnime())
         } catch (e: Exception) {
             null
         }
@@ -733,7 +733,7 @@ class AnimeScreen(
     private fun copyMangaUrl(context: Context, manga_: Anime?, source_: Source?) {
         val manga = manga_ ?: return
         val source = source_ as? HttpSource ?: return
-        val url = source.getMangaUrl(manga.toSAnime())
+        val url = source.getAnimeUrl(manga.toSAnime())
         context.copyToClipboard(url, url)
     }
 

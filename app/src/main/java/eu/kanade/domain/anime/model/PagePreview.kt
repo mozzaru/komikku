@@ -1,6 +1,6 @@
 package eu.kanade.domain.anime.model
 
-import eu.kanade.tachiyomi.source.PagePreviewInfo
+import eu.kanade.tachiyomi.source.ThumbnailPreviewInfo
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.serialization.Serializable
@@ -18,5 +18,5 @@ data class PagePreview(
     @Transient
     val progress = _progress.asStateFlow()
 
-    fun getPagePreviewInfo() = PagePreviewInfo(index, imageUrl, _progress)
+    fun getPagePreviewInfo() = ThumbnailPreviewInfo(index, imageUrl, _progress)
 }

@@ -5,11 +5,11 @@ import com.hippo.unifile.UniFile
 import eu.kanade.tachiyomi.source.CatalogueSource
 import eu.kanade.tachiyomi.source.Source
 import eu.kanade.tachiyomi.source.UnmeteredSource
+import eu.kanade.tachiyomi.source.model.AnimesPage
 import eu.kanade.tachiyomi.source.model.FilterList
-import eu.kanade.tachiyomi.source.model.MangasPage
-import eu.kanade.tachiyomi.source.model.Page
-import eu.kanade.tachiyomi.source.model.SEpisode
 import eu.kanade.tachiyomi.source.model.SAnime
+import eu.kanade.tachiyomi.source.model.SEpisode
+import eu.kanade.tachiyomi.source.model.Video
 import eu.kanade.tachiyomi.util.lang.compareToCaseInsensitiveNaturalOrder
 import kotlinx.coroutines.async
 import kotlinx.coroutines.awaitAll
@@ -77,11 +77,11 @@ actual class LocalSource(
     override val supportsLatest: Boolean = true
 
     // Browse related
-    override suspend fun getPopularManga(page: Int) = getSearchManga(page, "", PopularFilters)
+    override suspend fun getPopularAnime(page: Int) = getSearchAnime(page, "", PopularFilters)
 
-    override suspend fun getLatestUpdates(page: Int) = getSearchManga(page, "", LatestFilters)
+    override suspend fun getLatestUpdates(page: Int) = getSearchAnime(page, "", LatestFilters)
 
-    override suspend fun getSearchManga(page: Int, query: String, filters: FilterList): MangasPage = withIOContext {
+    override suspend fun getSearchAnime(page: Int, query: String, filters: FilterList): AnimesPage = withIOContext {
         val lastModifiedLimit = if (filters === LatestFilters) {
             System.currentTimeMillis() - LATEST_THRESHOLD
         } else {
@@ -91,7 +91,7 @@ actual class LocalSource(
         val allowLocalSourceHiddenFolders = allowHiddenFiles()
         // SY <--
 
-        var mangaDirs = fileSystem.getFilesInBaseDirectory()
+        var animeDirs = fileSystem.getFilesInBaseDirectory()
             // Filter out files that are hidden and is not a folder
             .filter {
                 it.isDirectory &&
@@ -114,17 +114,17 @@ actual class LocalSource(
         filters.forEach { filter ->
             when (filter) {
                 is OrderBy.Popular -> {
-                    mangaDirs = if (filter.state!!.ascending) {
-                        mangaDirs.sortedWith(compareBy(String.CASE_INSENSITIVE_ORDER) { it.name.orEmpty() })
+                    animeDirs = if (filter.state!!.ascending) {
+                        animeDirs.sortedWith(compareBy(String.CASE_INSENSITIVE_ORDER) { it.name.orEmpty() })
                     } else {
-                        mangaDirs.sortedWith(compareByDescending(String.CASE_INSENSITIVE_ORDER) { it.name.orEmpty() })
+                        animeDirs.sortedWith(compareByDescending(String.CASE_INSENSITIVE_ORDER) { it.name.orEmpty() })
                     }
                 }
                 is OrderBy.Latest -> {
-                    mangaDirs = if (filter.state!!.ascending) {
-                        mangaDirs.sortedBy(UniFile::lastModified)
+                    animeDirs = if (filter.state!!.ascending) {
+                        animeDirs.sortedBy(UniFile::lastModified)
                     } else {
-                        mangaDirs.sortedByDescending(UniFile::lastModified)
+                        animeDirs.sortedByDescending(UniFile::lastModified)
                     }
                 }
                 else -> {
@@ -133,15 +133,15 @@ actual class LocalSource(
             }
         }
 
-        val mangas = mangaDirs
-            .map { mangaDir ->
+        val animes = animeDirs
+            .map { animeDir ->
                 async {
                     SAnime.create().apply {
-                        title = mangaDir.name.orEmpty()
-                        url = mangaDir.name.orEmpty()
+                        title = animeDir.name.orEmpty()
+                        url = animeDir.name.orEmpty()
 
                         // Try to find the cover
-                        coverManager.find(mangaDir.name.orEmpty())?.let {
+                        coverManager.find(animeDir.name.orEmpty())?.let {
                             thumbnail_url = it.uri.toString()
                         }
                     }
@@ -149,15 +149,15 @@ actual class LocalSource(
             }
             .awaitAll()
 
-        MangasPage(mangas, false)
+        AnimesPage(animes, false)
     }
 
     // SY -->
-    fun updateMangaInfo(manga: SAnime) {
-        val mangaDirFiles = fileSystem.getFilesInAnimeDirectory(manga.url)
-        val existingFile = mangaDirFiles
+    fun updateAnimeInfo(anime: SAnime) {
+        val animeDirFiles = fileSystem.getFilesInAnimeDirectory(anime.url)
+        val existingFile = animeDirFiles
             .firstOrNull { it.name == COMIC_INFO_FILE }
-        val comicInfoArchiveFile = mangaDirFiles.firstOrNull { it.name == COMIC_INFO_ARCHIVE }
+        val comicInfoArchiveFile = animeDirFiles.firstOrNull { it.name == COMIC_INFO_ARCHIVE }
         val comicInfoArchiveReader = comicInfoArchiveFile?.archiveReader(context)
         val existingComicInfo =
             (existingFile?.openInputStream() ?: comicInfoArchiveReader?.getInputStream(COMIC_INFO_FILE))?.use {
@@ -166,7 +166,7 @@ actual class LocalSource(
                 }
             }
         val newComicInfo = if (existingComicInfo != null) {
-            manga.run {
+            anime.run {
                 existingComicInfo.copy(
                     series = ComicInfo.Series(title),
                     summary = description?.let { ComicInfo.Summary(it) },
@@ -179,10 +179,10 @@ actual class LocalSource(
                 )
             }
         } else {
-            manga.getComicInfo()
+            anime.getComicInfo()
         }
 
-        fileSystem.getAnimeDirectory(manga.url)?.let {
+        fileSystem.getAnimeDirectory(anime.url)?.let {
             copyComicInfoFile(
                 xml.encodeToString(ComicInfo.serializer(), newComicInfo).byteInputStream(),
                 it,
@@ -192,25 +192,25 @@ actual class LocalSource(
     }
     // SY <--
 
-    // Manga details related
-    override suspend fun getMangaDetails(manga: SAnime): SAnime = withIOContext {
-        coverManager.find(manga.url)?.let {
-            manga.thumbnail_url = it.uri.toString()
+    // Anime details related
+    override suspend fun getAnimeDetails(anime: SAnime): SAnime = withIOContext {
+        coverManager.find(anime.url)?.let {
+            anime.thumbnail_url = it.uri.toString()
         }
 
-        // Augment manga details based on metadata files
+        // Augment anime details based on metadata files
         try {
-            val mangaDir = fileSystem.getAnimeDirectory(manga.url) ?: error("${manga.url} is not a valid directory")
-            val mangaDirFiles = mangaDir.listFiles().orEmpty()
+            val animeDir = fileSystem.getAnimeDirectory(anime.url) ?: error("${anime.url} is not a valid directory")
+            val animeDirFiles = animeDir.listFiles().orEmpty()
 
-            val comicInfoFile = mangaDirFiles
+            val comicInfoFile = animeDirFiles
                 .firstOrNull { it.name == COMIC_INFO_FILE }
-            val noXmlFile = mangaDirFiles
+            val noXmlFile = animeDirFiles
                 .firstOrNull { it.name == ".noxml" }
-            val legacyJsonDetailsFile = mangaDirFiles
+            val legacyJsonDetailsFile = animeDirFiles
                 .firstOrNull { it.extension == "json" }
             // SY -->
-            val comicInfoArchiveFile = mangaDirFiles
+            val comicInfoArchiveFile = animeDirFiles
                 .firstOrNull { it.name == COMIC_INFO_ARCHIVE }
             // SY <--
 
@@ -218,14 +218,14 @@ actual class LocalSource(
                 // Top level ComicInfo.xml
                 comicInfoFile != null -> {
                     noXmlFile?.delete()
-                    setMangaDetailsFromComicInfoFile(comicInfoFile.openInputStream(), manga)
+                    setAnimeDetailsFromComicInfoFile(comicInfoFile.openInputStream(), anime)
                 }
                 // SY -->
                 comicInfoArchiveFile != null -> {
                     noXmlFile?.delete()
 
                     comicInfoArchiveFile.archiveReader(context).getInputStream(COMIC_INFO_FILE)
-                        ?.let { setMangaDetailsFromComicInfoFile(it, manga) }
+                        ?.let { setAnimeDetailsFromComicInfoFile(it, anime) }
                 }
 
                 // SY <--
@@ -234,16 +234,16 @@ actual class LocalSource(
                 // TODO: remove support for this entirely after a while
                 legacyJsonDetailsFile != null -> {
                     json.decodeFromStream<AnimeDetails>(legacyJsonDetailsFile.openInputStream()).run {
-                        title?.let { manga.title = it }
-                        author?.let { manga.author = it }
-                        artist?.let { manga.artist = it }
-                        description?.let { manga.description = it }
-                        genre?.let { manga.genre = it.joinToString() }
-                        status?.let { manga.status = it }
+                        title?.let { anime.title = it }
+                        author?.let { anime.author = it }
+                        artist?.let { anime.artist = it }
+                        description?.let { anime.description = it }
+                        genre?.let { anime.genre = it.joinToString() }
+                        status?.let { anime.status = it }
                     }
                     // Replace with ComicInfo.xml file
-                    val comicInfo = manga.getComicInfo()
-                    mangaDir
+                    val comicInfo = anime.getComicInfo()
+                    animeDir
                         .createFile(COMIC_INFO_FILE)
                         ?.openOutputStream()
                         ?.use {
@@ -253,35 +253,35 @@ actual class LocalSource(
                         }
                 }
 
-                // Copy ComicInfo.xml from chapter archive to top level if found
+                // Copy ComicInfo.xml from episode archive to top level if found
                 noXmlFile == null -> {
-                    val chapterArchives = mangaDirFiles.filter(Archive::isSupported)
+                    val episodeArchives = animeDirFiles.filter(Archive::isSupported)
 
-                    val copiedFile = copyComicInfoFileFromArchive(chapterArchives, mangaDir)
+                    val copiedFile = copyComicInfoFileFromArchive(episodeArchives, animeDir)
 
                     // SY -->
                     if (copiedFile != null && copiedFile.name != COMIC_INFO_ARCHIVE) {
-                        setMangaDetailsFromComicInfoFile(copiedFile.openInputStream(), manga)
+                        setAnimeDetailsFromComicInfoFile(copiedFile.openInputStream(), anime)
                     } else if (copiedFile != null && copiedFile.name == COMIC_INFO_ARCHIVE) {
                         copiedFile.archiveReader(context).getInputStream(COMIC_INFO_FILE)
-                            ?.let { setMangaDetailsFromComicInfoFile(it, manga) }
+                            ?.let { setAnimeDetailsFromComicInfoFile(it, anime) }
                     } // SY <--
                     else {
                         // Avoid re-scanning
-                        mangaDir.createFile(".noxml")
+                        animeDir.createFile(".noxml")
                     }
                 }
             }
         } catch (e: Throwable) {
-            logcat(LogPriority.ERROR, e) { "Error setting manga details from local metadata for ${manga.title}" }
+            logcat(LogPriority.ERROR, e) { "Error setting anime details from local metadata for ${anime.title}" }
         }
 
-        return@withIOContext manga
+        return@withIOContext anime
     }
 
-    private fun copyComicInfoFileFromArchive(chapterArchives: List<UniFile>, folder: UniFile): UniFile? {
-        for (chapter in chapterArchives) {
-            chapter.archiveReader(context).use { reader ->
+    private fun copyComicInfoFileFromArchive(episodeArchives: List<UniFile>, folder: UniFile): UniFile? {
+        for (episode in episodeArchives) {
+            episode.archiveReader(context).use { reader ->
                 reader.getInputStream(COMIC_INFO_FILE)?.use { stream ->
                     return copyComicInfoFile(stream, folder, /* SY --> */ reader.encrypted /* SY <-- */)
                 }
@@ -316,36 +316,36 @@ actual class LocalSource(
         }
     }
 
-    private fun setMangaDetailsFromComicInfoFile(stream: InputStream, manga: SAnime) {
+    private fun setAnimeDetailsFromComicInfoFile(stream: InputStream, anime: SAnime) {
         val comicInfo = AndroidXmlReader(stream, StandardCharsets.UTF_8.name()).use {
             xml.decodeFromReader<ComicInfo>(it)
         }
 
-        manga.copyFromComicInfo(comicInfo)
+        anime.copyFromComicInfo(comicInfo)
     }
 
-    // Chapters
-    override suspend fun getChapterList(manga: SAnime): List<SEpisode> = withIOContext {
-        val chapters = fileSystem.getFilesInAnimeDirectory(manga.url)
+    // Episodes
+    override suspend fun getEpisodeList(anime: SAnime): List<SEpisode> = withIOContext {
+        val episodes = fileSystem.getFilesInAnimeDirectory(anime.url)
             // Only keep supported formats
             .filter { it.isDirectory || Archive.isSupported(it) || it.extension.equals("epub", true) }
-            .map { chapterFile ->
+            .map { episodeFile ->
                 SEpisode.create().apply {
-                    url = "${manga.url}/${chapterFile.name}"
-                    name = if (chapterFile.isDirectory) {
-                        chapterFile.name
+                    url = "${anime.url}/${episodeFile.name}"
+                    name = if (episodeFile.isDirectory) {
+                        episodeFile.name
                     } else {
-                        chapterFile.nameWithoutExtension
+                        episodeFile.nameWithoutExtension
                     }.orEmpty()
-                    date_upload = chapterFile.lastModified()
+                    date_upload = episodeFile.lastModified()
                     episode_number = EpisodeRecognition
-                        .parseEpisodeNumber(manga.title, this.name, this.episode_number.toDouble())
+                        .parseEpisodeNumber(anime.title, this.name, this.episode_number.toDouble())
                         .toFloat()
 
-                    val format = Format.valueOf(chapterFile)
+                    val format = Format.valueOf(episodeFile)
                     if (format is Format.Epub) {
                         format.file.epubReader(context).use { epub ->
-                            epub.fillMetadata(manga, this)
+                            epub.fillMetadata(anime, this)
                         }
                     }
                 }
@@ -355,28 +355,28 @@ actual class LocalSource(
                 if (c == 0) c2.name.compareToCaseInsensitiveNaturalOrder(c1.name) else c
             }
 
-        // Copy the cover from the first chapter found if not available
-        if (manga.thumbnail_url.isNullOrBlank()) {
-            chapters.lastOrNull()?.let { chapter ->
-                updateCover(chapter, manga)
+        // Copy the cover from the first episode found if not available
+        if (anime.thumbnail_url.isNullOrBlank()) {
+            episodes.lastOrNull()?.let { episode ->
+                updateCover(episode, anime)
             }
         }
 
-        chapters
+        episodes
     }
 
     // Filters
     override fun getFilterList() = FilterList(OrderBy.Popular(context))
 
     // Unused stuff
-    override suspend fun getPageList(chapter: SEpisode): List<Page> = throw UnsupportedOperationException("Unused")
+    override suspend fun getVideoList(episode: SEpisode): List<Video> = throw UnsupportedOperationException("Unused")
 
-    fun getFormat(chapter: SEpisode): Format {
+    fun getFormat(episode: SEpisode): Format {
         try {
-            val (mangaDirName, chapterName) = chapter.url.split('/', limit = 2)
+            val (animeDirName, episodeName) = episode.url.split('/', limit = 2)
             return fileSystem.getBaseDirectory()
-                ?.findFile(mangaDirName)
-                ?.findFile(chapterName)
+                ?.findFile(animeDirName)
+                ?.findFile(episodeName)
                 ?.let(Format.Companion::valueOf)
                 ?: throw Exception(context.stringResource(MR.strings.chapter_not_found))
         } catch (e: Format.UnknownFormatException) {
@@ -386,9 +386,9 @@ actual class LocalSource(
         }
     }
 
-    private fun updateCover(chapter: SEpisode, manga: SAnime): UniFile? {
+    private fun updateCover(episode: SEpisode, anime: SAnime): UniFile? {
         return try {
-            when (val format = getFormat(chapter)) {
+            when (val format = getFormat(episode)) {
                 is Format.Directory -> {
                     val entry = format.file.listFiles()
                         ?.sortedWith { f1, f2 ->
@@ -400,7 +400,7 @@ actual class LocalSource(
                             !it.isDirectory && ImageUtil.isImage(it.name) { it.openInputStream() }
                         }
 
-                    entry?.let { coverManager.update(manga, it.openInputStream()) }
+                    entry?.let { coverManager.update(anime, it.openInputStream()) }
                 }
                 is Format.Archive -> {
                     format.file.archiveReader(context).use { reader ->
@@ -410,19 +410,19 @@ actual class LocalSource(
                                 .find { it.isFile && ImageUtil.isImage(it.name) { reader.getInputStream(it.name)!! } }
                         }
 
-                        entry?.let { coverManager.update(manga, reader.getInputStream(it.name)!!, reader.encrypted) }
+                        entry?.let { coverManager.update(anime, reader.getInputStream(it.name)!!, reader.encrypted) }
                     }
                 }
                 is Format.Epub -> {
                     format.file.epubReader(context).use { epub ->
                         val entry = epub.getImagesFromPages().firstOrNull()
 
-                        entry?.let { coverManager.update(manga, epub.getInputStream(it)!!) }
+                        entry?.let { coverManager.update(anime, epub.getInputStream(it)!!) }
                     }
                 }
             }
         } catch (e: Throwable) {
-            logcat(LogPriority.ERROR, e) { "Error updating cover for ${manga.title}" }
+            logcat(LogPriority.ERROR, e) { "Error updating cover for ${anime.title}" }
             null
         }
     }

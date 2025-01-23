@@ -11,15 +11,15 @@ import eu.kanade.tachiyomi.data.track.TrackerManager
 import eu.kanade.tachiyomi.data.track.mdlist.MdList
 import eu.kanade.tachiyomi.network.asObservableSuccess
 import eu.kanade.tachiyomi.network.awaitSuccess
-import eu.kanade.tachiyomi.source.model.MangasPage
-import eu.kanade.tachiyomi.source.model.MetadataMangasPage
+import eu.kanade.tachiyomi.source.model.AnimesPage
+import eu.kanade.tachiyomi.source.model.MetadataAnimesPage
 import eu.kanade.tachiyomi.source.model.Page
 import eu.kanade.tachiyomi.source.online.FollowsSource
 import eu.kanade.tachiyomi.source.online.HttpSource
 import eu.kanade.tachiyomi.source.online.LoginSource
 import eu.kanade.tachiyomi.source.online.MetadataSource
 import eu.kanade.tachiyomi.source.online.NamespaceSource
-import eu.kanade.tachiyomi.source.online.RandomMangaSource
+import eu.kanade.tachiyomi.source.online.RandomAnimeSource
 import eu.kanade.tachiyomi.source.online.UrlImportableSource
 import exh.md.dto.MangaDto
 import exh.md.dto.StatisticsMangaDto
@@ -60,7 +60,7 @@ class MangaDex(delegate: HttpSource, val context: Context) :
     UrlImportableSource,
     FollowsSource,
     LoginSource,
-    RandomMangaSource,
+    RandomAnimeSource,
     NamespaceSource {
     override val lang: String = delegate.lang
 
@@ -168,7 +168,7 @@ class MangaDex(delegate: HttpSource, val context: Context) :
     }
 
     @Deprecated("Use the non-RxJava API instead", replaceWith = ReplaceWith("getLatestUpdates"))
-    override fun fetchLatestUpdates(page: Int): Observable<MangasPage> {
+    override fun fetchLatestUpdates(page: Int): Observable<AnimesPage> {
         val request = delegate.latestUpdatesRequest(page)
         val url = request.url.newBuilder()
             .removeAllQueryParameters("includeFutureUpdates")
@@ -180,7 +180,7 @@ class MangaDex(delegate: HttpSource, val context: Context) :
             }
     }
 
-    override suspend fun getLatestUpdates(page: Int): MangasPage {
+    override suspend fun getLatestUpdates(page: Int): AnimesPage {
         val request = delegate.latestUpdatesRequest(page)
         val url = request.url.newBuilder()
             .removeAllQueryParameters("includeFutureUpdates")
@@ -190,49 +190,49 @@ class MangaDex(delegate: HttpSource, val context: Context) :
         return delegate.latestUpdatesParse(response)
     }
 
-    @Deprecated("Use the 1.x API instead", replaceWith = ReplaceWith("getMangaDetails"))
-    override fun fetchMangaDetails(manga: SAnime): Observable<SAnime> {
-        return mangaHandler.fetchMangaDetailsObservable(manga, id, coverQuality(), tryUsingFirstVolumeCover(), altTitlesInDesc())
+    @Deprecated("Use the 1.x API instead", replaceWith = ReplaceWith("getAnimeDetails"))
+    override fun fetchAnimeDetails(anime: SAnime): Observable<SAnime> {
+        return mangaHandler.fetchMangaDetailsObservable(anime, id, coverQuality(), tryUsingFirstVolumeCover(), altTitlesInDesc())
     }
 
-    override suspend fun getMangaDetails(manga: SAnime): SAnime {
-        return mangaHandler.getMangaDetails(manga, id, coverQuality(), tryUsingFirstVolumeCover(), altTitlesInDesc())
+    override suspend fun getAnimeDetails(anime: SAnime): SAnime {
+        return mangaHandler.getMangaDetails(anime, id, coverQuality(), tryUsingFirstVolumeCover(), altTitlesInDesc())
     }
 
     @Deprecated("Use the 1.x API instead", replaceWith = ReplaceWith("getEpisodeList"))
-    override fun fetchChapterList(manga: SAnime): Observable<List<SEpisode>> {
-        return mangaHandler.fetchChapterListObservable(manga, blockedGroups(), blockedUploaders())
+    override fun fetchEpisodeList(anime: SAnime): Observable<List<SEpisode>> {
+        return mangaHandler.fetchChapterListObservable(anime, blockedGroups(), blockedUploaders())
     }
 
-    override suspend fun getChapterList(manga: SAnime): List<SEpisode> {
-        return mangaHandler.getChapterList(manga, blockedGroups(), blockedUploaders())
+    override suspend fun getEpisodeList(anime: SAnime): List<SEpisode> {
+        return mangaHandler.getChapterList(anime, blockedGroups(), blockedUploaders())
     }
 
-    @Deprecated("Use the 1.x API instead", replaceWith = ReplaceWith("getPageList"))
-    override fun fetchPageList(chapter: SEpisode): Observable<List<Page>> {
-        return runAsObservable { pageHandler.fetchPageList(chapter, usePort443Only(), dataSaver(), delegate) }
+    @Deprecated("Use the 1.x API instead", replaceWith = ReplaceWith("getVideoList"))
+    override fun fetchVideoList(episode: SEpisode): Observable<List<Page>> {
+        return runAsObservable { pageHandler.fetchPageList(episode, usePort443Only(), dataSaver(), delegate) }
     }
 
-    override suspend fun getPageList(chapter: SEpisode): List<Page> {
-        return pageHandler.fetchPageList(chapter, usePort443Only(), dataSaver(), delegate)
+    override suspend fun getVideoList(episode: SEpisode): List<Page> {
+        return pageHandler.fetchPageList(episode, usePort443Only(), dataSaver(), delegate)
     }
 
-    override suspend fun getImage(page: Page): Response {
-        val call = pageHandler.getImageCall(page)
-        return call?.awaitSuccess() ?: super.getImage(page)
+    override suspend fun getVideo(video: Page): Response {
+        val call = pageHandler.getImageCall(video)
+        return call?.awaitSuccess() ?: super.getVideo(video)
     }
 
-    @Deprecated("Use the non-RxJava API instead", replaceWith = ReplaceWith("getImageUrl"))
-    override fun fetchImageUrl(page: Page): Observable<String> {
-        return pageHandler.fetchImageUrl(page) {
+    @Deprecated("Use the non-RxJava API instead", replaceWith = ReplaceWith("getVideoUrl"))
+    override fun fetchVideoUrl(video: Page): Observable<String> {
+        return pageHandler.fetchImageUrl(video) {
             @Suppress("DEPRECATION")
-            super.fetchImageUrl(it)
+            super.fetchVideoUrl(it)
         }
     }
 
-    override suspend fun getImageUrl(page: Page): String {
-        return pageHandler.getImageUrl(page) {
-            super.getImageUrl(page)
+    override suspend fun getVideoUrl(video: Page): String {
+        return pageHandler.getImageUrl(video) {
+            super.getVideoUrl(video)
         }
     }
 
@@ -271,7 +271,7 @@ class MangaDex(delegate: HttpSource, val context: Context) :
     }
 
     // FollowsSource methods
-    override suspend fun fetchFollows(page: Int): MangasPage {
+    override suspend fun fetchFollows(page: Int): AnimesPage {
         return followsHandler.fetchFollows(page)
     }
 
@@ -300,16 +300,16 @@ class MangaDex(delegate: HttpSource, val context: Context) :
         return mangaHandler.getTrackingInfo(track)
     }
 
-    // RandomMangaSource method
-    override suspend fun fetchRandomMangaUrl(): String {
+    // RandomAnimeSource method
+    override suspend fun fetchRandomAnimeUrl(): String {
         return mangaHandler.fetchRandomMangaId()
     }
 
-    suspend fun getMangaSimilar(manga: SAnime): MetadataMangasPage {
+    suspend fun getMangaSimilar(manga: SAnime): MetadataAnimesPage {
         return similarHandler.getSimilar(manga)
     }
 
-    suspend fun getMangaRelated(manga: SAnime): MetadataMangasPage {
+    suspend fun getMangaRelated(manga: SAnime): MetadataAnimesPage {
         return similarHandler.getRelated(manga)
     }
 
