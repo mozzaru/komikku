@@ -67,7 +67,7 @@ class AnimeBackupCreator(
         // SY <--
 
         mangaObject.excludedScanlators = handler.awaitList {
-            excluded_scanlatorsQueries.getExcludedScanlatorsByMangaId(manga.id)
+            excluded_scanlatorsQueries.getExcludedScanlatorsByAnimeId(manga.id)
         }
 
         if (options.episodes) {
@@ -102,8 +102,8 @@ class AnimeBackupCreator(
             val historyByMangaId = getHistory.await(manga.id)
             if (historyByMangaId.isNotEmpty()) {
                 val history = historyByMangaId.map { history ->
-                    val chapter = handler.awaitOne { episodesQueries.getEpisodeById(history.chapterId) }
-                    BackupHistory(chapter.url, history.seenAt?.time ?: 0L, history.readDuration)
+                    val chapter = handler.awaitOne { episodesQueries.getEpisodeById(history.episodeId) }
+                    BackupHistory(chapter.url, history.seenAt?.time ?: 0L, history.watchDuration)
                 }
                 if (history.isNotEmpty()) {
                     mangaObject.history = history

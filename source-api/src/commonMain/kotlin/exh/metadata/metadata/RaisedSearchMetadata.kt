@@ -118,7 +118,7 @@ sealed class RaisedSearchMetadata {
     }
 
     fun fillBaseFields(metadata: FlatMetadata) {
-        animeId = metadata.metadata.mangaId
+        animeId = metadata.metadata.animeId
         uploader = metadata.metadata.uploader
         indexedExtra = metadata.metadata.indexedExtra
 

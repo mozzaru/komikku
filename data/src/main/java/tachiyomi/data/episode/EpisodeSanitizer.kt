@@ -5,10 +5,10 @@ object EpisodeSanitizer {
     fun String.sanitize(title: String): String {
         return trim()
             .removePrefix(title)
-            .trim(*CHAPTER_TRIM_CHARS)
+            .trim(*EPISODE_TRIM_CHARS)
     }
 
-    private val CHAPTER_TRIM_CHARS = arrayOf(
+    private val EPISODE_TRIM_CHARS = arrayOf(
         // Whitespace
         ' ',
         '\u0009',

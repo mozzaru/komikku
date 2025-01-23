@@ -4,16 +4,16 @@ import java.util.Date
 
 data class History(
     val id: Long,
-    val chapterId: Long,
+    val episodeId: Long,
     val seenAt: Date?,
-    val readDuration: Long,
+    val watchDuration: Long,
 ) {
     companion object {
         fun create() = History(
             id = -1L,
-            chapterId = -1L,
+            episodeId = -1L,
             seenAt = null,
-            readDuration = -1L,
+            watchDuration = -1L,
         )
     }
 }

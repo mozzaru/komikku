@@ -8,6 +8,6 @@ class GetExhFavoriteAnimeWithMetadata(
 ) {
 
     suspend fun await(): List<Anime> {
-        return animeMetadataRepository.getExhFavoriteMangaWithMetadata()
+        return animeMetadataRepository.getExhFavoriteAnimeWithMetadata()
     }
 }

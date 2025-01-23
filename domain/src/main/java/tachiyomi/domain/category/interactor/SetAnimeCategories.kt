@@ -10,7 +10,7 @@ class SetAnimeCategories(
 
     suspend fun await(mangaId: Long, categoryIds: List<Long>) {
         try {
-            animeRepository.setMangaCategories(mangaId, categoryIds)
+            animeRepository.setAnimeCategories(mangaId, categoryIds)
         } catch (e: Exception) {
             logcat(LogPriority.ERROR, e)
         }

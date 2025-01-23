@@ -121,10 +121,10 @@ internal fun LazyListScope.updatesUiItems(
                     modifier = Modifier.animateItemFastScroll(),
                     update = updatesItem.update,
                     selected = updatesItem.selected,
-                    readProgress = updatesItem.update.lastPageRead
+                    readProgress = updatesItem.update.lastSecondSeen
                         .takeIf {
                             /* SY --> */(
-                                !updatesItem.update.read ||
+                                !updatesItem.update.seen ||
                                     (preserveReadingPosition && updatesItem.isEhBasedUpdate())
                                 )/* SY <-- */ &&
                                 it > 0L
@@ -186,7 +186,7 @@ private fun UpdatesUiItem(
     modifier: Modifier = Modifier,
 ) {
     val haptic = LocalHapticFeedback.current
-    val textAlpha = if (update.read) DISABLED_ALPHA else 1f
+    val textAlpha = if (update.seen) DISABLED_ALPHA else 1f
 
     Row(
         modifier = modifier
@@ -272,7 +272,7 @@ private fun UpdatesUiItem(
 
             Row(verticalAlignment = Alignment.CenterVertically) {
                 var textHeight by remember { mutableIntStateOf(0) }
-                if (!update.read) {
+                if (!update.seen) {
                     Icon(
                         imageVector = Icons.Filled.Circle,
                         contentDescription = stringResource(MR.strings.unread),
@@ -293,7 +293,7 @@ private fun UpdatesUiItem(
                     Spacer(modifier = Modifier.width(2.dp))
                 }
                 Text(
-                    text = update.chapterName,
+                    text = update.episodeName,
                     maxLines = 1,
                     style = MaterialTheme.typography.bodySmall,
                     color = LocalContentColor.current.copy(alpha = textAlpha),

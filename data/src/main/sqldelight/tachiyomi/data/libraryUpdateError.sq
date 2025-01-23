@@ -27,11 +27,11 @@ deleteError:
 DELETE FROM libraryUpdateError
 WHERE _id = :_id;
 
-deleteMangaError:
+deleteAnimeError:
 DELETE FROM libraryUpdateError
 WHERE manga_id = :mangaId;
 
-cleanUnrelevantMangaErrors:
+cleanUnrelevantAnimeErrors:
 DELETE FROM libraryUpdateError
 WHERE NOT EXISTS (
     SELECT 1

@@ -16,9 +16,7 @@ import eu.kanade.tachiyomi.source.ThumbnailPreviewSource
 import eu.kanade.tachiyomi.source.model.AnimesPage
 import eu.kanade.tachiyomi.source.model.Filter
 import eu.kanade.tachiyomi.source.model.FilterList
-import eu.kanade.tachiyomi.source.model.MangasPage
 import eu.kanade.tachiyomi.source.model.MetadataAnimesPage
-import eu.kanade.tachiyomi.source.model.Page
 import eu.kanade.tachiyomi.source.model.SAnime
 import eu.kanade.tachiyomi.source.model.SEpisode
 import eu.kanade.tachiyomi.source.model.Video
@@ -55,8 +53,8 @@ import exh.util.ignore
 import exh.util.nullIfBlank
 import exh.util.trimAll
 import exh.util.trimOrNull
-import exh.util.urlImportFetchSearchManga
-import exh.util.urlImportFetchSearchMangaSuspend
+import exh.util.urlImportFetchSearchAnime
+import exh.util.urlImportFetchSearchAnimeSuspend
 import kotlinx.serialization.json.Json
 import kotlinx.serialization.json.JsonObject
 import kotlinx.serialization.json.add
@@ -426,7 +424,7 @@ class EHentai(
     ): Observable<List<Video>> = fetchChapterPage(episode, baseUrl + episode.url)
         .map {
             it.mapIndexed { i, s ->
-                Page(i, s)
+                Video(i, s)
             }
         }!!
 
@@ -473,12 +471,12 @@ class EHentai(
         return exGet("$baseUrl/popular")
     }
 
-    private fun <T : MangasPage> Observable<T>.checkValid(): Observable<MangasPage> = map {
+    private fun <T : AnimesPage> Observable<T>.checkValid(): Observable<AnimesPage> = map {
         it.checkValid()
     }
 
-    private fun <T : MangasPage> T.checkValid(): MangasPage =
-        if (exh && mangas.isEmpty() && preferences.igneousVal().get().equals("mystery", true)) {
+    private fun <T : AnimesPage> T.checkValid(): AnimesPage =
+        if (exh && animes.isEmpty() && preferences.igneousVal().get().equals("mystery", true)) {
             throw Exception(
                 "Invalid igneous cookie, try re-logging or finding a correct one to input in the login menu",
             )
@@ -509,13 +507,13 @@ class EHentai(
     // Support direct URL importing
     @Deprecated("Use the non-RxJava API instead", replaceWith = ReplaceWith("getSearchAnime"))
     override fun fetchSearchAnime(page: Int, query: String, filters: FilterList): Observable<AnimesPage> =
-        urlImportFetchSearchManga(context, query) {
+        urlImportFetchSearchAnime(context, query) {
             @Suppress("DEPRECATION")
             super<HttpSource>.fetchSearchAnime(page, query, filters).checkValid()
         }
 
     override suspend fun getSearchAnime(page: Int, query: String, filters: FilterList): AnimesPage {
-        return urlImportFetchSearchMangaSuspend(context, query) {
+        return urlImportFetchSearchAnimeSuspend(context, query) {
             super<HttpSource>.getSearchAnime(page, query, filters).checkValid()
         }
     }
@@ -813,19 +811,19 @@ class EHentai(
     override fun videoListParse(response: Response) =
         throw UnsupportedOperationException("Unused method was called somehow!")
 
-    override suspend fun getVideoUrl(video: Page): String {
+    override suspend fun getVideoUrl(video: Video): String {
         val imageUrlResponse = client.newCall(videoUrlRequest(video)).awaitSuccess()
         return realImageUrlParse(imageUrlResponse, video)
     }
 
     @Deprecated("Use the non-RxJava API instead", replaceWith = ReplaceWith("getVideoUrl"))
-    override fun fetchVideoUrl(video: Page): Observable<String> {
+    override fun fetchVideoUrl(video: Video): Observable<String> {
         return client.newCall(videoUrlRequest(video))
             .asObservableSuccess()
             .map { realImageUrlParse(it, video) }
     }
 
-    private fun realImageUrlParse(response: Response, page: Page): String {
+    private fun realImageUrlParse(response: Response, page: Video): String {
         with(response.asJsoup()) {
             val currentImage = getElementById("img")!!.attr("src")
             // Each press of the retry button will choose another server
@@ -1146,7 +1144,7 @@ class EHentai(
         )
     }
 
-    override suspend fun mapUrlToMangaUrl(uri: Uri): String? {
+    override suspend fun mapUrlToAnimeUrl(uri: Uri): String? {
         return when (uri.pathSegments.firstOrNull()) {
             "g" -> {
                 // Is already gallery page, do nothing
@@ -1160,8 +1158,8 @@ class EHentai(
         }
     }
 
-    override fun cleanMangaUrl(url: String): String {
-        return EHentaiSearchMetadata.normalizeUrl(super.cleanMangaUrl(url))
+    override fun cleanAnimeUrl(url: String): String {
+        return EHentaiSearchMetadata.normalizeUrl(super.cleanAnimeUrl(url))
     }
 
     private fun getGalleryUrlFromPage(uri: Uri): String {

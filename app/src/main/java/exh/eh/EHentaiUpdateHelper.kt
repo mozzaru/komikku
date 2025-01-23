@@ -184,21 +184,21 @@ class EHentaiUpdateHelper(context: Context) {
         chainsAsEpisodes: List<Episode>,
         chainsAsHistory: List<History>,
     ): Pair<List<HistoryUpdate>, List<Long>> {
-        val history = chainsAsHistory.groupBy { history -> chainsAsEpisodes.find { it.id == history.chapterId }?.url }
+        val history = chainsAsHistory.groupBy { history -> chainsAsEpisodes.find { it.id == history.episodeId }?.url }
         val newHistory = currentEpisodes.mapNotNull { chapter ->
             val newHistory = history[chapter.url]
                 ?.maxByOrNull {
                     it.seenAt?.time ?: 0
                 }
-                ?.takeIf { it.chapterId != chapter.id && it.seenAt != null }
+                ?.takeIf { it.episodeId != chapter.id && it.seenAt != null }
             if (newHistory != null) {
-                HistoryUpdate(chapter.id, newHistory.seenAt!!, newHistory.readDuration)
+                HistoryUpdate(chapter.id, newHistory.seenAt!!, newHistory.watchDuration)
             } else {
                 null
             }
         }
         val currentChapterIds = currentEpisodes.map { it.id }
-        val historyToDelete = chainsAsHistory.filterNot { it.chapterId in currentChapterIds }
+        val historyToDelete = chainsAsHistory.filterNot { it.episodeId in currentChapterIds }
             .map { it.id }
         return newHistory to historyToDelete
     }
@@ -278,7 +278,7 @@ class EHentaiUpdateHelper(context: Context) {
                             EpisodeUpdate(
                                 id = chapter.id,
                                 name = name.takeUnless { chapter.name == it },
-                                chapterNumber = chapterNumber.takeUnless { chapter.episodeNumber == it },
+                                episodeNumber = chapterNumber.takeUnless { chapter.episodeNumber == it },
                                 sourceOrder = sourceOrder.takeUnless { chapter.sourceOrder == it },
                             ),
                         )

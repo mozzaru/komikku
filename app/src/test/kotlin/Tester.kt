@@ -171,8 +171,8 @@ class Tester {
             Injekt.addSingletonFactory {
                 GetCustomAnimeInfo(
                     object : CustomAnimeRepository {
-                        override fun get(mangaId: Long) = null
-                        override fun set(mangaInfo: CustomAnimeInfo) = Unit
+                        override fun get(animeId: Long) = null
+                        override fun set(animeInfo: CustomAnimeInfo) = Unit
                     },
                 )
             }

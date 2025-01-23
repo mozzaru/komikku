@@ -8,6 +8,6 @@ class GetSeenAnimeNotInLibraryView(
 ) {
 
     suspend fun await(): List<LibraryAnime> {
-        return animeRepository.getReadMangaNotInLibraryView()
+        return animeRepository.getSeenAnimeNotInLibraryView()
     }
 }

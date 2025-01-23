@@ -391,18 +391,18 @@ class AnimeRestorer(
                     null
                 } else {
                     // New history entry
-                    item.copy(chapterId = chapter._id)
+                    item.copy(episodeId = chapter._id)
                 }
             }
 
             // Update history entry
             item.copy(
                 id = dbHistory._id,
-                chapterId = dbHistory.chapter_id,
+                episodeId = dbHistory.chapter_id,
                 seenAt = max(item.seenAt?.time ?: 0L, dbHistory.last_read?.time ?: 0L)
                     .takeIf { it > 0L }
                     ?.let { Date(it) },
-                readDuration = max(item.readDuration, dbHistory.time_read) - dbHistory.time_read,
+                watchDuration = max(item.watchDuration, dbHistory.time_read) - dbHistory.time_read,
             )
         }
 
@@ -410,9 +410,9 @@ class AnimeRestorer(
             handler.await(true) {
                 toUpdate.forEach {
                     historyQueries.upsert(
-                        it.chapterId,
+                        it.episodeId,
                         it.seenAt,
-                        it.readDuration,
+                        it.watchDuration,
                     )
                 }
             }
@@ -510,10 +510,10 @@ class AnimeRestorer(
                     handler.await {
                         mergedQueries.insert(
                             infoManga = isInfoAnime,
-                            getChapterUpdates = getChapterUpdates,
-                            chapterSortMode = chapterSortMode.toLong(),
-                            chapterPriority = chapterPriority.toLong(),
-                            downloadChapters = downloadChapters,
+                            getChapterUpdates = getEpisodeUpdates,
+                            chapterSortMode = episodeSortMode.toLong(),
+                            chapterPriority = episodePriority.toLong(),
+                            downloadChapters = downloadEpisodes,
                             mergeId = mergeMangaId,
                             mergeUrl = mergeUrl,
                             mangaId = mergedManga.id,
@@ -572,7 +572,7 @@ class AnimeRestorer(
     private suspend fun restoreExcludedScanlators(manga: Anime, excludedScanlators: List<String>) {
         if (excludedScanlators.isEmpty()) return
         val existingExcludedScanlators = handler.awaitList {
-            excluded_scanlatorsQueries.getExcludedScanlatorsByMangaId(manga.id)
+            excluded_scanlatorsQueries.getExcludedScanlatorsByAnimeId(manga.id)
         }
         val toInsert = excludedScanlators.filter { it !in existingExcludedScanlators }
         if (toInsert.isNotEmpty()) {

@@ -14,7 +14,7 @@ data class BackupHistory(
     fun getHistoryImpl(): History {
         return History.create().copy(
             seenAt = Date(lastRead),
-            readDuration = readDuration,
+            watchDuration = readDuration,
         )
     }
 }

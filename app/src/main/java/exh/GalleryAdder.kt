@@ -94,16 +94,16 @@ class GalleryAdder(
                     } ?: return GalleryAddEvent.Fail.UnknownSource(url, context)
             }
 
-            val realChapterUrl = try {
-                source.mapUrlToChapterUrl(uri)
+            val realEpisodeUrl = try {
+                source.mapUrlToEpisodeUrl(uri)
             } catch (e: Exception) {
                 logger.e(context.stringResource(SYMR.strings.gallery_adder_uri_map_to_chapter_error), e)
                 null
             }
 
-            val cleanedChapterUrl = if (realChapterUrl != null) {
+            val cleanedEpisodeUrl = if (realEpisodeUrl != null) {
                 try {
-                    source.cleanChapterUrl(realChapterUrl)
+                    source.cleanEpisodeUrl(realEpisodeUrl)
                 } catch (e: Exception) {
                     logger.e(context.stringResource(SYMR.strings.gallery_adder_uri_clean_error), e)
                     null
@@ -112,74 +112,74 @@ class GalleryAdder(
                 null
             }
 
-            val chapterMangaUrl = if (realChapterUrl != null) {
-                source.mapChapterUrlToMangaUrl(realChapterUrl.toUri())
+            val episodeAnimeUrl = if (realEpisodeUrl != null) {
+                source.mapEpisodeUrlToAnimeUrl(realEpisodeUrl.toUri())
             } else {
                 null
             }
 
-            // Map URL to manga URL
-            val realMangaUrl = try {
-                chapterMangaUrl ?: source.mapUrlToMangaUrl(uri)
+            // Map URL to anime URL
+            val realAnimeUrl = try {
+                episodeAnimeUrl ?: source.mapUrlToAnimeUrl(uri)
             } catch (e: Exception) {
                 logger.e(context.stringResource(SYMR.strings.gallery_adder_uri_map_to_gallery_error), e)
                 null
             } ?: return GalleryAddEvent.Fail.UnknownType(url, context)
 
             // Clean URL
-            val cleanedMangaUrl = try {
-                source.cleanMangaUrl(realMangaUrl)
+            val cleanedAnimeUrl = try {
+                source.cleanAnimeUrl(realAnimeUrl)
             } catch (e: Exception) {
                 logger.e(context.stringResource(SYMR.strings.gallery_adder_uri_clean_error), e)
                 null
             } ?: return GalleryAddEvent.Fail.UnknownType(url, context)
 
-            // Use manga in DB if possible, otherwise, make a new manga
-            var manga = getAnime.await(cleanedMangaUrl, source.id)
+            // Use anime in DB if possible, otherwise, make a new anime
+            var anime = getAnime.await(cleanedAnimeUrl, source.id)
                 ?: networkToLocalAnime.await(
                     Anime.create().copy(
                         source = source.id,
-                        url = cleanedMangaUrl,
+                        url = cleanedAnimeUrl,
                     ),
                 )
 
             // Fetch and copy details
-            val newManga = retry(retry) { source.getMangaDetails(manga.toSAnime()) }
-            updateAnime.awaitUpdateFromSource(manga, newManga, false)
-            manga = getAnime.await(manga.id)!!
+            val newAnime = retry(retry) { source.getAnimeDetails(anime.toSAnime()) }
+            updateAnime.awaitUpdateFromSource(anime, newAnime, false)
+            anime = getAnime.await(anime.id)!!
 
             if (fav) {
-                updateAnime.awaitUpdateFavorite(manga.id, true)
-                manga = manga.copy(favorite = true)
+                updateAnime.awaitUpdateFavorite(anime.id, true)
+                anime = anime.copy(favorite = true)
             }
 
             // Fetch and copy episodes
             try {
-                val chapterList = retry(retry) {
+                val episodeList = retry(retry) {
                     if (source is EHentai) {
-                        source.getChapterList(manga.toSAnime(), throttleFunc)
+                        source.getEpisodeList(anime.toSAnime(), throttleFunc)
                     } else {
-                        source.getChapterList(manga.toSAnime())
+                        source.getEpisodeList(anime.toSAnime())
                     }
                 }
 
-                if (chapterList.isNotEmpty()) {
-                    syncEpisodesWithSource.await(chapterList, manga, source)
+                if (episodeList.isNotEmpty()) {
+                    syncEpisodesWithSource.await(episodeList, anime, source)
                 }
             } catch (e: Exception) {
-                logger.w(context.stringResource(SYMR.strings.gallery_adder_chapter_fetch_error, manga.title), e)
+                logger.w(context.stringResource(SYMR.strings.gallery_adder_chapter_fetch_error, anime.title), e)
                 return GalleryAddEvent.Fail.Error(url, context.stringResource(SYMR.strings.gallery_adder_chapter_fetch_error, url))
             }
 
-            return if (cleanedChapterUrl != null) {
-                val chapter = getEpisode.await(cleanedChapterUrl, manga.id)
-                if (chapter != null) {
-                    GalleryAddEvent.Success(url, manga, context, chapter)
+            return if (cleanedEpisodeUrl != null) {
+                val episode = getEpisode.await(cleanedEpisodeUrl, anime.id)
+                if (episode != null) {
+                    GalleryAddEvent.Success(url, anime, context, episode)
                 } else {
                     GalleryAddEvent.Fail.Error(url, context.stringResource(SYMR.strings.gallery_adder_could_not_identify_chapter, url))
                 }
             } else {
-                GalleryAddEvent.Success(url, manga, context)
+                GalleryAddEvent.Success(url, anime, context)
             }
         } catch (e: Exception) {
             logger.w(context.stringResource(SYMR.strings.gallery_adder_could_not_add_gallery, url), e)
@@ -226,11 +226,11 @@ sealed class GalleryAddEvent {
 
     class Success(
         override val galleryUrl: String,
-        val manga: Anime,
+        val anime: Anime,
         val context: Context,
         val episode: Episode? = null,
     ) : GalleryAddEvent() {
-        override val galleryTitle = manga.title
+        override val galleryTitle = anime.title
         override val logMessage = context.stringResource(SYMR.strings.batch_add_success_log_message, galleryTitle)
     }
 

@@ -56,7 +56,7 @@ import exh.source.MERGED_SOURCE_ID
 import exh.source.getMainSource
 import exh.source.isEhBasedAnime
 import exh.util.defaultReaderType
-import exh.util.mangaType
+import exh.util.animeType
 import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.channels.Channel
@@ -632,7 +632,7 @@ class ReaderViewModel @JvmOverloads constructor(
                 }
             }.take(downloadAheadAmount)
 
-            downloadManager.downloadChapters(
+            downloadManager.downloadEpisodes(
                 manga,
                 chaptersToDownload,
             )
@@ -815,7 +815,7 @@ class ReaderViewModel @JvmOverloads constructor(
         val source = getSource() ?: return null
 
         return try {
-            source.getChapterUrl(sEpisode)
+            source.getEpisodeUrl(sEpisode)
         } catch (e: Exception) {
             logcat(LogPriority.ERROR, e)
             null
@@ -871,7 +871,7 @@ class ReaderViewModel @JvmOverloads constructor(
         // SY -->
         return when {
             resolveDefault && readingMode == ReadingMode.DEFAULT && readerPreferences.useAutoWebtoon().get() -> {
-                manga.defaultReaderType(manga.mangaType(sourceName = sourceManager.get(manga.source)?.name))
+                manga.defaultReaderType(manga.animeType(sourceName = sourceManager.get(manga.source)?.name))
                     ?: default
             }
             resolveDefault && readingMode == ReadingMode.DEFAULT -> default

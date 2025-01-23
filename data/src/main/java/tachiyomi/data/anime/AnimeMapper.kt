@@ -22,7 +22,7 @@ object AnimeMapper {
         nextUpdate: Long?,
         initialized: Boolean,
         viewerFlags: Long,
-        chapterFlags: Long,
+        episodeFlags: Long,
         coverLastModified: Long,
         dateAdded: Long,
         // SY -->
@@ -45,7 +45,7 @@ object AnimeMapper {
         fetchInterval = calculateInterval.toInt(),
         dateAdded = dateAdded,
         viewerFlags = viewerFlags,
-        episodeFlags = chapterFlags,
+        episodeFlags = episodeFlags,
         coverLastModified = coverLastModified,
         url = url,
         // SY -->
@@ -80,7 +80,7 @@ object AnimeMapper {
         nextUpdate: Long?,
         initialized: Boolean,
         viewerFlags: Long,
-        chapterFlags: Long,
+        episodeFlags: Long,
         coverLastModified: Long,
         dateAdded: Long,
         // SY -->
@@ -94,14 +94,14 @@ object AnimeMapper {
         version: Long,
         isSyncing: Long,
         totalCount: Long,
-        readCount: Double,
+        seenCount: Double,
         latestUpload: Long,
-        chapterFetchedAt: Long,
-        lastRead: Long,
+        episodeFetchedAt: Long,
+        lastSeen: Long,
         bookmarkCount: Double,
         category: Long,
     ): LibraryAnime = LibraryAnime(
-        manga = mapAnime(
+        anime = mapAnime(
             id,
             source,
             url,
@@ -117,7 +117,7 @@ object AnimeMapper {
             nextUpdate,
             initialized,
             viewerFlags,
-            chapterFlags,
+            episodeFlags,
             coverLastModified,
             dateAdded,
             // SY -->
@@ -131,17 +131,17 @@ object AnimeMapper {
             isSyncing,
         ),
         category = category,
-        totalChapters = totalCount,
-        readCount = readCount.toLong(),
+        totalEpisodes = totalCount,
+        seenCount = seenCount.toLong(),
         bookmarkCount = bookmarkCount.toLong(),
         latestUpload = latestUpload,
-        chapterFetchedAt = chapterFetchedAt,
-        lastRead = lastRead,
+        episodeFetchedAt = episodeFetchedAt,
+        lastSeen = lastSeen,
     )
 
     fun mapLibraryView(libraryView: LibraryView): LibraryAnime {
         return LibraryAnime(
-            manga = Anime(
+            anime = Anime(
                 id = libraryView._id,
                 source = libraryView.source,
                 favorite = libraryView.favorite,
@@ -167,12 +167,12 @@ object AnimeMapper {
                 version = libraryView.version,
             ),
             category = libraryView.category,
-            totalChapters = libraryView.totalCount,
-            readCount = libraryView.readCount.toLong(),
+            totalEpisodes = libraryView.totalCount,
+            seenCount = libraryView.readCount.toLong(),
             bookmarkCount = libraryView.bookmarkCount.toLong(),
             latestUpload = libraryView.latestUpload,
-            chapterFetchedAt = libraryView.chapterFetchedAt,
-            lastRead = libraryView.lastRead,
+            episodeFetchedAt = libraryView.chapterFetchedAt,
+            lastSeen = libraryView.lastRead,
         )
     }
 }

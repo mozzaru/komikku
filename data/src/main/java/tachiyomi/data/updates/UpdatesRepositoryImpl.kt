@@ -13,14 +13,14 @@ class UpdatesRepositoryImpl(
     private val databaseHandler: DatabaseHandler,
 ) : UpdatesRepository {
 
-    override suspend fun awaitWithRead(
-        read: Boolean,
+    override suspend fun awaitWithSeen(
+        seen: Boolean,
         after: Long,
         limit: Long,
     ): List<UpdatesWithRelations> {
         return databaseHandler.awaitList {
-            updatesViewQueries.getUpdatesByReadStatus(
-                read = read,
+            updatesViewQueries.getUpdatesBySeenStatus(
+                read = seen,
                 after = after,
                 limit = limit,
                 mapper = ::mapUpdatesWithRelations,
@@ -39,14 +39,14 @@ class UpdatesRepositoryImpl(
         }
     }
 
-    override fun subscribeWithRead(
-        read: Boolean,
+    override fun subscribeWithSeen(
+        seen: Boolean,
         after: Long,
         limit: Long,
     ): Flow<List<UpdatesWithRelations>> {
         return databaseHandler.subscribeToList {
-            updatesViewQueries.getUpdatesByReadStatus(
-                read = read,
+            updatesViewQueries.getUpdatesBySeenStatus(
+                read = seen,
                 after = after,
                 limit = limit,
                 mapper = ::mapUpdatesWithRelations,
@@ -55,14 +55,14 @@ class UpdatesRepositoryImpl(
     }
 
     private fun mapUpdatesWithRelations(
-        mangaId: Long,
-        mangaTitle: String,
-        chapterId: Long,
-        chapterName: String,
+        animeId: Long,
+        animeTitle: String,
+        episodeId: Long,
+        episodeName: String,
         scanlator: String?,
-        read: Boolean,
+        seen: Boolean,
         bookmark: Boolean,
-        lastPageRead: Long,
+        lastSecondSeen: Long,
         sourceId: Long,
         favorite: Boolean,
         thumbnailUrl: String?,
@@ -70,20 +70,20 @@ class UpdatesRepositoryImpl(
         dateUpload: Long,
         dateFetch: Long,
     ): UpdatesWithRelations = UpdatesWithRelations(
-        animeId = mangaId,
+        animeId = animeId,
         // SY -->
-        ogAnimeTitle = mangaTitle,
+        ogAnimeTitle = animeTitle,
         // SY <--
-        episodeId = chapterId,
-        chapterName = chapterName,
+        episodeId = episodeId,
+        episodeName = episodeName,
         scanlator = scanlator,
-        read = read,
+        seen = seen,
         bookmark = bookmark,
-        lastPageRead = lastPageRead,
+        lastSecondSeen = lastSecondSeen,
         sourceId = sourceId,
         dateFetch = dateFetch,
         coverData = AnimeCover(
-            animeId = mangaId,
+            animeId = animeId,
             sourceId = sourceId,
             isAnimeFavorite = favorite,
             ogUrl = thumbnailUrl,
@@ -96,11 +96,11 @@ class UpdatesRepositoryImpl(
             animeId = updatesView.mangaId,
             ogAnimeTitle = updatesView.mangaTitle,
             episodeId = updatesView.chapterId,
-            chapterName = updatesView.chapterName,
+            episodeName = updatesView.chapterName,
             scanlator = updatesView.scanlator,
-            read = updatesView.read,
+            seen = updatesView.read,
             bookmark = updatesView.bookmark,
-            lastPageRead = updatesView.last_page_read,
+            lastSecondSeen = updatesView.last_page_read,
             sourceId = updatesView.source,
             dateFetch = updatesView.datefetch,
             coverData = AnimeCover(

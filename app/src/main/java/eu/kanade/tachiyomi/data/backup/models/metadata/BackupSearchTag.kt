@@ -13,7 +13,7 @@ data class BackupSearchTag(
     fun getSearchTag(mangaId: Long): SearchTag {
         return SearchTag(
             id = null,
-            mangaId = mangaId,
+            animeId = mangaId,
             namespace = namespace,
             name = name,
             type = type,

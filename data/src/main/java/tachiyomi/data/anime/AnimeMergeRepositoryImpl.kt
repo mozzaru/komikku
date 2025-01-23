@@ -13,20 +13,20 @@ class AnimeMergeRepositoryImpl(
     private val handler: DatabaseHandler,
 ) : AnimeMergeRepository {
 
-    override suspend fun getMergedManga(): List<Anime> {
-        return handler.awaitList { mergedQueries.selectAllMergedMangas(AnimeMapper::mapAnime) }
+    override suspend fun getMergedAnime(): List<Anime> {
+        return handler.awaitList { mergedQueries.selectAllMergedAnimes(AnimeMapper::mapAnime) }
     }
 
-    override suspend fun subscribeMergedManga(): Flow<List<Anime>> {
-        return handler.subscribeToList { mergedQueries.selectAllMergedMangas(AnimeMapper::mapAnime) }
+    override suspend fun subscribeMergedAnime(): Flow<List<Anime>> {
+        return handler.subscribeToList { mergedQueries.selectAllMergedAnimes(AnimeMapper::mapAnime) }
     }
 
-    override suspend fun getMergedMangaById(id: Long): List<Anime> {
-        return handler.awaitList { mergedQueries.selectMergedMangasById(id, AnimeMapper::mapAnime) }
+    override suspend fun getMergedAnimeById(id: Long): List<Anime> {
+        return handler.awaitList { mergedQueries.selectMergedAnimesById(id, AnimeMapper::mapAnime) }
     }
 
-    override suspend fun subscribeMergedMangaById(id: Long): Flow<List<Anime>> {
-        return handler.subscribeToList { mergedQueries.selectMergedMangasById(id, AnimeMapper::mapAnime) }
+    override suspend fun subscribeMergedAnimeById(id: Long): Flow<List<Anime>> {
+        return handler.subscribeToList { mergedQueries.selectMergedAnimesById(id, AnimeMapper::mapAnime) }
     }
 
     override suspend fun getReferencesById(id: Long): List<MergedAnimeReference> {
@@ -62,11 +62,11 @@ class AnimeMergeRepositoryImpl(
             values.forEach { value ->
                 mergedQueries.updateSettingsById(
                     id = value.id,
-                    getChapterUpdates = value.getChapterUpdates,
-                    downloadChapters = value.downloadChapters,
-                    infoManga = value.isInfoManga,
-                    chapterPriority = value.chapterPriority?.toLong(),
-                    chapterSortMode = value.chapterSortMode?.toLong(),
+                    getChapterUpdates = value.getEpisodeUpdates,
+                    downloadChapters = value.downloadEpisodes,
+                    infoManga = value.isInfoAnime,
+                    chapterPriority = value.episodePriority?.toLong(),
+                    chapterSortMode = value.episodeSortMode?.toLong(),
                 )
             }
         }
@@ -76,10 +76,10 @@ class AnimeMergeRepositoryImpl(
         return handler.awaitOneOrNullExecutable {
             mergedQueries.insert(
                 infoManga = reference.isInfoAnime,
-                getChapterUpdates = reference.getChapterUpdates,
-                chapterSortMode = reference.chapterSortMode.toLong(),
-                chapterPriority = reference.chapterPriority.toLong(),
-                downloadChapters = reference.downloadChapters,
+                getChapterUpdates = reference.getEpisodeUpdates,
+                chapterSortMode = reference.episodeSortMode.toLong(),
+                chapterPriority = reference.episodePriority.toLong(),
+                downloadChapters = reference.downloadEpisodes,
                 mergeId = reference.mergeId!!,
                 mergeUrl = reference.mergeUrl,
                 mangaId = reference.animeId,
@@ -95,10 +95,10 @@ class AnimeMergeRepositoryImpl(
             references.forEach { reference ->
                 mergedQueries.insert(
                     infoManga = reference.isInfoAnime,
-                    getChapterUpdates = reference.getChapterUpdates,
-                    chapterSortMode = reference.chapterSortMode.toLong(),
-                    chapterPriority = reference.chapterPriority.toLong(),
-                    downloadChapters = reference.downloadChapters,
+                    getChapterUpdates = reference.getEpisodeUpdates,
+                    chapterSortMode = reference.episodeSortMode.toLong(),
+                    chapterPriority = reference.episodePriority.toLong(),
+                    downloadChapters = reference.downloadEpisodes,
                     mergeId = reference.mergeId!!,
                     mergeUrl = reference.mergeUrl,
                     mangaId = reference.animeId,
@@ -121,7 +121,7 @@ class AnimeMergeRepositoryImpl(
         }
     }
 
-    override suspend fun getMergeMangaForDownloading(mergeId: Long): List<Anime> {
-        return handler.awaitList { mergedQueries.selectMergedMangasForDownloadingById(mergeId, AnimeMapper::mapAnime) }
+    override suspend fun getMergeAnimeForDownloading(mergeId: Long): List<Anime> {
+        return handler.awaitList { mergedQueries.selectMergedAnimesForDownloadingById(mergeId, AnimeMapper::mapAnime) }
     }
 }

@@ -7,6 +7,6 @@ class DeleteAnimeById(
 ) {
 
     suspend fun await(id: Long) {
-        return animeRepository.deleteManga(id)
+        return animeRepository.deleteAnime(id)
     }
 }

@@ -11,7 +11,7 @@ data class AnimeUpdate(
     val fetchInterval: Int? = null,
     val dateAdded: Long? = null,
     val viewerFlags: Long? = null,
-    val chapterFlags: Long? = null,
+    val episodeFlags: Long? = null,
     val coverLastModified: Long? = null,
     val url: String? = null,
     val title: String? = null,
@@ -39,7 +39,7 @@ fun Anime.toAnimeUpdate(): AnimeUpdate {
         fetchInterval = fetchInterval,
         dateAdded = dateAdded,
         viewerFlags = viewerFlags,
-        chapterFlags = episodeFlags,
+        episodeFlags = episodeFlags,
         coverLastModified = coverLastModified,
         url = url,
         // SY -->

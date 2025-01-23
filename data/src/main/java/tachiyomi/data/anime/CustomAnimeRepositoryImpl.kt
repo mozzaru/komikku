@@ -11,63 +11,63 @@ import java.io.File
 class CustomAnimeRepositoryImpl(context: Context) : CustomAnimeRepository {
     private val editJson = File(context.getExternalFilesDir(null), "edits.json")
 
-    private val customMangaMap = fetchCustomData()
+    private val customAnimeMap = fetchCustomData()
 
-    override fun get(mangaId: Long) = customMangaMap[mangaId]
+    override fun get(animeId: Long) = customAnimeMap[animeId]
 
     private fun fetchCustomData(): MutableMap<Long, CustomAnimeInfo> {
         if (!editJson.exists() || !editJson.isFile) return mutableMapOf()
 
         val json = try {
-            Json.decodeFromString<MangaList>(
+            Json.decodeFromString<AnimeList>(
                 editJson.bufferedReader().use { it.readText() },
             )
         } catch (e: Exception) {
             null
         } ?: return mutableMapOf()
 
-        val mangasJson = json.mangas ?: return mutableMapOf()
-        return mangasJson
-            .mapNotNull { mangaJson ->
-                val id = mangaJson.id ?: return@mapNotNull null
-                id to mangaJson.toManga()
+        val animesJson = json.animes ?: return mutableMapOf()
+        return animesJson
+            .mapNotNull { animeJson ->
+                val id = animeJson.id ?: return@mapNotNull null
+                id to animeJson.toAnime()
             }
             .toMap()
             .toMutableMap()
     }
 
-    override fun set(mangaInfo: CustomAnimeInfo) {
+    override fun set(animeInfo: CustomAnimeInfo) {
         if (
-            mangaInfo.title == null &&
-            mangaInfo.author == null &&
-            mangaInfo.artist == null &&
-            mangaInfo.thumbnailUrl == null &&
-            mangaInfo.description == null &&
-            mangaInfo.genre == null &&
-            mangaInfo.status == null
+            animeInfo.title == null &&
+            animeInfo.author == null &&
+            animeInfo.artist == null &&
+            animeInfo.thumbnailUrl == null &&
+            animeInfo.description == null &&
+            animeInfo.genre == null &&
+            animeInfo.status == null
         ) {
-            customMangaMap.remove(mangaInfo.id)
+            customAnimeMap.remove(animeInfo.id)
         } else {
-            customMangaMap[mangaInfo.id] = mangaInfo
+            customAnimeMap[animeInfo.id] = animeInfo
         }
         saveCustomInfo()
     }
 
     private fun saveCustomInfo() {
-        val jsonElements = customMangaMap.values.map { it.toJson() }
+        val jsonElements = customAnimeMap.values.map { it.toJson() }
         if (jsonElements.isNotEmpty()) {
             editJson.delete()
-            editJson.writeText(Json.encodeToString(MangaList(jsonElements)))
+            editJson.writeText(Json.encodeToString(AnimeList(jsonElements)))
         }
     }
 
     @Serializable
-    data class MangaList(
-        val mangas: List<MangaJson>? = null,
+    data class AnimeList(
+        val animes: List<AnimeJson>? = null,
     )
 
     @Serializable
-    data class MangaJson(
+    data class AnimeJson(
         var id: Long? = null,
         val title: String? = null,
         val author: String? = null,
@@ -78,20 +78,20 @@ class CustomAnimeRepositoryImpl(context: Context) : CustomAnimeRepository {
         val status: Long? = null,
     ) {
 
-        fun toManga() = CustomAnimeInfo(
-            id = this@MangaJson.id!!,
-            title = this@MangaJson.title?.takeUnless { it.isBlank() },
-            author = this@MangaJson.author,
-            artist = this@MangaJson.artist,
-            thumbnailUrl = this@MangaJson.thumbnailUrl,
-            description = this@MangaJson.description,
-            genre = this@MangaJson.genre,
-            status = this@MangaJson.status?.takeUnless { it == 0L },
+        fun toAnime() = CustomAnimeInfo(
+            id = this@AnimeJson.id!!,
+            title = this@AnimeJson.title?.takeUnless { it.isBlank() },
+            author = this@AnimeJson.author,
+            artist = this@AnimeJson.artist,
+            thumbnailUrl = this@AnimeJson.thumbnailUrl,
+            description = this@AnimeJson.description,
+            genre = this@AnimeJson.genre,
+            status = this@AnimeJson.status?.takeUnless { it == 0L },
         )
     }
 
-    fun CustomAnimeInfo.toJson(): MangaJson {
-        return MangaJson(
+    fun CustomAnimeInfo.toJson(): AnimeJson {
+        return AnimeJson(
             id,
             title,
             author,

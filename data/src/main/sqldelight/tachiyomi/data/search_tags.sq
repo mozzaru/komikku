@@ -14,11 +14,11 @@ CREATE INDEX search_tags_manga_id_index ON search_tags(manga_id);
 CREATE INDEX search_tags_namespace_name_index ON search_tags(namespace, name);
 
 
-selectByMangaId:
+selectByAnimeId:
 SELECT * FROM search_tags
 WHERE manga_id = ?;
 
-deleteByManga:
+deleteByAnime:
 DELETE FROM search_tags WHERE manga_id = ?;
 
 insert:

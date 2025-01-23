@@ -16,23 +16,23 @@ class EpisodeRepositoryImpl(
     override suspend fun addAll(episodes: List<Episode>): List<Episode> {
         return try {
             handler.await(inTransaction = true) {
-                episodes.map { chapter ->
+                episodes.map { episode ->
                     episodesQueries.insert(
-                        chapter.animeId,
-                        chapter.url,
-                        chapter.name,
-                        chapter.scanlator,
-                        chapter.seen,
-                        chapter.bookmark,
-                        chapter.lastSecondSeen,
-                        chapter.episodeNumber,
-                        chapter.sourceOrder,
-                        chapter.dateFetch,
-                        chapter.dateUpload,
-                        chapter.version,
+                        episode.animeId,
+                        episode.url,
+                        episode.name,
+                        episode.scanlator,
+                        episode.seen,
+                        episode.bookmark,
+                        episode.lastSecondSeen,
+                        episode.episodeNumber,
+                        episode.sourceOrder,
+                        episode.dateFetch,
+                        episode.dateUpload,
+                        episode.version,
                     )
                     val lastInsertId = episodesQueries.selectLastInsertedRowId().executeAsOne()
-                    chapter.copy(id = lastInsertId)
+                    episode.copy(id = lastInsertId)
                 }
             }
         } catch (e: Exception) {
@@ -51,21 +51,21 @@ class EpisodeRepositoryImpl(
 
     private suspend fun partialUpdate(vararg episodeUpdates: EpisodeUpdate) {
         handler.await(inTransaction = true) {
-            episodeUpdates.forEach { chapterUpdate ->
+            episodeUpdates.forEach { episodeUpdate ->
                 episodesQueries.update(
-                    mangaId = chapterUpdate.mangaId,
-                    url = chapterUpdate.url,
-                    name = chapterUpdate.name,
-                    scanlator = chapterUpdate.scanlator,
-                    read = chapterUpdate.seen,
-                    bookmark = chapterUpdate.bookmark,
-                    lastPageRead = chapterUpdate.lastSecondSeen,
-                    chapterNumber = chapterUpdate.chapterNumber,
-                    sourceOrder = chapterUpdate.sourceOrder,
-                    dateFetch = chapterUpdate.dateFetch,
-                    dateUpload = chapterUpdate.dateUpload,
-                    chapterId = chapterUpdate.id,
-                    version = chapterUpdate.version,
+                    mangaId = episodeUpdate.episodeId,
+                    url = episodeUpdate.url,
+                    name = episodeUpdate.name,
+                    scanlator = episodeUpdate.scanlator,
+                    read = episodeUpdate.seen,
+                    bookmark = episodeUpdate.bookmark,
+                    lastPageRead = episodeUpdate.lastSecondSeen,
+                    chapterNumber = episodeUpdate.episodeNumber,
+                    sourceOrder = episodeUpdate.sourceOrder,
+                    dateFetch = episodeUpdate.dateFetch,
+                    dateUpload = episodeUpdate.dateUpload,
+                    chapterId = episodeUpdate.id,
+                    version = episodeUpdate.version,
                     isSyncing = 0,
                 )
             }

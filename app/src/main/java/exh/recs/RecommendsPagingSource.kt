@@ -7,10 +7,10 @@ import eu.kanade.tachiyomi.network.POST
 import eu.kanade.tachiyomi.network.awaitSuccess
 import eu.kanade.tachiyomi.network.parseAs
 import eu.kanade.tachiyomi.source.CatalogueSource
-import eu.kanade.tachiyomi.source.model.MangasPage
+import eu.kanade.tachiyomi.source.model.AnimesPage
 import eu.kanade.tachiyomi.source.model.SAnime
-import exh.util.MangaType
-import exh.util.mangaType
+import exh.util.AnimeType
+import exh.util.animeType
 import kotlinx.serialization.json.Json
 import kotlinx.serialization.json.JsonArray
 import kotlinx.serialization.json.JsonElement
@@ -264,19 +264,19 @@ class Anilist : API("https://graphql.anilist.co/") {
 
 open class RecommendsPagingSource(
     source: CatalogueSource,
-    private val manga: Anime,
+    private val anime: Anime,
     private val smart: Boolean = true,
     private var preferredApi: API = API.MYANIMELIST,
 ) : SourcePagingSource(source) {
     val trackerManager: TrackerManager by injectLazy()
     val getTracks: GetTracks by injectLazy()
 
-    override suspend fun requestNextPage(currentPage: Int): MangasPage {
-        if (smart) preferredApi = if (manga.mangaType() != MangaType.TYPE_MANGA) API.ANILIST else preferredApi
+    override suspend fun requestNextPage(currentPage: Int): AnimesPage {
+        if (smart) preferredApi = if (anime.animeType() != AnimeType.TYPE_MANGA) API.ANILIST else preferredApi
 
         val apiList = API_MAP.toList().sortedByDescending { it.first == preferredApi }
 
-        val tracks = getTracks.await(manga.id)
+        val tracks = getTracks.await(anime.id)
 
         val recs = apiList.firstNotNullOfOrNull { (key, api) ->
             try {
@@ -288,7 +288,7 @@ open class RecommendsPagingSource(
                 val recs = if (id != null) {
                     api.getRecsById(id.toString())
                 } else {
-                    api.getRecsBySearch(manga.ogTitle)
+                    api.getRecsBySearch(anime.ogTitle)
                 }
                 logcat { key.toString() + " > Results: " + recs.size }
                 recs.ifEmpty { null }
@@ -298,7 +298,7 @@ open class RecommendsPagingSource(
             }
         } ?: throw NoResultsException()
 
-        return MangasPage(recs, false)
+        return AnimesPage(recs, false)
     }
 
     companion object {

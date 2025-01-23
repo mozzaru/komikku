@@ -12,11 +12,11 @@ CREATE TABLE search_titles (
 CREATE INDEX search_titles_manga_id_index ON search_titles(manga_id);
 CREATE INDEX search_titles_title_index ON search_titles(title);
 
-selectByMangaId:
+selectByAnimeId:
 SELECT * FROM search_titles
 WHERE manga_id = ?;
 
-deleteByManga:
+deleteByAnime:
 DELETE FROM search_titles WHERE manga_id = ?;
 
 insert:

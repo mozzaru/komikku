@@ -6,7 +6,7 @@ UPDATE animes
 SET source = :newId
 WHERE source = :oldId;
 
-getChaptersByMangaIds:
+getEpisodesByAnimeIds:
 SELECT * FROM episodes WHERE manga_id IN :mangaIds;
 
 migrateAllNhentaiToOtherLang:
@@ -14,7 +14,7 @@ UPDATE animes
 SET source = :nh
 WHERE favorite = 1 AND source IN :sources;
 
-resetReaderViewerForAllManga:
+resetReaderViewerForAllAnime:
 UPDATE animes
 SET viewer = 0;
 
@@ -23,6 +23,6 @@ UPDATE animes
 SET viewer = 0
 WHERE viewer = -1;
 
-addAllMangaInDatabaseToLibrary:
+addAllAnimeInDatabaseToLibrary:
 UPDATE animes
 SET favorite = 1;

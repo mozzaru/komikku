@@ -3,7 +3,7 @@ package tachiyomi.data.source
 import androidx.paging.PagingState
 import eu.kanade.tachiyomi.source.CatalogueSource
 import eu.kanade.tachiyomi.source.model.FilterList
-import eu.kanade.tachiyomi.source.model.MangasPage
+import eu.kanade.tachiyomi.source.model.AnimesPage
 import eu.kanade.tachiyomi.source.model.MetadataAnimesPage
 import eu.kanade.tachiyomi.source.model.SAnime
 import exh.metadata.metadata.RaisedSearchMetadata
@@ -12,19 +12,19 @@ import tachiyomi.domain.source.repository.SourcePagingSourceType
 
 class SourceSearchPagingSource(source: CatalogueSource, val query: String, val filters: FilterList) :
     SourcePagingSource(source) {
-    override suspend fun requestNextPage(currentPage: Int): MangasPage {
-        return source.getSearchManga(currentPage, query, filters)
+    override suspend fun requestNextPage(currentPage: Int): AnimesPage {
+        return source.getSearchAnime(currentPage, query, filters)
     }
 }
 
 class SourcePopularPagingSource(source: CatalogueSource) : SourcePagingSource(source) {
-    override suspend fun requestNextPage(currentPage: Int): MangasPage {
-        return source.getPopularManga(currentPage)
+    override suspend fun requestNextPage(currentPage: Int): AnimesPage {
+        return source.getPopularAnime(currentPage)
     }
 }
 
 class SourceLatestPagingSource(source: CatalogueSource) : SourcePagingSource(source) {
-    override suspend fun requestNextPage(currentPage: Int): MangasPage {
+    override suspend fun requestNextPage(currentPage: Int): AnimesPage {
         return source.getLatestUpdates(currentPage)
     }
 }
@@ -33,14 +33,14 @@ abstract class SourcePagingSource(
     protected open val source: CatalogueSource,
 ) : SourcePagingSourceType() {
 
-    abstract suspend fun requestNextPage(currentPage: Int): MangasPage
+    abstract suspend fun requestNextPage(currentPage: Int): AnimesPage
 
     override suspend fun load(
         params: LoadParams<Long>,
     ): LoadResult<Long, /*SY --> */ Pair<SAnime, RaisedSearchMetadata?>/*SY <-- */> {
         val page = params.key ?: 1
 
-        val mangasPage = try {
+        val animesPage = try {
             withIOContext {
                 requestNextPage(page.toInt())
                     .takeIf { it.animes.isNotEmpty() }
@@ -51,32 +51,32 @@ abstract class SourcePagingSource(
         }
 
         // SY -->
-        return getPageLoadResult(params, mangasPage)
+        return getPageLoadResult(params, animesPage)
         // SY <--
     }
 
     // SY -->
     open fun getPageLoadResult(
         params: LoadParams<Long>,
-        mangasPage: MangasPage,
+        animesPage: AnimesPage,
     ): LoadResult.Page<Long, /*SY --> */ Pair<SAnime, RaisedSearchMetadata?>/*SY <-- */> {
         val page = params.key ?: 1
 
         // SY -->
-        val metadata = if (mangasPage is MetadataAnimesPage) {
-            mangasPage.animesMetadata
+        val metadata = if (animesPage is MetadataAnimesPage) {
+            animesPage.animesMetadata
         } else {
             emptyList()
         }
         // SY <--
 
         return LoadResult.Page(
-            data = mangasPage.animes
+            data = animesPage.animes
                 // SY -->
-                .mapIndexed { index, sManga -> sManga to metadata.getOrNull(index) },
+                .mapIndexed { index, sAnime -> sAnime to metadata.getOrNull(index) },
             // SY <--
             prevKey = null,
-            nextKey = if (mangasPage.hasNextPage) page + 1 else null,
+            nextKey = if (animesPage.hasNextPage) page + 1 else null,
         )
     }
     // SY <--

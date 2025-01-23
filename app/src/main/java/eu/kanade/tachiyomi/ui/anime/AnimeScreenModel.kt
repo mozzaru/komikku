@@ -655,7 +655,7 @@ class AnimeScreenModel(
                 ogStatus = status ?: 0,
                 lastUpdate = manga.lastUpdate + 1,
             )
-            (sourceManager.get(LocalSource.ID) as LocalSource).updateMangaInfo(manga.toSAnime())
+            (sourceManager.get(LocalSource.ID) as LocalSource).updateAnimeInfo(manga.toSAnime())
             screenModelScope.launchNonCancellable {
                 updateAnime.await(
                     AnimeUpdate(
@@ -723,11 +723,11 @@ class AnimeScreenModel(
                     mergedAnimeReferences.map {
                         MergeAnimeSettingsUpdate(
                             id = it.id,
-                            isInfoManga = it.isInfoAnime,
-                            getChapterUpdates = it.getChapterUpdates,
-                            chapterPriority = it.chapterPriority,
-                            downloadChapters = it.downloadChapters,
-                            chapterSortMode = it.chapterSortMode,
+                            isInfoAnime = it.isInfoAnime,
+                            getEpisodeUpdates = it.getEpisodeUpdates,
+                            episodePriority = it.episodePriority,
+                            downloadEpisodes = it.downloadEpisodes,
+                            episodeSortMode = it.episodeSortMode,
                         )
                     },
                 )
@@ -1079,7 +1079,7 @@ class AnimeScreenModel(
                 // SY -->
                 if (state.source !is MergedSource) {
                     // SY <--
-                    val chapters = state.source.getChapterList(state.anime.toSAnime())
+                    val chapters = state.source.getEpisodeList(state.anime.toSAnime())
 
                     val newChapters = syncEpisodesWithSource.await(
                         chapters,
@@ -1093,7 +1093,7 @@ class AnimeScreenModel(
                     }
                     // SY -->
                 } else {
-                    state.source.fetchChaptersForMergedManga(state.anime, manualFetch)
+                    state.source.fetchEpisodesForMergedAnime(state.anime, manualFetch)
                 }
                 // SY <--
             }
@@ -1384,12 +1384,12 @@ class AnimeScreenModel(
         if (state.source is MergedSource) {
             episodes.groupBy { it.animeId }.forEach { map ->
                 val manga = state.mergedData?.anime?.get(map.key) ?: return@forEach
-                downloadManager.downloadChapters(manga, map.value)
+                downloadManager.downloadEpisodes(manga, map.value)
             }
         } else {
             // SY <--
             val manga = state.anime
-            downloadManager.downloadChapters(manga, episodes)
+            downloadManager.downloadEpisodes(manga, episodes)
         }
         toggleAllSelection(false)
     }

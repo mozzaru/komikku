@@ -5,7 +5,7 @@ import eu.kanade.domain.source.service.SourcePreferences.DataSaver.BANDWIDTH_HER
 import eu.kanade.domain.source.service.SourcePreferences.DataSaver.NONE
 import eu.kanade.domain.source.service.SourcePreferences.DataSaver.WSRV_NL
 import eu.kanade.tachiyomi.source.Source
-import eu.kanade.tachiyomi.source.model.Page
+import eu.kanade.tachiyomi.source.model.Video
 import eu.kanade.tachiyomi.source.online.HttpSource
 import okhttp3.Response
 import tachiyomi.core.common.preference.Preference
@@ -21,13 +21,13 @@ interface DataSaver {
             }
         }
 
-        suspend fun HttpSource.getImage(page: Page, dataSaver: DataSaver): Response {
-            val imageUrl = page.imageUrl ?: return getImage(page)
-            page.imageUrl = dataSaver.compress(imageUrl)
+        suspend fun HttpSource.getImage(video: Video, dataSaver: DataSaver): Response {
+            val videoUrl = video.videoUrl ?: return getVideo(video)
+            video.videoUrl = dataSaver.compress(videoUrl)
             return try {
-                getImage(page)
+                getVideo(video)
             } finally {
-                page.imageUrl = imageUrl
+                video.videoUrl = videoUrl
             }
         }
     }

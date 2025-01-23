@@ -418,7 +418,7 @@ class FavoritesSyncHelper(val context: Context) {
                     throw IgnoredException(error)
                 }
             } else if (result is GalleryAddEvent.Success) {
-                insertedMangaCategories += categories[it.category].id to result.manga
+                insertedMangaCategories += categories[it.category].id to result.anime
             }
         }
 

@@ -7,6 +7,6 @@ class GetAnimeByUrlAndSourceId(
     private val animeRepository: AnimeRepository,
 ) {
     suspend fun await(url: String, sourceId: Long): Anime? {
-        return animeRepository.getMangaByUrlAndSourceId(url, sourceId)
+        return animeRepository.getAnimeByUrlAndSourceId(url, sourceId)
     }
 }

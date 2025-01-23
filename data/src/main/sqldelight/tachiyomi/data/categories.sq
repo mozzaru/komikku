@@ -41,7 +41,7 @@ hidden
 FROM categories
 ORDER BY sort;
 
-getCategoriesByMangaId:
+getCategoriesByAnimeId:
 SELECT
 C._id AS id,
 C.name,

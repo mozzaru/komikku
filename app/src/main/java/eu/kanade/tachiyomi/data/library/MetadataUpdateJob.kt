@@ -101,13 +101,13 @@ class MetadataUpdateJob(private val context: Context, workerParams: WorkerParame
         val currentlyUpdatingManga = CopyOnWriteArrayList<Anime>()
 
         coroutineScope {
-            mangaToUpdate.groupBy { it.manga.source }
+            mangaToUpdate.groupBy { it.anime.source }
                 .values
                 .map { mangaInSource ->
                     async {
                         semaphore.withPermit {
                             mangaInSource.forEach { libraryManga ->
-                                val manga = libraryManga.manga
+                                val manga = libraryManga.anime
                                 ensureActive()
 
                                 withUpdateNotification(

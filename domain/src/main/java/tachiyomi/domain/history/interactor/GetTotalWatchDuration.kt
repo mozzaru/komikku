@@ -7,6 +7,6 @@ class GetTotalWatchDuration(
 ) {
 
     suspend fun await(): Long {
-        return repository.getTotalReadDuration()
+        return repository.getTotalWatchDuration()
     }
 }

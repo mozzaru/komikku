@@ -71,7 +71,7 @@ class StatsScreenModel(
             val overviewStatData = StatsData.Overview(
                 libraryMangaCount = distinctLibraryManga.size,
                 completedMangaCount = distinctLibraryManga.count {
-                    it.manga.status.toInt() == SAnime.COMPLETED && it.unreadCount == 0L
+                    it.anime.status.toInt() == SAnime.COMPLETED && it.unreadCount == 0L
                 },
                 totalReadDuration = getTotalWatchDuration.await(),
             )
@@ -79,12 +79,12 @@ class StatsScreenModel(
             val titlesStatData = StatsData.Titles(
                 globalUpdateItemCount = getGlobalUpdateItemCount(libraryManga),
                 startedMangaCount = distinctLibraryManga.count { it.hasStarted },
-                localMangaCount = distinctLibraryManga.count { it.manga.isLocal() },
+                localMangaCount = distinctLibraryManga.count { it.anime.isLocal() },
             )
 
             val chaptersStatData = StatsData.Chapters(
-                totalChapterCount = distinctLibraryManga.sumOf { it.totalChapters }.toInt(),
-                readChapterCount = distinctLibraryManga.sumOf { it.readCount }.toInt(),
+                totalChapterCount = distinctLibraryManga.sumOf { it.totalEpisodes }.toInt(),
+                readChapterCount = distinctLibraryManga.sumOf { it.seenCount }.toInt(),
                 downloadCount = downloadManager.getDownloadCount(),
             )
 
@@ -126,12 +126,12 @@ class StatsScreenModel(
 
         val updateRestrictions = preferences.autoUpdateAnimeRestrictions().get()
         return includedManga
-            .fastFilterNot { it.manga.id in excludedMangaIds }
-            .fastDistinctBy { it.manga.id }
+            .fastFilterNot { it.anime.id in excludedMangaIds }
+            .fastDistinctBy { it.anime.id }
             .fastCountNot {
-                (ANIME_NON_COMPLETED in updateRestrictions && it.manga.status.toInt() == SAnime.COMPLETED) ||
+                (ANIME_NON_COMPLETED in updateRestrictions && it.anime.status.toInt() == SAnime.COMPLETED) ||
                     (MANGA_HAS_UNREAD in updateRestrictions && it.unreadCount != 0L) ||
-                    (MANGA_NON_READ in updateRestrictions && it.totalChapters > 0 && !it.hasStarted)
+                    (MANGA_NON_READ in updateRestrictions && it.totalEpisodes > 0 && !it.hasStarted)
             }
     }
 

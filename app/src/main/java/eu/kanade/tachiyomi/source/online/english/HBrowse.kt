@@ -3,8 +3,8 @@ package eu.kanade.tachiyomi.source.online.english
 import android.content.Context
 import android.net.Uri
 import eu.kanade.tachiyomi.network.awaitSuccess
-import eu.kanade.tachiyomi.source.model.FilterList
 import eu.kanade.tachiyomi.source.model.AnimesPage
+import eu.kanade.tachiyomi.source.model.FilterList
 import eu.kanade.tachiyomi.source.model.SAnime
 import eu.kanade.tachiyomi.source.online.HttpSource
 import eu.kanade.tachiyomi.source.online.MetadataSource
@@ -14,8 +14,8 @@ import eu.kanade.tachiyomi.util.asJsoup
 import exh.metadata.metadata.HBrowseSearchMetadata
 import exh.metadata.metadata.base.RaisedTag
 import exh.source.DelegatedHttpSource
-import exh.util.urlImportFetchSearchManga
-import exh.util.urlImportFetchSearchMangaSuspend
+import exh.util.urlImportFetchSearchAnime
+import exh.util.urlImportFetchSearchAnimeSuspend
 import org.jsoup.nodes.Document
 import org.jsoup.nodes.Element
 
@@ -31,13 +31,13 @@ class HBrowse(delegate: HttpSource, val context: Context) :
     // Support direct URL importing
     @Deprecated("Use the non-RxJava API instead", replaceWith = ReplaceWith("getSearchAnime"))
     override fun fetchSearchAnime(page: Int, query: String, filters: FilterList) =
-        urlImportFetchSearchManga(context, query) {
+        urlImportFetchSearchAnime(context, query) {
             @Suppress("DEPRECATION")
             super<DelegatedHttpSource>.fetchSearchAnime(page, query, filters)
         }
 
     override suspend fun getSearchAnime(page: Int, query: String, filters: FilterList): AnimesPage {
-        return urlImportFetchSearchMangaSuspend(context, query) {
+        return urlImportFetchSearchAnimeSuspend(context, query) {
             super<DelegatedHttpSource>.getSearchAnime(page, query, filters)
         }
     }
@@ -89,7 +89,7 @@ class HBrowse(delegate: HttpSource, val context: Context) :
         "hbrowse.com",
     )
 
-    override suspend fun mapUrlToMangaUrl(uri: Uri): String? {
+    override suspend fun mapUrlToAnimeUrl(uri: Uri): String? {
         return uri.pathSegments.firstOrNull()?.let { "/$it/c00001/" }
     }
 }

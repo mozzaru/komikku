@@ -14,7 +14,7 @@ class GetAnimeWithEpisodes(
 
     suspend fun subscribe(id: Long, applyScanlatorFilter: Boolean = false): Flow<Pair<Anime, List<Episode>>> {
         return combine(
-            animeRepository.getMangaByIdAsFlow(id),
+            animeRepository.getAnimeByIdAsFlow(id),
             episodeRepository.getEpisodeByAnimeIdAsFlow(id, applyScanlatorFilter),
         ) { manga, chapters ->
             Pair(manga, chapters)

@@ -21,16 +21,16 @@ class GetAnime(
     }
 
     suspend fun subscribe(id: Long): Flow<Anime> {
-        return animeRepository.getMangaByIdAsFlow(id)
+        return animeRepository.getAnimeByIdAsFlow(id)
     }
 
     fun subscribe(url: String, sourceId: Long): Flow<Anime?> {
-        return animeRepository.getMangaByUrlAndSourceIdAsFlow(url, sourceId)
+        return animeRepository.getAnimeByUrlAndSourceIdAsFlow(url, sourceId)
     }
 
     // SY -->
     suspend fun await(url: String, sourceId: Long): Anime? {
-        return animeRepository.getMangaByUrlAndSourceId(url, sourceId)
+        return animeRepository.getAnimeByUrlAndSourceId(url, sourceId)
     }
 
     override suspend fun awaitId(url: String, sourceId: Long): Long? {

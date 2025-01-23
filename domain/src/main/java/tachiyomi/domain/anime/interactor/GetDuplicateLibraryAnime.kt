@@ -8,6 +8,6 @@ class GetDuplicateLibraryAnime(
 ) {
 
     suspend fun await(anime: Anime): List<Anime> {
-        return animeRepository.getDuplicateLibraryManga(anime.id, anime.title.lowercase())
+        return animeRepository.getDuplicateLibraryAnime(anime.id, anime.title.lowercase())
     }
 }

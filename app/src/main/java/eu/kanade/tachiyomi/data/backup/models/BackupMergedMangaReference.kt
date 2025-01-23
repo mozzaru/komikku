@@ -21,10 +21,10 @@ data class BackupMergedMangaReference(
     fun getMergedMangaReference(): MergedAnimeReference {
         return MergedAnimeReference(
             isInfoAnime = isInfoManga,
-            getChapterUpdates = getChapterUpdates,
-            chapterSortMode = chapterSortMode,
-            chapterPriority = chapterPriority,
-            downloadChapters = downloadChapters,
+            getEpisodeUpdates = getChapterUpdates,
+            episodeSortMode = chapterSortMode,
+            episodePriority = chapterPriority,
+            downloadEpisodes = downloadChapters,
             mergeUrl = mergeUrl,
             animeUrl = mangaUrl,
             animeSourceId = mangaSourceId,

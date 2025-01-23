@@ -293,7 +293,7 @@ class WebtoonPageHolder(
             }
         }
 
-        val imageUrl = page?.imageUrl
+        val imageUrl = page?.videoUrl
         errorLayout?.actionOpenInWebView?.isVisible = imageUrl != null
         if (imageUrl != null) {
             if (imageUrl.startsWith("http", true)) {

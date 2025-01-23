@@ -97,7 +97,7 @@ object DebugFunctions {
                     EH_SOURCE_ID -> eh
                     EXH_SOURCE_ID -> ex
                     else -> return@forEach
-                }?.getMangaDetails(manga.toSAnime()) ?: return@forEach
+                }?.getAnimeDetails(manga.toSAnime()) ?: return@forEach
 
                 updateAnime.awaitUpdateFromSource(manga, networkManga, true)
             }
@@ -129,7 +129,7 @@ object DebugFunctions {
     }
 
     fun addAllMangaInDatabaseToLibrary() {
-        runBlocking { handler.await { ehQueries.addAllMangaInDatabaseToLibrary() } }
+        runBlocking { handler.await { ehQueries.addAllAnimeInDatabaseToLibrary() } }
     }
 
     fun countMangaInDatabaseInLibrary() = runBlocking { getFavorites.await().size }
@@ -298,7 +298,7 @@ object DebugFunctions {
     }
 
     fun resetReaderViewerForAllManga() {
-        runBlocking { handler.await { ehQueries.resetReaderViewerForAllManga() } }
+        runBlocking { handler.await { ehQueries.resetReaderViewerForAllAnime() } }
     }
 
     fun migrateLangNhentaiToMultiLangSource() {

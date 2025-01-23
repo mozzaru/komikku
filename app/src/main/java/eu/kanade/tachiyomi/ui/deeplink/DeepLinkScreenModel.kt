@@ -37,12 +37,12 @@ class DeepLinkScreenModel(
                 .filterIsInstance<ResolvableSource>()
                 .firstOrNull { it.getUriType(query) != UriType.Unknown }
 
-            val manga = source?.getManga(query)?.let {
+            val manga = source?.getAnime(query)?.let {
                 getMangaFromSManga(it, source.id)
             }
 
             val chapter = if (source?.getUriType(query) == UriType.Chapter && manga != null) {
-                source.getChapter(query)?.let { getEpisodeFromSEpisode(it, manga, source) }
+                source.getEpisode(query)?.let { getEpisodeFromSEpisode(it, manga, source) }
             } else {
                 null
             }
@@ -65,7 +65,7 @@ class DeepLinkScreenModel(
         val localChapter = getEpisodeByUrlAndAnimeId.await(sEpisode.url, manga.id)
 
         return if (localChapter == null) {
-            val sourceChapters = source.getChapterList(manga.toSAnime())
+            val sourceChapters = source.getEpisodeList(manga.toSAnime())
             val newChapters = syncEpisodesWithSource.await(sourceChapters, manga, source, false)
             newChapters.find { it.url == sEpisode.url }
         } else {

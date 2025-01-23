@@ -212,7 +212,7 @@ class InterceptActivity : BaseActivity() {
         )
 
         status.value = when (result) {
-            is GalleryAddEvent.Success -> InterceptResult.Success(result.manga.id, result.manga, result.episode)
+            is GalleryAddEvent.Success -> InterceptResult.Success(result.anime.id, result.anime, result.episode)
             is GalleryAddEvent.Fail -> InterceptResult.Failure(result.logMessage)
         }
     }

@@ -7,17 +7,17 @@ data class MergedAnimeReference(
     // The anime where it grabs the updated anime info
     val isInfoAnime: Boolean,
 
-    // If false the anime will not grab chapter updates
-    val getChapterUpdates: Boolean,
+    // If false the anime will not grab episode updates
+    val getEpisodeUpdates: Boolean,
 
-    // The mode in which the chapters are handeled, only set in the main merge reference
-    val chapterSortMode: Int,
+    // The mode in which the episodes are handled, only set in the main merge reference
+    val episodeSortMode: Int,
 
-    // chapter priority the deduplication uses
-    val chapterPriority: Int,
+    // episode priority the deduplication uses
+    val episodePriority: Int,
 
-    // Set if you want it to download new chapters
-    val downloadChapters: Boolean,
+    // Set if you want it to download new episodes
+    val downloadEpisodes: Boolean,
 
     // merged anime this reference is attached to
     val mergeId: Long?,
@@ -35,10 +35,10 @@ data class MergedAnimeReference(
     val animeSourceId: Long,
 ) {
     companion object {
-        const val CHAPTER_SORT_NONE = 0
-        const val CHAPTER_SORT_NO_DEDUPE = 1
-        const val CHAPTER_SORT_PRIORITY = 2
-        const val CHAPTER_SORT_MOST_CHAPTERS = 3
-        const val CHAPTER_SORT_HIGHEST_CHAPTER_NUMBER = 4
+        const val EPISODE_SORT_NONE = 0
+        const val EPISODE_SORT_NO_DEDUPE = 1
+        const val EPISODE_SORT_PRIORITY = 2
+        const val EPISODE_SORT_MOST_EPISODES = 3
+        const val EPISODE_SORT_HIGHEST_EPISODE_NUMBER = 4
     }
 }

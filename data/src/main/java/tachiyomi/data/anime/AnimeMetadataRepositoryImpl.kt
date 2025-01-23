@@ -16,54 +16,54 @@ class AnimeMetadataRepositoryImpl(
 ) : AnimeMetadataRepository {
 
     override suspend fun getMetadataById(id: Long): SearchMetadata? {
-        return handler.awaitOneOrNull { search_metadataQueries.selectByMangaId(id, ::searchMetadataMapper) }
+        return handler.awaitOneOrNull { search_metadataQueries.selectByAnimeId(id, ::searchMetadataMapper) }
     }
 
     override fun subscribeMetadataById(id: Long): Flow<SearchMetadata?> {
-        return handler.subscribeToOneOrNull { search_metadataQueries.selectByMangaId(id, ::searchMetadataMapper) }
+        return handler.subscribeToOneOrNull { search_metadataQueries.selectByAnimeId(id, ::searchMetadataMapper) }
     }
 
     override suspend fun getTagsById(id: Long): List<SearchTag> {
-        return handler.awaitList { search_tagsQueries.selectByMangaId(id, ::searchTagMapper) }
+        return handler.awaitList { search_tagsQueries.selectByAnimeId(id, ::searchTagMapper) }
     }
 
     override fun subscribeTagsById(id: Long): Flow<List<SearchTag>> {
-        return handler.subscribeToList { search_tagsQueries.selectByMangaId(id, ::searchTagMapper) }
+        return handler.subscribeToList { search_tagsQueries.selectByAnimeId(id, ::searchTagMapper) }
     }
 
     override suspend fun getTitlesById(id: Long): List<SearchTitle> {
-        return handler.awaitList { search_titlesQueries.selectByMangaId(id, ::searchTitleMapper) }
+        return handler.awaitList { search_titlesQueries.selectByAnimeId(id, ::searchTitleMapper) }
     }
 
     override fun subscribeTitlesById(id: Long): Flow<List<SearchTitle>> {
-        return handler.subscribeToList { search_titlesQueries.selectByMangaId(id, ::searchTitleMapper) }
+        return handler.subscribeToList { search_titlesQueries.selectByAnimeId(id, ::searchTitleMapper) }
     }
 
     override suspend fun insertFlatMetadata(flatMetadata: FlatMetadata) {
-        require(flatMetadata.metadata.mangaId != -1L)
+        require(flatMetadata.metadata.animeId != -1L)
 
         handler.await(true) {
             flatMetadata.metadata.run {
-                search_metadataQueries.upsert(mangaId, uploader, extra, indexedExtra, extraVersion.toLong())
+                search_metadataQueries.upsert(animeId, uploader, extra, indexedExtra, extraVersion.toLong())
             }
-            search_tagsQueries.deleteByManga(flatMetadata.metadata.mangaId)
+            search_tagsQueries.deleteByAnime(flatMetadata.metadata.animeId)
             flatMetadata.tags.forEach {
-                search_tagsQueries.insert(it.mangaId, it.namespace, it.name, it.type.toLong())
+                search_tagsQueries.insert(it.animeId, it.namespace, it.name, it.type.toLong())
             }
-            search_titlesQueries.deleteByManga(flatMetadata.metadata.mangaId)
+            search_titlesQueries.deleteByAnime(flatMetadata.metadata.animeId)
             flatMetadata.titles.forEach {
-                search_titlesQueries.insert(it.mangaId, it.title, it.type.toLong())
+                search_titlesQueries.insert(it.animeId, it.title, it.type.toLong())
             }
         }
     }
 
-    override suspend fun getExhFavoriteMangaWithMetadata(): List<Anime> {
+    override suspend fun getExhFavoriteAnimeWithMetadata(): List<Anime> {
         return handler.awaitList {
             animesQueries.getEhAnimeWithMetadata(EH_SOURCE_ID, EXH_SOURCE_ID, AnimeMapper::mapAnime)
         }
     }
 
-    override suspend fun getIdsOfFavoriteMangaWithMetadata(): List<Long> {
+    override suspend fun getIdsOfFavoriteAnimeWithMetadata(): List<Long> {
         return handler.awaitList { animesQueries.getIdsOfFavoriteAnimeWithMetadata() }
     }
 
@@ -72,14 +72,14 @@ class AnimeMetadataRepositoryImpl(
     }
 
     private fun searchMetadataMapper(
-        mangaId: Long,
+        animeId: Long,
         uploader: String?,
         extra: String,
         indexedExtra: String?,
         extraVersion: Long,
     ): SearchMetadata {
         return SearchMetadata(
-            mangaId = mangaId,
+            animeId = animeId,
             uploader = uploader,
             extra = extra,
             indexedExtra = indexedExtra,
@@ -88,13 +88,13 @@ class AnimeMetadataRepositoryImpl(
     }
 
     private fun searchTitleMapper(
-        mangaId: Long,
+        animeId: Long,
         id: Long?,
         title: String,
         type: Long,
     ): SearchTitle {
         return SearchTitle(
-            mangaId = mangaId,
+            animeId = animeId,
             id = id,
             title = title,
             type = type.toInt(),
@@ -102,14 +102,14 @@ class AnimeMetadataRepositoryImpl(
     }
 
     private fun searchTagMapper(
-        mangaId: Long,
+        animeId: Long,
         id: Long?,
         namespace: String?,
         name: String,
         type: Long,
     ): SearchTag {
         return SearchTag(
-            mangaId = mangaId,
+            animeId = animeId,
             id = id,
             namespace = namespace,
             name = name,

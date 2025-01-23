@@ -7,6 +7,6 @@ class GetIdsOfFavoriteAnimeWithMetadata(
 ) {
 
     suspend fun await(): List<Long> {
-        return animeMetadataRepository.getIdsOfFavoriteMangaWithMetadata()
+        return animeMetadataRepository.getIdsOfFavoriteAnimeWithMetadata()
     }
 }

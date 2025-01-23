@@ -240,7 +240,7 @@ class NotificationReceiver : BroadcastReceiver() {
         launchIO {
             val manga = getAnime.await(mangaId) ?: return@launchIO
             val chapters = chapterUrls.mapNotNull { getEpisode.await(it, mangaId) }
-            downloadManager.downloadChapters(manga, chapters)
+            downloadManager.downloadEpisodes(manga, chapters)
         }
     }
 

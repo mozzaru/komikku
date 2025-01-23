@@ -12,7 +12,7 @@ class GetMergedAnime(
 
     suspend fun await(): List<Anime> {
         return try {
-            animeMergeRepository.getMergedManga()
+            animeMergeRepository.getMergedAnime()
         } catch (e: Exception) {
             logcat(LogPriority.ERROR, e)
             emptyList()
@@ -20,6 +20,6 @@ class GetMergedAnime(
     }
 
     suspend fun subscribe(): Flow<List<Anime>> {
-        return animeMergeRepository.subscribeMergedManga()
+        return animeMergeRepository.subscribeMergedAnime()
     }
 }

@@ -4,8 +4,8 @@ import android.content.Context
 import android.net.Uri
 import androidx.core.net.toUri
 import eu.kanade.tachiyomi.network.awaitSuccess
-import eu.kanade.tachiyomi.source.model.FilterList
 import eu.kanade.tachiyomi.source.model.AnimesPage
+import eu.kanade.tachiyomi.source.model.FilterList
 import eu.kanade.tachiyomi.source.model.SAnime
 import eu.kanade.tachiyomi.source.online.HttpSource
 import eu.kanade.tachiyomi.source.online.MetadataSource
@@ -15,8 +15,8 @@ import eu.kanade.tachiyomi.util.asJsoup
 import exh.metadata.metadata.EightMusesSearchMetadata
 import exh.metadata.metadata.base.RaisedTag
 import exh.source.DelegatedHttpSource
-import exh.util.urlImportFetchSearchManga
-import exh.util.urlImportFetchSearchMangaSuspend
+import exh.util.urlImportFetchSearchAnime
+import exh.util.urlImportFetchSearchAnimeSuspend
 import org.jsoup.nodes.Document
 import org.jsoup.nodes.Element
 
@@ -32,13 +32,13 @@ class EightMuses(delegate: HttpSource, val context: Context) :
     // Support direct URL importing
     @Deprecated("Use the non-RxJava API instead", replaceWith = ReplaceWith("getSearchAnime"))
     override fun fetchSearchAnime(page: Int, query: String, filters: FilterList) =
-        urlImportFetchSearchManga(context, query) {
+        urlImportFetchSearchAnime(context, query) {
             @Suppress("DEPRECATION")
             super<DelegatedHttpSource>.fetchSearchAnime(page, query, filters)
         }
 
     override suspend fun getSearchAnime(page: Int, query: String, filters: FilterList): AnimesPage {
-        return urlImportFetchSearchMangaSuspend(context, query) {
+        return urlImportFetchSearchAnimeSuspend(context, query) {
             super<DelegatedHttpSource>.getSearchAnime(page, query, filters)
         }
     }
@@ -97,7 +97,7 @@ class EightMuses(delegate: HttpSource, val context: Context) :
         "8muses.com",
     )
 
-    override suspend fun mapUrlToMangaUrl(uri: Uri): String {
+    override suspend fun mapUrlToAnimeUrl(uri: Uri): String {
         var path = uri.pathSegments.drop(2)
         if (uri.pathSegments[1].lowercase() == "picture") {
             path = path.dropLast(1)

@@ -13,7 +13,7 @@ data class BackupSearchMetadata(
 ) {
     fun getSearchMetadata(mangaId: Long): SearchMetadata {
         return SearchMetadata(
-            mangaId = mangaId,
+            animeId = mangaId,
             uploader = uploader,
             extra = extra,
             indexedExtra = indexedExtra,

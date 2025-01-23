@@ -9,43 +9,43 @@ interface AnimeRepository {
 
     suspend fun getAnimeById(id: Long): Anime
 
-    suspend fun getMangaByIdAsFlow(id: Long): Flow<Anime>
+    suspend fun getAnimeByIdAsFlow(id: Long): Flow<Anime>
 
-    suspend fun getMangaByUrlAndSourceId(url: String, sourceId: Long): Anime?
+    suspend fun getAnimeByUrlAndSourceId(url: String, sourceId: Long): Anime?
 
-    fun getMangaByUrlAndSourceIdAsFlow(url: String, sourceId: Long): Flow<Anime?>
+    fun getAnimeByUrlAndSourceIdAsFlow(url: String, sourceId: Long): Flow<Anime?>
 
     suspend fun getFavorites(): List<Anime>
 
-    suspend fun getReadMangaNotInLibrary(): List<Anime>
+    suspend fun getSeenAnimeNotInLibrary(): List<Anime>
 
-    suspend fun getLibraryManga(): List<LibraryAnime>
+    suspend fun getLibraryAnime(): List<LibraryAnime>
 
-    fun getLibraryMangaAsFlow(): Flow<List<LibraryAnime>>
+    fun getLibraryAnimeAsFlow(): Flow<List<LibraryAnime>>
 
     fun getFavoritesBySourceId(sourceId: Long): Flow<List<Anime>>
 
-    suspend fun getDuplicateLibraryManga(id: Long, title: String): List<Anime>
+    suspend fun getDuplicateLibraryAnime(id: Long, title: String): List<Anime>
 
-    suspend fun getUpcomingManga(statuses: Set<Long>): Flow<List<Anime>>
+    suspend fun getUpcomingAnime(statuses: Set<Long>): Flow<List<Anime>>
 
     suspend fun resetViewerFlags(): Boolean
 
-    suspend fun setMangaCategories(mangaId: Long, categoryIds: List<Long>)
+    suspend fun setAnimeCategories(animeId: Long, categoryIds: List<Long>)
 
-    suspend fun insert(manga: Anime): Long?
+    suspend fun insert(anime: Anime): Long?
 
     suspend fun update(update: AnimeUpdate): Boolean
 
     suspend fun updateAll(animeUpdates: List<AnimeUpdate>): Boolean
 
     // SY -->
-    suspend fun getMangaBySourceId(sourceId: Long): List<Anime>
+    suspend fun getAnimeBySourceId(sourceId: Long): List<Anime>
 
     suspend fun getAll(): List<Anime>
 
-    suspend fun deleteManga(mangaId: Long)
+    suspend fun deleteAnime(animeId: Long)
 
-    suspend fun getReadMangaNotInLibraryView(): List<LibraryAnime>
+    suspend fun getSeenAnimeNotInLibraryView(): List<LibraryAnime>
     // SY <--
 }

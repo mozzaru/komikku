@@ -8,6 +8,6 @@ class GetHistoryByAnimeId(
 ) {
 
     suspend fun await(mangaId: Long): List<History> {
-        return repository.getByMangaId(mangaId)
+        return repository.getByAnimeId(mangaId)
     }
 }

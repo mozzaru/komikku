@@ -243,10 +243,10 @@ private fun UpdatesBottomBar(
         }.takeIf { selected.fastAll { it.update.bookmark } },
         onMarkAsSeenClicked = {
             onMultiMarkAsReadClicked(selected, true)
-        }.takeIf { selected.fastAny { !it.update.read } },
+        }.takeIf { selected.fastAny { !it.update.seen } },
         onMarkAsUnseenClicked = {
             onMultiMarkAsReadClicked(selected, false)
-        }.takeIf { selected.fastAny { it.update.read || it.update.lastPageRead > 0L } },
+        }.takeIf { selected.fastAny { it.update.seen || it.update.lastSecondSeen > 0L } },
         onDownloadClicked = {
             onDownloadChapter(selected, EpisodeDownloadAction.START)
         }.takeIf {

@@ -18,7 +18,7 @@ interface SourceRepository {
 
     fun getSourcesWithFavoriteCount(): Flow<List<Pair<Source, Long>>>
 
-    fun getSourcesWithNonLibraryManga(): Flow<List<SourceWithCount>>
+    fun getSourcesWithNonLibraryAnime(): Flow<List<SourceWithCount>>
 
     fun search(sourceId: Long, query: String, filterList: FilterList): SourcePagingSourceType
 

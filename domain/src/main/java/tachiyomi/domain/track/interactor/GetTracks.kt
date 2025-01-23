@@ -50,6 +50,6 @@ class GetTracks(
     }
 
     fun subscribe(mangaId: Long): Flow<List<Track>> {
-        return trackRepository.getTracksByMangaIdAsFlow(mangaId)
+        return trackRepository.getTracksByAnimeIdAsFlow(mangaId)
     }
 }

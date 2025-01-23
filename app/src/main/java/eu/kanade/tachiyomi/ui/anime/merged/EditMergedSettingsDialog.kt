@@ -60,7 +60,7 @@ class EditMergedSettingsState(
         mergeReference = mergedReferences.firstOrNull { it.animeSourceId == MERGED_SOURCE_ID }
 
         val isPriorityOrder =
-            mergeReference?.let { it.chapterSortMode == MergedAnimeReference.CHAPTER_SORT_PRIORITY } ?: false
+            mergeReference?.let { it.episodeSortMode == MergedAnimeReference.EPISODE_SORT_PRIORITY } ?: false
 
         mergedMangaAdapter = EditMergedMangaAdapter(this, isPriorityOrder)
         mergedMangaHeaderAdapter = EditMergedSettingsHeaderAdapter(this, mergedMangaAdapter!!)
@@ -73,7 +73,7 @@ class EditMergedSettingsState(
         mergedMangaAdapter?.updateDataSet(
             mergedMangas.map {
                 it.toModel()
-            }.sortedBy { it.mergedAnimeReference.chapterPriority },
+            }.sortedBy { it.mergedAnimeReference.episodePriority },
         )
     }
 
@@ -81,7 +81,7 @@ class EditMergedSettingsState(
         val mergedMangaAdapter = mergedMangaAdapter ?: return
         mergedMangas = mergedMangas.map { (manga, reference) ->
             manga to reference.copy(
-                chapterPriority = mergedMangaAdapter.currentItems.indexOfFirst {
+                episodePriority = mergedMangaAdapter.currentItems.indexOfFirst {
                     reference.id == it.mergedAnimeReference.id
                 },
             )
@@ -125,11 +125,11 @@ class EditMergedSettingsState(
                 it is EditMergedMangaHolder && it.reference.id == reference.id
             }?.let {
                 if (it is EditMergedMangaHolder) {
-                    it.updateChapterUpdatesIcon(!reference.getChapterUpdates)
+                    it.updateChapterUpdatesIcon(!reference.getEpisodeUpdates)
                 }
             } ?: context.toast(SYMR.strings.merged_chapter_updates_error)
 
-            manga to reference.copy(getChapterUpdates = !reference.getChapterUpdates)
+            manga to reference.copy(getEpisodeUpdates = !reference.getEpisodeUpdates)
         }
     }
 
@@ -155,11 +155,11 @@ class EditMergedSettingsState(
                 it is EditMergedMangaHolder && it.reference.id == reference.id
             }?.let {
                 if (it is EditMergedMangaHolder) {
-                    it.updateDownloadChaptersIcon(!reference.downloadChapters)
+                    it.updateDownloadChaptersIcon(!reference.downloadEpisodes)
                 }
             } ?: context.toast(SYMR.strings.merged_toggle_download_chapters_error)
 
-            manga to reference.copy(downloadChapters = !reference.downloadChapters)
+            manga to reference.copy(downloadEpisodes = !reference.downloadEpisodes)
         }
     }
 

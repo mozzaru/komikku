@@ -12,11 +12,11 @@ class GetLibraryAnime(
 ) {
 
     suspend fun await(): List<LibraryAnime> {
-        return animeRepository.getLibraryManga()
+        return animeRepository.getLibraryAnime()
     }
 
     fun subscribe(): Flow<List<LibraryAnime>> {
-        return animeRepository.getLibraryMangaAsFlow()
+        return animeRepository.getLibraryAnimeAsFlow()
             // SY -->
             .retry {
                 if (it is NullPointerException) {

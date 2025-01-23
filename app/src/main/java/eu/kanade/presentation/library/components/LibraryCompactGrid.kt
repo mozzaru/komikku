@@ -34,16 +34,16 @@ internal fun LibraryCompactGrid(
             items = items,
             contentType = { "library_compact_grid_item" },
         ) { libraryItem ->
-            val manga = libraryItem.libraryAnime.manga
+            val anime = libraryItem.libraryAnime.anime
             AnimeCompactGridItem(
                 isSelected = selection.fastAny { it.id == libraryItem.libraryAnime.id },
-                title = manga.title.takeIf { showTitle },
+                title = anime.title.takeIf { showTitle },
                 coverData = AnimeCover(
-                    animeId = manga.id,
-                    sourceId = manga.source,
-                    isAnimeFavorite = manga.favorite,
-                    ogUrl = manga.thumbnailUrl,
-                    lastModified = manga.coverLastModified,
+                    animeId = anime.id,
+                    sourceId = anime.source,
+                    isAnimeFavorite = anime.favorite,
+                    ogUrl = anime.thumbnailUrl,
+                    lastModified = anime.coverLastModified,
                 ),
                 coverBadgeStart = {
                     DownloadsBadge(count = libraryItem.downloadCount)

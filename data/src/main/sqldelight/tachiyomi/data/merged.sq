@@ -29,7 +29,7 @@ SELECT * FROM merged WHERE merge_url = ?;
 deleteByMergeId:
 DELETE FROM merged WHERE merge_id = ?;
 
-selectMergedMangasById:
+selectMergedAnimesById:
 SELECT animes.*
 FROM (
     SELECT manga_id FROM merged WHERE merge_id = ?
@@ -37,7 +37,7 @@ FROM (
 JOIN animes
 ON animes._id = M.manga_id;
 
-selectMergedMangasForDownloadingById:
+selectMergedAnimesForDownloadingById:
 SELECT animes.*
 FROM (
     SELECT manga_id FROM merged WHERE merge_id = ? AND download_chapters = 1
@@ -45,7 +45,7 @@ FROM (
 JOIN animes
 ON animes._id = M.manga_id;
 
-selectMergedMangasByUrl:
+selectMergedAnimesByUrl:
 SELECT animes.*
 FROM (
     SELECT manga_id FROM merged WHERE merge_url = ?
@@ -53,7 +53,7 @@ FROM (
 JOIN animes
 ON animes._id = M.manga_id;
 
-selectAllMergedMangas:
+selectAllMergedAnimes:
 SELECT animes.*
 FROM (
     SELECT manga_id FROM merged
@@ -67,7 +67,7 @@ DELETE FROM merged WHERE merge_url = ?;
 selectAll:
 SELECT * FROM merged;
 
-selectChaptersByMergedId:
+selectEpisodesByMergedId:
 SELECT episodes.*
 FROM (
     SELECT manga_id FROM merged WHERE merge_id = ?

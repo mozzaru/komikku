@@ -16,7 +16,7 @@ CREATE INDEX search_metadata_indexed_extra_index ON search_metadata(indexed_extr
 selectAll:
 SELECT * FROM search_metadata;
 
-selectByMangaId:
+selectByAnimeId:
 SELECT * FROM search_metadata WHERE manga_id = ?;
 
 selectByIndexedExtra:

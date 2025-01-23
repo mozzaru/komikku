@@ -4,8 +4,6 @@ import android.content.Context
 import android.content.SharedPreferences
 import android.net.Uri
 import eu.kanade.domain.track.service.TrackPreferences
-import eu.kanade.tachiyomi.source.model.SAnime
-import eu.kanade.tachiyomi.source.model.SEpisode
 import eu.kanade.tachiyomi.data.database.models.Track
 import eu.kanade.tachiyomi.data.track.TrackerManager
 import eu.kanade.tachiyomi.data.track.mdlist.MdList
@@ -13,7 +11,9 @@ import eu.kanade.tachiyomi.network.asObservableSuccess
 import eu.kanade.tachiyomi.network.awaitSuccess
 import eu.kanade.tachiyomi.source.model.AnimesPage
 import eu.kanade.tachiyomi.source.model.MetadataAnimesPage
-import eu.kanade.tachiyomi.source.model.Page
+import eu.kanade.tachiyomi.source.model.SAnime
+import eu.kanade.tachiyomi.source.model.SEpisode
+import eu.kanade.tachiyomi.source.model.Video
 import eu.kanade.tachiyomi.source.online.FollowsSource
 import eu.kanade.tachiyomi.source.online.HttpSource
 import eu.kanade.tachiyomi.source.online.LoginSource
@@ -146,7 +146,7 @@ class MangaDex(delegate: HttpSource, val context: Context) :
     }
 
     // UrlImportableSource methods
-    override suspend fun mapUrlToMangaUrl(uri: Uri): String? {
+    override suspend fun mapUrlToAnimeUrl(uri: Uri): String? {
         val lcFirstPathSegment = uri.pathSegments.firstOrNull()?.lowercase() ?: return null
 
         return if (lcFirstPathSegment == "title" || lcFirstPathSegment == "manga") {
@@ -156,13 +156,13 @@ class MangaDex(delegate: HttpSource, val context: Context) :
         }
     }
 
-    override fun mapUrlToChapterUrl(uri: Uri): String? {
+    override fun mapUrlToEpisodeUrl(uri: Uri): String? {
         if (!uri.pathSegments.firstOrNull().equals("chapter", true)) return null
         val id = uri.pathSegments.getOrNull(1) ?: return null
         return MdApi.chapter + '/' + id
     }
 
-    override suspend fun mapChapterUrlToMangaUrl(uri: Uri): String? {
+    override suspend fun mapEpisodeUrlToAnimeUrl(uri: Uri): String? {
         val id = uri.pathSegments.getOrNull(1) ?: return null
         return mangaHandler.getMangaFromChapterId(id)?.let { MdUtil.buildMangaUrl(it) }
     }
@@ -209,28 +209,28 @@ class MangaDex(delegate: HttpSource, val context: Context) :
     }
 
     @Deprecated("Use the 1.x API instead", replaceWith = ReplaceWith("getVideoList"))
-    override fun fetchVideoList(episode: SEpisode): Observable<List<Page>> {
+    override fun fetchVideoList(episode: SEpisode): Observable<List<Video>> {
         return runAsObservable { pageHandler.fetchPageList(episode, usePort443Only(), dataSaver(), delegate) }
     }
 
-    override suspend fun getVideoList(episode: SEpisode): List<Page> {
+    override suspend fun getVideoList(episode: SEpisode): List<Video> {
         return pageHandler.fetchPageList(episode, usePort443Only(), dataSaver(), delegate)
     }
 
-    override suspend fun getVideo(video: Page): Response {
+    override suspend fun getVideo(video: Video): Response {
         val call = pageHandler.getImageCall(video)
         return call?.awaitSuccess() ?: super.getVideo(video)
     }
 
     @Deprecated("Use the non-RxJava API instead", replaceWith = ReplaceWith("getVideoUrl"))
-    override fun fetchVideoUrl(video: Page): Observable<String> {
+    override fun fetchVideoUrl(video: Video): Observable<String> {
         return pageHandler.fetchImageUrl(video) {
             @Suppress("DEPRECATION")
             super.fetchVideoUrl(it)
         }
     }
 
-    override suspend fun getVideoUrl(video: Page): String {
+    override suspend fun getVideoUrl(video: Video): String {
         return pageHandler.getImageUrl(video) {
             super.getVideoUrl(video)
         }
@@ -296,7 +296,7 @@ class MangaDex(delegate: HttpSource, val context: Context) :
         return followsHandler.updateRating(track)
     }
 
-    suspend fun getTrackingAndMangaInfo(track: Track): Pair<Track, MangaDexSearchMetadata?> {
+    suspend fun getTrackingAndAnimeInfo(track: Track): Pair<Track, MangaDexSearchMetadata?> {
         return mangaHandler.getTrackingInfo(track)
     }
 

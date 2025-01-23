@@ -9,6 +9,6 @@ class GetSourcesWithNonLibraryAnime(
 ) {
 
     fun subscribe(): Flow<List<SourceWithCount>> {
-        return repository.getSourcesWithNonLibraryManga()
+        return repository.getSourcesWithNonLibraryAnime()
     }
 }

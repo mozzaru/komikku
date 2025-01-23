@@ -10,41 +10,41 @@ import uy.kohesive.injekt.Injekt
 import uy.kohesive.injekt.api.get
 import java.util.Locale
 
-fun Anime.mangaType(context: Context): String {
+fun Anime.animeType(context: Context): String {
     return context.stringResource(
-        when (mangaType()) {
-            MangaType.TYPE_WEBTOON -> SYMR.strings.entry_type_webtoon
-            MangaType.TYPE_MANHWA -> SYMR.strings.entry_type_manhwa
-            MangaType.TYPE_MANHUA -> SYMR.strings.entry_type_manhua
-            MangaType.TYPE_COMIC -> SYMR.strings.entry_type_comic
+        when (animeType()) {
+            AnimeType.TYPE_WEBTOON -> SYMR.strings.entry_type_webtoon
+            AnimeType.TYPE_MANHWA -> SYMR.strings.entry_type_manhwa
+            AnimeType.TYPE_MANHUA -> SYMR.strings.entry_type_manhua
+            AnimeType.TYPE_COMIC -> SYMR.strings.entry_type_comic
             else -> SYMR.strings.entry_type_manga
         },
     ).lowercase(Locale.getDefault())
 }
 
 /**
- * The type of comic the manga is (ie. manga, manhwa, manhua)
+ * The type of comic the anime is (ie. manga, manhwa, manhua)
  */
-fun Anime.mangaType(sourceName: String? = Injekt.get<SourceManager>().get(source)?.name): MangaType {
+fun Anime.animeType(sourceName: String? = Injekt.get<SourceManager>().get(source)?.name): AnimeType {
     val currentTags = genre.orEmpty()
     return when {
         currentTags.any { tag -> isMangaTag(tag) } -> {
-            MangaType.TYPE_MANGA
+            AnimeType.TYPE_MANGA
         }
         currentTags.any { tag -> isWebtoonTag(tag) } || sourceName?.let { isWebtoonSource(it) } == true -> {
-            MangaType.TYPE_WEBTOON
+            AnimeType.TYPE_WEBTOON
         }
         currentTags.any { tag -> isComicTag(tag) } || sourceName?.let { isComicSource(it) } == true -> {
-            MangaType.TYPE_COMIC
+            AnimeType.TYPE_COMIC
         }
         currentTags.any { tag -> isManhuaTag(tag) } || sourceName?.let { isManhuaSource(it) } == true -> {
-            MangaType.TYPE_MANHUA
+            AnimeType.TYPE_MANHUA
         }
         currentTags.any { tag -> isManhwaTag(tag) } || sourceName?.let { isManhwaSource(it) } == true -> {
-            MangaType.TYPE_MANHWA
+            AnimeType.TYPE_MANHWA
         }
         else -> {
-            MangaType.TYPE_MANGA
+            AnimeType.TYPE_MANGA
         }
     }
 }
@@ -53,8 +53,8 @@ fun Anime.mangaType(sourceName: String? = Injekt.get<SourceManager>().get(source
  * The type the reader should use. Different from manga type as certain manga has different
  * read types
  */
-fun Anime.defaultReaderType(type: MangaType = mangaType()): Int? {
-    return if (type == MangaType.TYPE_MANHWA || type == MangaType.TYPE_WEBTOON) {
+fun Anime.defaultReaderType(type: AnimeType = animeType()): Int? {
+    return if (type == AnimeType.TYPE_MANHWA || type == AnimeType.TYPE_WEBTOON) {
         ReadingMode.WEBTOON.flagValue
     } else {
         null
@@ -157,7 +157,7 @@ private fun isManhuaSource(sourceName: String): Boolean {
         sourceName.contains("manhua", true)
 }
 
-enum class MangaType {
+enum class AnimeType {
     TYPE_MANGA,
     TYPE_MANHWA,
     TYPE_MANHUA,

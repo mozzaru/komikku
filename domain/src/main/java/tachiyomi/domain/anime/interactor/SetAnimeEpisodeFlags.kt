@@ -12,7 +12,7 @@ class SetAnimeEpisodeFlags(
         return animeRepository.update(
             AnimeUpdate(
                 id = manga.id,
-                chapterFlags = manga.episodeFlags.setFlag(flag, Anime.EPISODE_DOWNLOADED_MASK),
+                episodeFlags = manga.episodeFlags.setFlag(flag, Anime.EPISODE_DOWNLOADED_MASK),
             ),
         )
     }
@@ -21,7 +21,7 @@ class SetAnimeEpisodeFlags(
         return animeRepository.update(
             AnimeUpdate(
                 id = manga.id,
-                chapterFlags = manga.episodeFlags.setFlag(flag, Anime.EPISODE_UNSEEN_MASK),
+                episodeFlags = manga.episodeFlags.setFlag(flag, Anime.EPISODE_UNSEEN_MASK),
             ),
         )
     }
@@ -30,7 +30,7 @@ class SetAnimeEpisodeFlags(
         return animeRepository.update(
             AnimeUpdate(
                 id = manga.id,
-                chapterFlags = manga.episodeFlags.setFlag(flag, Anime.EPISODE_BOOKMARKED_MASK),
+                episodeFlags = manga.episodeFlags.setFlag(flag, Anime.EPISODE_BOOKMARKED_MASK),
             ),
         )
     }
@@ -39,7 +39,7 @@ class SetAnimeEpisodeFlags(
         return animeRepository.update(
             AnimeUpdate(
                 id = manga.id,
-                chapterFlags = manga.episodeFlags.setFlag(flag, Anime.EPISODE_DISPLAY_MASK),
+                episodeFlags = manga.episodeFlags.setFlag(flag, Anime.EPISODE_DISPLAY_MASK),
             ),
         )
     }
@@ -64,7 +64,7 @@ class SetAnimeEpisodeFlags(
         return animeRepository.update(
             AnimeUpdate(
                 id = manga.id,
-                chapterFlags = newFlags,
+                episodeFlags = newFlags,
             ),
         )
     }
@@ -81,7 +81,7 @@ class SetAnimeEpisodeFlags(
         return animeRepository.update(
             AnimeUpdate(
                 id = mangaId,
-                chapterFlags = 0L.setFlag(unreadFilter, Anime.EPISODE_UNSEEN_MASK)
+                episodeFlags = 0L.setFlag(unreadFilter, Anime.EPISODE_UNSEEN_MASK)
                     .setFlag(downloadedFilter, Anime.EPISODE_DOWNLOADED_MASK)
                     .setFlag(bookmarkedFilter, Anime.EPISODE_BOOKMARKED_MASK)
                     .setFlag(sortingMode, Anime.EPISODE_SORTING_MASK)

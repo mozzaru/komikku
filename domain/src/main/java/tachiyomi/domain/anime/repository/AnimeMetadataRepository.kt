@@ -25,9 +25,9 @@ interface AnimeMetadataRepository {
 
     suspend fun insertMetadata(metadata: RaisedSearchMetadata) = insertFlatMetadata(metadata.flatten())
 
-    suspend fun getExhFavoriteMangaWithMetadata(): List<Anime>
+    suspend fun getExhFavoriteAnimeWithMetadata(): List<Anime>
 
-    suspend fun getIdsOfFavoriteMangaWithMetadata(): List<Long>
+    suspend fun getIdsOfFavoriteAnimeWithMetadata(): List<Long>
 
     suspend fun getSearchMetadata(): List<SearchMetadata>
 }

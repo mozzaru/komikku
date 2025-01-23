@@ -116,7 +116,7 @@ class UpdatesScreenModel(
             .map { update ->
                 val activeDownload = downloadManager.getQueuedDownloadOrNull(update.episodeId)
                 val downloaded = downloadManager.isEpisodeDownloaded(
-                    update.chapterName,
+                    update.episodeName,
                     update.scanlator,
                     // SY -->
                     update.ogAnimeTitle,
@@ -247,7 +247,7 @@ class UpdatesScreenModel(
                 // Don't download if source isn't available
                 sourceManager.get(manga.source) ?: continue
                 val chapters = updates.mapNotNull { getEpisode.await(it.update.episodeId) }
-                downloadManager.downloadChapters(manga, chapters)
+                downloadManager.downloadEpisodes(manga, chapters)
             }
         }
     }

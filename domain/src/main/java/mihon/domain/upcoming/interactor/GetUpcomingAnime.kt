@@ -30,7 +30,7 @@ class GetUpcomingAnime(
     )
 
     suspend fun subscribe(): Flow<List<Anime>> {
-        return animeRepository.getUpcomingManga(includedStatuses)
+        return animeRepository.getUpcomingAnime(includedStatuses)
     }
 
     // KMK -->
@@ -46,35 +46,35 @@ class GetUpcomingAnime(
 
         val categoriesToExclude = libraryPreferences.updateCategoriesExclude().get().map { it.toLong() }
         val excludedMangaIds = if (categoriesToExclude.isNotEmpty()) {
-            libraryManga.filter { it.category in categoriesToExclude }.map { it.manga.id }
+            libraryManga.filter { it.category in categoriesToExclude }.map { it.anime.id }
         } else {
             emptyList()
         }
 
         val listToUpdate = includedManga
-            .filterNot { it.manga.id in excludedMangaIds }
+            .filterNot { it.anime.id in excludedMangaIds }
 
         val restrictions = libraryPreferences.autoUpdateAnimeRestrictions().get()
         val today = LocalDate.now().atStartOfDay(ZoneId.systemDefault()).toEpochSecond() * 1000
 
         return listToUpdate
-            .distinctBy { it.manga.id }
+            .distinctBy { it.anime.id }
             .filter {
                 when {
-                    it.manga.updateStrategy != UpdateStrategy.ALWAYS_UPDATE -> false
+                    it.anime.updateStrategy != UpdateStrategy.ALWAYS_UPDATE -> false
 
-                    ANIME_NON_COMPLETED in restrictions && it.manga.status.toInt() == SAnime.COMPLETED -> false
+                    ANIME_NON_COMPLETED in restrictions && it.anime.status.toInt() == SAnime.COMPLETED -> false
 
                     MANGA_HAS_UNREAD in restrictions && it.unreadCount != 0L -> false
 
-                    MANGA_NON_READ in restrictions && it.totalChapters > 0L && !it.hasStarted -> false
+                    MANGA_NON_READ in restrictions && it.totalEpisodes > 0L && !it.hasStarted -> false
 
-                    ANIME_OUTSIDE_RELEASE_PERIOD in restrictions && it.manga.nextUpdate < today -> false
+                    ANIME_OUTSIDE_RELEASE_PERIOD in restrictions && it.anime.nextUpdate < today -> false
 
                     else -> true
                 }
             }
-            .map { it.manga }
+            .map { it.anime }
             .sortedBy { it.nextUpdate }
     }
     // KMK <--

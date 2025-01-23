@@ -12,7 +12,7 @@ data class BackupSearchTitle(
     fun getSearchTitle(mangaId: Long): SearchTitle {
         return SearchTitle(
             id = null,
-            mangaId = mangaId,
+            animeId = mangaId,
             title = title,
             type = type,
         )

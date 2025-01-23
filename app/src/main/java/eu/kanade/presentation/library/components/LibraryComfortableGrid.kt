@@ -36,16 +36,16 @@ internal fun LibraryComfortableGrid(
             items = items,
             contentType = { "library_comfortable_grid_item" },
         ) { libraryItem ->
-            val manga = libraryItem.libraryAnime.manga
+            val anime = libraryItem.libraryAnime.anime
             AnimeComfortableGridItem(
                 isSelected = selection.fastAny { it.id == libraryItem.libraryAnime.id },
-                title = manga.title,
+                title = anime.title,
                 coverData = AnimeCover(
-                    animeId = manga.id,
-                    sourceId = manga.source,
-                    isAnimeFavorite = manga.favorite,
-                    ogUrl = manga.thumbnailUrl,
-                    lastModified = manga.coverLastModified,
+                    animeId = anime.id,
+                    sourceId = anime.source,
+                    isAnimeFavorite = anime.favorite,
+                    ogUrl = anime.thumbnailUrl,
+                    lastModified = anime.coverLastModified,
                 ),
                 coverBadgeStart = {
                     DownloadsBadge(count = libraryItem.downloadCount)
