@@ -3,7 +3,6 @@ package tachiyomi.data.anime
 import eu.kanade.tachiyomi.source.model.UpdateStrategy
 import tachiyomi.domain.anime.model.Anime
 import tachiyomi.domain.library.model.LibraryAnime
-import tachiyomi.view.LibraryView
 
 object AnimeMapper {
     fun mapAnime(
@@ -138,41 +137,4 @@ object AnimeMapper {
         episodeFetchedAt = episodeFetchedAt,
         lastSeen = lastSeen,
     )
-
-    fun mapLibraryView(libraryView: LibraryView): LibraryAnime {
-        return LibraryAnime(
-            anime = Anime(
-                id = libraryView._id,
-                source = libraryView.source,
-                favorite = libraryView.favorite,
-                lastUpdate = libraryView.last_update ?: 0,
-                nextUpdate = libraryView.next_update ?: 0,
-                dateAdded = libraryView.date_added,
-                viewerFlags = libraryView.viewer,
-                episodeFlags = libraryView.chapter_flags,
-                coverLastModified = libraryView.cover_last_modified,
-                url = libraryView.url,
-                ogTitle = libraryView.title,
-                ogArtist = libraryView.artist,
-                ogAuthor = libraryView.author,
-                ogDescription = libraryView.description,
-                ogGenre = libraryView.genre,
-                ogStatus = libraryView.status,
-                ogThumbnailUrl = libraryView.thumbnail_url,
-                updateStrategy = libraryView.update_strategy,
-                initialized = libraryView.initialized,
-                fetchInterval = libraryView.calculate_interval.toInt(),
-                lastModifiedAt = libraryView.last_modified_at,
-                favoriteModifiedAt = libraryView.favorite_modified_at,
-                version = libraryView.version,
-            ),
-            category = libraryView.category,
-            totalEpisodes = libraryView.totalCount,
-            seenCount = libraryView.readCount.toLong(),
-            bookmarkCount = libraryView.bookmarkCount.toLong(),
-            latestUpload = libraryView.latestUpload,
-            episodeFetchedAt = libraryView.chapterFetchedAt,
-            lastSeen = libraryView.lastRead,
-        )
-    }
 }

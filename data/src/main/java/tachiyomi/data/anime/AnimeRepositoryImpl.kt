@@ -1,10 +1,8 @@
 package tachiyomi.data.anime
 
 import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.map
 import logcat.LogPriority
 import tachiyomi.core.common.util.system.logcat
-import tachiyomi.data.AndroidDatabaseHandler
 import tachiyomi.data.DatabaseHandler
 import tachiyomi.data.StringListColumnAdapter
 import tachiyomi.data.UpdateStrategyColumnAdapter
@@ -56,17 +54,11 @@ class AnimeRepositoryImpl(
     }
 
     override suspend fun getLibraryAnime(): List<LibraryAnime> {
-        return handler.awaitListExecutable {
-            (handler as AndroidDatabaseHandler).getLibraryQuery()
-        }.map(AnimeMapper::mapLibraryView)
-        // return handler.awaitList { libraryViewQueries.library(AnimeMapper::mapLibraryAnime) }
+        return handler.awaitList { libraryViewQueries.library(AnimeMapper::mapLibraryAnime) }
     }
 
     override fun getLibraryAnimeAsFlow(): Flow<List<LibraryAnime>> {
         return handler.subscribeToList { libraryViewQueries.library(AnimeMapper::mapLibraryAnime) }
-            // SY -->
-            .map { getLibraryAnime() }
-        // SY <--
     }
 
     override fun getFavoritesBySourceId(sourceId: Long): Flow<List<Anime>> {
@@ -203,9 +195,7 @@ class AnimeRepositoryImpl(
     }
 
     override suspend fun getSeenAnimeNotInLibraryView(): List<LibraryAnime> {
-        return handler.awaitListExecutable {
-            (handler as AndroidDatabaseHandler).getLibraryQuery("M.favorite = 0 AND C.readCount != 0")
-        }.map(AnimeMapper::mapLibraryView)
+        return handler.awaitList { libraryViewQueries.seenAnimeNonLibrary(AnimeMapper::mapLibraryAnime) }
     }
     // SY <--
 }
