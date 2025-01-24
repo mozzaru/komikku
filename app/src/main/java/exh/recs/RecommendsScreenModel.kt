@@ -56,7 +56,11 @@ open class RecommendsScreenModel(
 
                     RecommendationPagingSource.createSources(
                         manga,
-                        sourceManager.getOrStub(args.sourceId) as CatalogueSource,
+                        sourceManager
+                            // KMK -->
+                            .get(args.sourceId)
+                            ?.let { it as CatalogueSource },
+                        // KMK <--
                     )
                 }
                 is RecommendsScreen.Args.MergedSourceMangas -> {

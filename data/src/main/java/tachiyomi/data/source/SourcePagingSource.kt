@@ -13,19 +13,28 @@ import tachiyomi.domain.source.repository.SourcePagingSourceType
 class SourceSearchPagingSource(source: CatalogueSource, val query: String, val filters: FilterList) :
     SourcePagingSource(source) {
     override suspend fun requestNextPage(currentPage: Int): MangasPage {
-        return source!!.getSearchManga(currentPage, query, filters)
+        return source?.getSearchManga(currentPage, query, filters)
+            // KMK -->
+            ?: MangasPage(emptyList(), false)
+        // KMK <--
     }
 }
 
 class SourcePopularPagingSource(source: CatalogueSource) : SourcePagingSource(source) {
     override suspend fun requestNextPage(currentPage: Int): MangasPage {
-        return source!!.getPopularManga(currentPage)
+        return source?.getPopularManga(currentPage)
+            // KMK -->
+            ?: MangasPage(emptyList(), false)
+        // KMK <--
     }
 }
 
 class SourceLatestPagingSource(source: CatalogueSource) : SourcePagingSource(source) {
     override suspend fun requestNextPage(currentPage: Int): MangasPage {
-        return source!!.getLatestUpdates(currentPage)
+        return source?.getLatestUpdates(currentPage)
+            // KMK -->
+            ?: MangasPage(emptyList(), false)
+        // KMK <--
     }
 }
 
