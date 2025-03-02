@@ -28,18 +28,27 @@ import eu.kanade.tachiyomi.ui.browse.RemoveMangaDialog
 import eu.kanade.tachiyomi.ui.browse.source.SourcesScreen
 import eu.kanade.tachiyomi.ui.manga.MangaScreen
 import eu.kanade.tachiyomi.ui.webview.WebViewActivity
+import exh.recs.batch.RankedSearchResults
 import mihon.presentation.core.util.collectAsLazyPagingItems
 import tachiyomi.core.common.util.lang.launchIO
 import tachiyomi.domain.manga.model.Manga
 import tachiyomi.presentation.core.components.material.Scaffold
 import tachiyomi.presentation.core.screens.LoadingScreen
+import java.io.Serializable
 
 class BrowseRecommendsScreen(
-    private val mangaId: Long,
-    private val sourceId: Long,
-    private val recommendationSourceName: String,
+    private val args: Args,
     private val isExternalSource: Boolean,
 ) : Screen() {
+
+    sealed interface Args : Serializable {
+        data class SingleSourceManga(
+            val mangaId: Long,
+            val sourceId: Long,
+            val recommendationSourceName: String,
+        ) : Args
+        data class MergedSourceMangas(val results: RankedSearchResults) : Args
+    }
 
     @Composable
     override fun Content() {
@@ -52,7 +61,7 @@ class BrowseRecommendsScreen(
         val navigator = LocalNavigator.currentOrThrow
 
         val screenModel = rememberScreenModel {
-            BrowseRecommendsScreenModel(mangaId, sourceId, recommendationSourceName)
+            BrowseRecommendsScreenModel(args)
         }
 
         // KMK -->

@@ -260,6 +260,7 @@ fun LibraryBottomActionMenu(
     // SY -->
     onClickCleanTitles: (() -> Unit)?,
     onClickMigrate: (() -> Unit)?,
+    onClickCollectRecommendations: (() -> Unit)?,
     onClickAddToMangaDex: (() -> Unit)?,
     onClickResetInfo: (() -> Unit)?,
     // SY <--
@@ -298,6 +299,7 @@ fun LibraryBottomActionMenu(
             val showOverflow = onClickCleanTitles != null ||
                 onClickAddToMangaDex != null ||
                 onClickResetInfo != null ||
+                onClickCollectRecommendations != null ||
                 // KMK -->
                 onClickMigrate != null ||
                 onClickMerge != null
@@ -417,6 +419,12 @@ fun LibraryBottomActionMenu(
                             DropdownMenuItem(
                                 text = { Text(stringResource(SYMR.strings.action_clean_titles)) },
                                 onClick = onClickCleanTitles,
+                            )
+                        }
+                        if (onClickCollectRecommendations != null) {
+                            DropdownMenuItem(
+                                text = { Text(stringResource(SYMR.strings.rec_search_short)) },
+                                onClick = onClickCollectRecommendations,
                             )
                         }
                         if (onClickAddToMangaDex != null) {
