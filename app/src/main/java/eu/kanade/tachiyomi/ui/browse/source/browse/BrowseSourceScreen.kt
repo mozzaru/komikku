@@ -63,7 +63,6 @@ import eu.kanade.tachiyomi.ui.webview.WebViewScreen
 import eu.kanade.tachiyomi.util.system.toast
 import exh.md.follows.MangaDexFollowsScreen
 import exh.source.isEhBasedSource
-import exh.source.isMdBasedSource
 import exh.ui.smartsearch.SmartSearchScreen
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.collectLatest
@@ -409,7 +408,7 @@ data class BrowseSourceScreen(
                     // KMK -->
                     onSavedSearchPressDesc = stringResource(KMR.strings.saved_searches_delete),
                     // KMK <--
-                    openMangaDexRandom = if (screenModel.source.isMdBasedSource()) {
+                    openMangaDexRandom = if (screenModel.sourceIsMangaDex) {
                         {
                             screenModel.onMangaDexRandom {
                                 navigator.replace(
@@ -423,7 +422,7 @@ data class BrowseSourceScreen(
                     } else {
                         null
                     },
-                    openMangaDexFollows = if (screenModel.source.isMdBasedSource()) {
+                    openMangaDexFollows = if (screenModel.sourceIsMangaDex) {
                         {
                             navigator.replace(MangaDexFollowsScreen(sourceId))
                         }
