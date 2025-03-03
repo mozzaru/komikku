@@ -57,7 +57,7 @@ class RecommendsScreen(val mangaId: Long, val sourceId: Long) : Screen() {
 
         val onClickItem = { manga: Manga ->
             when (manga.source) {
-                RECOMMENDS_SOURCE -> navigator.push(
+                -1L -> navigator.push(
                     SourcesScreen(SourcesScreen.SmartSearchConfig(manga.ogTitle)),
                 )
                 else -> {
@@ -75,7 +75,7 @@ class RecommendsScreen(val mangaId: Long, val sourceId: Long) : Screen() {
 
         val onLongClickItem = { manga: Manga ->
             when (manga.source) {
-                RECOMMENDS_SOURCE -> WebViewActivity.newIntent(context, manga.url, title = manga.title).let(context::startActivity)
+                -1L -> WebViewActivity.newIntent(context, manga.url, title = manga.title).let(context::startActivity)
                 else -> {
                     // KMK -->
                     scope.launchIO {

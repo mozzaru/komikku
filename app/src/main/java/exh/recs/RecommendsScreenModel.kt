@@ -6,8 +6,8 @@ import androidx.compose.runtime.produceState
 import cafe.adriel.voyager.core.model.StateScreenModel
 import eu.kanade.domain.manga.model.toDomainManga
 import eu.kanade.presentation.util.ioCoroutineScope
+import eu.kanade.tachiyomi.source.CatalogueSource
 import exh.recs.sources.RecommendationPagingSource
-import exh.recs.sources.SourceCatalogue
 import kotlinx.collections.immutable.PersistentMap
 import kotlinx.collections.immutable.mutate
 import kotlinx.collections.immutable.persistentMapOf
@@ -25,18 +25,21 @@ import kotlinx.coroutines.withContext
 import tachiyomi.domain.manga.interactor.GetManga
 import tachiyomi.domain.manga.interactor.NetworkToLocalManga
 import tachiyomi.domain.manga.model.Manga
+import tachiyomi.domain.source.service.SourceManager
 import uy.kohesive.injekt.Injekt
 import uy.kohesive.injekt.api.get
 
 open class RecommendsScreenModel(
     val mangaId: Long,
     val sourceId: Long,
+    sourceManager: SourceManager = Injekt.get(),
     private val getManga: GetManga = Injekt.get(),
     internal val networkToLocalManga: NetworkToLocalManga = Injekt.get(),
 ) : StateScreenModel<RecommendsScreenModel.State>(State()) {
 
-    // KMK -->
-    private val sourceCatalogue = SourceCatalogue(sourceId)
+    val source = sourceManager.get(sourceId)
+        // KMK -->
+        ?.let { it as CatalogueSource }
     // KMK <--
 
     private val coroutineDispatcher = Dispatchers.IO.limitedParallelism(5)
@@ -53,12 +56,7 @@ open class RecommendsScreenModel(
         ioCoroutineScope.launch {
             val manga = getManga.await(mangaId)!!
             mutableState.update { it.copy(manga = manga) }
-            val recommendationSources = RecommendationPagingSource.createSources(
-                manga,
-                // KMK -->
-                sourceCatalogue,
-                // KMK <--
-            )
+            val recommendationSources = RecommendationPagingSource.createSources(manga, source)
 
             updateItems(
                 recommendationSources
@@ -82,7 +80,7 @@ open class RecommendsScreenModel(
                             // KMK -->
                             // If the recommendation is associated with a source, resolve it
                             // Otherwise, skip this step. The user will be prompted to choose a source via SmartSearch
-                            it.toDomainManga(recSourceId ?: RECOMMENDS_SOURCE)
+                            it.toDomainManga(recSourceId ?: -1)
                             // KMK <--
                         }
 
@@ -157,5 +155,3 @@ sealed interface RecommendationItemResult {
         return !onlyShowHasResults || (this is Success && !this.isEmpty)
     }
 }
-
-const val RECOMMENDS_SOURCE = -1L
