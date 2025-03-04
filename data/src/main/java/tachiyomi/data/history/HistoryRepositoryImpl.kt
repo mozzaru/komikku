@@ -26,7 +26,7 @@ class HistoryRepositoryImpl(
     }
 
     override suspend fun getTotalWatchDuration(): Long {
-        return handler.awaitOne { historyQueries.getSeenDuration() }
+        return handler.awaitOne { historyQueries.getWatchDuration() }
     }
 
     override suspend fun getHistoryByAnimeId(animeId: Long): List<History> {

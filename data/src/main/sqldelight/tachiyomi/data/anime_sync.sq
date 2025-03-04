@@ -1,25 +1,25 @@
 CREATE TABLE anime_sync(
     _id INTEGER NOT NULL PRIMARY KEY,
-    manga_id INTEGER NOT NULL,
+    anime_id INTEGER NOT NULL,
     sync_id INTEGER NOT NULL,
     remote_id INTEGER NOT NULL,
     library_id INTEGER,
     title TEXT NOT NULL,
-    last_chapter_read REAL NOT NULL,
-    total_chapters INTEGER NOT NULL,
+    last_episode_seen REAL NOT NULL,
+    total_episodes INTEGER NOT NULL,
     status INTEGER NOT NULL,
     score REAL NOT NULL,
     remote_url TEXT NOT NULL,
     start_date INTEGER NOT NULL,
     finish_date INTEGER NOT NULL,
-    UNIQUE (manga_id, sync_id) ON CONFLICT REPLACE,
-    FOREIGN KEY(manga_id) REFERENCES animes (_id)
+    UNIQUE (anime_id, sync_id) ON CONFLICT REPLACE,
+    FOREIGN KEY(anime_id) REFERENCES animes (_id)
     ON DELETE CASCADE
 );
 
 delete:
 DELETE FROM anime_sync
-WHERE manga_id = :mangaId AND sync_id = :syncId;
+WHERE anime_id = :animeId AND sync_id = :syncId;
 
 getTracks:
 SELECT *
@@ -31,27 +31,27 @@ FROM anime_sync
 WHERE _id = :id;
 
 getTracksByAnimeIds:
-SELECT * FROM anime_sync WHERE manga_id IN :mangaIds;
+SELECT * FROM anime_sync WHERE anime_id IN :animeIds;
 
 getTracksByAnimeId:
 SELECT *
 FROM anime_sync
-WHERE manga_id = :mangaId;
+WHERE anime_id = :animeId;
 
 insert:
-INSERT INTO anime_sync(manga_id,sync_id,remote_id,library_id,title,last_chapter_read,total_chapters,status,score,remote_url,start_date,finish_date)
-VALUES (:mangaId,:syncId,:remoteId,:libraryId,:title,:lastChapterRead,:totalChapters,:status,:score,:remoteUrl,:startDate,:finishDate);
+INSERT INTO anime_sync(anime_id,sync_id,remote_id,library_id,title,last_episode_seen,total_episodes,status,score,remote_url,start_date,finish_date)
+VALUES (:animeId,:syncId,:remoteId,:libraryId,:title,:lastEpisodeSeen,:totalEpisodes,:status,:score,:remoteUrl,:startDate,:finishDate);
 
 update:
 UPDATE anime_sync
 SET
-    manga_id = coalesce(:mangaId, manga_id),
+    anime_id = coalesce(:animeId, anime_id),
     sync_id = coalesce(:syncId, sync_id),
     remote_id = coalesce(:mediaId, remote_id),
     library_id = coalesce(:libraryId, library_id),
     title = coalesce(:title, title),
-    last_chapter_read = coalesce(:lastChapterRead, last_chapter_read),
-    total_chapters = coalesce(:totalChapter, total_chapters),
+    last_episode_seen = coalesce(:lastEpisodeSeen, last_episode_seen),
+    total_episodes = coalesce(:totalEpisodes, total_episodes),
     status = coalesce(:status, status),
     score = coalesce(:score, score),
     remote_url = coalesce(:trackingUrl, remote_url),

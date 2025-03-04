@@ -18,8 +18,8 @@ import tachiyomi.domain.anime.interactor.GetAnimeByUrlAndSourceId
 import tachiyomi.domain.anime.interactor.GetFlatMetadataById
 import tachiyomi.domain.anime.interactor.InsertFlatMetadata
 import tachiyomi.domain.anime.interactor.SetCustomAnimeInfo
-import tachiyomi.domain.anime.model.CustomAnimeInfo
 import tachiyomi.domain.anime.model.Anime
+import tachiyomi.domain.anime.model.CustomAnimeInfo
 import tachiyomi.domain.category.interactor.GetCategories
 import tachiyomi.domain.episode.interactor.GetEpisodesByAnimeId
 import tachiyomi.domain.episode.model.Episode
@@ -155,10 +155,10 @@ class AnimeRestorer(
                 calculateInterval = null,
                 initialized = manga.initialized,
                 viewer = manga.viewerFlags,
-                chapterFlags = manga.episodeFlags,
+                episodeFlags = manga.episodeFlags,
                 coverLastModified = manga.coverLastModified,
                 dateAdded = manga.dateAdded,
-                mangaId = manga.id,
+                animeId = manga.id,
                 updateStrategy = manga.updateStrategy.let(UpdateStrategyColumnAdapter::encode),
                 version = manga.version,
                 isSyncing = 1,
@@ -261,20 +261,20 @@ class AnimeRestorer(
         handler.await(true) {
             episodes.forEach { chapter ->
                 episodesQueries.update(
-                    mangaId = null,
+                    animeId = null,
                     url = null,
                     name = null,
                     scanlator = null,
-                    read = chapter.seen,
+                    seen = chapter.seen,
                     bookmark = chapter.bookmark,
-                    lastPageRead = chapter.lastSecondSeen,
-                    chapterNumber = null,
+                    lastSecondSeen = chapter.lastSecondSeen,
+                    episodeNumber = null,
                     sourceOrder = if (isSync) chapter.sourceOrder else null,
                     dateFetch = null,
                     // KMK -->
                     dateUpload = chapter.dateUpload,
                     // KMK <--
-                    chapterId = chapter.id,
+                    episodeId = chapter.id,
                     version = chapter.version,
                     isSyncing = 1,
                 )
@@ -305,7 +305,7 @@ class AnimeRestorer(
                 calculateInterval = 0L,
                 initialized = manga.initialized,
                 viewerFlags = manga.viewerFlags,
-                chapterFlags = manga.episodeFlags,
+                episodeFlags = manga.episodeFlags,
                 coverLastModified = manga.coverLastModified,
                 dateAdded = manga.dateAdded,
                 updateStrategy = manga.updateStrategy,

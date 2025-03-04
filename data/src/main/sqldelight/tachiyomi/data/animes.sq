@@ -163,7 +163,7 @@ WHERE favorite = 0 AND source IN :sourceIdsAND AND _id NOT IN (
 
 insert:
 INSERT INTO animes(source, url, artist, author, description, genre, title, status, thumbnail_url, favorite, last_update, next_update, initialized, viewer, chapter_flags, cover_last_modified, date_added, update_strategy, calculate_interval, last_modified_at, version)
-VALUES (:source, :url, :artist, :author, :description, :genre, :title, :status, :thumbnailUrl, :favorite, :lastUpdate, :nextUpdate, :initialized, :viewerFlags, :chapterFlags, :coverLastModified, :dateAdded, :updateStrategy, :calculateInterval, 0, :version);
+VALUES (:source, :url, :artist, :author, :description, :genre, :title, :status, :thumbnailUrl, :favorite, :lastUpdate, :nextUpdate, :initialized, :viewerFlags, :episodeFlags, :coverLastModified, :dateAdded, :updateStrategy, :calculateInterval, 0, :version);
 
 update:
 UPDATE animes SET
@@ -181,14 +181,14 @@ UPDATE animes SET
     next_update = coalesce(:nextUpdate, next_update),
     initialized = coalesce(:initialized, initialized),
     viewer = coalesce(:viewer, viewer),
-    chapter_flags = coalesce(:chapterFlags, chapter_flags),
+    chapter_flags = coalesce(:episodeFlags, chapter_flags),
     cover_last_modified = coalesce(:coverLastModified, cover_last_modified),
     date_added = coalesce(:dateAdded, date_added),
     update_strategy = coalesce(:updateStrategy, update_strategy),
     calculate_interval = coalesce(:calculateInterval, calculate_interval),
     version = coalesce(:version, version),
     is_syncing = coalesce(:isSyncing, is_syncing)
-WHERE _id = :mangaId;
+WHERE _id = :animeId;
 
 selectLastInsertedRowId:
 SELECT last_insert_rowid();

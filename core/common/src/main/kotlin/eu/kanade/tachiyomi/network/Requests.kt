@@ -65,6 +65,7 @@ fun PUT(
         .cacheControl(cache)
         .build()
 }
+
 fun PATCH(
     url: String,
     headers: Headers = DEFAULT_HEADERS,

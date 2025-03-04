@@ -53,18 +53,18 @@ class EpisodeRepositoryImpl(
         handler.await(inTransaction = true) {
             episodeUpdates.forEach { episodeUpdate ->
                 episodesQueries.update(
-                    mangaId = episodeUpdate.episodeId,
+                    animeId = episodeUpdate.animeId,
                     url = episodeUpdate.url,
                     name = episodeUpdate.name,
                     scanlator = episodeUpdate.scanlator,
-                    read = episodeUpdate.seen,
+                    seen = episodeUpdate.seen,
                     bookmark = episodeUpdate.bookmark,
-                    lastPageRead = episodeUpdate.lastSecondSeen,
-                    chapterNumber = episodeUpdate.episodeNumber,
+                    lastSecondSeen = episodeUpdate.lastSecondSeen,
+                    episodeNumber = episodeUpdate.episodeNumber,
                     sourceOrder = episodeUpdate.sourceOrder,
                     dateFetch = episodeUpdate.dateFetch,
                     dateUpload = episodeUpdate.dateUpload,
-                    chapterId = episodeUpdate.id,
+                    episodeId = episodeUpdate.id,
                     version = episodeUpdate.version,
                     isSyncing = 0,
                 )

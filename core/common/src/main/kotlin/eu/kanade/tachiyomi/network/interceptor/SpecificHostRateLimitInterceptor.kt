@@ -51,6 +51,7 @@ fun OkHttpClient.Builder.rateLimitHost(
  * @param permits [Int]     Number of requests allowed within a period of units.
  * @param period [Duration] The limiting duration. Defaults to 1.seconds.
  */
+@Suppress("UNUSED")
 fun OkHttpClient.Builder.rateLimitHost(
     httpUrl: HttpUrl,
     permits: Int,

@@ -48,7 +48,7 @@ class TrackRepositoryImpl(
     override suspend fun delete(animeId: Long, trackerId: Long) {
         handler.await {
             anime_syncQueries.delete(
-                mangaId = animeId,
+                animeId = animeId,
                 syncId = trackerId,
             )
         }
@@ -66,13 +66,13 @@ class TrackRepositoryImpl(
         handler.await(inTransaction = true) {
             tracks.forEach { animeTrack ->
                 anime_syncQueries.insert(
-                    mangaId = animeTrack.animeId,
+                    animeId = animeTrack.animeId,
                     syncId = animeTrack.trackerId,
                     remoteId = animeTrack.remoteId,
                     libraryId = animeTrack.libraryId,
                     title = animeTrack.title,
-                    lastChapterRead = animeTrack.lastEpisodeSeen,
-                    totalChapters = animeTrack.totalEpisodes,
+                    lastEpisodeSeen = animeTrack.lastEpisodeSeen,
+                    totalEpisodes = animeTrack.totalEpisodes,
                     status = animeTrack.status,
                     score = animeTrack.score,
                     remoteUrl = animeTrack.remoteUrl,

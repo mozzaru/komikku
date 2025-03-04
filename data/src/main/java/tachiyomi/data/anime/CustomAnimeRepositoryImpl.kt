@@ -90,7 +90,7 @@ class CustomAnimeRepositoryImpl(context: Context) : CustomAnimeRepository {
         )
     }
 
-    fun CustomAnimeInfo.toJson(): AnimeJson {
+    private fun CustomAnimeInfo.toJson(): AnimeJson {
         return AnimeJson(
             id,
             title,
