@@ -38,7 +38,6 @@ import eu.kanade.tachiyomi.source.online.HttpSource
 import eu.kanade.tachiyomi.source.online.all.MergedSource
 import eu.kanade.tachiyomi.util.episode.getNextUnseen
 import eu.kanade.tachiyomi.util.removeCovers
-import exh.favorites.FavoritesSyncHelper
 import exh.md.utils.FollowStatus
 import exh.md.utils.MdUtil
 import exh.metadata.sql.models.SearchTag
@@ -92,9 +91,9 @@ import tachiyomi.domain.anime.interactor.GetMergedAnimeById
 import tachiyomi.domain.anime.interactor.GetSearchTags
 import tachiyomi.domain.anime.interactor.GetSearchTitles
 import tachiyomi.domain.anime.interactor.SetCustomAnimeInfo
+import tachiyomi.domain.anime.model.Anime
 import tachiyomi.domain.anime.model.AnimeUpdate
 import tachiyomi.domain.anime.model.CustomAnimeInfo
-import tachiyomi.domain.anime.model.Anime
 import tachiyomi.domain.anime.model.applyFilter
 import tachiyomi.domain.category.interactor.GetCategories
 import tachiyomi.domain.category.interactor.SetAnimeCategories
@@ -163,10 +162,6 @@ class LibraryScreenModel(
 ) : StateScreenModel<LibraryScreenModel.State>(State()) {
 
     var activeCategoryIndex: Int by libraryPreferences.lastUsedCategory().asState(screenModelScope)
-
-    // SY -->
-    val favoritesSync = FavoritesSyncHelper(preferences.context)
-    // SY <--
 
     init {
         screenModelScope.launchIO {
@@ -1374,14 +1369,6 @@ class LibraryScreenModel(
                 }
             }
         }.toSortedMap(compareBy { it.order })
-    }
-
-    fun runSync() {
-        favoritesSync.runSync(screenModelScope)
-    }
-
-    fun onAcceptSyncWarning() {
-        unsortedPreferences.exhShowSyncIntro().set(false)
     }
 
     fun openFavoritesSyncDialog() {

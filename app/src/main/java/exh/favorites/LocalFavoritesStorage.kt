@@ -1,22 +1,18 @@
 package exh.favorites
 
-import eu.kanade.domain.anime.model.toDomainAnime
-import eu.kanade.tachiyomi.source.online.all.EHentai
 import exh.metadata.metadata.EHentaiSearchMetadata
-import exh.source.EXH_SOURCE_ID
 import exh.source.isEhBasedAnime
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.asFlow
 import kotlinx.coroutines.flow.filter
-import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.mapNotNull
 import kotlinx.coroutines.flow.toList
 import tachiyomi.domain.anime.interactor.DeleteFavoriteEntries
 import tachiyomi.domain.anime.interactor.GetFavoriteEntries
 import tachiyomi.domain.anime.interactor.GetFavorites
 import tachiyomi.domain.anime.interactor.InsertFavoriteEntries
-import tachiyomi.domain.anime.model.FavoriteEntry
 import tachiyomi.domain.anime.model.Anime
+import tachiyomi.domain.anime.model.FavoriteEntry
 import tachiyomi.domain.category.interactor.GetCategories
 import tachiyomi.domain.category.model.Category
 import uy.kohesive.injekt.Injekt
@@ -33,17 +29,6 @@ class LocalFavoritesStorage(
     suspend fun getChangedDbEntries() = getFavorites.await()
         .asFlow()
         .loadDbCategories()
-        .parseToFavoriteEntries()
-        .getChangedEntries()
-
-    suspend fun getChangedRemoteEntries(entries: List<EHentai.ParsedAnime>) = entries
-        .asFlow()
-        .map {
-            it.fav to it.anime.toDomainAnime(EXH_SOURCE_ID).copy(
-                favorite = true,
-                dateAdded = System.currentTimeMillis(),
-            )
-        }
         .parseToFavoriteEntries()
         .getChangedEntries()
 

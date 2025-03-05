@@ -7,7 +7,6 @@ import eu.kanade.domain.anime.model.toSAnime
 import eu.kanade.domain.episode.interactor.SyncEpisodesWithSource
 import eu.kanade.domain.source.service.SourcePreferences
 import eu.kanade.tachiyomi.source.online.UrlImportableSource
-import eu.kanade.tachiyomi.source.online.all.EHentai
 import exh.log.xLogStack
 import exh.source.getMainSource
 import tachiyomi.core.common.i18n.stringResource
@@ -156,11 +155,7 @@ class GalleryAdder(
             // Fetch and copy episodes
             try {
                 val episodeList = retry(retry) {
-                    if (source is EHentai) {
-                        source.getEpisodeList(anime.toSAnime(), throttleFunc)
-                    } else {
-                        source.getEpisodeList(anime.toSAnime())
-                    }
+                    source.getEpisodeList(anime.toSAnime())
                 }
 
                 if (episodeList.isNotEmpty()) {
@@ -184,10 +179,6 @@ class GalleryAdder(
         } catch (e: Exception) {
             logger.w(context.stringResource(SYMR.strings.gallery_adder_could_not_add_gallery, url), e)
 
-            if (e is EHentai.GalleryNotFoundException) {
-                return GalleryAddEvent.Fail.NotFound(url, context)
-            }
-
             return GalleryAddEvent.Fail.Error(
                 url,
                 ((e.message ?: "Unknown error!") + " (Gallery: $url)").trim(),
@@ -204,9 +195,6 @@ class GalleryAdder(
                 result = block()
                 break
             } catch (e: Exception) {
-                if (e is EHentai.GalleryNotFoundException) {
-                    throw e
-                }
                 lastError = e
             }
         }

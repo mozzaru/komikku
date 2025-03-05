@@ -55,8 +55,8 @@ import exh.metadata.metadata.RaisedSearchMetadata
 import exh.source.MERGED_SOURCE_ID
 import exh.source.getMainSource
 import exh.source.isEhBasedAnime
-import exh.util.defaultReaderType
 import exh.util.animeType
+import exh.util.defaultReaderType
 import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.channels.Channel
@@ -280,7 +280,7 @@ class ReaderViewModel @JvmOverloads constructor(
                     // Restore from SavedState
                     currentChapter.requestedPage = chapterPageIndex
                 } else if (!currentChapter.episode.seen) {
-                    currentChapter.requestedPage = currentChapter.episode.last_second_seen
+                    currentChapter.requestedPage = currentChapter.episode.last_second_seen.toInt()
                 }
                 chapterId = currentChapter.episode.id!!
             }
@@ -690,7 +690,7 @@ class ReaderViewModel @JvmOverloads constructor(
         chapterPageIndex = pageIndex
 
         if (!incognitoMode && page.status != Page.State.ERROR) {
-            readerChapter.episode.last_second_seen = pageIndex
+            readerChapter.episode.last_second_seen = pageIndex.toLong()
 
             // SY -->
             if (
@@ -753,7 +753,7 @@ class ReaderViewModel @JvmOverloads constructor(
             )
 
             // Check if syncing is enabled for episode open:
-            if (isSyncEnabled && syncTriggerOpt.syncOnChapterOpen && readerChapter.episode.last_second_seen == 0) {
+            if (isSyncEnabled && syncTriggerOpt.syncOnChapterOpen && readerChapter.episode.last_second_seen.toInt() == 0) {
                 SyncDataJob.startNow(Injekt.get<Application>())
             }
         }
@@ -891,7 +891,7 @@ class ReaderViewModel @JvmOverloads constructor(
             if (currChapters != null) {
                 // Save current page
                 val currChapter = currChapters.currChapter
-                currChapter.requestedPage = currChapter.episode.last_second_seen
+                currChapter.requestedPage = currChapter.episode.last_second_seen.toInt()
 
                 mutableState.update {
                     it.copy(
@@ -927,7 +927,7 @@ class ReaderViewModel @JvmOverloads constructor(
             if (currChapters != null) {
                 // Save current page
                 val currChapter = currChapters.currChapter
-                currChapter.requestedPage = currChapter.episode.last_second_seen
+                currChapter.requestedPage = currChapter.episode.last_second_seen.toInt()
 
                 mutableState.update {
                     it.copy(

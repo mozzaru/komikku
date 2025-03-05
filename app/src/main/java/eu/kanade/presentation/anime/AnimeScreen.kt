@@ -89,7 +89,6 @@ import eu.kanade.tachiyomi.data.download.model.Download
 import eu.kanade.tachiyomi.source.Source
 import eu.kanade.tachiyomi.source.getNameForAnimeInfo
 import eu.kanade.tachiyomi.source.online.MetadataSource
-import eu.kanade.tachiyomi.source.online.all.EHentai
 import eu.kanade.tachiyomi.source.online.all.MangaDex
 import eu.kanade.tachiyomi.source.online.all.NHentai
 import eu.kanade.tachiyomi.source.online.english.EightMuses
@@ -105,7 +104,6 @@ import exh.metadata.MetadataUtil
 import exh.source.MERGED_SOURCE_ID
 import exh.source.getMainSource
 import exh.source.isEhBasedAnime
-import exh.ui.metadata.adapters.EHentaiDescription
 import exh.ui.metadata.adapters.EightMusesDescription
 import exh.ui.metadata.adapters.HBrowseDescription
 import exh.ui.metadata.adapters.MangaDexDescription
@@ -1395,9 +1393,6 @@ fun metadataDescription(source: Source): MetadataDescriptionComposable? {
     val metadataSource = remember(source.id) { source.getMainSource<MetadataSource<*, *>>() }
     return remember(metadataSource) {
         when (metadataSource) {
-            is EHentai -> { state, openMetadataViewer, search ->
-                EHentaiDescription(state, openMetadataViewer, search)
-            }
             is MangaDex -> { state, openMetadataViewer, _ ->
                 MangaDexDescription(state, openMetadataViewer)
             }

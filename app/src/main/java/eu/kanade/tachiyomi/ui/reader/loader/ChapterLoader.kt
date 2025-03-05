@@ -69,7 +69,7 @@ class ChapterLoader(
                         .get() ||
                     page != null // <-- EH
                 ) {
-                    chapter.requestedPage = /* SY --> */ page ?: /* SY <-- */ chapter.episode.last_second_seen
+                    chapter.requestedPage = /* SY --> */ page ?: /* SY <-- */ chapter.episode.last_second_seen.toInt()
                 }
 
                 chapter.state = ReaderChapter.State.Loaded(pages)

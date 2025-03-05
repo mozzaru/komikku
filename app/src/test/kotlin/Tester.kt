@@ -1,9 +1,6 @@
 
-import eu.kanade.tachiyomi.source.model.SAnime
 import eu.kanade.tachiyomi.data.backup.models.Backup
-import eu.kanade.tachiyomi.source.online.all.EHentai
 import exh.favorites.LocalFavoritesStorage
-import exh.metadata.metadata.EHentaiSearchMetadata
 import exh.source.EXH_SOURCE_ID
 import io.kotest.inspectors.shouldForAll
 import io.mockk.coEvery
@@ -138,30 +135,6 @@ class Tester {
         val (added, removed) = storage.getChangedDbEntries()
         added.shouldForAll { it.gid == "gid4" && it.token == "token4" }
         removed.shouldForAll { it.gid == "gid6" && it.token == "token6" }
-
-        val (remoteAdded, remoteRemoved) = storage.getChangedRemoteEntries(
-            listOf(
-                EHentai.ParsedAnime(
-                    0,
-                    SAnime("/g/gid/token", "a"),
-                    EHentaiSearchMetadata(),
-                ),
-                EHentai.ParsedAnime(
-                    0,
-                    SAnime("/g/gid2/token2", "a"),
-                    EHentaiSearchMetadata(),
-                ),
-                // added on remote
-                EHentai.ParsedAnime(
-                    0,
-                    SAnime("/g/gid5/token5", "a"),
-                    EHentaiSearchMetadata(),
-                ),
-            ),
-        )
-
-        remoteAdded.shouldForAll { it.gid == "gid5" && it.token == "token5" }
-        remoteRemoved.shouldForAll { it.gid == "gid6" && it.token == "token6" }
     }
 
     companion object {

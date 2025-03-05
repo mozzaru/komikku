@@ -17,7 +17,7 @@ class UpdatesRepositoryImpl(
     ): List<UpdatesWithRelations> {
         return databaseHandler.awaitList {
             updatesViewQueries.getUpdatesBySeenStatus(
-                read = seen,
+                seen = seen,
                 after = after,
                 limit = limit,
                 mapper = ::mapUpdatesWithRelations,
@@ -38,7 +38,7 @@ class UpdatesRepositoryImpl(
     ): Flow<List<UpdatesWithRelations>> {
         return databaseHandler.subscribeToList {
             updatesViewQueries.getUpdatesBySeenStatus(
-                read = seen,
+                seen = seen,
                 after = after,
                 limit = limit,
                 mapper = ::mapUpdatesWithRelations,
@@ -54,7 +54,11 @@ class UpdatesRepositoryImpl(
         scanlator: String?,
         seen: Boolean,
         bookmark: Boolean,
+        // AM (FILLERMARK) -->
+        fillermark: Boolean,
+        // <-- AM (FILLERMARK)
         lastSecondSeen: Long,
+        totalSeconds: Long,
         sourceId: Long,
         favorite: Boolean,
         thumbnailUrl: String?,
@@ -71,7 +75,11 @@ class UpdatesRepositoryImpl(
         scanlator = scanlator,
         seen = seen,
         bookmark = bookmark,
+        // AM (FILLERMARK) -->
+        fillermark = fillermark,
+        // <-- AM (FILLERMARK)
         lastSecondSeen = lastSecondSeen,
+        totalSeconds = totalSeconds,
         sourceId = sourceId,
         dateFetch = dateFetch,
         coverData = AnimeCover(

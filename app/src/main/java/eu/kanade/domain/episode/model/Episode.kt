@@ -1,7 +1,7 @@
 package eu.kanade.domain.episode.model
 
-import eu.kanade.tachiyomi.source.model.SEpisode
 import eu.kanade.tachiyomi.data.database.models.EpisodeImpl
+import eu.kanade.tachiyomi.source.model.SEpisode
 import tachiyomi.domain.episode.model.Episode
 import eu.kanade.tachiyomi.data.database.models.Episode as DbEpisode
 
@@ -34,7 +34,7 @@ fun Episode.toDbEpisode(): DbEpisode = EpisodeImpl().also {
     it.scanlator = scanlator
     it.seen = seen
     it.bookmark = bookmark
-    it.last_second_seen = lastSecondSeen.toInt()
+    it.last_second_seen = lastSecondSeen
     it.date_fetch = dateFetch
     it.date_upload = dateUpload
     it.episode_number = episodeNumber.toFloat()

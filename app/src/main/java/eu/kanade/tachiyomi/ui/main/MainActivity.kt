@@ -60,7 +60,6 @@ import eu.kanade.presentation.components.IndexingBannerBackgroundColor
 import eu.kanade.presentation.components.RestoringBannerBackgroundColor
 import eu.kanade.presentation.components.SyncingBannerBackgroundColor
 import eu.kanade.presentation.components.UpdatingBannerBackgroundColor
-import eu.kanade.presentation.more.settings.screen.ConfigureExhDialog
 import eu.kanade.presentation.more.settings.screen.about.WhatsNewDialog
 import eu.kanade.presentation.more.settings.screen.browse.ExtensionReposScreen
 import eu.kanade.presentation.more.settings.screen.data.RestoreBackupScreen
@@ -91,7 +90,6 @@ import eu.kanade.tachiyomi.util.system.isPreviewBuildType
 import eu.kanade.tachiyomi.util.system.isReleaseBuildType
 import eu.kanade.tachiyomi.util.view.setComposeContent
 import exh.debug.DebugToggles
-import exh.eh.EHentaiUpdateWorker
 import exh.log.DebugModeOverlay
 import exh.source.BlacklistedSources
 import exh.source.EH_SOURCE_ID
@@ -263,8 +261,6 @@ class MainActivity : BaseActivity() {
                                 runExhConfigureDialog = true
                             }
                             // Scheduler uploader job if required
-
-                            EHentaiUpdateWorker.scheduleBackground(this@MainActivity)
                         }
                         // SY <--
                     }
@@ -374,10 +370,6 @@ class MainActivity : BaseActivity() {
             // KMK -->
             previewLastVersion.set(previewCurrentVersion)
             // KMK <--
-
-            // SY -->
-            ConfigureExhDialog(run = runExhConfigureDialog, onRunning = { runExhConfigureDialog = false })
-            // SY <--
         }
 
         val startTime = System.currentTimeMillis()

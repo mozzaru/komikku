@@ -6,7 +6,6 @@ val migrations: List<Migration>
     get() = listOf(
         SetupBackupCreateMigration(),
         SetupLibraryUpdateMigration(),
-        SetupEHentaiUpdateMigration(),
         SetupSyncDataMigration(),
         // KMK -->
         SetupAppUpdateMigration(),

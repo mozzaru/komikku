@@ -35,9 +35,6 @@ import eu.kanade.presentation.library.DeleteLibraryAnimeDialog
 import eu.kanade.presentation.library.LibrarySettingsDialog
 import eu.kanade.presentation.library.components.LibraryContent
 import eu.kanade.presentation.library.components.LibraryToolbar
-import eu.kanade.presentation.library.components.SyncFavoritesConfirmDialog
-import eu.kanade.presentation.library.components.SyncFavoritesProgressDialog
-import eu.kanade.presentation.library.components.SyncFavoritesWarningDialog
 import eu.kanade.presentation.more.onboarding.GETTING_STARTED_URL
 import eu.kanade.presentation.util.Tab
 import eu.kanade.tachiyomi.R
@@ -52,7 +49,6 @@ import eu.kanade.tachiyomi.ui.home.HomeScreen
 import eu.kanade.tachiyomi.ui.main.MainActivity
 import eu.kanade.tachiyomi.ui.reader.ReaderActivity
 import eu.kanade.tachiyomi.util.system.toast
-import exh.favorites.FavoritesSyncStatus
 import exh.source.MERGED_SOURCE_ID
 import kotlinx.collections.immutable.persistentListOf
 import kotlinx.coroutines.channels.Channel
@@ -356,34 +352,9 @@ data object LibraryTab : Tab {
                     },
                 )
             }
-            LibraryScreenModel.Dialog.SyncFavoritesWarning -> {
-                SyncFavoritesWarningDialog(
-                    onDismissRequest = onDismissRequest,
-                    onAccept = {
-                        onDismissRequest()
-                        screenModel.onAcceptSyncWarning()
-                    },
-                )
-            }
-            LibraryScreenModel.Dialog.SyncFavoritesConfirm -> {
-                SyncFavoritesConfirmDialog(
-                    onDismissRequest = onDismissRequest,
-                    onAccept = {
-                        onDismissRequest()
-                        screenModel.runSync()
-                    },
-                )
-            }
             null -> {}
+            else -> {}
         }
-
-        // SY -->
-        SyncFavoritesProgressDialog(
-            status = screenModel.favoritesSync.status.collectAsState().value,
-            setStatusIdle = { screenModel.favoritesSync.status.value = FavoritesSyncStatus.Idle },
-            openManga = { navigator.push(AnimeScreen(it)) },
-        )
-        // SY <--
 
         BackHandler(enabled = state.selectionMode || state.searchQuery != null) {
             when {

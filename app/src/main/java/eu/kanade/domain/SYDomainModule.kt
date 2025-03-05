@@ -18,9 +18,7 @@ import eu.kanade.domain.source.interactor.ToggleExcludeFromDataSaver
 import eu.kanade.tachiyomi.source.online.MetadataSource
 import exh.search.SearchEngine
 import tachiyomi.data.anime.AnimeMergeRepositoryImpl
-import tachiyomi.data.anime.AnimeMetadataRepositoryImpl
 import tachiyomi.data.anime.CustomAnimeRepositoryImpl
-import tachiyomi.data.anime.FavoritesEntryRepositoryImpl
 import tachiyomi.data.source.FeedSavedSearchRepositoryImpl
 import tachiyomi.data.source.SavedSearchRepositoryImpl
 import tachiyomi.domain.anime.interactor.DeleteAnimeById
@@ -50,9 +48,7 @@ import tachiyomi.domain.anime.interactor.InsertMergedReference
 import tachiyomi.domain.anime.interactor.SetCustomAnimeInfo
 import tachiyomi.domain.anime.interactor.UpdateMergedSettings
 import tachiyomi.domain.anime.repository.AnimeMergeRepository
-import tachiyomi.domain.anime.repository.AnimeMetadataRepository
 import tachiyomi.domain.anime.repository.CustomAnimeRepository
-import tachiyomi.domain.anime.repository.FavoritesEntryRepository
 import tachiyomi.domain.episode.interactor.DeleteEpisodes
 import tachiyomi.domain.episode.interactor.GetEpisodeByUrl
 import tachiyomi.domain.episode.interactor.GetMergedEpisodesByAnimeId
@@ -111,7 +107,6 @@ class SYDomainModule : InjektModule {
         addFactory<MetadataSource.GetFlatMetadataById> { GetFlatMetadataById(get()) }
         addFactory<MetadataSource.InsertFlatMetadata> { InsertFlatMetadata(get()) }
 
-        addSingletonFactory<AnimeMetadataRepository> { AnimeMetadataRepositoryImpl(get()) }
         addFactory { GetFlatMetadataById(get()) }
         addFactory { InsertFlatMetadata(get()) }
         addFactory { GetExhFavoriteAnimeWithMetadata(get()) }
@@ -134,7 +129,6 @@ class SYDomainModule : InjektModule {
         addFactory { SmartSearchMerge(get()) }
         // KMK <--
 
-        addSingletonFactory<FavoritesEntryRepository> { FavoritesEntryRepositoryImpl(get()) }
         addFactory { GetFavoriteEntries(get()) }
         addFactory { InsertFavoriteEntries(get()) }
         addFactory { DeleteFavoriteEntries(get()) }

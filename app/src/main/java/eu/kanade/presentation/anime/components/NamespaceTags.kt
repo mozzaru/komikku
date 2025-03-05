@@ -11,26 +11,19 @@ import androidx.compose.material3.ElevatedSuggestionChip
 import androidx.compose.material3.LocalMinimumInteractiveComponentSize
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.SuggestionChip
-import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.Immutable
-import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.style.TextOverflow
-import androidx.compose.ui.tooling.preview.PreviewLightDark
 import androidx.compose.ui.unit.dp
 import eu.kanade.presentation.components.ChipBorder
 import eu.kanade.presentation.components.SuggestionChip
 import eu.kanade.presentation.components.SuggestionChipDefaults
-import eu.kanade.presentation.theme.TachiyomiPreviewTheme
 import eu.kanade.tachiyomi.source.Source
-import eu.kanade.tachiyomi.source.online.all.EHentai
 import exh.metadata.metadata.EHentaiSearchMetadata
 import exh.metadata.metadata.RaisedSearchMetadata
-import exh.metadata.metadata.base.RaisedTag
 import exh.source.EH_SOURCE_ID
 import exh.source.EXH_SOURCE_ID
 import exh.util.SourceTagsUtil
@@ -225,57 +218,6 @@ fun TagsChip(
                     )
                 },
                 border = border,
-            )
-        }
-    }
-}
-
-@PreviewLightDark
-@Composable
-fun NamespaceTagsPreview() {
-    TachiyomiPreviewTheme {
-        Surface {
-            val context = LocalContext.current
-            NamespaceTags(
-                tags = remember {
-                    EHentaiSearchMetadata().apply {
-                        this.tags.addAll(
-                            arrayOf(
-                                RaisedTag(
-                                    "Male",
-                                    "Test",
-                                    EHentaiSearchMetadata.TAG_TYPE_NORMAL,
-                                ),
-                                RaisedTag(
-                                    "Male",
-                                    "Test2",
-                                    EHentaiSearchMetadata.TAG_TYPE_WEAK,
-                                ),
-                                RaisedTag(
-                                    "Male",
-                                    "Test3",
-                                    EHentaiSearchMetadata.TAG_TYPE_LIGHT,
-                                ),
-                                RaisedTag(
-                                    "Female",
-                                    "Test",
-                                    EHentaiSearchMetadata.TAG_TYPE_NORMAL,
-                                ),
-                                RaisedTag(
-                                    "Female",
-                                    "Test2",
-                                    EHentaiSearchMetadata.TAG_TYPE_WEAK,
-                                ),
-                                RaisedTag(
-                                    "Female",
-                                    "Test3",
-                                    EHentaiSearchMetadata.TAG_TYPE_LIGHT,
-                                ),
-                            ),
-                        )
-                    }.let { SearchMetadataChips(it, EHentai(EXH_SOURCE_ID, true, context), emptyList()) }!!
-                },
-                onClick = {},
             )
         }
     }

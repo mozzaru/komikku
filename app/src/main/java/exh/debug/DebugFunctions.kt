@@ -2,20 +2,15 @@ package exh.debug
 
 import android.app.Application
 import eu.kanade.domain.anime.interactor.UpdateAnime
-import eu.kanade.domain.anime.model.toSAnime
 import eu.kanade.tachiyomi.BuildConfig
 import eu.kanade.tachiyomi.data.backup.models.Backup
 import eu.kanade.tachiyomi.data.library.LibraryUpdateJob
 import eu.kanade.tachiyomi.data.sync.SyncDataJob
 import eu.kanade.tachiyomi.source.AndroidSourceManager
 import eu.kanade.tachiyomi.util.system.workManager
-import exh.eh.EHentaiThrottleManager
-import exh.eh.EHentaiUpdateWorker
 import exh.metadata.metadata.EHentaiSearchMetadata
 import exh.source.EH_SOURCE_ID
 import exh.source.EXH_SOURCE_ID
-import exh.source.NHENTAI_SOURCE_ID
-import exh.source.nHentaiSourceIds
 import exh.util.jobScheduler
 import kotlinx.coroutines.runBlocking
 import kotlinx.serialization.protobuf.schema.ProtoBufSchemaGenerator
@@ -76,33 +71,10 @@ object DebugFunctions {
             }
         }
     }
-    private val throttleManager = EHentaiThrottleManager()
 
     fun getDelegatedSourceList(): String = AndroidSourceManager.currentDelegatedSources.map {
         it.value.sourceName + " : " + it.value.sourceId + " : " + it.value.factory
     }.joinToString(separator = "\n")
-
-    fun resetEHGalleriesForUpdater() {
-        throttleManager.resetThrottle()
-        runBlocking {
-            val allManga = getExhFavoriteAnimeWithMetadata.await()
-
-            val eh = sourceManager.get(EH_SOURCE_ID)
-            val ex = sourceManager.get(EXH_SOURCE_ID)
-
-            allManga.forEach { manga ->
-                throttleManager.throttle()
-
-                val networkManga = when (manga.source) {
-                    EH_SOURCE_ID -> eh
-                    EXH_SOURCE_ID -> ex
-                    else -> return@forEach
-                }?.getAnimeDetails(manga.toSAnime()) ?: return@forEach
-
-                updateAnime.awaitUpdateFromSource(manga, networkManga, true)
-            }
-        }
-    }
 
     fun getEHMangaListWithAgedFlagInfo(): String {
         return runBlocking {
@@ -170,14 +142,6 @@ object DebugFunctions {
     fun convertAllEhentaiGalleriesToExhentai() = convertSources(EH_SOURCE_ID, EXH_SOURCE_ID)
 
     fun convertAllExhentaiGalleriesToEhentai() = convertSources(EXH_SOURCE_ID, EH_SOURCE_ID)
-
-    fun testLaunchEhentaiBackgroundUpdater() {
-        EHentaiUpdateWorker.launchBackgroundTest(app)
-    }
-
-    fun rescheduleEhentaiBackgroundUpdater() {
-        EHentaiUpdateWorker.scheduleBackground(app)
-    }
 
     fun listScheduledJobs() = app.jobScheduler.allPendingJobs.joinToString(",\n") { j ->
         val info = j.extras.getString("EXTRA_WORK_SPEC_ID")?.let {
@@ -292,20 +256,6 @@ object DebugFunctions {
             prefs.savedSearches().set((otherSerialized + newSerialized).toSet())
         }
     }*/
-
-    fun fixReaderViewerBackupBug() {
-        runBlocking { handler.await { ehQueries.fixReaderViewerBackupBug() } }
-    }
-
-    fun resetReaderViewerForAllManga() {
-        runBlocking { handler.await { ehQueries.resetReaderViewerForAllAnime() } }
-    }
-
-    fun migrateLangNhentaiToMultiLangSource() {
-        val sources = nHentaiSourceIds - NHENTAI_SOURCE_ID
-
-        runBlocking { handler.await { ehQueries.migrateAllNhentaiToOtherLang(NHENTAI_SOURCE_ID, sources) } }
-    }
 
     fun exportProtobufScheme() = ProtoBufSchemaGenerator.generateSchemaText(Backup.serializer().descriptor)
 

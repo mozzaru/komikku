@@ -201,7 +201,7 @@ abstract class SyncService(
         val logTag = "MergeChapters"
 
         fun chapterCompositeKey(chapter: BackupEpisode): String {
-            return "${chapter.url}|${chapter.name}|${chapter.chapterNumber}"
+            return "${chapter.url}|${chapter.name}|${chapter.episodeNumber}"
         }
 
         val localChapterMap = localChapters.associateBy { chapterCompositeKey(it) }

@@ -71,7 +71,6 @@ import eu.kanade.tachiyomi.util.removeCovers
 import eu.kanade.tachiyomi.util.system.getBitmapOrNull
 import eu.kanade.tachiyomi.util.system.toast
 import exh.debug.DebugToggles
-import exh.eh.EHentaiUpdateHelper
 import exh.log.xLogD
 import exh.md.utils.FollowStatus
 import exh.metadata.metadata.RaisedSearchMetadata
@@ -251,14 +250,6 @@ class AnimeScreenModel(
     private val selectedPositions: Array<Int> = arrayOf(-1, -1) // first and last selected index in list
     private val selectedChapterIds: HashSet<Long> = HashSet()
 
-    // EXH -->
-    private val updateHelper: EHentaiUpdateHelper by injectLazy()
-
-    val redirectFlow: MutableSharedFlow<EXHRedirect> = MutableSharedFlow()
-
-    data class EXHRedirect(val mangaId: Long)
-    // EXH <--
-
     // SY -->
     private data class CombineState(
         val manga: Anime,
@@ -303,23 +294,6 @@ class AnimeScreenModel(
                         manga.isEhBasedAnime() &&
                         DebugToggles.ENABLE_EXH_ROOT_REDIRECT.enabled
                     ) {
-                        // Check for gallery in library and accept manga with lowest id
-                        // Find episodes sharing same root
-                        launchIO {
-                            try {
-                                val (acceptedChain) = updateHelper.findAcceptedRootAndDiscardOthers(manga.source, chapters)
-                                // Redirect if we are not the accepted root
-                                if (manga.id != acceptedChain.manga.id && acceptedChain.manga.favorite) {
-                                    // Update if any of our episodes are not in accepted manga's episodes
-                                    xLogD("Found accepted manga %s", manga.url)
-                                    redirectFlow.emit(
-                                        EXHRedirect(acceptedChain.manga.id),
-                                    )
-                                }
-                            } catch (e: Exception) {
-                                logcat(LogPriority.ERROR, e) { "Error loading accepted episode chain" }
-                            }
-                        }
                     }
                 }
                 .combine(

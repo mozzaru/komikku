@@ -96,9 +96,6 @@ import exh.ui.smartsearch.SmartSearchScreen
 import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.DelicateCoroutinesApi
-import kotlinx.coroutines.flow.launchIn
-import kotlinx.coroutines.flow.onEach
-import kotlinx.coroutines.flow.take
 import kotlinx.coroutines.launch
 import logcat.LogPriority
 import tachiyomi.core.common.i18n.stringResource
@@ -246,19 +243,6 @@ class AnimeScreen(
                 }
             }
         }
-
-        // SY -->
-        LaunchedEffect(Unit) {
-            screenModel.redirectFlow
-                .take(1)
-                .onEach {
-                    navigator.replace(
-                        AnimeScreen(it.mangaId),
-                    )
-                }
-                .launchIn(this)
-        }
-        // SY <--
 
         // KMK -->
         val coverRatio = remember { mutableFloatStateOf(1f) }

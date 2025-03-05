@@ -15,8 +15,6 @@ import tachiyomi.data.anime.AnimeMapper
 import tachiyomi.data.anime.MergedAnimeMapper
 import tachiyomi.domain.anime.interactor.FetchInterval
 import tachiyomi.domain.anime.interactor.GetAnimeByUrlAndSourceId
-import tachiyomi.domain.anime.interactor.GetFlatMetadataById
-import tachiyomi.domain.anime.interactor.InsertFlatMetadata
 import tachiyomi.domain.anime.interactor.SetCustomAnimeInfo
 import tachiyomi.domain.anime.model.Anime
 import tachiyomi.domain.anime.model.CustomAnimeInfo
@@ -45,8 +43,6 @@ class AnimeRestorer(
     fetchInterval: FetchInterval = Injekt.get(),
     // SY -->
     private val setCustomAnimeInfo: SetCustomAnimeInfo = Injekt.get(),
-    private val insertFlatMetadata: InsertFlatMetadata = Injekt.get(),
-    private val getFlatMetadataById: GetFlatMetadataById = Injekt.get(),
     // SY <--
 ) {
     private var now = ZonedDateTime.now()
@@ -183,7 +179,7 @@ class AnimeRestorer(
 
         val (existingChapters, newChapters) = backupEpisodes
             .mapNotNull { backupChapter ->
-                val chapter = backupChapter.toChapterImpl().copy(animeId = manga.id)
+                val chapter = backupChapter.toEpisodeImpl().copy(animeId = manga.id)
                 val dbChapter = dbChaptersByUrl[chapter.url]
 
                 when {
@@ -194,7 +190,7 @@ class AnimeRestorer(
             }
             .partition { it.id > 0 }
 
-        insertNewChapters(newChapters)
+        insertNewEpisodes(newChapters)
         updateExistingChapters(existingChapters)
     }
 
@@ -236,22 +232,26 @@ class AnimeRestorer(
             version = 0L,
         )
 
-    private suspend fun insertNewChapters(episodes: List<Episode>) {
+    private suspend fun insertNewEpisodes(episodes: List<Episode>) {
         handler.await(true) {
-            episodes.forEach { chapter ->
+            episodes.forEach { episode ->
                 episodesQueries.insert(
-                    chapter.animeId,
-                    chapter.url,
-                    chapter.name,
-                    chapter.scanlator,
-                    chapter.seen,
-                    chapter.bookmark,
-                    chapter.lastSecondSeen,
-                    chapter.episodeNumber,
-                    chapter.sourceOrder,
-                    chapter.dateFetch,
-                    chapter.dateUpload,
-                    chapter.version,
+                    episode.animeId,
+                    episode.url,
+                    episode.name,
+                    episode.scanlator,
+                    episode.seen,
+                    episode.bookmark,
+                    // AM (FILLERMARK) -->
+                    episode.fillermark,
+                    // <-- AM (FILLERMARK)
+                    episode.lastSecondSeen,
+                    episode.totalSeconds,
+                    episode.episodeNumber,
+                    episode.sourceOrder,
+                    episode.dateFetch,
+                    episode.dateUpload,
+                    episode.version,
                 )
             }
         }
@@ -259,23 +259,27 @@ class AnimeRestorer(
 
     private suspend fun updateExistingChapters(episodes: List<Episode>) {
         handler.await(true) {
-            episodes.forEach { chapter ->
+            episodes.forEach { episode ->
                 episodesQueries.update(
                     animeId = null,
                     url = null,
                     name = null,
                     scanlator = null,
-                    seen = chapter.seen,
-                    bookmark = chapter.bookmark,
-                    lastSecondSeen = chapter.lastSecondSeen,
+                    seen = episode.seen,
+                    bookmark = episode.bookmark,
+                    // AM (FILLERMARK) -->
+                    fillermark = episode.fillermark,
+                    // <-- AM (FILLERMARK)
+                    lastSecondSeen = episode.lastSecondSeen,
+                    totalSeconds = episode.totalSeconds,
                     episodeNumber = null,
-                    sourceOrder = if (isSync) chapter.sourceOrder else null,
+                    sourceOrder = if (isSync) episode.sourceOrder else null,
                     dateFetch = null,
                     // KMK -->
-                    dateUpload = chapter.dateUpload,
+                    dateUpload = episode.dateUpload,
                     // KMK <--
-                    episodeId = chapter.id,
-                    version = chapter.version,
+                    episodeId = episode.id,
+                    version = episode.version,
                     isSyncing = 1,
                 )
             }
@@ -337,7 +341,6 @@ class AnimeRestorer(
         updateAnime.awaitUpdateFetchInterval(manga, now, currentFetchWindow)
         // SY -->
         restoreMergedMangaReferencesForManga(manga.id, mergedMangaReferences)
-        flatMetadata?.let { restoreFlatMetadata(manga.id, it) }
         restoreEditedInfo(customManga?.copy(id = manga.id))
         // SY <--
 
@@ -385,7 +388,7 @@ class AnimeRestorer(
 
             if (dbHistory == null) {
                 val chapter = handler.awaitList { episodesQueries.getEpisodeByUrl(history.url) }
-                    .find { it.manga_id == manga.id }
+                    .find { it.anime_id == manga.id }
                 return@mapNotNull if (chapter == null) {
                     // Episode doesn't exist; skip
                     null
@@ -398,11 +401,11 @@ class AnimeRestorer(
             // Update history entry
             item.copy(
                 id = dbHistory._id,
-                episodeId = dbHistory.chapter_id,
-                seenAt = max(item.seenAt?.time ?: 0L, dbHistory.last_read?.time ?: 0L)
+                episodeId = dbHistory.episode_id,
+                seenAt = max(item.seenAt?.time ?: 0L, dbHistory.last_seen?.time ?: 0L)
                     .takeIf { it > 0L }
                     ?.let { Date(it) },
-                watchDuration = max(item.watchDuration, dbHistory.time_read) - dbHistory.time_read,
+                watchDuration = max(item.watchDuration, dbHistory.time_watch) - dbHistory.time_watch,
             )
         }
 
@@ -509,26 +512,20 @@ class AnimeRestorer(
                 backupMergedMangaReference.getMergedMangaReference().run {
                     handler.await {
                         mergedQueries.insert(
-                            infoManga = isInfoAnime,
-                            getChapterUpdates = getEpisodeUpdates,
-                            chapterSortMode = episodeSortMode.toLong(),
-                            chapterPriority = episodePriority.toLong(),
-                            downloadChapters = downloadEpisodes,
+                            infoAnime = isInfoAnime,
+                            getEpisodeUpdates = getEpisodeUpdates,
+                            episodeSortMode = episodeSortMode.toLong(),
+                            episodePriority = episodePriority.toLong(),
+                            downloadEpisodes = downloadEpisodes,
                             mergeId = mergeMangaId,
                             mergeUrl = mergeUrl,
-                            mangaId = mergedManga.id,
-                            mangaUrl = animeUrl,
-                            mangaSource = animeSourceId,
+                            animeId = mergedManga.id,
+                            animeUrl = animeUrl,
+                            animeSource = animeSourceId,
                         )
                     }
                 }
             }
-        }
-    }
-
-    private suspend fun restoreFlatMetadata(mangaId: Long, backupFlatMetadata: BackupFlatMetadata) {
-        if (getFlatMetadataById.await(mangaId) == null) {
-            insertFlatMetadata.await(backupFlatMetadata.getFlatMetadata(mangaId))
         }
     }
 

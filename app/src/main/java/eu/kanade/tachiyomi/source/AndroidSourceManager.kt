@@ -4,7 +4,6 @@ import android.content.Context
 import eu.kanade.tachiyomi.data.download.DownloadManager
 import eu.kanade.tachiyomi.extension.ExtensionManager
 import eu.kanade.tachiyomi.source.online.HttpSource
-import eu.kanade.tachiyomi.source.online.all.EHentai
 import eu.kanade.tachiyomi.source.online.all.MangaDex
 import eu.kanade.tachiyomi.source.online.all.MergedSource
 import eu.kanade.tachiyomi.source.online.all.NHentai
@@ -15,9 +14,7 @@ import eu.kanade.tachiyomi.source.online.english.Tsumino
 import exh.log.xLogD
 import exh.source.BlacklistedSources
 import exh.source.DelegatedHttpSource
-import exh.source.EH_SOURCE_ID
 import exh.source.EIGHTMUSES_SOURCE_ID
-import exh.source.EXH_SOURCE_ID
 import exh.source.EnhancedHttpSource
 import exh.source.HBROWSE_SOURCE_ID
 import exh.source.MERGED_SOURCE_ID
@@ -94,10 +91,6 @@ class AndroidSourceManager(
                         ),
                     ).apply {
                         // SY -->
-                        put(EH_SOURCE_ID, EHentai(EH_SOURCE_ID, false, context))
-                        if (enableExhentai) {
-                            put(EXH_SOURCE_ID, EHentai(EXH_SOURCE_ID, true, context))
-                        }
                         put(MERGED_SOURCE_ID, MergedSource())
                         // SY <--
                     }

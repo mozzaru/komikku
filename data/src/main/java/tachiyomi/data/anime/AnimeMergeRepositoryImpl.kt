@@ -62,11 +62,11 @@ class AnimeMergeRepositoryImpl(
             values.forEach { value ->
                 mergedQueries.updateSettingsById(
                     id = value.id,
-                    getChapterUpdates = value.getEpisodeUpdates,
-                    downloadChapters = value.downloadEpisodes,
-                    infoManga = value.isInfoAnime,
-                    chapterPriority = value.episodePriority?.toLong(),
-                    chapterSortMode = value.episodeSortMode?.toLong(),
+                    getEpisodeUpdates = value.getEpisodeUpdates,
+                    downloadEpisodes = value.downloadEpisodes,
+                    infoAnime = value.isInfoAnime,
+                    episodePriority = value.episodePriority?.toLong(),
+                    episodeSortMode = value.episodeSortMode?.toLong(),
                 )
             }
         }
@@ -75,16 +75,16 @@ class AnimeMergeRepositoryImpl(
     override suspend fun insert(reference: MergedAnimeReference): Long? {
         return handler.awaitOneOrNullExecutable {
             mergedQueries.insert(
-                infoManga = reference.isInfoAnime,
-                getChapterUpdates = reference.getEpisodeUpdates,
-                chapterSortMode = reference.episodeSortMode.toLong(),
-                chapterPriority = reference.episodePriority.toLong(),
-                downloadChapters = reference.downloadEpisodes,
+                infoAnime = reference.isInfoAnime,
+                getEpisodeUpdates = reference.getEpisodeUpdates,
+                episodeSortMode = reference.episodeSortMode.toLong(),
+                episodePriority = reference.episodePriority.toLong(),
+                downloadEpisodes = reference.downloadEpisodes,
                 mergeId = reference.mergeId!!,
                 mergeUrl = reference.mergeUrl,
-                mangaId = reference.animeId,
-                mangaUrl = reference.animeUrl,
-                mangaSource = reference.animeSourceId,
+                animeId = reference.animeId,
+                animeUrl = reference.animeUrl,
+                animeSource = reference.animeSourceId,
             )
             mergedQueries.selectLastInsertedRowId()
         }
@@ -94,16 +94,16 @@ class AnimeMergeRepositoryImpl(
         handler.await(true) {
             references.forEach { reference ->
                 mergedQueries.insert(
-                    infoManga = reference.isInfoAnime,
-                    getChapterUpdates = reference.getEpisodeUpdates,
-                    chapterSortMode = reference.episodeSortMode.toLong(),
-                    chapterPriority = reference.episodePriority.toLong(),
-                    downloadChapters = reference.downloadEpisodes,
+                    infoAnime = reference.isInfoAnime,
+                    getEpisodeUpdates = reference.getEpisodeUpdates,
+                    episodeSortMode = reference.episodeSortMode.toLong(),
+                    episodePriority = reference.episodePriority.toLong(),
+                    downloadEpisodes = reference.downloadEpisodes,
                     mergeId = reference.mergeId!!,
                     mergeUrl = reference.mergeUrl,
-                    mangaId = reference.animeId,
-                    mangaUrl = reference.animeUrl,
-                    mangaSource = reference.animeSourceId,
+                    animeId = reference.animeId,
+                    animeUrl = reference.animeUrl,
+                    animeSource = reference.animeSourceId,
                 )
             }
         }

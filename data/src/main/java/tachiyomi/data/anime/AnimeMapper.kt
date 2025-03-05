@@ -98,6 +98,9 @@ object AnimeMapper {
         episodeFetchedAt: Long,
         lastSeen: Long,
         bookmarkCount: Double,
+        // AM (FILLERMARK) -->
+        fillermarkCount: Double,
+        // <-- AM (FILLERMARK)
         category: Long,
     ): LibraryAnime = LibraryAnime(
         anime = mapAnime(
@@ -133,6 +136,9 @@ object AnimeMapper {
         totalEpisodes = totalCount,
         seenCount = seenCount.toLong(),
         bookmarkCount = bookmarkCount.toLong(),
+        // AM (FILLERMARK) -->
+        fillermarkCount = fillermarkCount.toLong(),
+        // <-- AM (FILLERMARK)
         latestUpload = latestUpload,
         episodeFetchedAt = episodeFetchedAt,
         lastSeen = lastSeen,
