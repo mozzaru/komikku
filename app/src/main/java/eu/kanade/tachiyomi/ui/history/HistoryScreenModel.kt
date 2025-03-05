@@ -72,12 +72,12 @@ class HistoryScreenModel(
     }
 
     suspend fun getNextChapter(): Episode? {
-        return withIOContext { getNextEpisodes.await(onlyUnread = false).firstOrNull() }
+        return withIOContext { getNextEpisodes.await(onlyUnseen = false).firstOrNull() }
     }
 
     fun getNextChapterForManga(mangaId: Long, chapterId: Long) {
         screenModelScope.launchIO {
-            sendNextChapterEvent(getNextEpisodes.await(mangaId, chapterId, onlyUnread = false))
+            sendNextChapterEvent(getNextEpisodes.await(mangaId, chapterId, onlyUnseen = false))
         }
     }
 

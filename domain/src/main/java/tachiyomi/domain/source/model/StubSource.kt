@@ -18,6 +18,7 @@ class StubSource(
 
     override suspend fun getEpisodeList(anime: SAnime): List<SEpisode> =
         throw SourceNotInstalledException()
+
     override suspend fun getVideoList(episode: SEpisode): List<Video> =
         throw SourceNotInstalledException()
 

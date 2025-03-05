@@ -7,7 +7,7 @@ class GetHistoryByAnimeId(
     private val repository: HistoryRepository,
 ) {
 
-    suspend fun await(mangaId: Long): List<History> {
-        return repository.getByAnimeId(mangaId)
+    suspend fun await(animeId: Long): List<History> {
+        return repository.getByAnimeId(animeId)
     }
 }

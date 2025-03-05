@@ -5,7 +5,7 @@ import uy.kohesive.injekt.injectLazy
 import java.util.concurrent.ConcurrentHashMap
 
 /**
- * Contains the required data for MangaCoverFetcher
+ * Contains the required data for AnimeCoverFetcher
  */
 data class AnimeCover(
     val animeId: Long,

@@ -19,68 +19,68 @@ class GetNextEpisodes(
     private val historyRepository: HistoryRepository,
 ) {
 
-    suspend fun await(onlyUnread: Boolean = true): List<Episode> {
+    suspend fun await(onlyUnseen: Boolean = true): List<Episode> {
         val history = historyRepository.getLastHistory() ?: return emptyList()
-        return await(history.animeId, history.episodeId, onlyUnread)
+        return await(history.animeId, history.episodeId, onlyUnseen)
     }
 
-    suspend fun await(mangaId: Long, onlyUnread: Boolean = true): List<Episode> {
-        val manga = getAnime.await(mangaId) ?: return emptyList()
+    suspend fun await(animeId: Long, onlyUnseen: Boolean = true): List<Episode> {
+        val anime = getAnime.await(animeId) ?: return emptyList()
 
         // SY -->
-        if (manga.source == MERGED_SOURCE_ID) {
-            val chapters = getMergedEpisodesByAnimeId.await(mangaId, applyScanlatorFilter = true)
-                .sortedWith(getEpisodeSort(manga, sortDescending = false))
+        if (anime.source == MERGED_SOURCE_ID) {
+            val episodes = getMergedEpisodesByAnimeId.await(animeId, applyScanlatorFilter = true)
+                .sortedWith(getEpisodeSort(anime, sortDescending = false))
 
-            return if (onlyUnread) {
-                chapters.filterNot { it.seen }
+            return if (onlyUnseen) {
+                episodes.filterNot { it.seen }
             } else {
-                chapters
+                episodes
             }
         }
-        if (manga.isEhBasedAnime()) {
-            val chapters = getEpisodesByAnimeId.await(mangaId, applyScanlatorFilter = true)
-                .sortedWith(getEpisodeSort(manga, sortDescending = false))
+        if (anime.isEhBasedAnime()) {
+            val episodes = getEpisodesByAnimeId.await(animeId, applyScanlatorFilter = true)
+                .sortedWith(getEpisodeSort(anime, sortDescending = false))
 
-            return if (onlyUnread) {
-                chapters.takeLast(1).takeUnless { it.firstOrNull()?.seen == true }.orEmpty()
+            return if (onlyUnseen) {
+                episodes.takeLast(1).takeUnless { it.firstOrNull()?.seen == true }.orEmpty()
             } else {
-                chapters
+                episodes
             }
         }
         // SY <--
 
-        val chapters = getEpisodesByAnimeId.await(mangaId, applyScanlatorFilter = true)
-            .sortedWith(getEpisodeSort(manga, sortDescending = false))
+        val episodes = getEpisodesByAnimeId.await(animeId, applyScanlatorFilter = true)
+            .sortedWith(getEpisodeSort(anime, sortDescending = false))
 
-        return if (onlyUnread) {
-            chapters.filterNot { it.seen }
+        return if (onlyUnseen) {
+            episodes.filterNot { it.seen }
         } else {
-            chapters
+            episodes
         }
     }
 
     suspend fun await(
-        mangaId: Long,
-        fromChapterId: Long,
-        onlyUnread: Boolean = true,
+        animeId: Long,
+        fromEpisoeId: Long,
+        onlyUnseen: Boolean = true,
     ): List<Episode> {
-        val chapters = await(mangaId, onlyUnread)
-        val currChapterIndex = chapters.indexOfFirst { it.id == fromChapterId }
-        val nextChapters = chapters.subList(max(0, currChapterIndex), chapters.size)
+        val episodes = await(animeId, onlyUnseen)
+        val currEpisodeIndex = episodes.indexOfFirst { it.id == fromEpisoeId }
+        val nextEpisodes = episodes.subList(max(0, currEpisodeIndex), episodes.size)
 
-        if (onlyUnread) {
-            return nextChapters
+        if (onlyUnseen) {
+            return nextEpisodes
         }
 
         // The "next chapter" is either:
         // - The current chapter if it isn't completely read
         // - The chapters after the current chapter if the current one is completely read
-        val fromChapter = chapters.getOrNull(currChapterIndex)
-        return if (fromChapter != null && !fromChapter.seen) {
-            nextChapters
+        val fromEpisode = episodes.getOrNull(currEpisodeIndex)
+        return if (fromEpisode != null && !fromEpisode.seen) {
+            nextEpisodes
         } else {
-            nextChapters.drop(1)
+            nextEpisodes.drop(1)
         }
     }
 }
