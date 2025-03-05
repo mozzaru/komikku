@@ -1,79 +1,91 @@
 CREATE VIEW libraryView AS
 SELECT
-    M.*,
-    coalesce(C.total, 0) AS totalCount,
-    coalesce(C.readCount, 0) AS readCount,
-    coalesce(C.latestUpload, 0) AS latestUpload,
-    coalesce(C.fetchedAt, 0) AS chapterFetchedAt,
-    coalesce(C.lastRead, 0) AS lastRead,
-    coalesce(C.bookmarkCount, 0) AS bookmarkCount,
-    coalesce(MC.category_id, 0) AS category
-FROM animes M
+    A.*,
+    coalesce(EP.total, 0) AS totalCount,
+    coalesce(EP.seenCount, 0) AS seenCount,
+    coalesce(EP.latestUpload, 0) AS latestUpload,
+    coalesce(EP.fetchedAt, 0) AS episodeFetchedAt,
+    coalesce(EP.lastSeen, 0) AS lastSeen,
+    coalesce(EP.bookmarkCount, 0) AS bookmarkCount,
+    -- AM (FILLERMARK) -->
+    coalesce(EP.fillermarkCount, 0) AS fillermarkCount,
+    -- <-- AM (FILLERMARK)
+    coalesce(AC.category_id, 0) AS category
+FROM animes A
 LEFT JOIN(
     SELECT
-        episodes.manga_id,
+        episodes.anime_id,
         count(*) AS total,
-        sum(read) AS readCount,
+        sum(seen) AS seenCount,
         coalesce(max(episodes.date_upload), 0) AS latestUpload,
-        coalesce(max(history.last_read), 0) AS lastRead,
+        coalesce(max(history.last_seen), 0) AS lastSeen,
         coalesce(max(episodes.date_fetch), 0) AS fetchedAt,
         sum(episodes.bookmark) AS bookmarkCount,
-        excluded_scanlators.scanlator AS ex_scanlator
+        excluded_scanlators.scanlator AS ex_scanlator,
+        -- AM (FILLERMARK) -->
+        sum(episodes.fillermark) AS fillermarkCount
+        -- <-- AM (FILLERMARK)
     FROM episodes
     LEFT JOIN excluded_scanlators
-    ON episodes.manga_id = excluded_scanlators.manga_id
+    ON episodes.anime_id = excluded_scanlators.anime_id
     AND episodes.scanlator = excluded_scanlators.scanlator
     LEFT JOIN history
-    ON episodes._id = history.chapter_id
+    ON episodes._id = history.episode_id
     WHERE ex_scanlator IS NULL
-    GROUP BY episodes.manga_id
-) AS C
-ON M._id = C.manga_id
-LEFT JOIN animes_categories AS MC
-ON MC.manga_id = M._id
-WHERE M.source <> 6969
+    GROUP BY episodes.anime_id
+) AS EP
+ON A._id = EP.anime_id
+LEFT JOIN animes_categories AS AC
+ON AC.anime_id = A._id
+WHERE A.source <> 6969
 UNION
 SELECT
-    M.*,
-    coalesce(C.total, 0) AS totalCount,
-    coalesce(C.readCount, 0) AS readCount,
-    coalesce(C.latestUpload, 0) AS latestUpload,
-    coalesce(C.fetchedAt, 0) AS chapterFetchedAt,
-    coalesce(C.lastRead, 0) AS lastRead,
-    coalesce(C.bookmarkCount, 0) AS bookmarkCount,
-    coalesce(MC.category_id, 0) AS category
-FROM animes M
+    A.*,
+    coalesce(EP.total, 0) AS totalCount,
+    coalesce(EP.seenCount, 0) AS seenCount,
+    coalesce(EP.latestUpload, 0) AS latestUpload,
+    coalesce(EP.fetchedAt, 0) AS episodeFetchedAt,
+    coalesce(EP.lastSeen, 0) AS lastSeen,
+    coalesce(EP.bookmarkCount, 0) AS bookmarkCount,
+    -- AM (FILLERMARK) -->
+    coalesce(EP.fillermarkCount, 0) AS fillermarkCount,
+    -- <-- AM (FILLERMARK)
+    coalesce(AC.category_id, 0) AS category
+FROM animes A
 LEFT JOIN (
-    SELECT merged.manga_id,merged.merge_id
+    SELECT merged.anime_id,merged.merge_id
     FROM merged
     GROUP BY merged.merge_id
 ) AS ME
-ON ME.merge_id = M._id
+ON ME.merge_id = A._id
 LEFT JOIN(
     SELECT
         ME.merge_id,
         count(*) AS total,
-        sum(read) AS readCount,
+        sum(seen) AS seenCount,
         coalesce(max(episodes.date_upload), 0) AS latestUpload,
-        coalesce(max(history.last_read), 0) AS lastRead,
+        coalesce(max(history.last_seen), 0) AS lastSeen,
         coalesce(max(episodes.date_fetch), 0) AS fetchedAt,
         sum(episodes.bookmark) AS bookmarkCount,
-        excluded_scanlators.scanlator AS ex_scanlator
+        excluded_scanlators.scanlator AS ex_scanlator,
+        -- AM (FILLERMARK) -->
+        sum(episodes.fillermark) AS fillermarkCount
+        -- <-- AM (FILLERMARK)
     FROM episodes
     LEFT JOIN excluded_scanlators
-    ON episodes.manga_id = excluded_scanlators.manga_id
+    ON episodes.anime_id = excluded_scanlators.anime_id
     AND episodes.scanlator = excluded_scanlators.scanlator
     LEFT JOIN history
-    ON episodes._id = history.chapter_id
+    ON episodes._id = history.episode_id
     LEFT JOIN merged ME
-    ON ME.manga_id = episodes.manga_id
+    ON ME.anime_id = episodes.anime_id
     WHERE ex_scanlator IS NULL
     GROUP BY ME.merge_id
-) AS C
-ON M._id = C.merge_id  -- ON ME.merge_id = C.merge_id
-LEFT JOIN animes_categories AS MC
-ON MC.manga_id = M._id
-WHERE M.source = 6969;
+) AS EP
+ON A._id = EP.merge_id
+LEFT JOIN animes_categories AS AC
+ON AC.anime_id = A._id
+WHERE A.source = 6969;
 
 library:
 SELECT *
@@ -83,4 +95,4 @@ WHERE libraryView.favorite = 1;
 seenAnimeNonLibrary:
 SELECT *
 FROM libraryView
-WHERE libraryView.favorite = 0 AND libraryView.readCount != 0;
+WHERE libraryView.favorite = 0 AND libraryView.seenCount != 0;

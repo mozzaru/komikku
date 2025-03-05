@@ -19,7 +19,7 @@ CREATE TABLE animes(
     next_update INTEGER,
     initialized INTEGER AS Boolean NOT NULL,
     viewer INTEGER NOT NULL,
-    chapter_flags INTEGER NOT NULL,
+    episode_flags INTEGER NOT NULL,
     cover_last_modified INTEGER NOT NULL,
     date_added INTEGER NOT NULL,
     filtered_scanlators TEXT,
@@ -32,9 +32,9 @@ CREATE TABLE animes(
 );
 
 CREATE INDEX library_favorite_index ON animes(favorite) WHERE favorite = 1;
-CREATE INDEX mangas_url_index ON animes(url);
+CREATE INDEX animes_url_index ON animes(url);
 
-CREATE TRIGGER update_last_favorited_at_mangas
+CREATE TRIGGER update_last_favorite_at_animes
 AFTER UPDATE OF favorite ON animes
 BEGIN
   UPDATE animes
@@ -42,7 +42,7 @@ BEGIN
   WHERE _id = new._id;
 END;
 
-CREATE TRIGGER update_last_modified_at_mangas
+CREATE TRIGGER update_last_modified_at_animes
 AFTER UPDATE ON animes
 FOR EACH ROW
 BEGIN
@@ -51,7 +51,7 @@ BEGIN
   WHERE _id = new._id;
 END;
 
-CREATE TRIGGER update_manga_version AFTER UPDATE ON animes
+CREATE TRIGGER update_anime_version AFTER UPDATE ON animes
 BEGIN
     UPDATE animes SET version = version + 1
     WHERE _id = new._id AND new.is_syncing = 0 AND (
@@ -83,9 +83,9 @@ getSeenAnimeNotInLibrary:
 SELECT *
 FROM animes
 WHERE favorite = 0 AND _id IN (
-    SELECT DISTINCT episodes.manga_id
+    SELECT DISTINCT episodes.anime_id
     FROM episodes
-    WHERE read = 1 OR last_page_read != 0
+    WHERE seen = 1 OR last_second_seen != 0
 );
 
 getAllAnime:
@@ -140,7 +140,7 @@ SET is_syncing = 0
 WHERE is_syncing = 1;
 
 getSourceIdsWithNonLibraryAnime:
-SELECT source, COUNT(*) AS manga_count
+SELECT source, COUNT(*) AS anime_count
 FROM animes
 WHERE favorite = 0
 GROUP BY source;
@@ -150,19 +150,19 @@ DELETE FROM animes
 WHERE favorite = 0
 AND source IN :sourceIds
 AND _id NOT IN (
-    SELECT manga_id FROM merged WHERE manga_id != merge_id
+    SELECT anime_id FROM merged WHERE anime_id != merge_id
 );
 
 deleteAnimesNotInLibraryAndNotSeenBySourceIds:
 DELETE FROM animes
 WHERE favorite = 0 AND source IN :sourceIdsAND AND _id NOT IN (
-    SELECT manga_id FROM merged WHERE manga_id != merge_id
+    SELECT anime_id FROM merged WHERE anime_id != merge_id
 ) AND _id NOT IN (
-    SELECT manga_id FROM episodes WHERE read = 1 OR last_page_read != 0
+    SELECT anime_id FROM episodes WHERE seen = 1 OR last_second_seen != 0
 );
 
 insert:
-INSERT INTO animes(source, url, artist, author, description, genre, title, status, thumbnail_url, favorite, last_update, next_update, initialized, viewer, chapter_flags, cover_last_modified, date_added, update_strategy, calculate_interval, last_modified_at, version)
+INSERT INTO animes(source, url, artist, author, description, genre, title, status, thumbnail_url, favorite, last_update, next_update, initialized, viewer, episode_flags, cover_last_modified, date_added, update_strategy, calculate_interval, last_modified_at, version)
 VALUES (:source, :url, :artist, :author, :description, :genre, :title, :status, :thumbnailUrl, :favorite, :lastUpdate, :nextUpdate, :initialized, :viewerFlags, :episodeFlags, :coverLastModified, :dateAdded, :updateStrategy, :calculateInterval, 0, :version);
 
 update:
@@ -181,7 +181,7 @@ UPDATE animes SET
     next_update = coalesce(:nextUpdate, next_update),
     initialized = coalesce(:initialized, initialized),
     viewer = coalesce(:viewer, viewer),
-    chapter_flags = coalesce(:episodeFlags, chapter_flags),
+    episode_flags = coalesce(:episodeFlags, episode_flags),
     cover_last_modified = coalesce(:coverLastModified, cover_last_modified),
     date_added = coalesce(:dateAdded, date_added),
     update_strategy = coalesce(:updateStrategy, update_strategy),
@@ -192,19 +192,6 @@ WHERE _id = :animeId;
 
 selectLastInsertedRowId:
 SELECT last_insert_rowid();
-
-getEhAnimeWithMetadata:
-SELECT animes.* FROM animes
-INNER JOIN search_metadata
-    ON animes._id = search_metadata.manga_id
-WHERE animes.favorite = 1 AND (animes.source = :eh OR animes.source = :exh);
-
-getIdsOfFavoriteAnimeWithMetadata:
-SELECT animes._id FROM animes
-INNER JOIN search_metadata
-    ON animes._id = search_metadata.manga_id
-WHERE animes.favorite = 1;
-
 getBySource:
 SELECT * FROM animes WHERE source = :sourceId;
 

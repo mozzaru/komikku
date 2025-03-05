@@ -1,14 +1,17 @@
--- NOTE: must update MERGED_SOURCE_ID (6969) here
 CREATE VIEW updatesView AS
 SELECT
-    animes._id AS mangaId,
-    animes.title AS mangaTitle,
-    episodes._id AS chapterId,
-    episodes.name AS chapterName,
+    animes._id AS animeId,
+    animes.title AS animeTitle,
+    episodes._id AS episodeId,
+    episodes.name AS episodeName,
     episodes.scanlator,
-    episodes.read,
+    episodes.seen,
     episodes.bookmark,
-    episodes.last_page_read,
+    -- AM (FILLERMARK) -->
+    episodes.fillermark,
+    -- <-- AM (FILLERMARK)
+    episodes.last_second_seen,
+    episodes.total_seconds AS totalSeconds,
     animes.source,
     animes.favorite,
     animes.thumbnail_url AS thumbnailUrl,
@@ -16,19 +19,23 @@ SELECT
     episodes.date_upload AS dateUpload,
     episodes.date_fetch AS datefetch
 FROM animes JOIN episodes
-ON animes._id = episodes.manga_id
+ON animes._id = episodes.anime_id
 WHERE favorite = 1 AND source <> 6969
 AND date_fetch > date_added
 UNION
 SELECT
-    animes._id AS mangaId,
-    animes.title AS mangaTitle,
-    episodes._id AS chapterId,
-    episodes.name AS chapterName,
+    animes._id AS animeId,
+    animes.title AS animeTitle,
+    episodes._id AS episodeId,
+    episodes.name AS episodeName,
     episodes.scanlator,
-    episodes.read,
+    episodes.seen,
     episodes.bookmark,
-    episodes.last_page_read,
+    -- AM (FILLERMARK) -->
+    episodes.fillermark,
+    -- <-- AM (FILLERMARK)
+    episodes.last_second_seen,
+    episodes.total_seconds AS totalSeconds,
     animes.source,
     animes.favorite,
     animes.thumbnail_url AS thumbnailUrl,
@@ -37,13 +44,13 @@ SELECT
     episodes.date_fetch AS datefetch
 FROM animes
 LEFT JOIN (
-    SELECT merged.manga_id,merged.merge_id
+    SELECT merged.anime_id,merged.merge_id
     FROM merged
     GROUP BY merged.merge_id
 ) AS ME
 ON ME.merge_id = animes._id
 JOIN episodes
-ON ME.manga_id = episodes.manga_id
+ON animes._id = episodes.anime_id
 WHERE favorite = 1 AND source = 6969
 AND date_fetch > date_added
 ORDER BY datefetch DESC;
@@ -57,6 +64,6 @@ LIMIT :limit;
 getUpdatesBySeenStatus:
 SELECT *
 FROM updatesView
-WHERE read = :read
+WHERE seen = :seen
 AND dateUpload > :after
 LIMIT :limit;

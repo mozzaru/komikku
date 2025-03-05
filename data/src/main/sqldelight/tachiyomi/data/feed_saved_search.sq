@@ -40,25 +40,25 @@ selectGlobalFeedSavedSearch:
 SELECT saved_search.*
 FROM (
     SELECT saved_search FROM feed_saved_search WHERE global = 1 ORDER BY feed_order
-) AS M
+) AS A
 JOIN saved_search
-ON saved_search._id = M.saved_search;
+ON saved_search._id = A.saved_search;
 
 selectSourceFeedSavedSearch:
 SELECT saved_search.*
 FROM (
     SELECT saved_search FROM feed_saved_search WHERE global = 0 AND source = :sourceId ORDER BY feed_order
-) AS M
+) AS A
 JOIN saved_search
-ON saved_search._id = M.saved_search;
+ON saved_search._id = A.saved_search;
 
 countSourceFeedSavedSearch:
 SELECT count(*)
 FROM (
     SELECT saved_search FROM feed_saved_search WHERE global = 0 AND source = :sourceId ORDER BY feed_order
-) AS M
+) AS A
 JOIN saved_search
-ON saved_search._id = M.saved_search;
+ON saved_search._id = A.saved_search;
 
 selectLastInsertedRowId:
 SELECT last_insert_rowid();
