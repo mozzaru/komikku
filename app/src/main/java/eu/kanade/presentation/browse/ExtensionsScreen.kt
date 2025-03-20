@@ -60,7 +60,6 @@ import eu.kanade.tachiyomi.util.system.launchRequestPackageInstallsPermission
 import kotlinx.collections.immutable.persistentListOf
 import tachiyomi.i18n.MR
 import tachiyomi.i18n.kmk.KMR
-import tachiyomi.i18n.sy.SYMR
 import tachiyomi.presentation.core.components.FastScrollLazyColumn
 import tachiyomi.presentation.core.components.material.PullRefresh
 import tachiyomi.presentation.core.components.material.padding
@@ -403,9 +402,6 @@ private fun ExtensionItemContent(
                 val warning = when {
                     extension is Extension.Untrusted -> MR.strings.ext_untrusted
                     extension is Extension.Installed && extension.isObsolete -> MR.strings.ext_obsolete
-                    // SY -->
-                    extension is Extension.Installed && extension.isRedundant -> SYMR.strings.ext_redundant
-                    // SY <--
                     extension.isNsfw -> MR.strings.ext_nsfw_short
                     else -> null
                 }
@@ -615,7 +611,6 @@ private fun ExtensionItemContentPreview() {
         hasUpdate = false,
         isObsolete = false,
         isShared = false,
-        isRedundant = false,
     )
     val extUntrusted = Extension.Untrusted(
         name = "Tachiyomi",
@@ -644,9 +639,7 @@ private fun ExtensionItemContentPreview() {
             installStep = InstallStep.Idle,
         )
         ExtensionItemContent(
-            extension = extInstalled.copy(
-                isRedundant = true,
-            ),
+            extension = extInstalled,
             installStep = InstallStep.Idle,
         )
         ExtensionItemContent(extension = extUntrusted, installStep = InstallStep.Idle)

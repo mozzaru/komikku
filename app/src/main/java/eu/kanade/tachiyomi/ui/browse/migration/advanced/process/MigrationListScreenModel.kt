@@ -12,12 +12,10 @@ import eu.kanade.tachiyomi.data.cache.CoverCache
 import eu.kanade.tachiyomi.data.download.DownloadManager
 import eu.kanade.tachiyomi.source.CatalogueSource
 import eu.kanade.tachiyomi.source.getNameForMangaInfo
-import eu.kanade.tachiyomi.source.online.all.EHentai
 import eu.kanade.tachiyomi.ui.browse.migration.MigrationFlags
 import eu.kanade.tachiyomi.ui.browse.migration.advanced.design.MigrationType
 import eu.kanade.tachiyomi.ui.browse.migration.advanced.process.MigratingManga.SearchResult
 import eu.kanade.tachiyomi.util.system.toast
-import exh.eh.EHentaiThrottleManager
 import exh.smartsearch.SmartSearchEngine
 import exh.source.MERGED_SOURCE_ID
 import kotlinx.collections.immutable.ImmutableList
@@ -86,7 +84,6 @@ class MigrationListScreenModel(
 ) : ScreenModel {
 
     private val smartSearchEngine = SmartSearchEngine(config.extraSearchParams)
-    private val throttleManager = EHentaiThrottleManager()
 
     val migratingItems = MutableStateFlow<ImmutableList<MigratingManga>?>(null)
     val migrationDone = MutableStateFlow(false)
@@ -161,7 +158,6 @@ class MigrationListScreenModel(
     }
 
     private suspend fun runMigrations(mangas: List<MigratingManga>) {
-        throttleManager.resetThrottle()
         // KMK: finishedCount.value = mangas.size
 
         val sources = getMigrationSources()
@@ -196,11 +192,7 @@ class MigrationListScreenModel(
                                 if (localManga != null) {
                                     val source = sourceManager.get(localManga.source) as? CatalogueSource
                                     if (source != null) {
-                                        val chapters = if (source is EHentai) {
-                                            source.getChapterList(localManga.toSManga(), throttleManager::throttle)
-                                        } else {
-                                            source.getChapterList(localManga.toSManga())
-                                        }
+                                        val chapters = source.getChapterList(localManga.toSManga())
                                         try {
                                             syncChaptersWithSource.await(chapters, localManga, source)
                                         } catch (_: Exception) {
@@ -231,11 +223,7 @@ class MigrationListScreenModel(
                                             ) {
                                                 val localManga = networkToLocalManga.await(searchResult)
 
-                                                val chapters = if (source is EHentai) {
-                                                    source.getChapterList(localManga.toSManga(), throttleManager::throttle)
-                                                } else {
-                                                    source.getChapterList(localManga.toSManga())
-                                                }
+                                                val chapters = source.getChapterList(localManga.toSManga())
 
                                                 try {
                                                     syncChaptersWithSource.await(chapters, localManga, source)
@@ -269,11 +257,7 @@ class MigrationListScreenModel(
                                     if (searchResult != null) {
                                         val localManga = networkToLocalManga.await(searchResult)
                                         val chapters = try {
-                                            if (source is EHentai) {
-                                                source.getChapterList(localManga.toSManga(), throttleManager::throttle)
-                                            } else {
-                                                source.getChapterList(localManga.toSManga())
-                                            }
+                                            source.getChapterList(localManga.toSManga())
                                         } catch (e: Exception) {
                                             this@MigrationListScreenModel.logcat(LogPriority.ERROR, e)
                                             emptyList()

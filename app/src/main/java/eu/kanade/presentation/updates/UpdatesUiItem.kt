@@ -82,9 +82,6 @@ internal fun LazyListScope.updatesUiItems(
     usePanoramaCover: Boolean,
     // KMK <--
     selectionMode: Boolean,
-    // SY -->
-    preserveReadingPosition: Boolean,
-    // SY <--
     onUpdateSelected: (UpdatesItem, Boolean, Boolean, Boolean) -> Unit,
     onClickCover: (UpdatesItem) -> Unit,
     onClickUpdate: (UpdatesItem) -> Unit,
@@ -122,13 +119,7 @@ internal fun LazyListScope.updatesUiItems(
                     update = updatesItem.update,
                     selected = updatesItem.selected,
                     readProgress = updatesItem.update.lastPageRead
-                        .takeIf {
-                            /* SY --> */(
-                                !updatesItem.update.read ||
-                                    (preserveReadingPosition && updatesItem.isEhBasedUpdate())
-                                )/* SY <-- */ &&
-                                it > 0L
-                        }
+                        .takeIf { !updatesItem.update.read && it > 0L }
                         ?.let {
                             stringResource(
                                 MR.strings.chapter_progress,
@@ -181,9 +172,9 @@ private fun UpdatesUiItem(
     expanded: Boolean,
     collapseToggle: (key: String) -> Unit,
     usePanoramaCover: Boolean,
+    modifier: Modifier = Modifier,
     coverRatio: MutableFloatState = remember { mutableFloatStateOf(1f) },
     // KMK <--
-    modifier: Modifier = Modifier,
 ) {
     val haptic = LocalHapticFeedback.current
     val textAlpha = if (update.read) DISABLED_ALPHA else 1f

@@ -23,7 +23,6 @@ import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.toArgb
 import androidx.compose.ui.hapticfeedback.HapticFeedbackType
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalHapticFeedback
@@ -84,21 +83,12 @@ import eu.kanade.tachiyomi.ui.webview.WebViewScreen
 import eu.kanade.tachiyomi.util.system.copyToClipboard
 import eu.kanade.tachiyomi.util.system.toShareIntent
 import eu.kanade.tachiyomi.util.system.toast
-import exh.md.similar.MangaDexSimilarScreen
-import exh.pagepreview.PagePreviewScreen
-import exh.pref.DelegateSourcePreferences
 import exh.recs.RecommendsScreen
 import exh.source.MERGED_SOURCE_ID
-import exh.source.getMainSource
-import exh.source.isMdBasedSource
-import exh.ui.metadata.MetadataViewScreen
 import exh.ui.smartsearch.SmartSearchScreen
 import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.DelicateCoroutinesApi
-import kotlinx.coroutines.flow.launchIn
-import kotlinx.coroutines.flow.onEach
-import kotlinx.coroutines.flow.take
 import kotlinx.coroutines.launch
 import logcat.LogPriority
 import tachiyomi.core.common.i18n.stringResource
@@ -247,19 +237,6 @@ class MangaScreen(
             }
         }
 
-        // SY -->
-        LaunchedEffect(Unit) {
-            screenModel.redirectFlow
-                .take(1)
-                .onEach {
-                    navigator.replace(
-                        MangaScreen(it.mangaId),
-                    )
-                }
-                .launchIn(this)
-        }
-        // SY <--
-
         // KMK -->
         val coverRatio = remember { mutableFloatStateOf(1f) }
         val hazeState = remember { HazeState() }
@@ -328,31 +305,17 @@ class MangaScreen(
             onEditFetchIntervalClicked = screenModel::showSetFetchIntervalDialog.takeIf {
                 successState.manga.favorite
             },
-            previewsRowCount = successState.previewsRowCount,
             // SY -->
             onMigrateClicked = { migrateManga(navigator, screenModel.manga!!) }.takeIf { successState.manga.favorite },
-            onMetadataViewerClicked = {
-                openMetadataViewer(
-                    navigator,
-                    successState.manga,
-                    // KMK -->
-                    successState.seedColor,
-                    // KMK <--
-                )
-            },
             onEditInfoClicked = screenModel::showEditMangaInfoDialog,
             onRecommendClicked = {
-                openRecommends(context, navigator, screenModel.source?.getMainSource(), successState.manga)
+                openRecommends(context, navigator, screenModel.source, successState.manga)
             },
             onMergedSettingsClicked = screenModel::showEditMergedSettingsDialog,
             onMergeClicked = { openSmartSearch(navigator, successState.manga) },
             onMergeWithAnotherClicked = {
                 mergeWithAnother(navigator, context, successState.manga, screenModel::smartSearchMerge)
             },
-            onOpenPagePreview = { page ->
-                openPagePreview(context, successState.chapters.minByOrNull { it.chapter.sourceOrder }?.chapter, page)
-            },
-            onMorePreviewsClicked = { openMorePagePreviews(navigator, successState.manga) },
             // SY <--
             onMultiBookmarkClicked = screenModel::bookmarkChapters,
             onMultiMarkAsReadClicked = screenModel::markChaptersRead,
@@ -414,7 +377,6 @@ class MangaScreen(
                 if (screenModel.themeCoverBased || successState.manga.favorite) screenModel.setPaletteColor(it)
             },
             coverRatio = coverRatio,
-            onPaletteScreenClick = { navigator.push(PaletteScreen(successState.seedColor?.toArgb())) },
             hazeState = hazeState,
             // KMK <--
         )
@@ -752,16 +714,6 @@ class MangaScreen(
         // SY <--
     }
 
-    private fun openMetadataViewer(
-        navigator: Navigator,
-        manga: Manga,
-        // KMK -->
-        seedColor: Color?,
-        // KMK <--
-    ) {
-        navigator.push(MetadataViewScreen(manga.id, manga.source, seedColor?.toArgb()))
-    }
-
     private fun openMergedMangaWebview(context: Context, navigator: Navigator, mergedMangaData: MergedMangaData) {
         val sourceManager: SourceManager = Injekt.get()
         val mergedManga = mergedMangaData.manga.values.filterNot { it.source == MERGED_SOURCE_ID }
@@ -777,15 +729,6 @@ class MangaScreen(
             }
             .setNegativeButton(MR.strings.action_cancel.getString(context), null)
             .show()
-    }
-
-    private fun openMorePagePreviews(navigator: Navigator, manga: Manga) {
-        navigator.push(PagePreviewScreen(manga.id))
-    }
-
-    private fun openPagePreview(context: Context, chapter: Chapter?, page: Int) {
-        chapter ?: return
-        context.startActivity(ReaderActivity.newIntent(context, chapter.mangaId, chapter.id, page))
     }
     // SY <--
 
@@ -834,24 +777,7 @@ class MangaScreen(
     // AZ -->
     private fun openRecommends(context: Context, navigator: Navigator, source: Source?, manga: Manga) {
         source ?: return
-        if (source.isMdBasedSource() && Injekt.get<DelegateSourcePreferences>().delegateSources().get()) {
-            MaterialAlertDialogBuilder(context)
-                .setTitle(SYMR.strings.az_recommends.getString(context))
-                .setSingleChoiceItems(
-                    arrayOf(
-                        context.stringResource(SYMR.strings.mangadex_similar),
-                        context.stringResource(SYMR.strings.community_recommendations),
-                    ),
-                    -1,
-                ) { dialog, index ->
-                    dialog.dismiss()
-                    when (index) {
-                        0 -> navigator.push(MangaDexSimilarScreen(manga.id, source.id))
-                        1 -> navigator.push(RecommendsScreen(manga.id, source.id))
-                    }
-                }
-                .show()
-        } else if (source is CatalogueSource) {
+        if (source is CatalogueSource) {
             navigator.push(RecommendsScreen(manga.id, source.id))
         }
     }

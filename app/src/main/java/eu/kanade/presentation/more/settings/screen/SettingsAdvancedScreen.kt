@@ -58,7 +58,6 @@ import eu.kanade.tachiyomi.network.PREF_DOH_NJALLA
 import eu.kanade.tachiyomi.network.PREF_DOH_QUAD101
 import eu.kanade.tachiyomi.network.PREF_DOH_QUAD9
 import eu.kanade.tachiyomi.network.PREF_DOH_SHECAN
-import eu.kanade.tachiyomi.source.AndroidSourceManager
 import eu.kanade.tachiyomi.ui.more.OnboardingScreen
 import eu.kanade.tachiyomi.util.CrashLogUtil
 import eu.kanade.tachiyomi.util.storage.DiskUtil
@@ -71,10 +70,6 @@ import eu.kanade.tachiyomi.util.system.setDefaultSettings
 import eu.kanade.tachiyomi.util.system.toast
 import exh.debug.SettingsDebugScreen
 import exh.log.EHLogLevel
-import exh.pref.DelegateSourcePreferences
-import exh.source.BlacklistedSources
-import exh.source.EH_SOURCE_ID
-import exh.source.EXH_SOURCE_ID
 import exh.util.toAnnotatedString
 import kotlinx.collections.immutable.persistentListOf
 import kotlinx.collections.immutable.persistentMapOf
@@ -730,36 +725,10 @@ object SettingsAdvancedScreen : SearchableSettings {
         val navigator = LocalNavigator.currentOrThrow
         val sourcePreferences = remember { Injekt.get<SourcePreferences>() }
         val unsortedPreferences = remember { Injekt.get<UnsortedPreferences>() }
-        val delegateSourcePreferences = remember { Injekt.get<DelegateSourcePreferences>() }
         val securityPreferences = remember { Injekt.get<SecurityPreferences>() }
         return Preference.PreferenceGroup(
             title = stringResource(SYMR.strings.developer_tools),
             preferenceItems = persistentListOf(
-                Preference.PreferenceItem.SwitchPreference(
-                    pref = unsortedPreferences.isHentaiEnabled(),
-                    title = stringResource(SYMR.strings.toggle_hentai_features),
-                    subtitle = stringResource(SYMR.strings.toggle_hentai_features_summary),
-                    onValueChanged = {
-                        if (it) {
-                            BlacklistedSources.HIDDEN_SOURCES += EH_SOURCE_ID
-                            BlacklistedSources.HIDDEN_SOURCES += EXH_SOURCE_ID
-                        } else {
-                            BlacklistedSources.HIDDEN_SOURCES -= EH_SOURCE_ID
-                            BlacklistedSources.HIDDEN_SOURCES -= EXH_SOURCE_ID
-                        }
-                        true
-                    },
-                ),
-                Preference.PreferenceItem.SwitchPreference(
-                    pref = delegateSourcePreferences.delegateSources(),
-                    title = stringResource(SYMR.strings.toggle_delegated_sources),
-                    subtitle = stringResource(
-                        SYMR.strings.toggle_delegated_sources_summary,
-                        stringResource(MR.strings.app_name),
-                        AndroidSourceManager.DELEGATED_SOURCES.values.map { it.sourceName }.distinct()
-                            .joinToString(),
-                    ),
-                ),
                 Preference.PreferenceItem.ListPreference(
                     pref = unsortedPreferences.logLevel(),
                     title = stringResource(SYMR.strings.log_level),

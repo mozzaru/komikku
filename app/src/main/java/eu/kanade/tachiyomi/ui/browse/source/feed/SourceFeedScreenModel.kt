@@ -15,10 +15,7 @@ import eu.kanade.domain.ui.UiPreferences
 import eu.kanade.presentation.browse.SourceFeedUI
 import eu.kanade.tachiyomi.source.CatalogueSource
 import eu.kanade.tachiyomi.source.model.FilterList
-import eu.kanade.tachiyomi.source.online.all.MangaDex
 import eu.kanade.tachiyomi.ui.browse.feed.MaxFeedItems
-import exh.source.getMainSource
-import exh.source.mangaDexSourceIds
 import exh.util.nullIfBlank
 import kotlinx.collections.immutable.ImmutableList
 import kotlinx.collections.immutable.persistentListOf
@@ -78,8 +75,6 @@ open class SourceFeedScreenModel(
 ) : StateScreenModel<SourceFeedState>(SourceFeedState()) {
 
     var source = sourceManager.getOrStub(sourceId)
-
-    val sourceIsMangaDex = sourceId in mangaDexSourceIds
 
     private val coroutineDispatcher = Executors.newFixedThreadPool(5).asCoroutineDispatcher()
 
@@ -365,14 +360,6 @@ open class SourceFeedScreenModel(
                 return@launchIO
             }
             openAddFeed(search.id, search.name)
-        }
-    }
-
-    fun onMangaDexRandom(onRandomFound: (String) -> Unit) {
-        screenModelScope.launchIO {
-            val random = source.getMainSource<MangaDex>()?.fetchRandomMangaUrl()
-                ?: return@launchIO
-            onRandomFound(random)
         }
     }
 

@@ -61,8 +61,6 @@ import eu.kanade.tachiyomi.ui.category.CategoryScreen
 import eu.kanade.tachiyomi.ui.manga.MangaScreen
 import eu.kanade.tachiyomi.ui.webview.WebViewScreen
 import eu.kanade.tachiyomi.util.system.toast
-import exh.md.follows.MangaDexFollowsScreen
-import exh.source.isEhBasedSource
 import exh.ui.smartsearch.SmartSearchScreen
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.collectLatest
@@ -186,7 +184,7 @@ data class BrowseSourceScreen(
                             onChangeCategoryClick = bulkFavoriteScreenModel::addFavorite,
                             onSelectAll = {
                                 mangaList.itemSnapshotList.items
-                                    .map { it.value.first }
+                                    .map { it.value }
                                     .forEach { manga ->
                                         bulkFavoriteScreenModel.select(manga)
                                     }
@@ -194,7 +192,7 @@ data class BrowseSourceScreen(
                             onReverseSelection = {
                                 bulkFavoriteScreenModel.reverseSelection(
                                     mangaList.itemSnapshotList.items
-                                        .map { it.value.first },
+                                        .map { it.value },
                                 )
                             },
                         )
@@ -204,12 +202,7 @@ data class BrowseSourceScreen(
                             searchQuery = state.toolbarQuery,
                             onSearchQueryChange = screenModel::setToolbarQuery,
                             source = screenModel.source,
-                            displayMode = screenModel.displayMode
-                                // KMK -->
-                                .takeIf {
-                                    !screenModel.source.isEhBasedSource() || !screenModel.ehentaiBrowseDisplayMode
-                                },
-                            // KMK <--
+                            displayMode = screenModel.displayMode,
                             onDisplayModeChange = { screenModel.displayMode = it },
                             navigateUp = navigateUp,
                             onWebViewClick = onWebViewClick,
@@ -324,9 +317,6 @@ data class BrowseSourceScreen(
                 source = screenModel.source,
                 mangaList = mangaList,
                 columns = screenModel.getColumnsPreference(LocalConfiguration.current.orientation),
-                // SY -->
-                ehentaiBrowseDisplayMode = screenModel.ehentaiBrowseDisplayMode,
-                // SY <--
                 displayMode = screenModel.displayMode,
                 snackbarHostState = snackbarHostState,
                 contentPadding = paddingValues,
@@ -405,31 +395,10 @@ data class BrowseSourceScreen(
                         }
                     },
                     onSavedSearchPress = screenModel::onSavedSearchPress,
+                    // SY <--
                     // KMK -->
                     onSavedSearchPressDesc = stringResource(KMR.strings.saved_searches_delete),
                     // KMK <--
-                    openMangaDexRandom = if (screenModel.sourceIsMangaDex) {
-                        {
-                            screenModel.onMangaDexRandom {
-                                navigator.replace(
-                                    BrowseSourceScreen(
-                                        sourceId,
-                                        "id:$it",
-                                    ),
-                                )
-                            }
-                        }
-                    } else {
-                        null
-                    },
-                    openMangaDexFollows = if (screenModel.sourceIsMangaDex) {
-                        {
-                            navigator.replace(MangaDexFollowsScreen(sourceId))
-                        }
-                    } else {
-                        null
-                    },
-                    // SY <--
                 )
             }
             is BrowseSourceScreenModel.Dialog.AddDuplicateManga -> {

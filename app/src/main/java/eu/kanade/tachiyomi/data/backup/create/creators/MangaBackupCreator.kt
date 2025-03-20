@@ -2,21 +2,17 @@ package eu.kanade.tachiyomi.data.backup.create.creators
 
 import eu.kanade.tachiyomi.data.backup.create.BackupOptions
 import eu.kanade.tachiyomi.data.backup.models.BackupChapter
-import eu.kanade.tachiyomi.data.backup.models.BackupFlatMetadata
 import eu.kanade.tachiyomi.data.backup.models.BackupHistory
 import eu.kanade.tachiyomi.data.backup.models.BackupManga
 import eu.kanade.tachiyomi.data.backup.models.backupChapterMapper
 import eu.kanade.tachiyomi.data.backup.models.backupMergedMangaReferenceMapper
 import eu.kanade.tachiyomi.data.backup.models.backupTrackMapper
-import eu.kanade.tachiyomi.source.online.MetadataSource
 import eu.kanade.tachiyomi.ui.reader.setting.ReadingMode
 import exh.source.MERGED_SOURCE_ID
-import exh.source.getMainSource
 import tachiyomi.data.DatabaseHandler
 import tachiyomi.domain.category.interactor.GetCategories
 import tachiyomi.domain.history.interactor.GetHistory
 import tachiyomi.domain.manga.interactor.GetCustomMangaInfo
-import tachiyomi.domain.manga.interactor.GetFlatMetadataById
 import tachiyomi.domain.manga.model.CustomMangaInfo
 import tachiyomi.domain.manga.model.Manga
 import tachiyomi.domain.source.service.SourceManager
@@ -30,7 +26,6 @@ class MangaBackupCreator(
     // SY -->
     private val sourceManager: SourceManager = Injekt.get(),
     private val getCustomMangaInfo: GetCustomMangaInfo = Injekt.get(),
-    private val getFlatMetadataById: GetFlatMetadataById = Injekt.get(),
     // SY <--
 ) {
 
@@ -55,13 +50,6 @@ class MangaBackupCreator(
         if (manga.source == MERGED_SOURCE_ID) {
             mangaObject.mergedMangaReferences = handler.awaitList {
                 mergedQueries.selectByMergeId(manga.id, backupMergedMangaReferenceMapper)
-            }
-        }
-
-        val source = sourceManager.get(manga.source)?.getMainSource<MetadataSource<*, *>>()
-        if (source != null) {
-            getFlatMetadataById.await(manga.id)?.let { flatMetadata ->
-                mangaObject.flatMetadata = BackupFlatMetadata.copyFrom(flatMetadata)
             }
         }
         // SY <--

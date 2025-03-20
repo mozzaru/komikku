@@ -18,8 +18,6 @@ import eu.kanade.tachiyomi.data.download.model.Download
 import eu.kanade.tachiyomi.data.library.LibraryUpdateJob
 import eu.kanade.tachiyomi.ui.reader.setting.ReaderPreferences
 import eu.kanade.tachiyomi.util.lang.toLocalDate
-import exh.source.EH_SOURCE_ID
-import exh.source.EXH_SOURCE_ID
 import kotlinx.collections.immutable.PersistentList
 import kotlinx.collections.immutable.mutate
 import kotlinx.collections.immutable.persistentListOf
@@ -71,10 +69,6 @@ class UpdatesScreenModel(
     val events: Flow<Event> = _events.receiveAsFlow()
 
     val lastUpdated by libraryPreferences.lastUpdatedTimestamp().asState(screenModelScope)
-
-    // SY -->
-    val preserveReadingPosition by readerPreferences.preserveReadingPosition().asState(screenModelScope)
-    // SY <--
 
     // First and last selected index in list
     private val selectedPositions: Array<Int> = arrayOf(-1, -1)
@@ -460,13 +454,7 @@ data class UpdatesItem(
     val downloadStateProvider: () -> Download.State,
     val downloadProgressProvider: () -> Int,
     val selected: Boolean = false,
-) {
-    // SY -->
-    fun isEhBasedUpdate(): Boolean {
-        return update.sourceId == EH_SOURCE_ID || update.sourceId == EXH_SOURCE_ID
-    }
-    // SY <--
-}
+)
 
 // KMK -->
 fun UpdatesWithRelations.groupByDateAndManga() = "${dateFetch.toLocalDate().toEpochDay()}-$mangaId"

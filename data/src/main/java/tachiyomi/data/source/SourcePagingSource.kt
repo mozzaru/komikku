@@ -4,9 +4,7 @@ import androidx.paging.PagingState
 import eu.kanade.tachiyomi.source.CatalogueSource
 import eu.kanade.tachiyomi.source.model.FilterList
 import eu.kanade.tachiyomi.source.model.MangasPage
-import eu.kanade.tachiyomi.source.model.MetadataMangasPage
 import eu.kanade.tachiyomi.source.model.SManga
-import exh.metadata.metadata.RaisedSearchMetadata
 import tachiyomi.core.common.util.lang.withIOContext
 import tachiyomi.domain.source.repository.SourcePagingSourceType
 
@@ -37,7 +35,7 @@ abstract class SourcePagingSource(
 
     override suspend fun load(
         params: LoadParams<Long>,
-    ): LoadResult<Long, /*SY --> */ Pair<SManga, RaisedSearchMetadata?>/*SY <-- */> {
+    ): LoadResult<Long, SManga> {
         val page = params.key ?: 1
 
         val mangasPage = try {
@@ -59,22 +57,11 @@ abstract class SourcePagingSource(
     open fun getPageLoadResult(
         params: LoadParams<Long>,
         mangasPage: MangasPage,
-    ): LoadResult.Page<Long, /*SY --> */ Pair<SManga, RaisedSearchMetadata?>/*SY <-- */> {
+    ): LoadResult.Page<Long, SManga> {
         val page = params.key ?: 1
 
-        // SY -->
-        val metadata = if (mangasPage is MetadataMangasPage) {
-            mangasPage.mangasMetadata
-        } else {
-            emptyList()
-        }
-        // SY <--
-
         return LoadResult.Page(
-            data = mangasPage.mangas
-                // SY -->
-                .mapIndexed { index, sManga -> sManga to metadata.getOrNull(index) },
-            // SY <--
+            data = mangasPage.mangas,
             prevKey = null,
             nextKey = if (mangasPage.hasNextPage) page + 1 else null,
         )
@@ -82,7 +69,7 @@ abstract class SourcePagingSource(
     // SY <--
 
     override fun getRefreshKey(
-        state: PagingState<Long, /*SY --> */ Pair<SManga, RaisedSearchMetadata?>/*SY <-- */>,
+        state: PagingState<Long, SManga>,
     ): Long? {
         return state.anchorPosition?.let { anchorPosition ->
             val anchorPage = state.closestPageToPosition(anchorPosition)

@@ -34,9 +34,6 @@ import eu.kanade.presentation.library.DeleteLibraryMangaDialog
 import eu.kanade.presentation.library.LibrarySettingsDialog
 import eu.kanade.presentation.library.components.LibraryContent
 import eu.kanade.presentation.library.components.LibraryToolbar
-import eu.kanade.presentation.library.components.SyncFavoritesConfirmDialog
-import eu.kanade.presentation.library.components.SyncFavoritesProgressDialog
-import eu.kanade.presentation.library.components.SyncFavoritesWarningDialog
 import eu.kanade.presentation.manga.components.LibraryBottomActionMenu
 import eu.kanade.presentation.more.onboarding.GETTING_STARTED_URL
 import eu.kanade.presentation.util.Tab
@@ -52,7 +49,6 @@ import eu.kanade.tachiyomi.ui.main.MainActivity
 import eu.kanade.tachiyomi.ui.manga.MangaScreen
 import eu.kanade.tachiyomi.ui.reader.ReaderActivity
 import eu.kanade.tachiyomi.util.system.toast
-import exh.favorites.FavoritesSyncStatus
 import exh.source.MERGED_SOURCE_ID
 import kotlinx.collections.immutable.persistentListOf
 import kotlinx.coroutines.channels.Channel
@@ -175,7 +171,6 @@ data object LibraryTab : Tab {
                         }
                     },
                     // SY -->
-                    onClickSyncExh = screenModel::openFavoritesSyncDialog.takeIf { state.showSyncExh },
                     isSyncEnabled = state.isSyncEnabled,
                     // SY <--
                     searchQuery = state.searchQuery,
@@ -193,7 +188,6 @@ data object LibraryTab : Tab {
                         .takeIf { state.selection.fastAll { !it.manga.isLocal() } },
                     onDeleteClicked = screenModel::openDeleteMangaDialog,
                     // SY -->
-                    onClickCleanTitles = screenModel::cleanTitles.takeIf { state.showCleanTitles },
                     onClickMigrate = {
                         val selectedMangaIds = state.selection
                             .filterNot { it.manga.source == MERGED_SOURCE_ID }
@@ -209,7 +203,6 @@ data object LibraryTab : Tab {
                             context.toast(SYMR.strings.no_valid_entry)
                         }
                     },
-                    onClickAddToMangaDex = screenModel::syncMangaToDex.takeIf { state.showAddToMangadex },
                     onClickResetInfo = screenModel::resetInfo.takeIf { state.showResetInfo },
                     // SY <--
                     // KMK -->
@@ -356,34 +349,8 @@ data object LibraryTab : Tab {
                     },
                 )
             }
-            LibraryScreenModel.Dialog.SyncFavoritesWarning -> {
-                SyncFavoritesWarningDialog(
-                    onDismissRequest = onDismissRequest,
-                    onAccept = {
-                        onDismissRequest()
-                        screenModel.onAcceptSyncWarning()
-                    },
-                )
-            }
-            LibraryScreenModel.Dialog.SyncFavoritesConfirm -> {
-                SyncFavoritesConfirmDialog(
-                    onDismissRequest = onDismissRequest,
-                    onAccept = {
-                        onDismissRequest()
-                        screenModel.runSync()
-                    },
-                )
-            }
             null -> {}
         }
-
-        // SY -->
-        SyncFavoritesProgressDialog(
-            status = screenModel.favoritesSync.status.collectAsState().value,
-            setStatusIdle = { screenModel.favoritesSync.status.value = FavoritesSyncStatus.Idle },
-            openManga = { navigator.push(MangaScreen(it)) },
-        )
-        // SY <--
 
         BackHandler(enabled = state.selectionMode || state.searchQuery != null) {
             when {

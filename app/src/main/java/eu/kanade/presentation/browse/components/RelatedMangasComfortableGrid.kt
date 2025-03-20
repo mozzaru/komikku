@@ -89,7 +89,6 @@ fun RelatedMangasComfortableGrid(
                         onClick = { onMangaClick(manga) },
                         onLongClick = { onMangaLongClick(manga) },
                         isSelected = selection.fastAny { selected -> selected.id == manga.id },
-                        metadata = null,
                         usePanoramaCover = usePanoramaCover,
                     )
                 }

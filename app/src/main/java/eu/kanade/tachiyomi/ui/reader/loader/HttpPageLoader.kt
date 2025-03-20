@@ -8,7 +8,6 @@ import eu.kanade.tachiyomi.source.online.HttpSource
 import eu.kanade.tachiyomi.ui.reader.model.ReaderChapter
 import eu.kanade.tachiyomi.ui.reader.model.ReaderPage
 import eu.kanade.tachiyomi.ui.reader.setting.ReaderPreferences
-import exh.source.isEhBasedSource
 import exh.util.DataSaver
 import exh.util.DataSaver.Companion.getImage
 import kotlinx.coroutines.CancellationException
@@ -146,11 +145,6 @@ internal class HttpPageLoader(
             page.status = Page.State.QUEUE
         }
         // EXH -->
-        // Grab a new image URL on EXH sources
-        if (source.isEhBasedSource()) {
-            page.imageUrl = null
-        }
-
         if (readerPreferences.readerInstantRetry().get()) // EXH <--
             {
                 boostPage(page)

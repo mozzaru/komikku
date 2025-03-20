@@ -7,7 +7,6 @@ import eu.kanade.tachiyomi.source.Source
 import eu.kanade.tachiyomi.source.online.HttpSource
 import eu.kanade.tachiyomi.source.online.all.MergedSource
 import eu.kanade.tachiyomi.ui.reader.model.ReaderChapter
-import eu.kanade.tachiyomi.ui.reader.setting.ReaderPreferences
 import mihon.core.archive.archiveReader
 import mihon.core.archive.epubReader
 import tachiyomi.core.common.i18n.stringResource
@@ -32,7 +31,6 @@ class ChapterLoader(
     private val source: Source,
     // SY -->
     private val sourceManager: SourceManager,
-    private val readerPrefs: ReaderPreferences,
     private val mergedReferences: List<MergedMangaReference>,
     private val mergedManga: Map<Long, Manga>,
     // SY <--
@@ -64,9 +62,6 @@ class ChapterLoader(
                 // If the chapter is partially read, set the starting page to the last the user read
                 // otherwise use the requested page.
                 if (!chapter.chapter.read /* --> EH */ ||
-                    readerPrefs
-                        .preserveReadingPosition()
-                        .get() ||
                     page != null // <-- EH
                 ) {
                     chapter.requestedPage = /* SY --> */ page ?: /* SY <-- */ chapter.chapter.last_page_read

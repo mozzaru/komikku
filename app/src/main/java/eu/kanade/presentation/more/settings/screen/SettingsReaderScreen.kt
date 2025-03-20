@@ -585,10 +585,6 @@ object SettingsReaderScreen : SearchableSettings {
                     subtitle = stringResource(SYMR.strings.skip_queue_on_retry_summary),
                 ),
                 Preference.PreferenceItem.SwitchPreference(
-                    pref = readerPreferences.preserveReadingPosition(),
-                    title = stringResource(SYMR.strings.preserve_reading_position),
-                ),
-                Preference.PreferenceItem.SwitchPreference(
                     pref = readerPreferences.useAutoWebtoon(),
                     title = stringResource(SYMR.strings.auto_webtoon_mode),
                     subtitle = stringResource(SYMR.strings.auto_webtoon_mode_summary),

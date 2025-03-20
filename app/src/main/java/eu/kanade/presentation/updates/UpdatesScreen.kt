@@ -49,9 +49,6 @@ fun UpdateScreen(
     state: UpdatesScreenModel.State,
     snackbarHostState: SnackbarHostState,
     lastUpdated: Long,
-    // SY -->
-    preserveReadingPosition: Boolean,
-    // SY <--
     onClickCover: (UpdatesItem) -> Unit,
     onSelectAll: (Boolean) -> Unit,
     onInvertSelection: () -> Unit,
@@ -144,9 +141,6 @@ fun UpdateScreen(
                             usePanoramaCover = usePanoramaCover.value,
                             // KMK <--
                             selectionMode = state.selectionMode,
-                            // SY -->
-                            preserveReadingPosition = preserveReadingPosition,
-                            // SY <--
                             onUpdateSelected = onUpdateSelected,
                             onClickCover = onClickCover,
                             onClickUpdate = onOpenChapter,

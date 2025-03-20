@@ -10,7 +10,6 @@ import eu.kanade.tachiyomi.network.GET
 import eu.kanade.tachiyomi.network.NetworkHelper
 import eu.kanade.tachiyomi.network.awaitSuccess
 import eu.kanade.tachiyomi.network.parseAs
-import exh.source.BlacklistedSources
 import kotlinx.coroutines.async
 import kotlinx.coroutines.awaitAll
 import kotlinx.serialization.Serializable
@@ -112,9 +111,6 @@ internal class ExtensionApi {
         val installedExtensions = ExtensionLoader.loadExtensions(context)
             .filterIsInstance<LoadResult.Success>()
             .map { it.extension }
-            // SY -->
-            .filterNot { it.isBlacklisted(blacklistEnabled) }
-        // SY <--
 
         val extensionsWithUpdate = mutableListOf<Extension.Installed>()
         for (installedExt in installedExtensions) {
@@ -175,14 +171,6 @@ internal class ExtensionApi {
     private fun ExtensionJsonObject.extractLibVersion(): Double {
         return version.substringBeforeLast('.').toDouble()
     }
-
-    // SY -->
-    private fun Extension.isBlacklisted(
-        blacklistEnabled: Boolean = sourcePreferences.enableSourceBlacklist().get(),
-    ): Boolean {
-        return pkgName in BlacklistedSources.BLACKLISTED_EXTENSIONS && blacklistEnabled
-    }
-    // SY <--
 }
 
 @Serializable

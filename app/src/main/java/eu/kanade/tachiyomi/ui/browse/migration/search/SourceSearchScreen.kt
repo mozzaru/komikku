@@ -92,7 +92,7 @@ data class SourceSearchScreen(
                         onChangeCategoryClick = bulkFavoriteScreenModel::addFavorite,
                         onSelectAll = {
                             mangaList.itemSnapshotList.items
-                                .map { it.value.first }
+                                .map { it.value }
                                 .forEach { manga ->
                                     bulkFavoriteScreenModel.select(manga)
                                 }
@@ -100,7 +100,7 @@ data class SourceSearchScreen(
                         onReverseSelection = {
                             bulkFavoriteScreenModel.reverseSelection(
                                 mangaList.itemSnapshotList.items
-                                    .map { it.value.first },
+                                    .map { it.value },
                             )
                         },
                     )
@@ -150,9 +150,6 @@ data class SourceSearchScreen(
                 source = screenModel.source,
                 mangaList = mangaList,
                 columns = screenModel.getColumnsPreference(LocalConfiguration.current.orientation),
-                // SY -->
-                ehentaiBrowseDisplayMode = screenModel.ehentaiBrowseDisplayMode,
-                // SY <--
                 displayMode = screenModel.displayMode,
                 snackbarHostState = snackbarHostState,
                 contentPadding = paddingValues,
@@ -206,6 +203,8 @@ data class SourceSearchScreen(
                     // SY -->
                     startExpanded = screenModel.startExpanded,
                     onSave = {},
+                    onSavedSearchPress = {},
+                    // SY <--
                     // KMK -->
                     savedSearches = state.savedSearches,
                     onSavedSearch = { search ->
@@ -216,10 +215,6 @@ data class SourceSearchScreen(
                     onSavedSearchPressDesc = stringResource(SYMR.strings.saved_searches),
                     shouldShowSavingButton = false,
                     // KMK <--
-                    onSavedSearchPress = {},
-                    openMangaDexRandom = null,
-                    openMangaDexFollows = null,
-                    // SY <--
                 )
             }
             else -> {}

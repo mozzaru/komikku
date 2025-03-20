@@ -46,8 +46,6 @@ import eu.kanade.tachiyomi.data.coil.MangaCoverFetcher
 import eu.kanade.tachiyomi.data.coil.MangaCoverKeyer
 import eu.kanade.tachiyomi.data.coil.MangaCoverMetadata
 import eu.kanade.tachiyomi.data.coil.MangaKeyer
-import eu.kanade.tachiyomi.data.coil.PagePreviewFetcher
-import eu.kanade.tachiyomi.data.coil.PagePreviewKeyer
 import eu.kanade.tachiyomi.data.coil.TachiyomiImageDecoder
 import eu.kanade.tachiyomi.data.notification.Notifications
 import eu.kanade.tachiyomi.data.sync.SyncDataJob
@@ -248,10 +246,6 @@ class App : Application(), DefaultLifecycleObserver, SingletonImageLoader.Factor
                 // Keyer
                 add(MangaCoverKeyer())
                 add(MangaKeyer())
-                // SY -->
-                add(PagePreviewKeyer())
-                add(PagePreviewFetcher.Factory(callFactoryLazy))
-                // SY <--
             }
 
             crossfade((300 * this@App.animatorDurationScale).toInt())

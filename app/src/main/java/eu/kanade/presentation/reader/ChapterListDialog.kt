@@ -17,10 +17,7 @@ import eu.kanade.presentation.manga.components.MangaChapterListItem
 import eu.kanade.tachiyomi.data.download.DownloadManager
 import eu.kanade.tachiyomi.data.download.model.Download
 import eu.kanade.tachiyomi.ui.reader.chapter.ReaderChapterItem
-import eu.kanade.tachiyomi.ui.reader.setting.ReaderSettingsScreenModel
 import eu.kanade.tachiyomi.util.lang.toRelativeString
-import exh.metadata.MetadataUtil
-import exh.source.isEhBasedManga
 import kotlinx.collections.immutable.ImmutableList
 import kotlinx.coroutines.flow.filter
 import kotlinx.coroutines.flow.map
@@ -32,18 +29,15 @@ import uy.kohesive.injekt.api.get
 import java.time.Instant
 import java.time.LocalDate
 import java.time.ZoneId
-import java.time.ZonedDateTime
 
 @Composable
 fun ChapterListDialog(
     onDismissRequest: () -> Unit,
-    screenModel: ReaderSettingsScreenModel,
     chapters: ImmutableList<ReaderChapterItem>,
     onClickChapter: (Chapter) -> Unit,
     onBookmark: (Chapter) -> Unit,
     dateRelativeTime: Boolean,
 ) {
-    val manga by screenModel.mangaFlow.collectAsState()
     val context = LocalContext.current
     val state = rememberLazyListState(chapters.indexOfFirst { it.isCurrent }.coerceAtLeast(0))
     val downloadManager: DownloadManager = remember { Injekt.get() }
@@ -88,17 +82,10 @@ fun ChapterListDialog(
                     date = chapterItem.chapter.dateUpload
                         .takeIf { it > 0L }
                         ?.let {
-                            // SY -->
-                            if (manga?.isEhBasedManga() == true) {
-                                MetadataUtil.EX_DATE_FORMAT
-                                    .format(ZonedDateTime.ofInstant(Instant.ofEpochMilli(it), ZoneId.systemDefault()))
-                            } else {
-                                LocalDate.ofInstant(
-                                    Instant.ofEpochMilli(it),
-                                    ZoneId.systemDefault(),
-                                ).toRelativeString(context, dateRelativeTime, chapterItem.dateFormat)
-                            }
-                            // SY <--
+                            LocalDate.ofInstant(
+                                Instant.ofEpochMilli(it),
+                                ZoneId.systemDefault(),
+                            ).toRelativeString(context, dateRelativeTime, chapterItem.dateFormat)
                         },
                     readProgress = null,
                     scanlator = chapterItem.chapter.scanlator,

@@ -258,9 +258,7 @@ fun LibraryBottomActionMenu(
     onDownloadClicked: ((DownloadAction) -> Unit)?,
     onDeleteClicked: () -> Unit,
     // SY -->
-    onClickCleanTitles: (() -> Unit)?,
     onClickMigrate: (() -> Unit)?,
-    onClickAddToMangaDex: (() -> Unit)?,
     onClickResetInfo: (() -> Unit)?,
     // SY <--
     // KMK -->
@@ -295,9 +293,7 @@ fun LibraryBottomActionMenu(
                 }
             }
             // SY -->
-            val showOverflow = onClickCleanTitles != null ||
-                onClickAddToMangaDex != null ||
-                onClickResetInfo != null ||
+            val showOverflow = onClickResetInfo != null ||
                 // KMK -->
                 onClickMigrate != null ||
                 onClickMerge != null
@@ -412,18 +408,6 @@ fun LibraryBottomActionMenu(
                                 )
                             }
                             // KMK <--
-                        }
-                        if (onClickCleanTitles != null) {
-                            DropdownMenuItem(
-                                text = { Text(stringResource(SYMR.strings.action_clean_titles)) },
-                                onClick = onClickCleanTitles,
-                            )
-                        }
-                        if (onClickAddToMangaDex != null) {
-                            DropdownMenuItem(
-                                text = { Text(stringResource(SYMR.strings.mangadex_add_to_follows)) },
-                                onClick = onClickAddToMangaDex,
-                            )
                         }
                         if (onClickResetInfo != null) {
                             DropdownMenuItem(

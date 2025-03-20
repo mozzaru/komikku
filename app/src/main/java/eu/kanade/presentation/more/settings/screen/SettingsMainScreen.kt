@@ -44,12 +44,8 @@ import eu.kanade.presentation.more.settings.screen.about.AboutScreen
 import eu.kanade.presentation.more.settings.widget.TextPreferenceWidget
 import eu.kanade.presentation.util.LocalBackPress
 import eu.kanade.presentation.util.Screen
-import exh.assets.EhAssets
-import exh.assets.ehassets.EhLogo
-import exh.assets.ehassets.MangadexLogo
 import kotlinx.collections.immutable.persistentListOf
 import tachiyomi.i18n.MR
-import tachiyomi.i18n.sy.SYMR
 import tachiyomi.presentation.core.components.material.Scaffold
 import tachiyomi.presentation.core.i18n.stringResource
 import cafe.adriel.voyager.core.screen.Screen as VoyagerScreen
@@ -228,20 +224,6 @@ object SettingsMainScreen : Screen() {
             icon = Icons.Outlined.Security,
             screen = SettingsSecurityScreen,
         ),
-        // SY -->
-        Item(
-            titleRes = SYMR.strings.pref_category_eh,
-            subtitleRes = SYMR.strings.pref_ehentai_summary,
-            icon = EhAssets.EhLogo,
-            screen = SettingsEhScreen,
-        ),
-        Item(
-            titleRes = SYMR.strings.pref_category_mangadex,
-            subtitleRes = SYMR.strings.pref_mangadex_summary,
-            icon = EhAssets.MangadexLogo,
-            screen = SettingsMangadexScreen,
-        ),
-        // SY <--
         Item(
             titleRes = MR.strings.pref_category_advanced,
             subtitleRes = MR.strings.pref_advanced_summary,

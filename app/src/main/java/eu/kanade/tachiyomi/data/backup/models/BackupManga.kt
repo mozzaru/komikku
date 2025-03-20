@@ -43,7 +43,6 @@ data class BackupManga(
 
     // SY specific values
     @ProtoNumber(600) var mergedMangaReferences: List<BackupMergedMangaReference> = emptyList(),
-    @ProtoNumber(601) var flatMetadata: BackupFlatMetadata? = null,
     @ProtoNumber(602) var customStatus: Int = 0,
     @ProtoNumber(603) var customThumbnailUrl: String? = null,
 

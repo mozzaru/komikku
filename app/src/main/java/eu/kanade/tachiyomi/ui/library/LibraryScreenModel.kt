@@ -5,7 +5,6 @@ import android.content.Context
 import androidx.compose.runtime.Immutable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.setValue
-import androidx.compose.ui.util.fastAll
 import androidx.compose.ui.util.fastAny
 import androidx.compose.ui.util.fastDistinctBy
 import androidx.compose.ui.util.fastFilter
@@ -22,7 +21,6 @@ import eu.kanade.domain.base.BasePreferences
 import eu.kanade.domain.chapter.interactor.SetReadStatus
 import eu.kanade.domain.manga.interactor.SmartSearchMerge
 import eu.kanade.domain.manga.interactor.UpdateManga
-import eu.kanade.domain.source.service.SourcePreferences
 import eu.kanade.domain.sync.SyncPreferences
 import eu.kanade.presentation.components.SEARCH_DEBOUNCE_MILLIS
 import eu.kanade.presentation.library.components.LibraryToolbarTitle
@@ -38,30 +36,18 @@ import eu.kanade.tachiyomi.source.online.HttpSource
 import eu.kanade.tachiyomi.source.online.all.MergedSource
 import eu.kanade.tachiyomi.util.chapter.getNextUnread
 import eu.kanade.tachiyomi.util.removeCovers
-import exh.favorites.FavoritesSyncHelper
-import exh.md.utils.FollowStatus
-import exh.md.utils.MdUtil
-import exh.metadata.sql.models.SearchTag
-import exh.metadata.sql.models.SearchTitle
 import exh.search.Namespace
 import exh.search.QueryComponent
 import exh.search.SearchEngine
 import exh.search.Text
-import exh.source.EH_SOURCE_ID
 import exh.source.MERGED_SOURCE_ID
-import exh.source.isEhBasedManga
-import exh.source.isMetadataSource
-import exh.source.mangaDexSourceIds
-import exh.source.nHentaiSourceIds
 import exh.util.cancellable
 import exh.util.isLewd
-import exh.util.nullIfBlank
 import kotlinx.collections.immutable.ImmutableList
 import kotlinx.collections.immutable.PersistentList
 import kotlinx.collections.immutable.mutate
 import kotlinx.collections.immutable.persistentListOf
 import kotlinx.collections.immutable.toImmutableList
-import kotlinx.coroutines.DelicateCoroutinesApi
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.asFlow
 import kotlinx.coroutines.flow.collectLatest
@@ -85,7 +71,6 @@ import tachiyomi.core.common.util.lang.compareToWithCollator
 import tachiyomi.core.common.util.lang.launchIO
 import tachiyomi.core.common.util.lang.launchNonCancellable
 import tachiyomi.core.common.util.lang.withIOContext
-import tachiyomi.domain.UnsortedPreferences
 import tachiyomi.domain.category.interactor.GetCategories
 import tachiyomi.domain.category.interactor.SetMangaCategories
 import tachiyomi.domain.category.model.Category
@@ -99,11 +84,8 @@ import tachiyomi.domain.library.model.LibraryManga
 import tachiyomi.domain.library.model.LibrarySort
 import tachiyomi.domain.library.model.sort
 import tachiyomi.domain.library.service.LibraryPreferences
-import tachiyomi.domain.manga.interactor.GetIdsOfFavoriteMangaWithMetadata
 import tachiyomi.domain.manga.interactor.GetLibraryManga
 import tachiyomi.domain.manga.interactor.GetMergedMangaById
-import tachiyomi.domain.manga.interactor.GetSearchTags
-import tachiyomi.domain.manga.interactor.GetSearchTitles
 import tachiyomi.domain.manga.interactor.SetCustomMangaInfo
 import tachiyomi.domain.manga.model.CustomMangaInfo
 import tachiyomi.domain.manga.model.Manga
@@ -145,17 +127,12 @@ class LibraryScreenModel(
     private val downloadCache: DownloadCache = Injekt.get(),
     private val trackerManager: TrackerManager = Injekt.get(),
     // SY -->
-    private val unsortedPreferences: UnsortedPreferences = Injekt.get(),
-    private val sourcePreferences: SourcePreferences = Injekt.get(),
     private val getMergedMangaById: GetMergedMangaById = Injekt.get(),
     private val getTracks: GetTracks = Injekt.get(),
-    private val getIdsOfFavoriteMangaWithMetadata: GetIdsOfFavoriteMangaWithMetadata = Injekt.get(),
-    private val getSearchTags: GetSearchTags = Injekt.get(),
-    private val getSearchTitles: GetSearchTitles = Injekt.get(),
     private val searchEngine: SearchEngine = Injekt.get(),
     private val setCustomMangaInfo: SetCustomMangaInfo = Injekt.get(),
     private val getMergedChaptersByMangaId: GetMergedChaptersByMangaId = Injekt.get(),
-    private val syncPreferences: SyncPreferences = Injekt.get(),
+    syncPreferences: SyncPreferences = Injekt.get(),
     // SY <--
     // KMK -->
     private val smartSearchMerge: SmartSearchMerge = Injekt.get(),
@@ -163,10 +140,6 @@ class LibraryScreenModel(
 ) : StateScreenModel<LibraryScreenModel.State>(State()) {
 
     var activeCategoryIndex: Int by libraryPreferences.lastUsedCategory().asState(screenModelScope)
-
-    // SY -->
-    val favoritesSync = FavoritesSyncHelper(preferences.context)
-    // SY <--
 
     init {
         screenModelScope.launchIO {
@@ -264,21 +237,6 @@ class LibraryScreenModel(
             .launchIn(screenModelScope)
 
         // SY -->
-        combine(
-            unsortedPreferences.isHentaiEnabled().changes(),
-            sourcePreferences.disabledSources().changes(),
-            unsortedPreferences.enableExhentai().changes(),
-        ) { isHentaiEnabled, disabledSources, enableExhentai ->
-            isHentaiEnabled && (EH_SOURCE_ID.toString() !in disabledSources || enableExhentai)
-        }
-            .distinctUntilChanged()
-            .onEach {
-                mutableState.update { state ->
-                    state.copy(showSyncExh = it)
-                }
-            }
-            .launchIn(screenModelScope)
-
         libraryPreferences.groupLibraryBy().changes()
             .onEach {
                 mutableState.update { state ->
@@ -784,47 +742,6 @@ class LibraryScreenModel(
     }
 
     // SY -->
-    fun cleanTitles() {
-        state.value.selection.fastFilter {
-            it.manga.isEhBasedManga() ||
-                it.manga.source in nHentaiSourceIds
-        }.fastForEach { (manga) ->
-            val editedTitle = manga.title.replace("\\[.*?]".toRegex(), "").trim().replace("\\(.*?\\)".toRegex(), "").trim().replace("\\{.*?\\}".toRegex(), "").trim().let {
-                if (it.contains("|")) {
-                    it.replace(".*\\|".toRegex(), "").trim()
-                } else {
-                    it
-                }
-            }
-            if (manga.title == editedTitle) return@fastForEach
-            val mangaInfo = CustomMangaInfo(
-                id = manga.id,
-                title = editedTitle.nullIfBlank(),
-                author = manga.author.takeUnless { it == manga.ogAuthor },
-                artist = manga.artist.takeUnless { it == manga.ogArtist },
-                thumbnailUrl = manga.thumbnailUrl.takeUnless { it == manga.ogThumbnailUrl },
-                description = manga.description.takeUnless { it == manga.ogDescription },
-                genre = manga.genre.takeUnless { it == manga.ogGenre },
-                status = manga.status.takeUnless { it == manga.ogStatus }?.toLong(),
-            )
-
-            setCustomMangaInfo.set(mangaInfo)
-        }
-        clearSelection()
-    }
-
-    @OptIn(DelicateCoroutinesApi::class)
-    fun syncMangaToDex() {
-        launchIO {
-            MdUtil.getEnabledMangaDex(unsortedPreferences, sourcePreferences, sourceManager)?.let { mdex ->
-                state.value.selection.fastFilter { it.manga.source in mangaDexSourceIds }.fastForEach { (manga) ->
-                    mdex.updateFollowStatus(MdUtil.getMangaId(manga.url), FollowStatus.READING)
-                }
-            }
-            clearSelection()
-        }
-    }
-
     fun resetInfo() {
         state.value.selection.fastForEach { (manga) ->
             val mangaInfo = CustomMangaInfo(
@@ -985,7 +902,6 @@ class LibraryScreenModel(
         return if (unfiltered.isNotEmpty() && !query.isNullOrBlank()) {
             // Prepare filter object
             val parsedQuery = searchEngine.parseQuery(query)
-            val mangaWithMetaIds = getIdsOfFavoriteMangaWithMetadata.await()
             val tracks = if (loggedInTrackServices.isNotEmpty()) {
                 getTracks.await().groupBy { it.mangaId }
             } else {
@@ -998,39 +914,13 @@ class LibraryScreenModel(
             unfiltered.asFlow().cancellable().filter { item ->
                 val mangaId = item.libraryManga.manga.id
                 val sourceId = item.libraryManga.manga.source
-                if (isMetadataSource(sourceId)) {
-                    if (mangaWithMetaIds.binarySearch(mangaId) < 0) {
-                        // No meta? Filter using title
-                        filterManga(
-                            queries = parsedQuery,
-                            libraryManga = item.libraryManga,
-                            tracks = tracks[mangaId],
-                            source = sources[sourceId],
-                            loggedInTrackServices = loggedInTrackServices,
-                        )
-                    } else {
-                        val tags = getSearchTags.await(mangaId)
-                        val titles = getSearchTitles.await(mangaId)
-                        filterManga(
-                            queries = parsedQuery,
-                            libraryManga = item.libraryManga,
-                            tracks = tracks[mangaId],
-                            source = sources[sourceId],
-                            checkGenre = false,
-                            searchTags = tags,
-                            searchTitles = titles,
-                            loggedInTrackServices = loggedInTrackServices,
-                        )
-                    }
-                } else {
-                    filterManga(
-                        queries = parsedQuery,
-                        libraryManga = item.libraryManga,
-                        tracks = tracks[mangaId],
-                        source = sources[sourceId],
-                        loggedInTrackServices = loggedInTrackServices,
-                    )
-                }
+                filterManga(
+                    queries = parsedQuery,
+                    libraryManga = item.libraryManga,
+                    tracks = tracks[mangaId],
+                    source = sources[sourceId],
+                    loggedInTrackServices = loggedInTrackServices,
+                )
             }.toList()
         } else {
             unfiltered
@@ -1043,8 +933,6 @@ class LibraryScreenModel(
         tracks: List<Track>?,
         source: Source?,
         checkGenre: Boolean = true,
-        searchTags: List<SearchTag>? = null,
-        searchTitles: List<SearchTitle>? = null,
         loggedInTrackServices: Map<Long, TriState>,
     ): Boolean {
         val manga = libraryManga.manga
@@ -1067,20 +955,7 @@ class LibraryScreenModel(
                                     tracks != null &&
                                     filterTracks(query, tracks, context)
                                 ) ||
-                            (genre.fastAny { it.contains(query, true) }) ||
-                            (searchTags?.fastAny { it.name.contains(query, true) } == true) ||
-                            (searchTitles?.fastAny { it.title.contains(query, true) } == true)
-                    }
-                    is Namespace -> {
-                        searchTags != null &&
-                            searchTags.fastAny {
-                                val tag = queryComponent.tag
-                                (
-                                    it.namespace.equals(queryComponent.namespace, true) &&
-                                        tag?.run { it.name.contains(tag.asQuery(), true) } == true
-                                    ) ||
-                                    (tag == null && it.namespace.equals(queryComponent.namespace, true))
-                            }
+                            (genre.fastAny { it.contains(query, true) })
                     }
                     else -> true
                 }
@@ -1100,28 +975,12 @@ class LibraryScreenModel(
                                             tracks == null ||
                                             !filterTracks(query, tracks, context)
                                         ) &&
-                                    (!genre.fastAny { it.contains(query, true) }) &&
-                                    (searchTags?.fastAny { it.name.contains(query, true) } != true) &&
-                                    (searchTitles?.fastAny { it.title.contains(query, true) } != true)
+                                    (!genre.fastAny { it.contains(query, true) })
                                 )
                     }
                     is Namespace -> {
                         val searchedTag = queryComponent.tag?.asQuery()
-                        searchTags == null ||
-                            (queryComponent.namespace.isBlank() && searchedTag.isNullOrBlank()) ||
-                            searchTags.fastAll { mangaTag ->
-                                if (queryComponent.namespace.isBlank() && !searchedTag.isNullOrBlank()) {
-                                    !mangaTag.name.contains(searchedTag, true)
-                                } else if (searchedTag.isNullOrBlank()) {
-                                    mangaTag.namespace == null ||
-                                        !mangaTag.namespace.equals(queryComponent.namespace, true)
-                                } else if (mangaTag.namespace.isNullOrBlank()) {
-                                    true
-                                } else {
-                                    !mangaTag.name.contains(searchedTag, true) ||
-                                        !mangaTag.namespace.equals(queryComponent.namespace, true)
-                                }
-                            }
+                        queryComponent.namespace.isBlank() && searchedTag.isNullOrBlank()
                     }
                     else -> true
                 }
@@ -1273,8 +1132,6 @@ class LibraryScreenModel(
             val initialSelection: ImmutableList<CheckboxState<Category>>,
         ) : Dialog
         data class DeleteManga(val manga: List<Manga>) : Dialog
-        data object SyncFavoritesWarning : Dialog
-        data object SyncFavoritesConfirm : Dialog
     }
 
     // SY -->
@@ -1375,26 +1232,6 @@ class LibraryScreenModel(
             }
         }.toSortedMap(compareBy { it.order })
     }
-
-    fun runSync() {
-        favoritesSync.runSync(screenModelScope)
-    }
-
-    fun onAcceptSyncWarning() {
-        unsortedPreferences.exhShowSyncIntro().set(false)
-    }
-
-    fun openFavoritesSyncDialog() {
-        mutableState.update {
-            it.copy(
-                dialog = if (unsortedPreferences.exhShowSyncIntro().get()) {
-                    Dialog.SyncFavoritesWarning
-                } else {
-                    Dialog.SyncFavoritesConfirm
-                },
-            )
-        }
-    }
     // SY <--
 
     // KMK -->
@@ -1452,7 +1289,6 @@ class LibraryScreenModel(
         val showMangaContinueButton: Boolean = false,
         val dialog: Dialog? = null,
         // SY -->
-        val showSyncExh: Boolean = false,
         val isSyncEnabled: Boolean = false,
         val ogCategories: List<Category> = emptyList(),
         val groupType: Int = LibraryGroup.BY_DEFAULT,
@@ -1472,17 +1308,6 @@ class LibraryScreenModel(
         val categories = library.keys.toList()
 
         // SY -->
-        val showCleanTitles: Boolean by lazy {
-            selection.any {
-                it.manga.isEhBasedManga() ||
-                    it.manga.source in nHentaiSourceIds
-            }
-        }
-
-        val showAddToMangadex: Boolean by lazy {
-            selection.any { it.manga.source in mangaDexSourceIds }
-        }
-
         val showResetInfo: Boolean by lazy {
             selection.fastAny { (manga) ->
                 manga.title != manga.ogTitle ||
