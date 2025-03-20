@@ -57,7 +57,6 @@ import eu.kanade.tachiyomi.util.system.copyToClipboard
 import kotlinx.collections.immutable.ImmutableList
 import kotlinx.collections.immutable.persistentListOf
 import tachiyomi.i18n.MR
-import tachiyomi.i18n.sy.SYMR
 import tachiyomi.presentation.core.components.ScrollbarLazyColumn
 import tachiyomi.presentation.core.components.material.Scaffold
 import tachiyomi.presentation.core.components.material.padding
@@ -176,13 +175,6 @@ private fun ExtensionDetails(
     ScrollbarLazyColumn(
         contentPadding = contentPadding,
     ) {
-        // SY -->
-        if (extension.isRedundant) {
-            item {
-                WarningBanner(SYMR.strings.redundant_extension_message)
-            }
-        }
-        // SY <--
         if (extension.isObsolete) {
             item {
                 WarningBanner(MR.strings.obsolete_extension_message)

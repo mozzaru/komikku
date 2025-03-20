@@ -1,7 +1,5 @@
 package exh.util
 
-import exh.source.isEhBasedAnime
-import exh.source.nHentaiSourceIds
 import tachiyomi.domain.anime.model.Anime
 import tachiyomi.domain.source.service.SourceManager
 import uy.kohesive.injekt.Injekt
@@ -9,10 +7,6 @@ import uy.kohesive.injekt.api.get
 
 fun Anime.isLewd(): Boolean {
     val sourceName = Injekt.get<SourceManager>().get(source)?.name
-
-    if (isEhBasedAnime() || source in nHentaiSourceIds) {
-        return genre.orEmpty().none { tag -> isNonHentaiTag(tag) }
-    }
 
     return source in 6905L..6913L ||
         (sourceName != null && isHentaiSource(sourceName)) ||

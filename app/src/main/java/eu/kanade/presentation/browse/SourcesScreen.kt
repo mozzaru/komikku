@@ -33,8 +33,6 @@ import eu.kanade.presentation.util.animateItemFastScroll
 import eu.kanade.tachiyomi.ui.browse.source.SourcesScreenModel
 import eu.kanade.tachiyomi.ui.browse.source.browse.BrowseSourceScreenModel.Listing
 import eu.kanade.tachiyomi.util.system.LocaleHelper
-import exh.source.EH_SOURCE_ID
-import exh.source.EXH_SOURCE_ID
 import kotlinx.collections.immutable.ImmutableList
 import tachiyomi.domain.source.model.Pin
 import tachiyomi.domain.source.model.Source
@@ -49,7 +47,6 @@ import tachiyomi.presentation.core.i18n.stringResource
 import tachiyomi.presentation.core.screens.EmptyScreen
 import tachiyomi.presentation.core.screens.LoadingScreen
 import tachiyomi.presentation.core.theme.header
-import tachiyomi.source.local.LocalSource
 import tachiyomi.source.local.isLocal
 
 @Composable
@@ -295,7 +292,7 @@ fun SourceOptionsDialog(
                 // KMK -->
                 if (onClickSettings != null &&
                     source.installedExtension !== null &&
-                    source.id !in listOf(LocalSource.ID, EH_SOURCE_ID, EXH_SOURCE_ID)
+                    !source.isLocal()
                 ) {
                     Text(
                         text = stringResource(MR.strings.label_extension_info),

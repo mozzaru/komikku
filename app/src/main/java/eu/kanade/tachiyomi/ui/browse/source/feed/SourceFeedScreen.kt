@@ -41,8 +41,6 @@ import eu.kanade.tachiyomi.ui.browse.source.browse.BrowseSourceScreen
 import eu.kanade.tachiyomi.ui.browse.source.browse.SourceFilterDialog
 import eu.kanade.tachiyomi.ui.webview.WebViewScreen
 import eu.kanade.tachiyomi.util.system.toast
-import exh.md.follows.MangaDexFollowsScreen
-import exh.source.isEhBasedSource
 import exh.util.nullIfBlank
 import tachiyomi.core.common.util.lang.launchIO
 import tachiyomi.domain.anime.model.Anime
@@ -168,7 +166,6 @@ class SourceFeedScreen(val sourceId: Long) : Screen() {
                         }
                     }.takeIf {
                         !screenModel.source.isLocalOrStub() &&
-                            !screenModel.source.isEhBasedSource() &&
                             screenModel.state.value.items
                                 .filterIsInstance<SourceFeedUI.SourceSavedSearch>()
                                 .isNotEmpty()
@@ -282,33 +279,6 @@ class SourceFeedScreen(val sourceId: Long) : Screen() {
                     onSavedSearchPressDesc = stringResource(KMR.strings.saved_searches_add_feed),
                     shouldShowSavingButton = false,
                     // KMK <--
-                    openMangaDexRandom = if (screenModel.sourceIsMangaDex) {
-                        {
-                            screenModel.onMangaDexRandom {
-                                // KMK -->
-                                // navigator.replace(
-                                navigator.push(
-                                    // KMK <--
-                                    BrowseSourceScreen(
-                                        sourceId,
-                                        "id:$it",
-                                    ),
-                                )
-                            }
-                        }
-                    } else {
-                        null
-                    },
-                    openMangaDexFollows = if (screenModel.sourceIsMangaDex) {
-                        {
-                            // KMK -->
-                            // navigator.replace(MangaDexFollowsScreen(sourceId))
-                            navigator.push(MangaDexFollowsScreen(sourceId))
-                            // KMK <--
-                        }
-                    } else {
-                        null
-                    },
                 )
             }
             null -> Unit

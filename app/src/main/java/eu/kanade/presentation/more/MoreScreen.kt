@@ -10,7 +10,6 @@ import androidx.compose.foundation.layout.windowInsetsPadding
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.outlined.HelpOutline
 import androidx.compose.material.icons.automirrored.outlined.Label
-import androidx.compose.material.icons.automirrored.outlined.PlaylistAdd
 import androidx.compose.material.icons.outlined.CloudOff
 import androidx.compose.material.icons.outlined.GetApp
 import androidx.compose.material.icons.outlined.History
@@ -21,7 +20,6 @@ import androidx.compose.material.icons.outlined.Settings
 import androidx.compose.material.icons.outlined.Storage
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.platform.LocalUriHandler
@@ -31,18 +29,13 @@ import eu.kanade.presentation.more.settings.widget.SwitchPreferenceWidget
 import eu.kanade.presentation.more.settings.widget.TextPreferenceWidget
 import eu.kanade.tachiyomi.R
 import eu.kanade.tachiyomi.ui.more.DownloadQueueState
-import exh.pref.DelegateSourcePreferences
 import tachiyomi.core.common.Constants
-import tachiyomi.domain.UnsortedPreferences
 import tachiyomi.i18n.MR
 import tachiyomi.i18n.kmk.KMR
-import tachiyomi.i18n.sy.SYMR
 import tachiyomi.presentation.core.components.ScrollbarLazyColumn
 import tachiyomi.presentation.core.components.material.Scaffold
 import tachiyomi.presentation.core.i18n.pluralStringResource
 import tachiyomi.presentation.core.i18n.stringResource
-import uy.kohesive.injekt.Injekt
-import uy.kohesive.injekt.api.get
 
 @Composable
 fun MoreScreen(
@@ -62,7 +55,6 @@ fun MoreScreen(
     onClickDataAndStorage: () -> Unit,
     onClickSettings: () -> Unit,
     onClickAbout: () -> Unit,
-    onClickBatchAdd: () -> Unit,
     onClickUpdates: () -> Unit,
     onClickHistory: () -> Unit,
     // KMK -->
@@ -70,10 +62,6 @@ fun MoreScreen(
     // KMK <--
 ) {
     val uriHandler = LocalUriHandler.current
-    // SY -->
-    val unsortedPreferences = remember { Injekt.get<UnsortedPreferences>() }
-    val delegateSourcePreferences = remember { Injekt.get<DelegateSourcePreferences>() }
-    // SY <--
 
     Scaffold(
         topBar = {
@@ -203,17 +191,6 @@ fun MoreScreen(
                     onPreferenceClick = onClickDataAndStorage,
                 )
             }
-            // SY -->
-            if (unsortedPreferences.isHentaiEnabled().get() || delegateSourcePreferences.delegateSources().get()) {
-                item {
-                    TextPreferenceWidget(
-                        title = stringResource(SYMR.strings.eh_batch_add),
-                        icon = Icons.AutoMirrored.Outlined.PlaylistAdd,
-                        onPreferenceClick = onClickBatchAdd,
-                    )
-                }
-            }
-            // SY <--
 
             item { HorizontalDivider() }
 

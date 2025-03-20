@@ -171,7 +171,6 @@ data object LibraryTab : Tab {
                         }
                     },
                     // SY -->
-                    onClickSyncExh = screenModel::openFavoritesSyncDialog.takeIf { state.showSyncExh },
                     isSyncEnabled = state.isSyncEnabled,
                     // SY <--
                     searchQuery = state.searchQuery,
@@ -189,7 +188,6 @@ data object LibraryTab : Tab {
                         .takeIf { state.selection.fastAll { !it.anime.isLocal() } },
                     onDeleteClicked = screenModel::openDeleteMangaDialog,
                     // SY -->
-                    onClickCleanTitles = screenModel::cleanTitles.takeIf { state.showCleanTitles },
                     onClickMigrate = {
                         val selectedMangaIds = state.selection
                             .filterNot { it.anime.source == MERGED_SOURCE_ID }
@@ -205,7 +203,6 @@ data object LibraryTab : Tab {
                             context.toast(SYMR.strings.no_valid_entry)
                         }
                     },
-                    onClickAddToMangaDex = screenModel::syncMangaToDex.takeIf { state.showAddToMangadex },
                     onClickResetInfo = screenModel::resetInfo.takeIf { state.showResetInfo },
                     // SY <--
                     // KMK -->
@@ -353,7 +350,6 @@ data object LibraryTab : Tab {
                 )
             }
             null -> {}
-            else -> {}
         }
 
         BackHandler(enabled = state.selectionMode || state.searchQuery != null) {

@@ -6,11 +6,7 @@ import eu.kanade.tachiyomi.BuildConfig
 import eu.kanade.tachiyomi.data.backup.models.Backup
 import eu.kanade.tachiyomi.data.library.LibraryUpdateJob
 import eu.kanade.tachiyomi.data.sync.SyncDataJob
-import eu.kanade.tachiyomi.source.AndroidSourceManager
 import eu.kanade.tachiyomi.util.system.workManager
-import exh.metadata.metadata.EHentaiSearchMetadata
-import exh.source.EH_SOURCE_ID
-import exh.source.EXH_SOURCE_ID
 import exh.util.jobScheduler
 import kotlinx.coroutines.runBlocking
 import kotlinx.serialization.protobuf.schema.ProtoBufSchemaGenerator
@@ -21,11 +17,7 @@ import mihon.core.migration.Migrator
 import mihon.core.migration.migrations.migrations
 import tachiyomi.data.DatabaseHandler
 import tachiyomi.domain.anime.interactor.GetAllAnime
-import tachiyomi.domain.anime.interactor.GetExhFavoriteAnimeWithMetadata
 import tachiyomi.domain.anime.interactor.GetFavorites
-import tachiyomi.domain.anime.interactor.GetFlatMetadataById
-import tachiyomi.domain.anime.interactor.GetSearchMetadata
-import tachiyomi.domain.anime.interactor.InsertFlatMetadata
 import tachiyomi.domain.source.service.SourceManager
 import uy.kohesive.injekt.Injekt
 import uy.kohesive.injekt.api.get
@@ -39,10 +31,6 @@ object DebugFunctions {
     private val sourceManager: SourceManager by injectLazy()
     private val updateAnime: UpdateAnime by injectLazy()
     private val getFavorites: GetFavorites by injectLazy()
-    private val getFlatMetadataById: GetFlatMetadataById by injectLazy()
-    private val insertFlatMetadata: InsertFlatMetadata by injectLazy()
-    private val getExhFavoriteAnimeWithMetadata: GetExhFavoriteAnimeWithMetadata by injectLazy()
-    private val getSearchMetadata: GetSearchMetadata by injectLazy()
     private val getAllAnime: GetAllAnime by injectLazy()
 
     fun forceUpgradeMigration(): Boolean {
@@ -61,45 +49,6 @@ object DebugFunctions {
         return runBlocking { strategy(migrations).await() }
     }
 
-    fun resetAgedFlagInExhManga() {
-        runBlocking {
-            getExhFavoriteAnimeWithMetadata.await().forEach { manga ->
-                val meta = getFlatMetadataById.await(manga.id)?.raise<EHentaiSearchMetadata>() ?: return@forEach
-                // remove age flag
-                meta.aged = false
-                insertFlatMetadata.await(meta)
-            }
-        }
-    }
-
-    fun getDelegatedSourceList(): String = AndroidSourceManager.currentDelegatedSources.map {
-        it.value.sourceName + " : " + it.value.sourceId + " : " + it.value.factory
-    }.joinToString(separator = "\n")
-
-    fun getEHMangaListWithAgedFlagInfo(): String {
-        return runBlocking {
-            val result = getExhFavoriteAnimeWithMetadata.await().mapNotNull { manga ->
-                val meta = getFlatMetadataById.await(manga.id)?.raise<EHentaiSearchMetadata>()
-                // KMK -->
-                meta?.let { "Aged: ${meta.aged}\t-\tTitle: ${manga.title}" }
-            }
-            listOf("Count: ${result.size}") + result
-            // KMK <--
-        }.joinToString(",\n")
-    }
-
-    fun countAgedFlagInExhManga(): Int {
-        return runBlocking {
-            getExhFavoriteAnimeWithMetadata.await()
-                .count { manga ->
-                    val meta = getFlatMetadataById.await(manga.id)
-                        ?.raise<EHentaiSearchMetadata>()
-                        ?: return@count false
-                    meta.aged
-                }
-        }
-    }
-
     fun addAllMangaInDatabaseToLibrary() {
         runBlocking { handler.await { ehQueries.addAllAnimeInDatabaseToLibrary() } }
     }
@@ -109,14 +58,6 @@ object DebugFunctions {
     fun countMangaInDatabaseNotInLibrary() = runBlocking { getAllAnime.await() }.count { !it.favorite }
 
     fun countMangaInDatabase() = runBlocking { getAllAnime.await() }.size
-
-    fun countMetadataInDatabase() = runBlocking { getSearchMetadata.await().size }
-
-    fun countMangaInLibraryWithMissingMetadata() = runBlocking {
-        runBlocking { getAllAnime.await() }.count {
-            it.favorite && getSearchMetadata.await(it.id) == null
-        }
-    }
 
     fun clearSavedSearches() = runBlocking { handler.await { saved_searchQueries.deleteAll() } }
 
@@ -138,10 +79,6 @@ object DebugFunctions {
     fun listVisibleHttpSources() = sourceManager.getVisibleOnlineSources().joinToString("\n") {
         "${it.id}: ${it.name} (${it.lang.uppercase()})"
     }
-
-    fun convertAllEhentaiGalleriesToExhentai() = convertSources(EH_SOURCE_ID, EXH_SOURCE_ID)
-
-    fun convertAllExhentaiGalleriesToEhentai() = convertSources(EXH_SOURCE_ID, EH_SOURCE_ID)
 
     fun listScheduledJobs() = app.jobScheduler.allPendingJobs.joinToString(",\n") { j ->
         val info = j.extras.getString("EXTRA_WORK_SPEC_ID")?.let {
@@ -178,84 +115,6 @@ object DebugFunctions {
             handler.await { ehQueries.migrateSource(to, from) }
         }
     }
-
-    /*fun copyEHentaiSavedSearchesToExhentai() {
-        runBlocking {
-            val source = sourceManager.get(EH_SOURCE_ID) as? CatalogueSource ?: return@runBlocking
-            val newSource = sourceManager.get(EXH_SOURCE_ID) as? CatalogueSource ?: return@runBlocking
-            val savedSearches = prefs.savedSearches().get().mapNotNull {
-                try {
-                    val id = it.substringBefore(':').toLong()
-                    if (id != source.id) return@mapNotNull null
-                    Json.decodeFromString<JsonSavedSearch>(it.substringAfter(':'))
-                } catch (t: RuntimeException) {
-                    // Load failed
-                    xLogE("Failed to load saved search!", t)
-                    t.printStackTrace()
-                    null
-                }
-            }.toMutableList()
-            savedSearches += prefs.savedSearches().get().mapNotNull {
-                try {
-                    val id = it.substringBefore(':').toLong()
-                    if (id != newSource.id) return@mapNotNull null
-                    Json.decodeFromString<JsonSavedSearch>(it.substringAfter(':'))
-                } catch (t: RuntimeException) {
-                    // Load failed
-                    xLogE("Failed to load saved search!", t)
-                    t.printStackTrace()
-                    null
-                }
-            }.filterNot { newSavedSearch -> savedSearches.any { it.name == newSavedSearch.name } }
-
-            val otherSerialized = prefs.savedSearches().get().filter {
-                !it.startsWith("${newSource.id}:")
-            }
-            val newSerialized = savedSearches.map {
-                "${newSource.id}:" + Json.encodeToString(it)
-            }
-            prefs.savedSearches().set((otherSerialized + newSerialized).toSet())
-        }
-    }
-
-    fun copyExhentaiSavedSearchesToEHentai() {
-        runBlocking {
-            val source = sourceManager.get(EXH_SOURCE_ID) as? CatalogueSource ?: return@runBlocking
-            val newSource = sourceManager.get(EH_SOURCE_ID) as? CatalogueSource ?: return@runBlocking
-            val savedSearches = prefs.savedSearches().get().mapNotNull {
-                try {
-                    val id = it.substringBefore(':').toLong()
-                    if (id != source.id) return@mapNotNull null
-                    Json.decodeFromString<JsonSavedSearch>(it.substringAfter(':'))
-                } catch (t: RuntimeException) {
-                    // Load failed
-                    xLogE("Failed to load saved search!", t)
-                    t.printStackTrace()
-                    null
-                }
-            }.toMutableList()
-            savedSearches += prefs.savedSearches().get().mapNotNull {
-                try {
-                    val id = it.substringBefore(':').toLong()
-                    if (id != newSource.id) return@mapNotNull null
-                    Json.decodeFromString<JsonSavedSearch>(it.substringAfter(':'))
-                } catch (t: RuntimeException) {
-                    // Load failed
-                    xLogE("Failed to load saved search!", t)
-                    t.printStackTrace()
-                    null
-                }
-            }.filterNot { newSavedSearch -> savedSearches.any { it.name == newSavedSearch.name } }
-
-            val otherSerialized = prefs.savedSearches().get().filter {
-                !it.startsWith("${newSource.id}:")
-            }
-            val newSerialized = savedSearches.map {
-                "${newSource.id}:" + Json.encodeToString(it)
-            }
-            prefs.savedSearches().set((otherSerialized + newSerialized).toSet())
-        }
-    }*/
 
     fun exportProtobufScheme() = ProtoBufSchemaGenerator.generateSchemaText(Backup.serializer().descriptor)
 

@@ -1,7 +1,7 @@
 package tachiyomi.source.local.metadata
 
-import eu.kanade.tachiyomi.source.model.SEpisode
 import eu.kanade.tachiyomi.source.model.SAnime
+import eu.kanade.tachiyomi.source.model.SEpisode
 import mihon.core.archive.EpubReader
 import java.text.ParseException
 import java.text.SimpleDateFormat

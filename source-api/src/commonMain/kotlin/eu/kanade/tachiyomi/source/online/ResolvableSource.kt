@@ -1,8 +1,8 @@
 package eu.kanade.tachiyomi.source.online
 
 import eu.kanade.tachiyomi.source.Source
-import eu.kanade.tachiyomi.source.model.SEpisode
 import eu.kanade.tachiyomi.source.model.SAnime
+import eu.kanade.tachiyomi.source.model.SEpisode
 
 /**
  * A source that may handle opening an SAnime or SEpisode for a given URI.

@@ -26,23 +26,15 @@ import eu.kanade.presentation.util.ioCoroutineScope
 import eu.kanade.tachiyomi.data.cache.CoverCache
 import eu.kanade.tachiyomi.source.CatalogueSource
 import eu.kanade.tachiyomi.source.model.FilterList
-import eu.kanade.tachiyomi.source.online.MetadataSource
-import eu.kanade.tachiyomi.source.online.all.MangaDex
 import eu.kanade.tachiyomi.util.removeCovers
-import exh.metadata.metadata.RaisedSearchMetadata
-import exh.source.getMainSource
-import exh.source.mangaDexSourceIds
 import kotlinx.collections.immutable.ImmutableList
 import kotlinx.collections.immutable.persistentListOf
 import kotlinx.collections.immutable.toImmutableList
 import kotlinx.coroutines.delay
-import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.emptyFlow
 import kotlinx.coroutines.flow.firstOrNull
-import kotlinx.coroutines.flow.flatMapLatest
-import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.onEach
@@ -61,7 +53,6 @@ import tachiyomi.core.common.util.lang.withUIContext
 import tachiyomi.domain.UnsortedPreferences
 import tachiyomi.domain.anime.interactor.GetAnime
 import tachiyomi.domain.anime.interactor.GetDuplicateLibraryAnime
-import tachiyomi.domain.anime.interactor.GetFlatMetadataById
 import tachiyomi.domain.anime.interactor.NetworkToLocalAnime
 import tachiyomi.domain.anime.model.Anime
 import tachiyomi.domain.anime.model.toAnimeUpdate
@@ -109,7 +100,6 @@ open class BrowseSourceScreenModel(
     // SY -->
     unsortedPreferences: UnsortedPreferences = Injekt.get(),
     uiPreferences: UiPreferences = Injekt.get(),
-    private val getFlatMetadataById: GetFlatMetadataById = Injekt.get(),
     private val deleteSavedSearchById: DeleteSavedSearchById = Injekt.get(),
     private val insertSavedSearch: InsertSavedSearch = Injekt.get(),
     private val getExhSavedSearch: GetExhSavedSearch = Injekt.get(),
@@ -121,13 +111,9 @@ open class BrowseSourceScreenModel(
     var source = sourceManager.getOrStub(sourceId)
 
     // SY -->
-    val ehentaiBrowseDisplayMode by unsortedPreferences.enhancedEHentaiView().asState(screenModelScope)
-
     val startExpanded by uiPreferences.expandFilters().asState(screenModelScope)
 
     private val filterSerializer = FilterSerializer()
-
-    val sourceIsMangaDex = sourceId in mangaDexSourceIds
     // SY <--
 
     init {
@@ -210,7 +196,7 @@ open class BrowseSourceScreenModel(
                 createSourcePagingSource(listing.query ?: "", listing.filters)
                 // SY <--
             }.flow.map { pagingData ->
-                pagingData.map { (it, metadata) ->
+                pagingData.map {
                     // KMK -->
                     it.toDomainAnime(sourceId)
                         .let { manga ->
@@ -218,12 +204,9 @@ open class BrowseSourceScreenModel(
                                 .map { it ?: manga }
                         }
                         // KMK <--
-                        // SY -->
-                        .combineMetadata(metadata)
-                        // SY <--
                         .stateIn(ioCoroutineScope)
                 }
-                    .filter { !hideInLibraryItems || !it.value.first.favorite }
+                    .filter { !hideInLibraryItems || !it.value.favorite }
             }
                 .cachedIn(ioCoroutineScope)
         }
@@ -238,22 +221,6 @@ open class BrowseSourceScreenModel(
         }.get()
         return if (columns == 0) GridCells.Adaptive(128.dp) else GridCells.Fixed(columns)
     }
-
-    // SY -->
-    open fun Flow<Anime>.combineMetadata(metadata: RaisedSearchMetadata?): Flow<Pair<Anime, RaisedSearchMetadata?>> {
-        val metadataSource = source.getMainSource<MetadataSource<*, *>>()
-        return flatMapLatest { manga ->
-            if (metadataSource != null) {
-                getFlatMetadataById.subscribe(manga.id)
-                    .map { flatMetadata ->
-                        manga to (flatMetadata?.raise(metadataSource.metaClass) ?: metadata)
-                    }
-            } else {
-                flowOf(manga to null)
-            }
-        }
-    }
-    // SY <--
 
     fun resetFilters() {
         // KMK -->
@@ -633,14 +600,6 @@ open class BrowseSourceScreenModel(
     fun deleteSearch(savedSearchId: Long) {
         screenModelScope.launchNonCancellable {
             deleteSavedSearchById.await(savedSearchId)
-        }
-    }
-
-    fun onMangaDexRandom(onRandomFound: (String) -> Unit) {
-        screenModelScope.launchIO {
-            val random = source.getMainSource<MangaDex>()?.fetchRandomAnimeUrl()
-                ?: return@launchIO
-            onRandomFound(random)
         }
     }
     // EXH <--

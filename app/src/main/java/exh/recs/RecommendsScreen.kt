@@ -76,7 +76,7 @@ class RecommendsScreen(val mangaId: Long, val sourceId: Long) : Screen() {
                         onChangeCategoryClick = bulkFavoriteScreenModel::addFavorite,
                         onSelectAll = {
                             mangaList.itemSnapshotList.items
-                                .map { it.value.first }
+                                .map { it.value }
                                 .forEach { manga ->
                                     bulkFavoriteScreenModel.select(manga)
                                 }
@@ -84,7 +84,7 @@ class RecommendsScreen(val mangaId: Long, val sourceId: Long) : Screen() {
                         onReverseSelection = {
                             bulkFavoriteScreenModel.reverseSelection(
                                 mangaList.itemSnapshotList.items
-                                    .map { it.value.first },
+                                    .map { it.value },
                             )
                         },
                     )
@@ -109,9 +109,6 @@ class RecommendsScreen(val mangaId: Long, val sourceId: Long) : Screen() {
                 source = screenModel.source,
                 animeList = mangaList,
                 columns = screenModel.getColumnsPreference(LocalConfiguration.current.orientation),
-                // SY -->
-                ehentaiBrowseDisplayMode = false,
-                // SY <--
                 displayMode = screenModel.displayMode,
                 snackbarHostState = snackbarHostState,
                 contentPadding = paddingValues,

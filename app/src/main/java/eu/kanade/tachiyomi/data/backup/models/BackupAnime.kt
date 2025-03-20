@@ -42,7 +42,6 @@ data class BackupAnime(
 
     // SY specific values
     @ProtoNumber(600) var mergedMangaReferences: List<BackupMergedMangaReference> = emptyList(),
-    @ProtoNumber(601) var flatMetadata: BackupFlatMetadata? = null,
     @ProtoNumber(602) var customStatus: Int = 0,
     @ProtoNumber(603) var customThumbnailUrl: String? = null,
 
@@ -54,7 +53,7 @@ data class BackupAnime(
     @ProtoNumber(804) var customDescription: String? = null,
     @ProtoNumber(805) var customGenre: List<String>? = null,
 
-    ) {
+) {
     fun getMangaImpl(): Anime {
         return Anime.create().copy(
             url = this@BackupAnime.url,

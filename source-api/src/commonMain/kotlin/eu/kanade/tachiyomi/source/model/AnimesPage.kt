@@ -1,8 +1,7 @@
 package eu.kanade.tachiyomi.source.model
 
-import exh.metadata.metadata.RaisedSearchMetadata
-
 typealias AnimesPage = MangasPage
+
 /* SY --> */
 open /* SY <-- */ class MangasPage(open val animes: List<SAnime>, open val hasNextPage: Boolean) {
     // SY -->
@@ -36,16 +35,14 @@ open /* SY <-- */ class MangasPage(open val animes: List<SAnime>, open val hasNe
 class MetadataAnimesPage(
     override val animes: List<SAnime>,
     override val hasNextPage: Boolean,
-    val animesMetadata: List<RaisedSearchMetadata>,
     val nextKey: Long? = null,
 ) : AnimesPage(animes, hasNextPage) {
     fun copy(
         animes: List<SAnime> = this.animes,
         hasNextPage: Boolean = this.hasNextPage,
-        animesMetadata: List<RaisedSearchMetadata> = this.animesMetadata,
         nextKey: Long? = this.nextKey,
     ): AnimesPage {
-        return MetadataAnimesPage(animes, hasNextPage, animesMetadata, nextKey)
+        return MetadataAnimesPage(animes, hasNextPage, nextKey)
     }
 
     override fun equals(other: Any?): Boolean {
@@ -57,7 +54,6 @@ class MetadataAnimesPage(
 
         if (animes != other.animes) return false
         if (hasNextPage != other.hasNextPage) return false
-        if (animesMetadata != other.animesMetadata) return false
         if (nextKey != other.nextKey) return false
 
         return true
@@ -67,7 +63,6 @@ class MetadataAnimesPage(
         var result = super.hashCode()
         result = 31 * result + animes.hashCode()
         result = 31 * result + hasNextPage.hashCode()
-        result = 31 * result + animesMetadata.hashCode()
         result = 31 * result + nextKey.hashCode()
         return result
     }
@@ -76,7 +71,6 @@ class MetadataAnimesPage(
         return "MetadataAnimesPage(" +
             "animes=$animes, " +
             "hasNextPage=$hasNextPage, " +
-            "animesMetadata=$animesMetadata, " +
             "nextKey=$nextKey" +
             ")"
     }

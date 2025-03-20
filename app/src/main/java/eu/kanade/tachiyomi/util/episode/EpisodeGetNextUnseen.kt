@@ -3,7 +3,6 @@ package eu.kanade.tachiyomi.util.episode
 import eu.kanade.domain.episode.model.applyFilters
 import eu.kanade.tachiyomi.data.download.DownloadManager
 import eu.kanade.tachiyomi.ui.anime.EpisodeList
-import exh.source.isEhBasedAnime
 import tachiyomi.domain.anime.model.Anime
 import tachiyomi.domain.episode.model.Episode
 
@@ -16,15 +15,6 @@ fun List<Episode>.getNextUnseen(
     mergedManga: Map<Long, Anime>, /* SY <-- */
 ): Episode? {
     return applyFilters(manga, downloadManager/* SY --> */, mergedManga/* SY <-- */).let { chapters ->
-        // SY -->
-        if (manga.isEhBasedAnime()) {
-            return@let if (manga.sortDescending()) {
-                chapters.firstOrNull()?.takeUnless { it.seen }
-            } else {
-                chapters.lastOrNull()?.takeUnless { it.seen }
-            }
-        }
-        // SY <--
         if (manga.sortDescending()) {
             chapters.findLast { !it.seen }
         } else {
@@ -38,15 +28,6 @@ fun List<Episode>.getNextUnseen(
  */
 fun List<EpisodeList.Item>.getNextUnseen(manga: Anime): Episode? {
     return applyFilters(manga).let { chapters ->
-        // SY -->
-        if (manga.isEhBasedAnime()) {
-            return@let if (manga.sortDescending()) {
-                chapters.firstOrNull()?.takeUnless { it.episode.seen }
-            } else {
-                chapters.lastOrNull()?.takeUnless { it.episode.seen }
-            }
-        }
-        // SY <--
         if (manga.sortDescending()) {
             chapters.findLast { !it.episode.seen }
         } else {

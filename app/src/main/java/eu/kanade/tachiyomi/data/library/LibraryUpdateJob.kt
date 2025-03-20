@@ -24,8 +24,6 @@ import eu.kanade.domain.anime.model.toSAnime
 import eu.kanade.domain.episode.interactor.SetSeenStatus
 import eu.kanade.domain.episode.interactor.SyncEpisodesWithSource
 import eu.kanade.domain.sync.SyncPreferences
-import eu.kanade.domain.track.model.toDbTrack
-import eu.kanade.domain.track.model.toDomainTrack
 import eu.kanade.tachiyomi.data.LibraryUpdateStatus
 import eu.kanade.tachiyomi.data.cache.CoverCache
 import eu.kanade.tachiyomi.data.download.DownloadManager
@@ -41,19 +39,13 @@ import eu.kanade.tachiyomi.util.system.isConnectedToWifi
 import eu.kanade.tachiyomi.util.system.isRunning
 import eu.kanade.tachiyomi.util.system.setForegroundSafely
 import eu.kanade.tachiyomi.util.system.workManager
-import exh.log.xLogE
-import exh.md.utils.FollowStatus
-import exh.md.utils.MdUtil
-import exh.source.LIBRARY_UPDATE_EXCLUDED_SOURCES
 import exh.source.MERGED_SOURCE_ID
-import exh.source.mangaDexSourceIds
 import exh.util.nullIfBlank
 import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.async
 import kotlinx.coroutines.awaitAll
 import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.ensureActive
-import kotlinx.coroutines.launch
 import kotlinx.coroutines.runBlocking
 import kotlinx.coroutines.sync.Semaphore
 import kotlinx.coroutines.sync.withPermit
@@ -64,13 +56,11 @@ import tachiyomi.core.common.preference.getAndSet
 import tachiyomi.core.common.util.lang.withIOContext
 import tachiyomi.core.common.util.system.logcat
 import tachiyomi.data.source.NoResultsException
-import tachiyomi.domain.UnsortedPreferences
 import tachiyomi.domain.anime.interactor.FetchInterval
 import tachiyomi.domain.anime.interactor.GetAnime
 import tachiyomi.domain.anime.interactor.GetFavorites
 import tachiyomi.domain.anime.interactor.GetLibraryAnime
 import tachiyomi.domain.anime.interactor.GetMergedAnimeForDownloading
-import tachiyomi.domain.anime.interactor.InsertFlatMetadata
 import tachiyomi.domain.anime.interactor.NetworkToLocalAnime
 import tachiyomi.domain.anime.model.Anime
 import tachiyomi.domain.anime.model.toAnimeUpdate
@@ -81,13 +71,13 @@ import tachiyomi.domain.library.model.GroupLibraryMode
 import tachiyomi.domain.library.model.LibraryAnime
 import tachiyomi.domain.library.model.LibraryGroup
 import tachiyomi.domain.library.service.LibraryPreferences
+import tachiyomi.domain.library.service.LibraryPreferences.Companion.ANIME_HAS_UNSEEN
 import tachiyomi.domain.library.service.LibraryPreferences.Companion.ANIME_NON_COMPLETED
+import tachiyomi.domain.library.service.LibraryPreferences.Companion.ANIME_NON_SEEN
 import tachiyomi.domain.library.service.LibraryPreferences.Companion.ANIME_OUTSIDE_RELEASE_PERIOD
 import tachiyomi.domain.library.service.LibraryPreferences.Companion.DEVICE_CHARGING
 import tachiyomi.domain.library.service.LibraryPreferences.Companion.DEVICE_NETWORK_NOT_METERED
 import tachiyomi.domain.library.service.LibraryPreferences.Companion.DEVICE_ONLY_ON_WIFI
-import tachiyomi.domain.library.service.LibraryPreferences.Companion.ANIME_HAS_UNSEEN
-import tachiyomi.domain.library.service.LibraryPreferences.Companion.ANIME_NON_SEEN
 import tachiyomi.domain.libraryUpdateError.interactor.DeleteLibraryUpdateErrors
 import tachiyomi.domain.libraryUpdateError.interactor.InsertLibraryUpdateErrors
 import tachiyomi.domain.libraryUpdateError.model.LibraryUpdateError
@@ -123,13 +113,11 @@ class LibraryUpdateJob(private val context: Context, workerParams: WorkerParamet
 
     // SY -->
     private val getFavorites: GetFavorites = Injekt.get()
-    private val insertFlatMetadata: InsertFlatMetadata = Injekt.get()
     private val networkToLocalAnime: NetworkToLocalAnime = Injekt.get()
     private val getMergedAnimeForDownloading: GetMergedAnimeForDownloading = Injekt.get()
     private val getTracks: GetTracks = Injekt.get()
     private val insertTrack: InsertTrack = Injekt.get()
     private val trackerManager: TrackerManager = Injekt.get()
-    private val mdList = trackerManager.mdList
     private val getEpisodesByAnimeId: GetEpisodesByAnimeId = Injekt.get()
     private val setSeenStatus: SetSeenStatus = Injekt.get()
     // SY <--
@@ -188,10 +176,6 @@ class LibraryUpdateJob(private val context: Context, workerParams: WorkerParamet
                 when (target) {
                     Target.CHAPTERS -> updateEpisodeList()
                     Target.COVERS -> updateCovers()
-                    // SY -->
-                    Target.SYNC_FOLLOWS -> syncFollows()
-                    Target.PUSH_FAVORITES -> pushFavorites()
-                    // SY <--
                 }
                 Result.success()
             } catch (e: Exception) {
@@ -371,43 +355,15 @@ class LibraryUpdateJob(private val context: Context, workerParams: WorkerParamet
         val newUpdates = CopyOnWriteArrayList<Pair<Anime, Array<Episode>>>()
         val failedUpdates = CopyOnWriteArrayList<Pair<Anime, String?>>()
         val hasDownloads = AtomicBoolean(false)
-        // SY -->
-        val mdlistLogged = mdList.isLoggedIn
-        // SY <--
 
         val fetchWindow = fetchInterval.getWindow(ZonedDateTime.now())
 
         coroutineScope {
             mangaToUpdate.groupBy { it.anime.source }
-                // SY -->
-                .filterNot { it.key in LIBRARY_UPDATE_EXCLUDED_SOURCES }
-                // SY <--
                 .values
                 .map { mangaInSource ->
                     async {
                         semaphore.withPermit {
-                            if (
-                                mdlistLogged &&
-                                mangaInSource.firstOrNull()
-                                    ?.let { it.anime.source in mangaDexSourceIds } == true
-                            ) {
-                                launch {
-                                    mangaInSource.forEach { (manga) ->
-                                        try {
-                                            val tracks = getTracks.await(manga.id)
-                                            if (tracks.isEmpty() ||
-                                                tracks.none { it.trackerId == TrackerManager.MDLIST }
-                                            ) {
-                                                val track = mdList.createInitialTracker(manga)
-                                                insertTrack.await(mdList.refresh(track).toDomainTrack(false)!!)
-                                            }
-                                        } catch (e: Exception) {
-                                            if (e is CancellationException) throw e
-                                            xLogE("Error adding initial track for ${manga.title}", e)
-                                        }
-                                    }
-                                }
-                            }
                             mangaInSource.forEach { libraryManga ->
                                 val manga = libraryManga.anime
                                 ensureActive()
@@ -606,91 +562,6 @@ class LibraryUpdateJob(private val context: Context, workerParams: WorkerParamet
         notifier.cancelProgressNotification()
     }
 
-    // SY -->
-    /**
-     * filter all follows from Mangadex and only add reading or rereading manga to library
-     */
-    private suspend fun syncFollows() = coroutineScope {
-        val preferences = Injekt.get<UnsortedPreferences>()
-        var count = 0
-        val mangaDex = MdUtil.getEnabledMangaDex(preferences, sourceManager = sourceManager)
-            ?: return@coroutineScope
-        val syncFollowStatusInts = preferences.mangadexSyncToLibraryIndexes().get().map { it.toInt() }
-
-        val size: Int
-        mangaDex.fetchAllFollows()
-            .filter { (_, metadata) ->
-                syncFollowStatusInts.contains(metadata.followStatus)
-            }
-            .also { size = it.size }
-            .forEach { (networkManga, metadata) ->
-                ensureActive()
-
-                count++
-                notifier.showProgressNotification(
-                    listOf(Anime.create().copy(ogTitle = networkManga.title)), count, size,
-                )
-
-                var dbManga = getAnime.await(networkManga.url, mangaDex.id)
-
-                if (dbManga == null) {
-                    dbManga = networkToLocalAnime.await(
-                        Anime.create().copy(
-                            url = networkManga.url,
-                            ogTitle = networkManga.title,
-                            source = mangaDex.id,
-                            favorite = true,
-                            dateAdded = System.currentTimeMillis(),
-                        ),
-                    )
-                } else if (!dbManga.favorite) {
-                    updateAnime.awaitUpdateFavorite(dbManga.id, true)
-                }
-
-                updateAnime.awaitUpdateFromSource(dbManga, networkManga, true)
-                metadata.animeId = dbManga.id
-                insertFlatMetadata.await(metadata)
-            }
-
-        notifier.cancelProgressNotification()
-    }
-
-    /**
-     * Method that updates the all mangas which are not tracked as "reading" on mangadex
-     */
-    private suspend fun pushFavorites() = coroutineScope {
-        var count = 0
-        val listManga = getFavorites.await().filter { it.source in mangaDexSourceIds }
-
-        // filter all follows from Mangadex and only add reading or rereading manga to library
-        if (mdList.isLoggedIn) {
-            listManga.forEach { manga ->
-                ensureActive()
-
-                count++
-                notifier.showProgressNotification(listOf(manga), count, listManga.size)
-
-                // Get this manga's trackers from the database
-                val dbTracks = getTracks.await(manga.id)
-
-                // find the mdlist entry if its unfollowed the follow it
-                var tracker = dbTracks.firstOrNull { it.trackerId == TrackerManager.MDLIST }
-                    ?: mdList.createInitialTracker(manga).toDomainTrack(idRequired = false)
-
-                if (tracker?.status == FollowStatus.UNFOLLOWED.long) {
-                    tracker = tracker.copy(
-                        status = FollowStatus.READING.long,
-                    )
-                    val updatedTrack = mdList.update(tracker.toDbTrack())
-                    insertTrack.await(updatedTrack.toDomainTrack(false)!!)
-                }
-            }
-        }
-
-        notifier.cancelProgressNotification()
-    }
-    // SY <--
-
     private suspend fun withUpdateNotification(
         updatingManga: CopyOnWriteArrayList<Anime>,
         completed: AtomicInteger,
@@ -759,12 +630,6 @@ class LibraryUpdateJob(private val context: Context, workerParams: WorkerParamet
     enum class Target {
         CHAPTERS, // Manga episodes
         COVERS, // Manga covers
-
-        // SY -->
-        SYNC_FOLLOWS, // MangaDex specific, pull mangadex manga in reading, rereading
-
-        PUSH_FAVORITES, // MangaDex specific, push mangadex manga to mangadex
-        // SY <--
     }
 
     companion object {

@@ -10,7 +10,6 @@ import eu.kanade.tachiyomi.data.download.DownloadProvider
 import eu.kanade.tachiyomi.source.Source
 import eu.kanade.tachiyomi.source.model.SEpisode
 import eu.kanade.tachiyomi.source.online.HttpSource
-import exh.source.isEhBasedAnime
 import tachiyomi.data.episode.EpisodeSanitizer
 import tachiyomi.data.source.NoResultsException
 import tachiyomi.domain.anime.model.Anime
@@ -190,24 +189,6 @@ class SyncEpisodesWithSource(
 
             episode
         }
-
-        // --> EXH (carry over watching progress)
-        if (anime.isEhBasedAnime()) {
-            val finalAdded = updatedToAdd.subtract(reAdded)
-            if (finalAdded.isNotEmpty()) {
-                val max = dbEpisodes.maxOfOrNull { it.lastSecondSeen }
-                if (max != null && max > 0) {
-                    updatedToAdd = updatedToAdd.map {
-                        if (it !in reAdded) {
-                            it.copy(lastSecondSeen = max)
-                        } else {
-                            it
-                        }
-                    }
-                }
-            }
-        }
-        // <-- EXH
 
         if (removedEpisodes.isNotEmpty()) {
             val toDeleteIds = removedEpisodes.map { it.id }

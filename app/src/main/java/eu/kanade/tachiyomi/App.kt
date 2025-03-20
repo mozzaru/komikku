@@ -42,12 +42,10 @@ import eu.kanade.tachiyomi.core.security.PrivacyPreferences
 import eu.kanade.tachiyomi.crash.CrashActivity
 import eu.kanade.tachiyomi.crash.GlobalExceptionHandler
 import eu.kanade.tachiyomi.data.coil.AnimeCoverFetcher
-import eu.kanade.tachiyomi.data.coil.AnimeCoverMetadata
-import eu.kanade.tachiyomi.data.coil.BufferedSourceFetcher
 import eu.kanade.tachiyomi.data.coil.AnimeCoverKeyer
+import eu.kanade.tachiyomi.data.coil.AnimeCoverMetadata
 import eu.kanade.tachiyomi.data.coil.AnimeKeyer
-import eu.kanade.tachiyomi.data.coil.PagePreviewFetcher
-import eu.kanade.tachiyomi.data.coil.PagePreviewKeyer
+import eu.kanade.tachiyomi.data.coil.BufferedSourceFetcher
 import eu.kanade.tachiyomi.data.coil.TachiyomiImageDecoder
 import eu.kanade.tachiyomi.data.notification.Notifications
 import eu.kanade.tachiyomi.data.sync.SyncDataJob
@@ -248,10 +246,6 @@ class App : Application(), DefaultLifecycleObserver, SingletonImageLoader.Factor
                 // Keyer
                 add(AnimeCoverKeyer())
                 add(AnimeKeyer())
-                // SY -->
-                add(PagePreviewKeyer())
-                add(PagePreviewFetcher.Factory(callFactoryLazy))
-                // SY <--
             }
 
             crossfade((300 * this@App.animatorDurationScale).toInt())

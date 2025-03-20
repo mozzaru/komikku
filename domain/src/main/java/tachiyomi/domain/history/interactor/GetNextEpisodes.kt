@@ -1,7 +1,6 @@
 package tachiyomi.domain.history.interactor
 
 import exh.source.MERGED_SOURCE_ID
-import exh.source.isEhBasedAnime
 import tachiyomi.domain.anime.interactor.GetAnime
 import tachiyomi.domain.episode.interactor.GetEpisodesByAnimeId
 import tachiyomi.domain.episode.interactor.GetMergedEpisodesByAnimeId
@@ -34,16 +33,6 @@ class GetNextEpisodes(
 
             return if (onlyUnseen) {
                 episodes.filterNot { it.seen }
-            } else {
-                episodes
-            }
-        }
-        if (anime.isEhBasedAnime()) {
-            val episodes = getEpisodesByAnimeId.await(animeId, applyScanlatorFilter = true)
-                .sortedWith(getEpisodeSort(anime, sortDescending = false))
-
-            return if (onlyUnseen) {
-                episodes.takeLast(1).takeUnless { it.firstOrNull()?.seen == true }.orEmpty()
             } else {
                 episodes
             }

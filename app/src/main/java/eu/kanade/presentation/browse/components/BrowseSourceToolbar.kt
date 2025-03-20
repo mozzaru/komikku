@@ -21,7 +21,6 @@ import eu.kanade.presentation.components.SearchToolbar
 import eu.kanade.tachiyomi.source.ConfigurableSource
 import eu.kanade.tachiyomi.source.Source
 import eu.kanade.tachiyomi.ui.browse.bulkSelectionButton
-import exh.source.anyIs
 import kotlinx.collections.immutable.persistentListOf
 import tachiyomi.domain.library.model.LibraryDisplayMode
 import tachiyomi.i18n.MR
@@ -50,7 +49,7 @@ fun BrowseSourceToolbar(
     // Avoid capturing unstable source in actions lambda
     val title = source?.name
     val isLocalSource = source is LocalSource
-    val isConfigurableSource = source?.anyIs<ConfigurableSource>() == true
+    val isConfigurableSource = source is ConfigurableSource
 
     var selectingDisplayMode by remember { mutableStateOf(false) }
 

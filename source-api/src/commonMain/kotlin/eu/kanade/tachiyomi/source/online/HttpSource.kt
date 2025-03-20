@@ -18,8 +18,6 @@ import eu.kanade.tachiyomi.source.model.SEpisode
 import eu.kanade.tachiyomi.source.model.SManga
 import eu.kanade.tachiyomi.source.model.Video
 import exh.log.maybeInjectEHLogger
-import exh.pref.DelegateSourcePreferences
-import exh.source.DelegatedHttpSource
 import kotlinx.coroutines.async
 import kotlinx.coroutines.coroutineScope
 import okhttp3.Headers
@@ -58,14 +56,14 @@ abstract class HttpSource : CatalogueSource {
         val network = Injekt.get<NetworkHelper>()
         object : NetworkHelper(Injekt.get<Application>(), Injekt.get(), network.isDebugBuild) {
             override val client: OkHttpClient
-                get() = delegate?.networkHttpClient ?: network.client
+                get() = network.client
                     .newBuilder()
                     .maybeInjectEHLogger()
                     .build()
 
             @Deprecated("The regular client handles Cloudflare by default")
             override val cloudflareClient: OkHttpClient
-                get() = delegate?.networkHttpClient ?: client
+                get() = client
 
             override val cookieJar: AndroidCookieJar
                 get() = network.cookieJar
@@ -107,7 +105,7 @@ abstract class HttpSource : CatalogueSource {
      */
     open val client: OkHttpClient
         // SY -->
-        get() = delegate?.baseHttpClient ?: network.client
+        get() = network.client
     // SY <--
 
     /**
@@ -674,17 +672,4 @@ abstract class HttpSource : CatalogueSource {
      * Returns the list of filters for the source.
      */
     override fun getFilterList() = FilterList()
-
-    // EXH -->
-    private var delegate: DelegatedHttpSource? = null
-        get() = if (Injekt.get<DelegateSourcePreferences>().delegateSources().get()) {
-            field
-        } else {
-            null
-        }
-
-    fun bindDelegate(delegate: DelegatedHttpSource) {
-        this.delegate = delegate
-    }
-    // EXH <--
 }

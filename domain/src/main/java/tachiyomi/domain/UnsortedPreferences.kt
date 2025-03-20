@@ -34,10 +34,6 @@ class UnsortedPreferences(
 
     fun showOnlyUpdatesMigration() = preferenceStore.getBoolean("show_only_updates_migration", false)
 
-    fun isHentaiEnabled() = preferenceStore.getBoolean("eh_is_hentai_enabled", false)
-
-    fun enableExhentai() = preferenceStore.getBoolean(Preference.privateKey("enable_exhentai"), false)
-
     fun imageQuality() = preferenceStore.getString("ehentai_quality", "auto")
 
     fun useHentaiAtHome() = preferenceStore.getInt("eh_enable_hah", 0)
@@ -91,8 +87,6 @@ class UnsortedPreferences(
         "eh_enabled_categories",
         "false,false,false,false,false,false,false,false,false,false",
     )
-
-    fun enhancedEHentaiView() = preferenceStore.getBoolean("enhanced_e_hentai_view", true)
 
     fun preferredMangaDexId() = preferenceStore.getString("preferred_mangaDex_id", "0")
 

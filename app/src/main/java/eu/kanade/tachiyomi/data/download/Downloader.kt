@@ -15,7 +15,6 @@ import eu.kanade.tachiyomi.source.online.HttpSource
 import eu.kanade.tachiyomi.util.storage.DiskUtil
 import eu.kanade.tachiyomi.util.storage.DiskUtil.NOMEDIA_FILE
 import eu.kanade.tachiyomi.util.storage.saveTo
-import exh.source.isEhBasedSource
 import exh.util.DataSaver
 import exh.util.DataSaver.Companion.getImage
 import kotlinx.coroutines.CancellationException
@@ -522,9 +521,6 @@ class Downloader(
             .retryWhen { _, attempt ->
                 if (attempt < 3) {
                     delay((2L shl attempt.toInt()) * 1000)
-                    if (source.isEhBasedSource()) {
-                        page.videoUrl = source.getVideoUrl(page)
-                    }
                     true
                 } else {
                     false

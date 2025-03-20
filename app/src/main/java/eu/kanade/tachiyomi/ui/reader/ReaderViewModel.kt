@@ -28,7 +28,6 @@ import eu.kanade.tachiyomi.data.saver.Location
 import eu.kanade.tachiyomi.data.sync.SyncDataJob
 import eu.kanade.tachiyomi.source.model.Page
 import eu.kanade.tachiyomi.source.online.HttpSource
-import eu.kanade.tachiyomi.source.online.MetadataSource
 import eu.kanade.tachiyomi.source.online.all.MergedSource
 import eu.kanade.tachiyomi.ui.reader.chapter.ReaderChapterItem
 import eu.kanade.tachiyomi.ui.reader.loader.ChapterLoader
@@ -51,10 +50,7 @@ import eu.kanade.tachiyomi.util.lang.takeBytes
 import eu.kanade.tachiyomi.util.storage.DiskUtil
 import eu.kanade.tachiyomi.util.storage.DiskUtil.MAX_FILE_NAME_BYTES
 import eu.kanade.tachiyomi.util.storage.cacheImageDir
-import exh.metadata.metadata.RaisedSearchMetadata
 import exh.source.MERGED_SOURCE_ID
-import exh.source.getMainSource
-import exh.source.isEhBasedAnime
 import exh.util.animeType
 import exh.util.defaultReaderType
 import kotlinx.coroutines.CancellationException
@@ -84,7 +80,6 @@ import tachiyomi.core.common.util.system.ImageUtil
 import tachiyomi.core.common.util.system.logcat
 import tachiyomi.decoder.ImageDecoder
 import tachiyomi.domain.anime.interactor.GetAnime
-import tachiyomi.domain.anime.interactor.GetFlatMetadataById
 import tachiyomi.domain.anime.interactor.GetMergedAnimeById
 import tachiyomi.domain.anime.interactor.GetMergedReferencesById
 import tachiyomi.domain.anime.model.Anime
@@ -130,7 +125,6 @@ class ReaderViewModel @JvmOverloads constructor(
     private val syncPreferences: SyncPreferences = Injekt.get(),
     // SY -->
     private val uiPreferences: UiPreferences = Injekt.get(),
-    private val getFlatMetadataById: GetFlatMetadataById = Injekt.get(),
     private val getMergedAnimeById: GetMergedAnimeById = Injekt.get(),
     private val getMergedReferencesById: GetMergedReferencesById = Injekt.get(),
     private val getMergedEpisodesByAnimeId: GetMergedEpisodesByAnimeId = Injekt.get(),
@@ -343,12 +337,6 @@ class ReaderViewModel @JvmOverloads constructor(
                     // SY -->
                     sourceManager.isInitialized.first { it }
                     val source = sourceManager.getOrStub(manga.source)
-                    val metadataSource = source.getMainSource<MetadataSource<*, *>>()
-                    val metadata = if (metadataSource != null) {
-                        getFlatMetadataById.await(mangaId)?.raise(metadataSource.metaClass)
-                    } else {
-                        null
-                    }
                     val mergedReferences = if (source is MergedSource) {
                         runBlocking {
                             getMergedReferencesById.await(manga.id)
@@ -370,7 +358,6 @@ class ReaderViewModel @JvmOverloads constructor(
                         it.copy(
                             manga = manga,
                             /* SY --> */
-                            meta = metadata,
                             mergedManga = mergedManga,
                             dateRelativeTime = relativeTime,
                             ehAutoscrollFreq = if (autoScrollFreq == -1f) {
@@ -393,7 +380,6 @@ class ReaderViewModel @JvmOverloads constructor(
                         manga = manga,
                         source = source, /* SY --> */
                         sourceManager = sourceManager,
-                        readerPrefs = readerPreferences,
                         mergedReferences = mergedReferences,
                         mergedManga = mergedManga, /* SY <-- */
                     )
@@ -720,19 +706,6 @@ class ReaderViewModel @JvmOverloads constructor(
                                 deleteChapterIfNeeded(ReaderChapter(chapter))
                             }
                         }
-                }
-                if (manga?.isEhBasedAnime() == true) {
-                    viewModelScope.launchNonCancellable {
-                        val episodeUpdates = episodeList
-                            .filter { it.episode.source_order > readerChapter.episode.source_order }
-                            .map { chapter ->
-                                EpisodeUpdate(
-                                    id = chapter.episode.id!!,
-                                    seen = true,
-                                )
-                            }
-                        updateEpisode.awaitAll(episodeUpdates)
-                    }
                 }
                 // SY <--
                 updateTrackChapterRead(readerChapter)
@@ -1346,7 +1319,6 @@ class ReaderViewModel @JvmOverloads constructor(
         // SY -->
         /** for display page number in double-page mode */
         val currentPageText: String = "",
-        val meta: RaisedSearchMetadata? = null,
         val mergedManga: Map<Long, Anime>? = null,
         val ehUtilsVisible: Boolean = false,
         val lastShiftDoubleState: Boolean? = null,

@@ -2,11 +2,9 @@ package tachiyomi.data.source
 
 import androidx.paging.PagingState
 import eu.kanade.tachiyomi.source.CatalogueSource
-import eu.kanade.tachiyomi.source.model.FilterList
 import eu.kanade.tachiyomi.source.model.AnimesPage
-import eu.kanade.tachiyomi.source.model.MetadataAnimesPage
+import eu.kanade.tachiyomi.source.model.FilterList
 import eu.kanade.tachiyomi.source.model.SAnime
-import exh.metadata.metadata.RaisedSearchMetadata
 import tachiyomi.core.common.util.lang.withIOContext
 import tachiyomi.domain.source.repository.SourcePagingSourceType
 
@@ -37,7 +35,7 @@ abstract class SourcePagingSource(
 
     override suspend fun load(
         params: LoadParams<Long>,
-    ): LoadResult<Long, /*SY --> */ Pair<SAnime, RaisedSearchMetadata?>/*SY <-- */> {
+    ): LoadResult<Long, SAnime> {
         val page = params.key ?: 1
 
         val animesPage = try {
@@ -59,22 +57,11 @@ abstract class SourcePagingSource(
     open fun getPageLoadResult(
         params: LoadParams<Long>,
         animesPage: AnimesPage,
-    ): LoadResult.Page<Long, /*SY --> */ Pair<SAnime, RaisedSearchMetadata?>/*SY <-- */> {
+    ): LoadResult.Page<Long, SAnime> {
         val page = params.key ?: 1
 
-        // SY -->
-        val metadata = if (animesPage is MetadataAnimesPage) {
-            animesPage.animesMetadata
-        } else {
-            emptyList()
-        }
-        // SY <--
-
         return LoadResult.Page(
-            data = animesPage.animes
-                // SY -->
-                .mapIndexed { index, sAnime -> sAnime to metadata.getOrNull(index) },
-            // SY <--
+            data = animesPage.animes,
             prevKey = null,
             nextKey = if (animesPage.hasNextPage) page + 1 else null,
         )
@@ -82,7 +69,7 @@ abstract class SourcePagingSource(
     // SY <--
 
     override fun getRefreshKey(
-        state: PagingState<Long, /*SY --> */ Pair<SAnime, RaisedSearchMetadata?>/*SY <-- */>,
+        state: PagingState<Long, SAnime>,
     ): Long? {
         return state.anchorPosition?.let { anchorPosition ->
             val anchorPage = state.closestPageToPosition(anchorPosition)

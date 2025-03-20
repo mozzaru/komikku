@@ -15,11 +15,8 @@ import org.junit.jupiter.api.BeforeAll
 import org.junit.jupiter.api.Disabled
 import org.junit.jupiter.api.Test
 import tachiyomi.domain.anime.interactor.GetCustomAnimeInfo
-import tachiyomi.domain.anime.interactor.GetFavoriteEntries
-import tachiyomi.domain.anime.interactor.GetFavorites
 import tachiyomi.domain.anime.model.Anime
 import tachiyomi.domain.anime.model.CustomAnimeInfo
-import tachiyomi.domain.anime.model.FavoriteEntry
 import tachiyomi.domain.anime.repository.CustomAnimeRepository
 import tachiyomi.domain.category.interactor.GetCategories
 import tachiyomi.domain.category.model.Category

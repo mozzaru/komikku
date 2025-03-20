@@ -91,9 +91,6 @@ import eu.kanade.tachiyomi.util.system.isReleaseBuildType
 import eu.kanade.tachiyomi.util.view.setComposeContent
 import exh.debug.DebugToggles
 import exh.log.DebugModeOverlay
-import exh.source.BlacklistedSources
-import exh.source.EH_SOURCE_ID
-import exh.source.EXH_SOURCE_ID
 import kotlinx.coroutines.channels.awaitClose
 import kotlinx.coroutines.flow.callbackFlow
 import kotlinx.coroutines.flow.collectLatest
@@ -251,18 +248,6 @@ class MainActivity : BaseActivity() {
 
                         // Reset Incognito Mode on relaunch
                         preferences.incognitoMode().set(false)
-
-                        // SY -->
-                        initWhenIdle {
-                            // Upload settings
-                            if (unsortedPreferences.enableExhentai().get() &&
-                                unsortedPreferences.exhShowSettingsUploadWarning().get()
-                            ) {
-                                runExhConfigureDialog = true
-                            }
-                            // Scheduler uploader job if required
-                        }
-                        // SY <--
                     }
                 }
 
@@ -384,13 +369,6 @@ class MainActivity : BaseActivity() {
                 episodeCache.clear()
             }
         }
-
-        // SY -->
-        if (!unsortedPreferences.isHentaiEnabled().get()) {
-            BlacklistedSources.HIDDEN_SOURCES += EH_SOURCE_ID
-            BlacklistedSources.HIDDEN_SOURCES += EXH_SOURCE_ID
-        }
-        // SY -->
     }
 
     // KMK -->

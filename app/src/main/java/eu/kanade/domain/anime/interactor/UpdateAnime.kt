@@ -1,9 +1,9 @@
 package eu.kanade.domain.anime.interactor
 
 import eu.kanade.domain.anime.model.hasCustomCover
-import eu.kanade.tachiyomi.source.model.SAnime
 import eu.kanade.tachiyomi.data.cache.CoverCache
 import eu.kanade.tachiyomi.data.download.DownloadManager
+import eu.kanade.tachiyomi.source.model.SAnime
 import tachiyomi.domain.anime.interactor.FetchInterval
 import tachiyomi.domain.anime.model.Anime
 import tachiyomi.domain.anime.model.AnimeUpdate

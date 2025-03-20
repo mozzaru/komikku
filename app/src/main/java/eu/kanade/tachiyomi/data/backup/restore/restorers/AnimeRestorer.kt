@@ -4,11 +4,9 @@ import eu.kanade.domain.anime.interactor.UpdateAnime
 import eu.kanade.tachiyomi.data.backup.models.BackupAnime
 import eu.kanade.tachiyomi.data.backup.models.BackupCategory
 import eu.kanade.tachiyomi.data.backup.models.BackupEpisode
-import eu.kanade.tachiyomi.data.backup.models.BackupFlatMetadata
 import eu.kanade.tachiyomi.data.backup.models.BackupHistory
 import eu.kanade.tachiyomi.data.backup.models.BackupMergedMangaReference
 import eu.kanade.tachiyomi.data.backup.models.BackupTracking
-import exh.EXHMigrations
 import tachiyomi.data.DatabaseHandler
 import tachiyomi.data.UpdateStrategyColumnAdapter
 import tachiyomi.data.anime.AnimeMapper
@@ -73,10 +71,7 @@ class AnimeRestorer(
     ) {
         handler.await(inTransaction = true) {
             val dbManga = findExistingManga(backupAnime)
-            var manga = backupAnime.getMangaImpl()
-            // SY -->
-            manga = EXHMigrations.migrateBackupEntry(manga)
-            // SY <--
+            val manga = backupAnime.getMangaImpl()
             val restoredManga = if (dbManga == null) {
                 restoreNewManga(manga)
             } else {
@@ -93,7 +88,6 @@ class AnimeRestorer(
                 excludedScanlators = backupAnime.excludedScanlators,
                 // SY -->
                 mergedMangaReferences = backupAnime.mergedMangaReferences,
-                flatMetadata = backupAnime.flatMetadata,
                 customManga = backupAnime.getCustomMangaInfo(),
                 // SY <--
             )
@@ -329,7 +323,6 @@ class AnimeRestorer(
         excludedScanlators: List<String>,
         // SY -->
         mergedMangaReferences: List<BackupMergedMangaReference>,
-        flatMetadata: BackupFlatMetadata?,
         customManga: CustomAnimeInfo?,
         // SY <--
     ): Anime {
@@ -534,7 +527,7 @@ class AnimeRestorer(
         setCustomAnimeInfo.set(mangaJson)
     }
 
-    fun BackupAnime.getCustomMangaInfo(): CustomAnimeInfo? {
+    private fun BackupAnime.getCustomMangaInfo(): CustomAnimeInfo? {
         if (customTitle != null ||
             customArtist != null ||
             customAuthor != null ||

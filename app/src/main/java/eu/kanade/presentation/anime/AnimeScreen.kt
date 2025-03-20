@@ -57,7 +57,6 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.platform.LocalHapticFeedback
 import androidx.compose.ui.platform.LocalLayoutDirection
-import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.IntOffset
 import androidx.compose.ui.unit.IntSize
 import androidx.compose.ui.util.fastAll
@@ -78,38 +77,17 @@ import eu.kanade.presentation.anime.components.EpisodeHeader
 import eu.kanade.presentation.anime.components.ExpandableAnimeDescription
 import eu.kanade.presentation.anime.components.MissingEpisodeCountListItem
 import eu.kanade.presentation.anime.components.OutlinedButtonWithArrow
-import eu.kanade.presentation.anime.components.PagePreviewItems
-import eu.kanade.presentation.anime.components.PagePreviews
 import eu.kanade.presentation.anime.components.RelatedAnimesRow
-import eu.kanade.presentation.anime.components.SearchMetadataChips
 import eu.kanade.presentation.browse.RelatedAnimeTitle
 import eu.kanade.presentation.components.relativeDateText
 import eu.kanade.presentation.util.formatEpisodeNumber
 import eu.kanade.tachiyomi.data.download.model.Download
-import eu.kanade.tachiyomi.source.Source
 import eu.kanade.tachiyomi.source.getNameForAnimeInfo
-import eu.kanade.tachiyomi.source.online.MetadataSource
-import eu.kanade.tachiyomi.source.online.all.MangaDex
-import eu.kanade.tachiyomi.source.online.all.NHentai
-import eu.kanade.tachiyomi.source.online.english.EightMuses
-import eu.kanade.tachiyomi.source.online.english.HBrowse
-import eu.kanade.tachiyomi.source.online.english.Pururin
-import eu.kanade.tachiyomi.source.online.english.Tsumino
 import eu.kanade.tachiyomi.ui.anime.AnimeScreenModel
 import eu.kanade.tachiyomi.ui.anime.EpisodeList
 import eu.kanade.tachiyomi.ui.anime.MergedAnimeData
-import eu.kanade.tachiyomi.ui.anime.PagePreviewState
 import eu.kanade.tachiyomi.util.system.copyToClipboard
-import exh.metadata.MetadataUtil
 import exh.source.MERGED_SOURCE_ID
-import exh.source.getMainSource
-import exh.source.isEhBasedAnime
-import exh.ui.metadata.adapters.EightMusesDescription
-import exh.ui.metadata.adapters.HBrowseDescription
-import exh.ui.metadata.adapters.MangaDexDescription
-import exh.ui.metadata.adapters.NHentaiDescription
-import exh.ui.metadata.adapters.PururinDescription
-import exh.ui.metadata.adapters.TsuminoDescription
 import tachiyomi.domain.anime.model.Anime
 import tachiyomi.domain.anime.model.AnimeCover
 import tachiyomi.domain.episode.model.Episode
@@ -131,8 +109,6 @@ import tachiyomi.source.local.isLocal
 import uy.kohesive.injekt.Injekt
 import uy.kohesive.injekt.api.get
 import java.time.Instant
-import java.time.ZoneId
-import java.time.ZonedDateTime
 import kotlin.math.roundToInt
 
 @Composable
@@ -169,15 +145,11 @@ fun AnimeScreen(
     onEditFetchIntervalClicked: (() -> Unit)?,
     onMigrateClicked: (() -> Unit)?,
     // SY -->
-    onMetadataViewerClicked: () -> Unit,
     onEditInfoClicked: () -> Unit,
     onRecommendClicked: () -> Unit,
     onMergedSettingsClicked: () -> Unit,
     onMergeClicked: () -> Unit,
     onMergeWithAnotherClicked: () -> Unit,
-    onOpenPagePreview: (Int) -> Unit,
-    onMorePreviewsClicked: () -> Unit,
-    previewsRowCount: Int,
     // SY <--
 
     // For bottom action menu
@@ -203,7 +175,6 @@ fun AnimeScreen(
     onSourceClick: () -> Unit,
     onCoverLoaded: (AnimeCover) -> Unit,
     coverRatio: MutableFloatState,
-    onPaletteScreenClick: () -> Unit,
     hazeState: HazeState,
     // KMK <--
 ) {
@@ -241,15 +212,11 @@ fun AnimeScreen(
             onEditIntervalClicked = onEditFetchIntervalClicked,
             onMigrateClicked = onMigrateClicked,
             // SY -->
-            onMetadataViewerClicked = onMetadataViewerClicked,
             onEditInfoClicked = onEditInfoClicked,
             onRecommendClicked = onRecommendClicked,
             onMergedSettingsClicked = onMergedSettingsClicked,
             onMergeClicked = onMergeClicked,
             onMergeWithAnotherClicked = onMergeWithAnotherClicked,
-            onOpenPagePreview = onOpenPagePreview,
-            onMorePreviewsClicked = onMorePreviewsClicked,
-            previewsRowCount = previewsRowCount,
             // SY <--
             onMultiBookmarkClicked = onMultiBookmarkClicked,
             onMultiMarkAsSeenClicked = onMultiMarkAsSeenClicked,
@@ -268,7 +235,6 @@ fun AnimeScreen(
             onSourceClick = onSourceClick,
             onCoverLoaded = onCoverLoaded,
             coverRatio = coverRatio,
-            onPaletteScreenClick = onPaletteScreenClick,
             hazeState = hazeState,
             // KMK <--
         )
@@ -299,15 +265,11 @@ fun AnimeScreen(
             onEditIntervalClicked = onEditFetchIntervalClicked,
             onMigrateClicked = onMigrateClicked,
             // SY -->
-            onMetadataViewerClicked = onMetadataViewerClicked,
             onEditInfoClicked = onEditInfoClicked,
             onRecommendClicked = onRecommendClicked,
             onMergedSettingsClicked = onMergedSettingsClicked,
             onMergeClicked = onMergeClicked,
             onMergeWithAnotherClicked = onMergeWithAnotherClicked,
-            onOpenPagePreview = onOpenPagePreview,
-            onMorePreviewsClicked = onMorePreviewsClicked,
-            previewsRowCount = previewsRowCount,
             // SY <--
             onMultiBookmarkClicked = onMultiBookmarkClicked,
             onMultiMarkAsSeenClicked = onMultiMarkAsSeenClicked,
@@ -326,7 +288,6 @@ fun AnimeScreen(
             onSourceClick = onSourceClick,
             onCoverLoaded = onCoverLoaded,
             coverRatio = coverRatio,
-            onPaletteScreenClick = onPaletteScreenClick,
             hazeState = hazeState,
             // KMK <--
         )
@@ -367,15 +328,11 @@ private fun AnimeScreenSmallImpl(
     onEditIntervalClicked: (() -> Unit)?,
     onMigrateClicked: (() -> Unit)?,
     // SY -->
-    onMetadataViewerClicked: () -> Unit,
     onEditInfoClicked: () -> Unit,
     onRecommendClicked: () -> Unit,
     onMergedSettingsClicked: () -> Unit,
     onMergeClicked: () -> Unit,
     onMergeWithAnotherClicked: () -> Unit,
-    onOpenPagePreview: (Int) -> Unit,
-    onMorePreviewsClicked: () -> Unit,
-    previewsRowCount: Int,
     // SY <--
 
     // For bottom action menu
@@ -401,7 +358,6 @@ private fun AnimeScreenSmallImpl(
     onSourceClick: () -> Unit,
     onCoverLoaded: (AnimeCover) -> Unit,
     coverRatio: MutableFloatState,
-    onPaletteScreenClick: () -> Unit,
     hazeState: HazeState,
     // KMK <--
 ) {
@@ -414,12 +370,6 @@ private fun AnimeScreenSmallImpl(
             third = state.isAnySelected,
         )
     }
-    // SY -->
-    val metadataDescription = metadataDescription(state.source)
-    var maxWidth by remember {
-        mutableStateOf(Dp.Hairline)
-    }
-    // SY <--
     // KMK -->
     val uiPreferences = Injekt.get<UiPreferences>()
     val relatedAnimesEnabled by Injekt.get<SourcePreferences>().relatedAnimes().collectAsState()
@@ -490,9 +440,6 @@ private fun AnimeScreenSmallImpl(
                 actionModeCounter = selectedEpisodeCount,
                 onSelectAll = { onAllEpisodeSelected(true) },
                 onInvertSelection = { onInvertSelection() },
-                // KMK -->
-                onPaletteScreenClick = onPaletteScreenClick,
-                // KMK <--
             )
         },
         bottomBar = {
@@ -644,22 +591,6 @@ private fun AnimeScreenSmallImpl(
                         )
                     }
 
-                    // SY -->
-                    if (metadataDescription != null) {
-                        item(
-                            key = AnimeScreenItem.METADATA_INFO,
-                            contentType = AnimeScreenItem.METADATA_INFO,
-                        ) {
-                            metadataDescription(
-                                state,
-                                onMetadataViewerClicked,
-                            ) {
-                                onSearch(it, false)
-                            }
-                        }
-                    }
-                    // SY <--
-
                     item(
                         key = AnimeScreenItem.DESCRIPTION_WITH_TAG,
                         contentType = AnimeScreenItem.DESCRIPTION_WITH_TAG,
@@ -672,9 +603,6 @@ private fun AnimeScreenSmallImpl(
                             onCopyTagToClipboard = onCopyTagToClipboard,
                             // SY -->
                             doSearch = onSearch,
-                            searchMetadataChips = remember(state.meta, state.source.id, state.anime.genre) {
-                                SearchMetadataChips(state.meta, state.source, state.anime.genre)
-                            },
                             // SY <--
                         )
                     }
@@ -739,17 +667,6 @@ private fun AnimeScreenSmallImpl(
                             )
                         }
                     }
-
-                    if (state.pagePreviewsState !is PagePreviewState.Unused && previewsRowCount > 0) {
-                        PagePreviewItems(
-                            pagePreviewState = state.pagePreviewsState,
-                            onOpenPage = onOpenPagePreview,
-                            onMorePreviewsClicked = onMorePreviewsClicked,
-                            maxWidth = maxWidth,
-                            setMaxWidth = { maxWidth = it },
-                            rowCount = previewsRowCount,
-                        )
-                    }
                     // SY <--
 
                     item(
@@ -774,9 +691,6 @@ private fun AnimeScreenSmallImpl(
                         isAnyEpisodeSelected = episodes.fastAny { it.selected },
                         episodeSwipeStartAction = episodeSwipeStartAction,
                         episodeSwipeEndAction = episodeSwipeEndAction,
-                        // SY -->
-                        alwaysShowWatchingProgress = state.alwaysShowWatchingProgress,
-                        // SY <--
                         onEpisodeClicked = onEpisodeClicked,
                         onDownloadEpisode = onDownloadEpisode,
                         onEpisodeSelected = onEpisodeSelected,
@@ -822,15 +736,11 @@ private fun AnimeScreenLargeImpl(
     onEditIntervalClicked: (() -> Unit)?,
     onMigrateClicked: (() -> Unit)?,
     // SY -->
-    onMetadataViewerClicked: () -> Unit,
     onEditInfoClicked: () -> Unit,
     onRecommendClicked: () -> Unit,
     onMergedSettingsClicked: () -> Unit,
     onMergeClicked: () -> Unit,
     onMergeWithAnotherClicked: () -> Unit,
-    onOpenPagePreview: (Int) -> Unit,
-    onMorePreviewsClicked: () -> Unit,
-    previewsRowCount: Int,
     // SY <--
 
     // For bottom action menu
@@ -856,7 +766,6 @@ private fun AnimeScreenLargeImpl(
     onSourceClick: () -> Unit,
     onCoverLoaded: (AnimeCover) -> Unit,
     coverRatio: MutableFloatState,
-    onPaletteScreenClick: () -> Unit,
     hazeState: HazeState,
     // KMK <--
 ) {
@@ -871,9 +780,6 @@ private fun AnimeScreenLargeImpl(
         )
     }
 
-    // SY -->
-    val metadataDescription = metadataDescription(state.source)
-    // SY <--
     // KMK -->
     val uiPreferences = Injekt.get<UiPreferences>()
     val relatedAnimesEnabled by Injekt.get<SourcePreferences>().relatedAnimes().collectAsState()
@@ -936,9 +842,6 @@ private fun AnimeScreenLargeImpl(
                 actionModeCounter = selectedEpisodeCount,
                 onSelectAll = { onAllEpisodeSelected(true) },
                 onInvertSelection = { onInvertSelection() },
-                // KMK -->
-                onPaletteScreenClick = onPaletteScreenClick,
-                // KMK <--
             )
         },
         bottomBar = {
@@ -1083,14 +986,6 @@ private fun AnimeScreenLargeImpl(
                             interval = state.anime.fetchInterval,
                             // KMK <--
                         )
-                        // SY -->
-                        metadataDescription?.invoke(
-                            state,
-                            onMetadataViewerClicked,
-                        ) {
-                            onSearch(it, false)
-                        }
-                        // SY <--
                         ExpandableAnimeDescription(
                             defaultExpandState = true,
                             description = state.anime.description,
@@ -1099,9 +994,6 @@ private fun AnimeScreenLargeImpl(
                             onCopyTagToClipboard = onCopyTagToClipboard,
                             // SY -->
                             doSearch = onSearch,
-                            searchMetadataChips = remember(state.meta, state.source.id, state.anime.genre) {
-                                SearchMetadataChips(state.meta, state.source, state.anime.genre)
-                            },
                             // SY <--
                         )
                         // SY -->
@@ -1111,14 +1003,6 @@ private fun AnimeScreenLargeImpl(
                                 showMergeWithAnotherButton = state.showMergeWithAnother,
                                 onRecommendClicked = onRecommendClicked,
                                 onMergeWithAnotherClicked = onMergeWithAnotherClicked,
-                            )
-                        }
-                        if (state.pagePreviewsState !is PagePreviewState.Unused && previewsRowCount > 0) {
-                            PagePreviews(
-                                pagePreviewState = state.pagePreviewsState,
-                                onOpenPage = onOpenPagePreview,
-                                onMorePreviewsClicked = onMorePreviewsClicked,
-                                rowCount = previewsRowCount,
                             )
                         }
                         // SY <--
@@ -1204,9 +1088,6 @@ private fun AnimeScreenLargeImpl(
                                 isAnyEpisodeSelected = episodes.fastAny { it.selected },
                                 episodeSwipeStartAction = episodeSwipeStartAction,
                                 episodeSwipeEndAction = episodeSwipeEndAction,
-                                // SY -->
-                                alwaysShowWatchingProgress = state.alwaysShowWatchingProgress,
-                                // SY <--
                                 onEpisodeClicked = onEpisodeClicked,
                                 onDownloadEpisode = onDownloadEpisode,
                                 onEpisodeSelected = onEpisodeSelected,
@@ -1269,9 +1150,6 @@ private fun LazyListScope.sharedEpisodeItems(
     isAnyEpisodeSelected: Boolean,
     episodeSwipeStartAction: LibraryPreferences.EpisodeSwipeAction,
     episodeSwipeEndAction: LibraryPreferences.EpisodeSwipeAction,
-    // SY -->
-    alwaysShowWatchingProgress: Boolean,
-    // SY <--
     onEpisodeClicked: (Episode) -> Unit,
     onDownloadEpisode: ((List<EpisodeList.Item>, EpisodeDownloadAction) -> Unit)?,
     onEpisodeSelected: (EpisodeList.Item, Boolean, Boolean, Boolean) -> Unit,
@@ -1308,18 +1186,11 @@ private fun LazyListScope.sharedEpisodeItems(
                     date = item.episode.dateUpload
                         .takeIf { it > 0L }
                         ?.let {
-                            // SY -->
-                            if (anime.isEhBasedAnime()) {
-                                MetadataUtil.EX_DATE_FORMAT
-                                    .format(ZonedDateTime.ofInstant(Instant.ofEpochMilli(it), ZoneId.systemDefault()))
-                            } else {
-                                relativeDateText(item.episode.dateUpload)
-                            }
-                            // SY <--
+                            relativeDateText(item.episode.dateUpload)
                         },
                     watchProgress = item.episode.lastSecondSeen
                         .takeIf {
-                            /* SY --> */(!item.episode.seen || alwaysShowWatchingProgress)/* SY <-- */ && it > 0L
+                            /* SY --> */(!item.episode.seen)/* SY <-- */ && it > 0L
                         }
                         ?.let {
                             stringResource(
@@ -1328,7 +1199,7 @@ private fun LazyListScope.sharedEpisodeItems(
                             )
                         },
                     scanlator = item.episode.scanlator.takeIf {
-                        !it.isNullOrBlank() /* SY --> */ && item.showScanlator /* SY <-- */
+                        !it.isNullOrBlank()
                     },
                     // SY -->
                     sourceName = item.sourceName,
@@ -1380,39 +1251,3 @@ private fun onEpisodeItemClick(
         else -> onEpisodeClicked(episodeItem.episode)
     }
 }
-
-// SY -->
-typealias MetadataDescriptionComposable = @Composable (
-    state: AnimeScreenModel.State.Success,
-    openMetadataViewer: () -> Unit,
-    search: (String) -> Unit,
-) -> Unit
-
-@Composable
-fun metadataDescription(source: Source): MetadataDescriptionComposable? {
-    val metadataSource = remember(source.id) { source.getMainSource<MetadataSource<*, *>>() }
-    return remember(metadataSource) {
-        when (metadataSource) {
-            is MangaDex -> { state, openMetadataViewer, _ ->
-                MangaDexDescription(state, openMetadataViewer)
-            }
-            is NHentai -> { state, openMetadataViewer, _ ->
-                NHentaiDescription(state, openMetadataViewer)
-            }
-            is EightMuses -> { state, openMetadataViewer, _ ->
-                EightMusesDescription(state, openMetadataViewer)
-            }
-            is HBrowse -> { state, openMetadataViewer, _ ->
-                HBrowseDescription(state, openMetadataViewer)
-            }
-            is Pururin -> { state, openMetadataViewer, _ ->
-                PururinDescription(state, openMetadataViewer)
-            }
-            is Tsumino -> { state, openMetadataViewer, _ ->
-                TsuminoDescription(state, openMetadataViewer)
-            }
-            else -> null
-        }
-    }
-}
-// SY <--
