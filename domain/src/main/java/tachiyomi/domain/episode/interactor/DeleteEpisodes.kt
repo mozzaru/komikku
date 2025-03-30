@@ -6,7 +6,7 @@ class DeleteEpisodes(
     private val episodeRepository: EpisodeRepository,
 ) {
 
-    suspend fun await(chapters: List<Long>) {
-        episodeRepository.removeEpisodesWithIds(chapters)
+    suspend fun await(episodes: List<Long>) {
+        episodeRepository.removeEpisodesWithIds(episodes)
     }
 }

@@ -41,7 +41,7 @@ class FetchInterval(
     }
 
     internal fun calculateInterval(episodes: List<Episode>, zone: ZoneId): Int {
-        val chapterWindow = if (episodes.size <= 8) 3 else 10
+        val episodeWindow = if (episodes.size <= 8) 3 else 10
 
         val uploadDates = episodes.asSequence()
             .filter { it.dateUpload > 0L }
@@ -52,7 +52,7 @@ class FetchInterval(
                     .atStartOfDay()
             }
             .distinct()
-            .take(chapterWindow)
+            .take(episodeWindow)
             .toList()
 
         val fetchDates = episodes.asSequence()
@@ -63,7 +63,7 @@ class FetchInterval(
                     .atStartOfDay()
             }
             .distinct()
-            .take(chapterWindow)
+            .take(episodeWindow)
             .toList()
 
         val interval = when {
@@ -87,17 +87,17 @@ class FetchInterval(
     }
 
     private fun calculateNextUpdate(
-        manga: Anime,
+        anime: Anime,
         interval: Int,
         dateTime: ZonedDateTime,
         window: Pair<Long, Long>,
     ): Long {
-        if (manga.nextUpdate in window.first.rangeTo(window.second + 1)) {
-            return manga.nextUpdate
+        if (anime.nextUpdate in window.first.rangeTo(window.second + 1)) {
+            return anime.nextUpdate
         }
 
         val latestDate = ZonedDateTime.ofInstant(
-            if (manga.lastUpdate > 0) Instant.ofEpochMilli(manga.lastUpdate) else Instant.now(),
+            if (anime.lastUpdate > 0) Instant.ofEpochMilli(anime.lastUpdate) else Instant.now(),
             dateTime.zone,
         )
             .toLocalDate()

@@ -19,7 +19,7 @@ import uy.kohesive.injekt.injectLazy
  */
 internal class DownloadPageLoader(
     private val chapter: ReaderChapter,
-    private val manga: Anime,
+    private val anime: Anime,
     private val source: Source,
     private val downloadManager: DownloadManager,
     private val downloadProvider: DownloadProvider,
@@ -33,7 +33,7 @@ internal class DownloadPageLoader(
 
     override suspend fun getPages(): List<ReaderVideo> {
         val dbChapter = chapter.episode
-        val chapterPath = downloadProvider.findEpisodeDir(dbChapter.name, dbChapter.scanlator, /* SY --> */ manga.ogTitle /* SY <-- */, source)
+        val chapterPath = downloadProvider.findEpisodeDir(dbChapter.name, dbChapter.scanlator, /* SY --> */ anime.ogTitle /* SY <-- */, source)
         return if (chapterPath?.isFile == true) {
             getPagesFromArchive(chapterPath)
         } else {
@@ -52,7 +52,7 @@ internal class DownloadPageLoader(
     }
 
     private fun getPagesFromDirectory(): List<ReaderVideo> {
-        val pages = downloadManager.buildPageList(source, manga, chapter.episode.toDomainEpisode()!!)
+        val pages = downloadManager.buildPageList(source, anime, chapter.episode.toDomainEpisode()!!)
         return pages.map { page ->
             ReaderVideo(page.index, page.url, page.videoUrl) {
                 context.contentResolver.openInputStream(page.uri ?: Uri.EMPTY)!!

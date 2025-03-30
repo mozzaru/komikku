@@ -27,10 +27,10 @@ data class AnimeCover(
 
     // KMK -->
     /**
-     * [vibrantCoverColor] is used to set the color theme in manga detail page.
-     * It contains color for all mangas, both in library or browsing.
+     * [vibrantCoverColor] is used to set the color theme in anime detail page.
+     * It contains color for all animes, both in library or browsing.
      *
-     * It reads/saves to a hashmap in [AnimeCover.vibrantCoverColorMap] for multiple mangas.
+     * It reads/saves to a hashmap in [AnimeCover.vibrantCoverColorMap] for multiple animes.
      */
     var vibrantCoverColor: Int?
         get() = vibrantCoverColorMap[animeId]
@@ -40,17 +40,17 @@ data class AnimeCover(
 
     /**
      * [dominantCoverColors] is used to set cover/text's color in Library (Favorite) grid view.
-     * It contains only color for in-library (favorite) mangas.
+     * It contains only color for in-library (favorite) animes.
      *
      * It reads/saves to a hashmap in [AnimeCover.dominantCoverColorMap].
      *
      * Format: <first: cover color, second: text color>.
      *
-     * Set in *[MangaCoverMetadata.setRatioAndColors]* whenever browsing meets a favorite manga
+     * Set in *[AnimeCoverMetadata.setRatioAndColors]* whenever browsing meets a favorite anime
      *  by loading from *[CoverCache]*.
      *
-     * Get in *[CommonMangaItem.MangaCompactGridItem]*, *[CommonMangaItem.MangaComfortableGridItem]* and
-     *  *[CommonMangaItem.MangaListItem]*
+     * Get in *[CommonAnimeItem.AnimeCompactGridItem]*, *[CommonAnimeItem.AnimeComfortableGridItem]* and
+     *  *[CommonAnimeItem.AnimeListItem]*
      */
     @Suppress("KDocUnresolvedReference")
     var dominantCoverColors: Pair<Int, Int>?
@@ -75,8 +75,8 @@ data class AnimeCover(
         val vibrantCoverColorMap: HashMap<Long, Int?> = hashMapOf()
 
         /**
-         * [dominantCoverColorMap] stores favorite manga's cover & text's color as a joined string in Prefs.
-         * They will be loaded each time *[App]* is initialized with *[MangaCoverMetadata.load]*.
+         * [dominantCoverColorMap] stores favorite anime's cover & text's color as a joined string in Prefs.
+         * They will be loaded each time *[App]* is initialized with *[AnimeCoverMetadata.load]*.
          *
          * They will be saved back when *[MainActivity.onPause]* is triggered.
          */

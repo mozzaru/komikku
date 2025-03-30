@@ -6,7 +6,7 @@ import java.time.format.DateTimeFormatter
 
 data class ReaderChapterItem(
     val episode: Episode,
-    val manga: Anime,
+    val anime: Anime,
     val isCurrent: Boolean,
     val dateFormat: DateTimeFormatter,
 )

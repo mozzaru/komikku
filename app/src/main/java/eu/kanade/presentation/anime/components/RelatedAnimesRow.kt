@@ -40,7 +40,7 @@ fun RelatedAnimesRow(
         relatedAnimes.isNotEmpty() -> {
             RelatedAnimeCardRow(
                 relatedAnimes = relatedAnimes,
-                getManga = { getAnimeState(it) },
+                getAnime = { getAnimeState(it) },
                 onMangaClick = onAnimeClick,
                 onMangaLongClick = onAnimeLongClick,
             )
@@ -55,11 +55,11 @@ fun RelatedAnimesRow(
 @Composable
 fun RelatedAnimeCardRow(
     relatedAnimes: List<RelatedAnime>,
-    getManga: @Composable (Anime) -> State<Anime>,
+    getAnime: @Composable (Anime) -> State<Anime>,
     onMangaClick: (Anime) -> Unit,
     onMangaLongClick: (Anime) -> Unit,
 ) {
-    val mangas = relatedAnimes.filterIsInstance<RelatedAnime.Success>().map { it.mangaList }.flatten()
+    val mangas = relatedAnimes.filterIsInstance<RelatedAnime.Success>().map { it.animeList }.flatten()
     val loading = relatedAnimes.filterIsInstance<RelatedAnime.Loading>().firstOrNull()
 
     LazyRow(
@@ -67,7 +67,7 @@ fun RelatedAnimeCardRow(
         horizontalArrangement = Arrangement.spacedBy(MaterialTheme.padding.extraSmall),
     ) {
         items(mangas, key = { "related-row-${it.url.hashCode()}" }) {
-            val manga by getManga(it)
+            val manga by getAnime(it)
             AnimeItem(
                 title = manga.title,
                 cover = manga.asAnimeCover(),

@@ -337,13 +337,13 @@ open class BrowseSourceScreenModel(
     /**
      * Adds or removes a manga from the library.
      *
-     * @param manga the manga to update.
+     * @param anime the manga to update.
      */
-    fun changeMangaFavorite(manga: Anime) {
+    fun changeMangaFavorite(anime: Anime) {
         screenModelScope.launch {
-            var new = manga.copy(
-                favorite = !manga.favorite,
-                dateAdded = when (manga.favorite) {
+            var new = anime.copy(
+                favorite = !anime.favorite,
+                dateAdded = when (anime.favorite) {
                     true -> 0
                     false -> Instant.now().toEpochMilli()
                 },
@@ -352,15 +352,15 @@ open class BrowseSourceScreenModel(
             if (!new.favorite) {
                 new = new.removeCovers(coverCache)
             } else {
-                setAnimeDefaultEpisodeFlags.await(manga)
-                addTracks.bindEnhancedTrackers(manga, source)
+                setAnimeDefaultEpisodeFlags.await(anime)
+                addTracks.bindEnhancedTrackers(anime, source)
             }
 
             updateAnime.await(new.toAnimeUpdate())
         }
     }
 
-    fun addFavorite(manga: Anime) {
+    fun addFavorite(anime: Anime) {
         screenModelScope.launch {
             val categories = getCategories()
             val defaultCategoryId = libraryPreferences.defaultCategory().get()
@@ -369,24 +369,24 @@ open class BrowseSourceScreenModel(
             when {
                 // Default category set
                 defaultCategory != null -> {
-                    moveMangaToCategories(manga, defaultCategory)
+                    moveMangaToCategories(anime, defaultCategory)
 
-                    changeMangaFavorite(manga)
+                    changeMangaFavorite(anime)
                 }
 
                 // Automatic 'Default' or no categories
                 defaultCategoryId == 0 || categories.isEmpty() -> {
-                    moveMangaToCategories(manga)
+                    moveMangaToCategories(anime)
 
-                    changeMangaFavorite(manga)
+                    changeMangaFavorite(anime)
                 }
 
                 // Choose a category
                 else -> {
-                    val preselectedIds = getCategories.await(manga.id).map { it.id }
+                    val preselectedIds = getCategories.await(anime.id).map { it.id }
                     setDialog(
                         Dialog.ChangeMangaCategory(
-                            manga,
+                            anime,
                             categories.mapAsCheckboxState { it.id in preselectedIds }.toImmutableList(),
                         ),
                     )
@@ -413,18 +413,18 @@ open class BrowseSourceScreenModel(
             .orEmpty()
     }
 
-    suspend fun getDuplicateLibraryManga(manga: Anime): Anime? {
-        return getDuplicateLibraryAnime.await(manga).getOrNull(0)
+    suspend fun getDuplicateLibraryManga(anime: Anime): Anime? {
+        return getDuplicateLibraryAnime.await(anime).getOrNull(0)
     }
 
-    private fun moveMangaToCategories(manga: Anime, vararg categories: Category) {
-        moveMangaToCategories(manga, categories.filter { it.id != 0L }.map { it.id })
+    private fun moveMangaToCategories(anime: Anime, vararg categories: Category) {
+        moveMangaToCategories(anime, categories.filter { it.id != 0L }.map { it.id })
     }
 
-    fun moveMangaToCategories(manga: Anime, categoryIds: List<Long>) {
+    fun moveMangaToCategories(anime: Anime, categoryIds: List<Long>) {
         screenModelScope.launchIO {
             setAnimeCategories.await(
-                mangaId = manga.id,
+                animeId = anime.id,
                 categoryIds = categoryIds.toList(),
             )
         }
@@ -466,13 +466,13 @@ open class BrowseSourceScreenModel(
 
     sealed interface Dialog {
         data object Filter : Dialog
-        data class RemoveManga(val manga: Anime) : Dialog
-        data class AddDuplicateManga(val manga: Anime, val duplicate: Anime) : Dialog
+        data class RemoveManga(val anime: Anime) : Dialog
+        data class AddDuplicateManga(val anime: Anime, val duplicate: Anime) : Dialog
         data class ChangeMangaCategory(
-            val manga: Anime,
+            val anime: Anime,
             val initialSelection: ImmutableList<CheckboxState.State<Category>>,
         ) : Dialog
-        data class Migrate(val newManga: Anime, val oldManga: Anime) : Dialog
+        data class Migrate(val newAnime: Anime, val oldAnime: Anime) : Dialog
 
         // SY -->
         data class DeleteSavedSearch(val idToDelete: Long, val name: String) : Dialog

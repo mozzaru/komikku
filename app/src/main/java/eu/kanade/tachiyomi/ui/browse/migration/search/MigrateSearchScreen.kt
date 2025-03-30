@@ -50,7 +50,7 @@ class MigrateSearchScreen(private val mangaId: Long, private val validSources: L
             onToggleResults = screenModel::toggleFilterResults,
             onClickSource = {
                 // SY -->
-                navigator.push(SourceSearchScreen(dialogState.manga!!, it.id, state.searchQuery))
+                navigator.push(SourceSearchScreen(dialogState.anime!!, it.id, state.searchQuery))
                 // SY <--
             },
             onClickItem = {

@@ -81,7 +81,7 @@ object SettingsDownloadScreen : SearchableSettings {
                     title = stringResource(MR.strings.pref_remove_after_marked_as_read),
                 ),
                 Preference.PreferenceItem.ListPreference(
-                    pref = downloadPreferences.removeAfterReadSlots(),
+                    pref = downloadPreferences.removeAfterSeenSlots(),
                     title = stringResource(MR.strings.pref_remove_after_read),
                     entries = persistentMapOf(
                         -1 to stringResource(MR.strings.disabled),
@@ -93,7 +93,7 @@ object SettingsDownloadScreen : SearchableSettings {
                     ),
                 ),
                 Preference.PreferenceItem.SwitchPreference(
-                    pref = downloadPreferences.removeBookmarkedChapters(),
+                    pref = downloadPreferences.removeBookmarkedEpisodes(),
                     title = stringResource(MR.strings.pref_remove_bookmarked_chapters),
                 ),
                 getExcludedCategoriesPreference(
@@ -192,7 +192,7 @@ object SettingsDownloadScreen : SearchableSettings {
             title = stringResource(MR.strings.download_ahead),
             preferenceItems = persistentListOf(
                 Preference.PreferenceItem.ListPreference(
-                    pref = downloadPreferences.autoDownloadWhileReading(),
+                    pref = downloadPreferences.autoDownloadWhileWatching(),
                     title = stringResource(MR.strings.auto_download_while_reading),
                     entries = listOf(0, 2, 3, 5, 10)
                         .associateWith {

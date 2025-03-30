@@ -14,7 +14,7 @@ import java.text.DecimalFormat
 import kotlin.coroutines.CoroutineContext
 
 class MigratingAnime(
-    val manga: Anime,
+    val anime: Anime,
     val episodeInfo: EpisodeInfo,
     val sourcesString: String,
     parentContext: CoroutineContext,

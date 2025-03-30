@@ -82,7 +82,7 @@ import uy.kohesive.injekt.api.get
 
 @Composable
 fun EditAnimeDialog(
-    manga: Anime,
+    anime: Anime,
     // KMK -->
     coverRatio: MutableFloatState,
     // KMK <--
@@ -167,7 +167,7 @@ fun EditAnimeDialog(
                             .also { binding = it }
                             .apply {
                                 onViewCreated(
-                                    manga,
+                                    anime,
                                     factoryContext,
                                     this,
                                     scope,
@@ -257,7 +257,7 @@ data class EditAnimeDialogColors(
 // KMK <--
 
 private fun onViewCreated(
-    manga: Anime,
+    anime: Anime,
     context: Context,
     binding: EditMangaDialogBinding,
     scope: CoroutineScope,
@@ -271,7 +271,7 @@ private fun onViewCreated(
     // KMK <--
 ) {
     loadCover(
-        manga,
+        anime,
         binding,
         // KMK -->
         coverRatio,
@@ -299,9 +299,9 @@ private fun onViewCreated(
     )
 
     binding.status.adapter = statusAdapter
-    if (manga.status != manga.ogStatus) {
+    if (anime.status != anime.ogStatus) {
         binding.status.setSelection(
-            when (manga.status.toInt()) {
+            when (anime.status.toInt()) {
                 SAnime.UNKNOWN -> 0
                 SAnime.ONGOING -> 1
                 SAnime.COMPLETED -> 2
@@ -327,48 +327,48 @@ private fun onViewCreated(
     binding.status.backgroundTintList = ColorStateList.valueOf(colors.iconColor)
     // KMK
 
-    if (manga.isLocal()) {
-        if (manga.title != manga.url) {
-            binding.title.setText(manga.title)
+    if (anime.isLocal()) {
+        if (anime.title != anime.url) {
+            binding.title.setText(anime.title)
         }
 
-        binding.title.hint = context.stringResource(SYMR.strings.title_hint, manga.url)
-        binding.mangaAuthor.setText(manga.author.orEmpty())
-        binding.mangaArtist.setText(manga.artist.orEmpty())
-        binding.thumbnailUrl.setText(manga.thumbnailUrl.orEmpty())
-        binding.mangaDescription.setText(manga.description.orEmpty())
-        binding.mangaGenresTags.setChips(manga.genre.orEmpty().dropBlank(), scope, colors)
+        binding.title.hint = context.stringResource(SYMR.strings.title_hint, anime.url)
+        binding.mangaAuthor.setText(anime.author.orEmpty())
+        binding.mangaArtist.setText(anime.artist.orEmpty())
+        binding.thumbnailUrl.setText(anime.thumbnailUrl.orEmpty())
+        binding.mangaDescription.setText(anime.description.orEmpty())
+        binding.mangaGenresTags.setChips(anime.genre.orEmpty().dropBlank(), scope, colors)
     } else {
-        if (manga.title != manga.ogTitle) {
-            binding.title.append(manga.title)
+        if (anime.title != anime.ogTitle) {
+            binding.title.append(anime.title)
         }
-        if (manga.author != manga.ogAuthor) {
-            binding.mangaAuthor.append(manga.author.orEmpty())
+        if (anime.author != anime.ogAuthor) {
+            binding.mangaAuthor.append(anime.author.orEmpty())
         }
-        if (manga.artist != manga.ogArtist) {
-            binding.mangaArtist.append(manga.artist.orEmpty())
+        if (anime.artist != anime.ogArtist) {
+            binding.mangaArtist.append(anime.artist.orEmpty())
         }
-        if (manga.thumbnailUrl != manga.ogThumbnailUrl) {
-            binding.thumbnailUrl.append(manga.thumbnailUrl.orEmpty())
+        if (anime.thumbnailUrl != anime.ogThumbnailUrl) {
+            binding.thumbnailUrl.append(anime.thumbnailUrl.orEmpty())
         }
-        if (manga.description != manga.ogDescription) {
-            binding.mangaDescription.append(manga.description.orEmpty())
+        if (anime.description != anime.ogDescription) {
+            binding.mangaDescription.append(anime.description.orEmpty())
         }
-        binding.mangaGenresTags.setChips(manga.genre.orEmpty().dropBlank(), scope, colors)
+        binding.mangaGenresTags.setChips(anime.genre.orEmpty().dropBlank(), scope, colors)
 
-        binding.title.hint = context.stringResource(SYMR.strings.title_hint, manga.ogTitle)
+        binding.title.hint = context.stringResource(SYMR.strings.title_hint, anime.ogTitle)
 
-        binding.mangaAuthor.hint = context.stringResource(SYMR.strings.author_hint, manga.ogAuthor ?: "")
-        binding.mangaArtist.hint = context.stringResource(SYMR.strings.artist_hint, manga.ogArtist ?: "")
+        binding.mangaAuthor.hint = context.stringResource(SYMR.strings.author_hint, anime.ogAuthor ?: "")
+        binding.mangaArtist.hint = context.stringResource(SYMR.strings.artist_hint, anime.ogArtist ?: "")
         binding.mangaDescription.hint =
             context.stringResource(
                 SYMR.strings.description_hint,
-                manga.ogDescription?.takeIf { it.isNotBlank() }?.replace("\n", " ")?.chop(20) ?: "",
+                anime.ogDescription?.takeIf { it.isNotBlank() }?.replace("\n", " ")?.chop(20) ?: "",
             )
         binding.thumbnailUrl.hint =
             context.stringResource(
                 SYMR.strings.thumbnail_url_hint,
-                manga.ogThumbnailUrl?.let {
+                anime.ogThumbnailUrl?.let {
                     it.chop(40) + if (it.length > 46) "." + it.substringAfterLast(".").chop(6) else ""
                 } ?: "",
             )
@@ -423,17 +423,17 @@ private fun onViewCreated(
     binding.resetInfo.setBackgroundColor(colors.btnBgColor)
     // KMK <--
 
-    binding.resetTags.setOnClickListener { resetTags(manga, binding, scope, colors) }
-    binding.resetInfo.setOnClickListener { resetInfo(manga, binding, scope, colors) }
+    binding.resetTags.setOnClickListener { resetTags(anime, binding, scope, colors) }
+    binding.resetInfo.setOnClickListener { resetInfo(anime, binding, scope, colors) }
     binding.autofillFromTracker.setOnClickListener {
         scope.launch {
-            getTrackers(manga, binding, context, getTracks, trackerManager, tracks, showTrackerSelectionDialogue)
+            getTrackers(anime, binding, context, getTracks, trackerManager, tracks, showTrackerSelectionDialogue)
         }
     }
 }
 
-private suspend fun getTrackers(manga: Anime, binding: EditMangaDialogBinding, context: Context, getTracks: GetTracks, trackerManager: TrackerManager, tracks: MutableState<List<Pair<Track, Tracker>>>, showTrackerSelectionDialogue: MutableState<Boolean>) {
-    tracks.value = getTracks.await(manga.id).map { track ->
+private suspend fun getTrackers(anime: Anime, binding: EditMangaDialogBinding, context: Context, getTracks: GetTracks, trackerManager: TrackerManager, tracks: MutableState<List<Pair<Track, Tracker>>>, showTrackerSelectionDialogue: MutableState<Boolean>) {
+    tracks.value = getTracks.await(anime.id).map { track ->
         track to trackerManager.get(track.trackerId)!!
     }
         .filterNot { (_, tracker) -> tracker is EnhancedTracker }
@@ -477,22 +477,22 @@ private suspend fun autofillFromTracker(binding: EditMangaDialogBinding, track: 
 }
 
 private fun resetTags(
-    manga: Anime,
+    anime: Anime,
     binding: EditMangaDialogBinding,
     scope: CoroutineScope,
     // KMK -->
     colors: EditAnimeDialogColors,
     // KMK <--
 ) {
-    if (manga.genre.isNullOrEmpty() || manga.isLocal()) {
+    if (anime.genre.isNullOrEmpty() || anime.isLocal()) {
         binding.mangaGenresTags.setChips(emptyList(), scope, colors)
     } else {
-        binding.mangaGenresTags.setChips(manga.ogGenre.orEmpty(), scope, colors)
+        binding.mangaGenresTags.setChips(anime.ogGenre.orEmpty(), scope, colors)
     }
 }
 
 private fun loadCover(
-    manga: Anime,
+    anime: Anime,
     binding: EditMangaDialogBinding,
     // KMK -->
     coverRatio: MutableFloatState,
@@ -502,19 +502,19 @@ private fun loadCover(
     if (Injekt.get<UiPreferences>().usePanoramaCoverAlways().get() && coverRatio.floatValue <= RatioSwitchToPanorama) {
         binding.mangaCover.visibility = View.GONE
         binding.mangaCoverPanorama.visibility = View.VISIBLE
-        binding.mangaCoverPanorama.load(manga) {
+        binding.mangaCoverPanorama.load(anime) {
             transformations(RoundedCornersTransformation(4.dpToPx.toFloat()))
         }
     } else {
         // KMK <--
-        binding.mangaCover.load(manga) {
+        binding.mangaCover.load(anime) {
             transformations(RoundedCornersTransformation(4.dpToPx.toFloat()))
         }
     }
 }
 
 private fun resetInfo(
-    manga: Anime,
+    anime: Anime,
     binding: EditMangaDialogBinding,
     scope: CoroutineScope,
     // KMK -->
@@ -526,7 +526,7 @@ private fun resetInfo(
     binding.mangaArtist.text?.clear()
     binding.thumbnailUrl.text?.clear()
     binding.mangaDescription.text?.clear()
-    resetTags(manga, binding, scope, colors)
+    resetTags(anime, binding, scope, colors)
 }
 
 private fun ChipGroup.setChips(

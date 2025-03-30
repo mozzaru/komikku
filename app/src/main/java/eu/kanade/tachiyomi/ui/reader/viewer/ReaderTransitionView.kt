@@ -38,18 +38,18 @@ class ReaderTransitionView @JvmOverloads constructor(
         layoutParams = LayoutParams(LayoutParams.WRAP_CONTENT, LayoutParams.WRAP_CONTENT)
     }
 
-    fun bind(transition: ChapterTransition, downloadManager: DownloadManager, manga: Anime?) {
-        data = if (manga != null) {
+    fun bind(transition: ChapterTransition, downloadManager: DownloadManager, anime: Anime?) {
+        data = if (anime != null) {
             Data(
                 transition = transition,
                 currChapterDownloaded = transition.from.pageLoader?.isLocal == true,
-                goingToChapterDownloaded = manga.isLocal() ||
+                goingToChapterDownloaded = anime.isLocal() ||
                     transition.to?.episode?.let { goingToChapter ->
                         downloadManager.isEpisodeDownloaded(
                             chapterName = goingToChapter.name,
                             episodeScanlator = goingToChapter.scanlator,
-                            mangaTitle = /* SY --> */ manga.ogTitle, /* SY <-- */
-                            sourceId = manga.source,
+                            mangaTitle = /* SY --> */ anime.ogTitle, /* SY <-- */
+                            sourceId = anime.source,
                             skipCache = true,
                         )
                     } ?: false,

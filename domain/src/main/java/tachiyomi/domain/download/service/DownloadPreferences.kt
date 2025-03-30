@@ -15,16 +15,16 @@ class DownloadPreferences(
 
     fun splitTallImages() = preferenceStore.getBoolean("split_tall_images", true)
 
-    fun autoDownloadWhileReading() = preferenceStore.getInt("auto_download_while_reading", 0)
+    fun autoDownloadWhileWatching() = preferenceStore.getInt("auto_download_while_watching", 0)
 
-    fun removeAfterReadSlots() = preferenceStore.getInt("remove_after_read_slots", -1)
+    fun removeAfterSeenSlots() = preferenceStore.getInt("remove_after_seen_slots", -1)
 
     fun removeAfterMarkedAsSeen() = preferenceStore.getBoolean(
-        "pref_remove_after_marked_as_read_key",
+        "pref_remove_after_marked_as_seen_key",
         false,
     )
 
-    fun removeBookmarkedChapters() = preferenceStore.getBoolean("pref_remove_bookmarked", false)
+    fun removeBookmarkedEpisodes() = preferenceStore.getBoolean("pref_remove_bookmarked", false)
 
     fun removeExcludeCategories() = preferenceStore.getStringSet(
         "remove_exclude_categories",
@@ -43,7 +43,7 @@ class DownloadPreferences(
         emptySet(),
     )
 
-    fun downloadNewUnseenEpisodesOnly() = preferenceStore.getBoolean("download_new_unread_chapters_only", false)
+    fun downloadNewUnseenEpisodesOnly() = preferenceStore.getBoolean("download_new_unseen_episodes_only", false)
 
     // KMK -->
     fun downloadCacheRenewInterval() = preferenceStore.getInt("download_cache_renew_interval", 1)

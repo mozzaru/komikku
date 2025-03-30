@@ -27,7 +27,7 @@ import tachiyomi.presentation.core.util.plus
 @Composable
 fun RelatedAnimesComfortableGrid(
     relatedAnimes: List<RelatedAnime>,
-    getManga: @Composable (Anime) -> State<Anime>,
+    getAnime: @Composable (Anime) -> State<Anime>,
     columns: GridCells,
     contentPadding: PaddingValues,
     onMangaClick: (Anime) -> Unit,
@@ -80,10 +80,10 @@ fun RelatedAnimesComfortableGrid(
                     )
                 }
                 items(
-                    key = { "related-comfort-${relatedAnime.mangaList[it].url.hashCode()}" },
-                    count = relatedAnime.mangaList.size,
+                    key = { "related-comfort-${relatedAnime.animeList[it].url.hashCode()}" },
+                    count = relatedAnime.animeList.size,
                 ) { index ->
-                    val manga by getManga(relatedAnime.mangaList[index])
+                    val manga by getAnime(relatedAnime.animeList[index])
                     BrowseSourceComfortableGridItem(
                         anime = manga,
                         onClick = { onMangaClick(manga) },

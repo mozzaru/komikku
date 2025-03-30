@@ -49,7 +49,7 @@ import java.time.YearMonth
 fun UpcomingScreenContent(
     state: UpcomingScreenModel.State,
     setSelectedYearMonth: (YearMonth) -> Unit,
-    onClickUpcoming: (manga: Anime) -> Unit,
+    onClickUpcoming: (anime: Anime) -> Unit,
     // KMK -->
     showUpdatingMangas: () -> Unit,
     hideUpdatingMangas: () -> Unit,
@@ -211,7 +211,7 @@ private fun UpcomingScreenSmallImpl(
     selectedYearMonth: YearMonth,
     setSelectedYearMonth: (YearMonth) -> Unit,
     onClickDay: (LocalDate) -> Unit,
-    onClickUpcoming: (manga: Anime) -> Unit,
+    onClickUpcoming: (anime: Anime) -> Unit,
     // KMK -->
     isShowingUpdatingMangas: Boolean,
     // KMK <--
@@ -266,7 +266,7 @@ private fun UpcomingScreenLargeImpl(
     selectedYearMonth: YearMonth,
     setSelectedYearMonth: (YearMonth) -> Unit,
     onClickDay: (LocalDate) -> Unit,
-    onClickUpcoming: (manga: Anime) -> Unit,
+    onClickUpcoming: (anime: Anime) -> Unit,
     // KMK -->
     isShowingUpdatingMangas: Boolean,
     // KMK <--

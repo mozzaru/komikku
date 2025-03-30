@@ -364,7 +364,7 @@ class MainActivity : BaseActivity() {
         }
         setSplashScreenExitAnimation(splashScreen)
 
-        if (isLaunch && libraryPreferences.autoClearChapterCache().get()) {
+        if (isLaunch && libraryPreferences.autoClearEpisdoeCache().get()) {
             lifecycleScope.launchIO {
                 episodeCache.clear()
             }

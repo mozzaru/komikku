@@ -331,7 +331,7 @@ object SettingsDataScreen : SearchableSettings {
                     },
                 ),
                 Preference.PreferenceItem.SwitchPreference(
-                    pref = libraryPreferences.autoClearChapterCache(),
+                    pref = libraryPreferences.autoClearEpisdoeCache(),
                     title = stringResource(MR.strings.pref_auto_clear_chapter_cache),
                 ),
             ),

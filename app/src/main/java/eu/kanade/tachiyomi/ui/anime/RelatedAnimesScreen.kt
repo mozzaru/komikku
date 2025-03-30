@@ -57,7 +57,7 @@ fun RelatedAnimesScreen(
                     onSelectAll = {
                         successState.relatedAnimesSorted?.forEach {
                             val relatedAnime = it as RelatedAnime.Success
-                            relatedAnime.mangaList.forEach { manga ->
+                            relatedAnime.animeList.forEach { manga ->
                                 bulkFavoriteScreenModel.select(manga)
                             }
                         }
@@ -65,7 +65,7 @@ fun RelatedAnimesScreen(
                     onReverseSelection = {
                         successState.relatedAnimesSorted
                             ?.map { it as RelatedAnime.Success }
-                            ?.flatMap { it.mangaList }
+                            ?.flatMap { it.animeList }
                             ?.let { bulkFavoriteScreenModel.reverseSelection(it) }
                     },
                 )
@@ -85,7 +85,7 @@ fun RelatedAnimesScreen(
     ) { paddingValues ->
         RelatedAnimesContent(
             relatedAnimes = successState.relatedAnimesSorted,
-            getMangaState = { manga -> screenModel.getManga(initialManga = manga) },
+            getAnimeState = { manga -> screenModel.getManga(initialAnime = manga) },
             columns = getColumnsPreference(LocalConfiguration.current.orientation),
             displayMode = displayMode,
             contentPadding = paddingValues,

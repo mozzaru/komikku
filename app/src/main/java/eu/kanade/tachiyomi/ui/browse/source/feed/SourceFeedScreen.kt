@@ -140,7 +140,7 @@ class SourceFeedScreen(val sourceId: Long) : Screen() {
                     onClickSearch = { onSearchClick(navigator, screenModel.source, it) },
                     searchQuery = state.searchQuery,
                     onSearchQueryChange = screenModel::search,
-                    getMangaState = { screenModel.getManga(initialManga = it) },
+                    getAnimeState = { screenModel.getManga(initialManga = it) },
                     // KMK -->
                     navigateUp = { navigator.pop() },
                     onWebViewClick = {
@@ -301,8 +301,8 @@ class SourceFeedScreen(val sourceId: Long) : Screen() {
         // KMK <--
     }
 
-    private fun onMangaClick(navigator: Navigator, manga: Anime) {
-        navigator.push(AnimeScreen(manga.id, true))
+    private fun onMangaClick(navigator: Navigator, anime: Anime) {
+        navigator.push(AnimeScreen(anime.id, true))
     }
 
     private fun onBrowseClick(navigator: Navigator, sourceId: Long, search: String? = null, savedSearch: Long? = null, filters: String? = null) {

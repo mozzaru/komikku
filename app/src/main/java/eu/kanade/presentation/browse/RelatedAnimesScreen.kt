@@ -41,7 +41,7 @@ import tachiyomi.presentation.core.screens.LoadingScreen
 @Composable
 fun RelatedAnimesContent(
     relatedAnimes: List<RelatedAnime>?,
-    getMangaState: @Composable (Anime) -> State<Anime>,
+    getAnimeState: @Composable (Anime) -> State<Anime>,
     columns: GridCells,
     displayMode: LibraryDisplayMode,
     contentPadding: PaddingValues,
@@ -70,7 +70,7 @@ fun RelatedAnimesContent(
         LibraryDisplayMode.ComfortableGrid -> {
             RelatedAnimesComfortableGrid(
                 relatedAnimes = relatedAnimes,
-                getManga = getMangaState,
+                getAnime = getAnimeState,
                 columns = columns,
                 contentPadding = contentPadding,
                 onMangaClick = onMangaClick,
@@ -83,7 +83,7 @@ fun RelatedAnimesContent(
         LibraryDisplayMode.ComfortableGridPanorama -> {
             RelatedAnimesComfortableGrid(
                 relatedAnimes = relatedAnimes,
-                getManga = getMangaState,
+                getAnime = getAnimeState,
                 columns = columns,
                 contentPadding = contentPadding,
                 onMangaClick = onMangaClick,
@@ -97,7 +97,7 @@ fun RelatedAnimesContent(
         LibraryDisplayMode.CompactGrid, LibraryDisplayMode.CoverOnlyGrid -> {
             RelatedAnimesCompactGrid(
                 relatedAnimes = relatedAnimes,
-                getManga = getMangaState,
+                getAnime = getAnimeState,
                 columns = columns,
                 contentPadding = contentPadding,
                 onMangaClick = onMangaClick,
@@ -110,7 +110,7 @@ fun RelatedAnimesContent(
         LibraryDisplayMode.List -> {
             RelatedAnimesList(
                 relatedAnimes = relatedAnimes,
-                getManga = getMangaState,
+                getAnime = getAnimeState,
                 contentPadding = contentPadding,
                 onMangaClick = onMangaClick,
                 onMangaLongClick = onMangaLongClick,

@@ -62,9 +62,9 @@ class GetNextEpisodes(
             return nextEpisodes
         }
 
-        // The "next chapter" is either:
-        // - The current chapter if it isn't completely read
-        // - The chapters after the current chapter if the current one is completely read
+        // The "next episode" is either:
+        // - The current episode if it isn't completely seen
+        // - The episodes after the current episode if the current one is completely seen
         val fromEpisode = episodes.getOrNull(currEpisodeIndex)
         return if (fromEpisode != null && !fromEpisode.seen) {
             nextEpisodes

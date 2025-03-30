@@ -37,7 +37,7 @@ import tachiyomi.presentation.core.i18n.stringResource
 @Composable
 fun MigrationItem(
     modifier: Modifier,
-    manga: Anime,
+    anime: Anime,
     sourcesString: String,
     episodeInfo: MigratingAnime.EpisodeInfo,
     onClick: () -> Unit,
@@ -58,7 +58,7 @@ fun MigrationItem(
             AnimeCover.Book(
                 modifier = Modifier
                     .fillMaxWidth(),
-                data = manga,
+                data = anime,
             )
             Box(
                 modifier = Modifier
@@ -77,7 +77,7 @@ fun MigrationItem(
                 modifier = Modifier
                     .padding(8.dp)
                     .align(Alignment.BottomStart),
-                text = manga.title.ifBlank { stringResource(MR.strings.unknown) },
+                text = anime.title.ifBlank { stringResource(MR.strings.unknown) },
                 fontSize = 12.sp,
                 lineHeight = 18.sp,
                 maxLines = 2,

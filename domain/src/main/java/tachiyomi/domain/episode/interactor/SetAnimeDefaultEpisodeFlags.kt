@@ -17,12 +17,12 @@ class SetAnimeDefaultEpisodeFlags(
             with(libraryPreferences) {
                 setAnimeEpisodeFlags.awaitSetAllFlags(
                     animeId = anime.id,
-                    unseenFilter = filterChapterByRead().get(),
-                    downloadedFilter = filterChapterByDownloaded().get(),
-                    bookmarkedFilter = filterChapterByBookmarked().get(),
-                    sortingMode = sortChapterBySourceOrNumber().get(),
-                    sortingDirection = sortChapterByAscendingOrDescending().get(),
-                    displayMode = displayChapterByNameOrNumber().get(),
+                    unseenFilter = filterEpisodeBySeen().get(),
+                    downloadedFilter = filterEpisodeByDownloaded().get(),
+                    bookmarkedFilter = filterEpisodeByBookmarked().get(),
+                    sortingMode = sortEpisodeBySourceOrNumber().get(),
+                    sortingDirection = sortEpisodeByAscendingOrDescending().get(),
+                    displayMode = displayEpisodeByNameOrNumber().get(),
                 )
             }
         }

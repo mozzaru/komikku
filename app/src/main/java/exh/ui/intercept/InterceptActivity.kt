@@ -109,7 +109,7 @@ class InterceptActivity : BaseActivity() {
                         finish()
                         startActivity(
                             if (it.episode != null) {
-                                ReaderActivity.newIntent(this, it.manga.id, it.episode.id)
+                                ReaderActivity.newIntent(this, it.anime.id, it.episode.id)
                             } else {
                                 Intent(this, MainActivity::class.java)
                                     .setAction(Constants.SHORTCUT_MANGA)
@@ -163,6 +163,6 @@ class InterceptActivity : BaseActivity() {
 sealed class InterceptResult {
     data object Idle : InterceptResult()
     data object Loading : InterceptResult()
-    data class Success(val mangaId: Long, val manga: Anime, val episode: Episode? = null) : InterceptResult()
+    data class Success(val mangaId: Long, val anime: Anime, val episode: Episode? = null) : InterceptResult()
     data class Failure(val reason: String) : InterceptResult()
 }

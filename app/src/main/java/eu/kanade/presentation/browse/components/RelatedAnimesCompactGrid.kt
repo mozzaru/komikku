@@ -27,7 +27,7 @@ import tachiyomi.presentation.core.util.plus
 @Composable
 fun RelatedAnimesCompactGrid(
     relatedAnimes: List<RelatedAnime>,
-    getManga: @Composable (Anime) -> State<Anime>,
+    getAnime: @Composable (Anime) -> State<Anime>,
     columns: GridCells,
     contentPadding: PaddingValues,
     onMangaClick: (Anime) -> Unit,
@@ -79,10 +79,10 @@ fun RelatedAnimesCompactGrid(
                     )
                 }
                 items(
-                    key = { "related-compact-${relatedAnime.mangaList[it].url.hashCode()}" },
-                    count = relatedAnime.mangaList.size,
+                    key = { "related-compact-${relatedAnime.animeList[it].url.hashCode()}" },
+                    count = relatedAnime.animeList.size,
                 ) { index ->
-                    val manga by getManga(relatedAnime.mangaList[index])
+                    val manga by getAnime(relatedAnime.animeList[index])
                     BrowseSourceCompactGridItem(
                         anime = manga,
                         onClick = { onMangaClick(manga) },

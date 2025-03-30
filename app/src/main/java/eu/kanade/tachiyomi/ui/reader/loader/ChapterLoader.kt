@@ -27,12 +27,12 @@ class ChapterLoader(
     private val context: Context,
     private val downloadManager: DownloadManager,
     private val downloadProvider: DownloadProvider,
-    private val manga: Anime,
+    private val anime: Anime,
     private val source: Source,
     // SY -->
     private val sourceManager: SourceManager,
     private val mergedReferences: List<MergedAnimeReference>,
-    private val mergedManga: Map<Long, Anime>,
+    private val mergedAnime: Map<Long, Anime>,
     // SY <--
 ) {
 
@@ -90,8 +90,8 @@ class ChapterLoader(
         val isDownloaded = downloadManager.isEpisodeDownloaded(
             chapterName = dbChapter.name,
             episodeScanlator = dbChapter.scanlator, /* SY --> */
-            mangaTitle = manga.ogTitle /* SY <-- */,
-            sourceId = manga.source,
+            mangaTitle = anime.ogTitle /* SY <-- */,
+            sourceId = anime.source,
             skipCache = true,
         )
         return when {
@@ -102,7 +102,7 @@ class ChapterLoader(
                 } ?: error("Merge reference null")
                 val source = sourceManager.get(mangaReference.animeSourceId)
                     ?: error("Source ${mangaReference.animeSourceId} was null")
-                val manga = mergedManga[chapter.episode.anime_id] ?: error("Manga for merged episode was null")
+                val manga = mergedAnime[chapter.episode.anime_id] ?: error("Manga for merged episode was null")
                 val isMergedMangaDownloaded = downloadManager.isEpisodeDownloaded(
                     chapterName = chapter.episode.name,
                     episodeScanlator = chapter.episode.scanlator,
@@ -113,7 +113,7 @@ class ChapterLoader(
                 when {
                     isMergedMangaDownloaded -> DownloadPageLoader(
                         chapter = chapter,
-                        manga = manga,
+                        anime = manga,
                         source = source,
                         downloadManager = downloadManager,
                         downloadProvider = downloadProvider,
@@ -132,7 +132,7 @@ class ChapterLoader(
             // SY <--
             isDownloaded -> DownloadPageLoader(
                 chapter,
-                manga,
+                anime,
                 source,
                 downloadManager,
                 downloadProvider,

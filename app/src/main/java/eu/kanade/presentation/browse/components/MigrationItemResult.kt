@@ -35,7 +35,7 @@ fun MigrationItemResult(
     modifier: Modifier,
     migrationItem: MigratingAnime,
     result: MigratingAnime.SearchResult,
-    getManga: suspend (MigratingAnime.SearchResult.Result) -> Anime?,
+    getAnime: suspend (MigratingAnime.SearchResult.Result) -> Anime?,
     getEpisodeInfo: suspend (MigratingAnime.SearchResult.Result) -> MigratingAnime.EpisodeInfo,
     getSourceName: (Anime) -> String,
     onMigrationItemClick: (Anime) -> Unit,
@@ -79,7 +79,7 @@ fun MigrationItemResult(
                     result,
                 ) {
                     value = withIOContext {
-                        val manga = getManga(result) ?: return@withIOContext null
+                        val manga = getAnime(result) ?: return@withIOContext null
                         Triple(
                             manga,
                             getEpisodeInfo(result),
@@ -91,7 +91,7 @@ fun MigrationItemResult(
                     val (manga, chapterInfo, source) = item!!
                     MigrationItem(
                         modifier = Modifier.fillMaxSize(),
-                        manga = manga,
+                        anime = manga,
                         sourcesString = source,
                         episodeInfo = chapterInfo,
                         onClick = {

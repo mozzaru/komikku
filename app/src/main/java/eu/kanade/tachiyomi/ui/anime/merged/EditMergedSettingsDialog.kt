@@ -47,7 +47,7 @@ class EditMergedSettingsState(
     fun onViewCreated(
         context: Context,
         binding: EditMergedSettingsDialogBinding,
-        mergedManga: List<Anime>,
+        mergedAnime: List<Anime>,
         mergedReferences: List<MergedAnimeReference>,
     ) {
         if (mergedReferences.isEmpty() || mergedReferences.size == 1) {
@@ -56,7 +56,7 @@ class EditMergedSettingsState(
         }
         mergedMangas += mergedReferences.filter {
             it.animeSourceId != MERGED_SOURCE_ID
-        }.map { reference -> mergedManga.firstOrNull { it.id == reference.animeId } to reference }
+        }.map { reference -> mergedAnime.firstOrNull { it.id == reference.animeId } to reference }
         mergeReference = mergedReferences.firstOrNull { it.animeSourceId == MERGED_SOURCE_ID }
 
         val isPriorityOrder =

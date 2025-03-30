@@ -62,14 +62,14 @@ fun ChapterListDialog(
                         .map { it.progress }
                         .collectAsState(0).value
                 } ?: 0
-                val downloaded = if (chapterItem.manga.isLocal()) {
+                val downloaded = if (chapterItem.anime.isLocal()) {
                     true
                 } else {
                     downloadManager.isEpisodeDownloaded(
                         chapterItem.episode.name,
                         chapterItem.episode.scanlator,
-                        chapterItem.manga.ogTitle,
-                        chapterItem.manga.source,
+                        chapterItem.anime.ogTitle,
+                        chapterItem.anime.source,
                     )
                 }
                 val downloadState = when {

@@ -27,40 +27,40 @@ class AnimeBackupCreator(
     // SY <--
 ) {
 
-    suspend operator fun invoke(mangas: List<Anime>, options: BackupOptions): List<BackupAnime> {
-        return mangas.map {
+    suspend operator fun invoke(mangases: List<Anime>, options: BackupOptions): List<BackupAnime> {
+        return mangases.map {
             backupManga(it, options)
         }
     }
 
-    private suspend fun backupManga(manga: Anime, options: BackupOptions): BackupAnime {
+    private suspend fun backupManga(anime: Anime, options: BackupOptions): BackupAnime {
         // Entry for this manga
-        val mangaObject = manga.toBackupManga(
+        val mangaObject = anime.toBackupManga(
             // SY -->
             if (options.customInfo) {
-                getCustomAnimeInfo.get(manga.id)
+                getCustomAnimeInfo.get(anime.id)
             } else {
                 null
             }, /* SY <-- */
         )
 
         // SY -->
-        if (manga.source == MERGED_SOURCE_ID) {
+        if (anime.source == MERGED_SOURCE_ID) {
             mangaObject.mergedMangaReferences = handler.awaitList {
-                mergedQueries.selectByMergeId(manga.id, backupMergedMangaReferenceMapper)
+                mergedQueries.selectByMergeId(anime.id, backupMergedMangaReferenceMapper)
             }
         }
         // SY <--
 
         mangaObject.excludedScanlators = handler.awaitList {
-            excluded_scanlatorsQueries.getExcludedScanlatorsByAnimeId(manga.id)
+            excluded_scanlatorsQueries.getExcludedScanlatorsByAnimeId(anime.id)
         }
 
         if (options.episodes) {
             // Backup all the episodes
             handler.awaitList {
                 episodesQueries.getEpisodesByAnimeId(
-                    animeId = manga.id,
+                    animeId = anime.id,
                     applyScanlatorFilter = 0, // false
                     mapper = backupEpisodeMapper,
                 )
@@ -71,21 +71,21 @@ class AnimeBackupCreator(
 
         if (options.categories) {
             // Backup categories for this manga
-            val categoriesForManga = getCategories.await(manga.id)
+            val categoriesForManga = getCategories.await(anime.id)
             if (categoriesForManga.isNotEmpty()) {
                 mangaObject.categories = categoriesForManga.map { it.order }
             }
         }
 
         if (options.tracking) {
-            val tracks = handler.awaitList { anime_syncQueries.getTracksByAnimeId(manga.id, backupTrackMapper) }
+            val tracks = handler.awaitList { anime_syncQueries.getTracksByAnimeId(anime.id, backupTrackMapper) }
             if (tracks.isNotEmpty()) {
                 mangaObject.tracking = tracks
             }
         }
 
         if (options.history) {
-            val historyByMangaId = getHistory.await(manga.id)
+            val historyByMangaId = getHistory.await(anime.id)
             if (historyByMangaId.isNotEmpty()) {
                 val history = historyByMangaId.map { history ->
                     val chapter = handler.awaitOne { episodesQueries.getEpisodeById(history.episodeId) }

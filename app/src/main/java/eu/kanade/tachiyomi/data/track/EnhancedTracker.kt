@@ -28,15 +28,15 @@ interface EnhancedTracker {
     /**
      * Similar to [Tracker].search, but only returns zero or one match.
      */
-    suspend fun match(manga: Anime): TrackSearch?
+    suspend fun match(anime: Anime): TrackSearch?
 
     /**
      * Checks whether the provided source/track/manga triplet is from this [Tracker]
      */
-    fun isTrackFrom(track: Track, manga: Anime, source: Source?): Boolean
+    fun isTrackFrom(track: Track, anime: Anime, source: Source?): Boolean
 
     /**
      * Migrates the given track for the manga to the newSource, if possible
      */
-    fun migrateTrack(track: Track, manga: Anime, newSource: Source): Track?
+    fun migrateTrack(track: Track, anime: Anime, newSource: Source): Track?
 }

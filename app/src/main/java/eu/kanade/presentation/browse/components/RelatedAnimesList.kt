@@ -24,7 +24,7 @@ import tachiyomi.presentation.core.i18n.stringResource
 @Composable
 fun RelatedAnimesList(
     relatedAnimes: List<RelatedAnime>,
-    getManga: @Composable (Anime) -> State<Anime>,
+    getAnime: @Composable (Anime) -> State<Anime>,
     contentPadding: PaddingValues,
     onMangaClick: (Anime) -> Unit,
     onMangaLongClick: (Anime) -> Unit,
@@ -82,10 +82,10 @@ fun RelatedAnimesList(
                     )
                 }
                 items(
-                    key = { "related-list-${relatedAnime.mangaList[it].url.hashCode()}" },
-                    count = relatedAnime.mangaList.size,
+                    key = { "related-list-${relatedAnime.animeList[it].url.hashCode()}" },
+                    count = relatedAnime.animeList.size,
                 ) { index ->
-                    val manga by getManga(relatedAnime.mangaList[index])
+                    val manga by getAnime(relatedAnime.animeList[index])
                     BrowseSourceListItem(
                         anime = manga,
                         onClick = { onMangaClick(manga) },

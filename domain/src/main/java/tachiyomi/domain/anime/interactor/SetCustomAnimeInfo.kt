@@ -7,5 +7,5 @@ class SetCustomAnimeInfo(
     private val customAnimeRepository: CustomAnimeRepository,
 ) {
 
-    fun set(mangaInfo: CustomAnimeInfo) = customAnimeRepository.set(mangaInfo)
+    fun set(animeInfo: CustomAnimeInfo) = customAnimeRepository.set(animeInfo)
 }

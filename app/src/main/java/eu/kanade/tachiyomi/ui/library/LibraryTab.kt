@@ -229,7 +229,7 @@ data object LibraryTab : Tab {
                                     )
                                     if (result == SnackbarResult.ActionPerformed) {
                                         screenModel.removeMangas(
-                                            mangaList = mergingMangas.map { it.anime },
+                                            animeList = mergingMangas.map { it.anime },
                                             deleteFromLibrary = true,
                                             deleteChapters = false,
                                         )
@@ -335,16 +335,16 @@ data object LibraryTab : Tab {
                     },
                     onConfirm = { include, exclude ->
                         screenModel.clearSelection()
-                        screenModel.setMangaCategories(dialog.manga, include, exclude)
+                        screenModel.setMangaCategories(dialog.anime, include, exclude)
                     },
                 )
             }
             is LibraryScreenModel.Dialog.DeleteManga -> {
                 DeleteLibraryAnimeDialog(
-                    containsLocalAnime = dialog.manga.any(Anime::isLocal),
+                    containsLocalAnime = dialog.anime.any(Anime::isLocal),
                     onDismissRequest = onDismissRequest,
                     onConfirm = { deleteManga, deleteChapter ->
-                        screenModel.removeMangas(dialog.manga, deleteManga, deleteChapter)
+                        screenModel.removeMangas(dialog.anime, deleteManga, deleteChapter)
                         screenModel.clearSelection()
                     },
                 )

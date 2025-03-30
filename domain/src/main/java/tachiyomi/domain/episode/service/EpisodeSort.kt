@@ -5,13 +5,13 @@ import tachiyomi.domain.anime.model.Anime
 import tachiyomi.domain.episode.model.Episode
 
 fun getEpisodeSort(
-    manga: Anime,
-    sortDescending: Boolean = manga.sortDescending(),
+    anime: Anime,
+    sortDescending: Boolean = anime.sortDescending(),
 ): (
     Episode,
     Episode,
 ) -> Int {
-    return when (manga.sorting) {
+    return when (anime.sorting) {
         Anime.EPISODE_SORTING_SOURCE -> when (sortDescending) {
             true -> { c1, c2 -> c1.sourceOrder.compareTo(c2.sourceOrder) }
             false -> { c1, c2 -> c2.sourceOrder.compareTo(c1.sourceOrder) }
@@ -28,6 +28,6 @@ fun getEpisodeSort(
             true -> { c1, c2 -> c2.name.compareToWithCollator(c1.name) }
             false -> { c1, c2 -> c1.name.compareToWithCollator(c2.name) }
         }
-        else -> throw NotImplementedError("Invalid chapter sorting method: ${manga.sorting}")
+        else -> throw NotImplementedError("Invalid episode sorting method: ${anime.sorting}")
     }
 }

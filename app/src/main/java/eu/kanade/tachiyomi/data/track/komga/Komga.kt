@@ -95,19 +95,19 @@ class Komga(id: Long) : BaseTracker(id, "Komga"), EnhancedTracker {
 
     override fun getAcceptedSources() = listOf("eu.kanade.tachiyomi.extension.all.komga.Komga")
 
-    override suspend fun match(manga: Anime): TrackSearch? =
+    override suspend fun match(anime: Anime): TrackSearch? =
         try {
-            api.getTrackSearch(manga.url)
+            api.getTrackSearch(anime.url)
         } catch (e: Exception) {
             null
         }
 
-    override fun isTrackFrom(track: DomainTrack, manga: Anime, source: Source?): Boolean =
-        track.remoteUrl == manga.url && source?.let { accept(it) } == true
+    override fun isTrackFrom(track: DomainTrack, anime: Anime, source: Source?): Boolean =
+        track.remoteUrl == anime.url && source?.let { accept(it) } == true
 
-    override fun migrateTrack(track: DomainTrack, manga: Anime, newSource: Source): DomainTrack? =
+    override fun migrateTrack(track: DomainTrack, anime: Anime, newSource: Source): DomainTrack? =
         if (accept(newSource)) {
-            track.copy(remoteUrl = manga.url)
+            track.copy(remoteUrl = anime.url)
         } else {
             null
         }

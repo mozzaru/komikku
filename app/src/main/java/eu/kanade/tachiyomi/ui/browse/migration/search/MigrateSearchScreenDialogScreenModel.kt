@@ -20,13 +20,13 @@ class MigrateSearchScreenDialogScreenModel(
             val manga = getAnime.await(mangaId)!!
 
             mutableState.update {
-                it.copy(manga = manga)
+                it.copy(anime = manga)
             }
         }
     }
 
     @Immutable
     data class State(
-        val manga: Anime? = null,
+        val anime: Anime? = null,
     )
 }

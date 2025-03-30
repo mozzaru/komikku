@@ -261,7 +261,7 @@ class ReaderActivity : BaseActivity() {
             .launchIn(lifecycleScope)
 
         viewModel.state
-            .map { it.manga }
+            .map { it.anime }
             .distinctUntilChanged()
             .filterNotNull()
             .onEach { updateViewer() }
@@ -508,7 +508,7 @@ class ReaderActivity : BaseActivity() {
                 visible = state.menuVisible,
                 fullscreen = isFullscreen,
 
-                mangaTitle = state.manga?.title,
+                mangaTitle = state.anime?.title,
                 chapterTitle = state.currentChapter?.episode?.name,
                 navigateUp = onBackPressedDispatcher::onBackPressed,
                 onClickTopAppBar = ::openMangaScreen,
@@ -777,12 +777,12 @@ class ReaderActivity : BaseActivity() {
     @Composable
     private fun seedColorState(): ComposeColor? {
         val state by viewModel.state.collectAsState()
-        return state.manga?.asAnimeCover()?.vibrantCoverColor?.let { ComposeColor(it) }
+        return state.anime?.asAnimeCover()?.vibrantCoverColor?.let { ComposeColor(it) }
             ?: seedColorStatic()
     }
 
     private fun seedColorStatic(): ComposeColor? {
-        return viewModel.manga?.asAnimeCover()?.vibrantCoverColor?.let { ComposeColor(it) }
+        return viewModel.anime?.asAnimeCover()?.vibrantCoverColor?.let { ComposeColor(it) }
             ?: intent.extras?.getLong("manga")?.takeIf { it > 0 }
                 ?.let { AnimeCover.vibrantCoverColorMap[it] }
                 ?.let { ComposeColor(it) }
@@ -983,7 +983,7 @@ class ReaderActivity : BaseActivity() {
             viewModel.state.value.lastShiftDoubleState?.let { newViewer.config.shiftDoublePage = it }
         }
 
-        val manga = viewModel.state.value.manga
+        val manga = viewModel.state.value.anime
         val defaultReaderType = manga?.defaultReaderType(
             manga.animeType(sourceName = sourceManager.get(manga.source)?.name),
         )
@@ -1012,7 +1012,7 @@ class ReaderActivity : BaseActivity() {
     }
 
     private fun openMangaScreen() {
-        viewModel.manga?.id?.let { id ->
+        viewModel.anime?.id?.let { id ->
             startActivity(
                 Intent(this, MainActivity::class.java).apply {
                     action = Constants.SHORTCUT_MANGA
@@ -1024,7 +1024,7 @@ class ReaderActivity : BaseActivity() {
     }
 
     private fun openChapterInWebView() {
-        val manga = viewModel.manga ?: return
+        val manga = viewModel.anime ?: return
         val source = viewModel.getSource() ?: return
         assistUrl?.let {
             val intent = WebViewActivity.newIntent(this@ReaderActivity, it, source.id, manga.title)
@@ -1222,7 +1222,7 @@ class ReaderActivity : BaseActivity() {
      * sharing tool.
      */
     fun onShareImageResult(uri: Uri, page: ReaderVideo /* SY --> */, secondPage: ReaderVideo? = null /* SY <-- */) {
-        val manga = viewModel.manga ?: return
+        val manga = viewModel.anime ?: return
         val chapter = page.chapter.episode
 
         // SY -->

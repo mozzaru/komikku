@@ -34,13 +34,13 @@ class DownloadPendingDeleter(
      * Adds a list of episodes for future deletion.
      *
      * @param episodes the episodes to be deleted.
-     * @param manga the manga of the episodes.
+     * @param anime the manga of the episodes.
      */
     @Synchronized
-    fun addChapters(episodes: List<Episode>, manga: Anime) {
+    fun addChapters(episodes: List<Episode>, anime: Anime) {
         val lastEntry = lastAddedEntry
 
-        val newEntry = if (lastEntry != null && lastEntry.manga.id == manga.id) {
+        val newEntry = if (lastEntry != null && lastEntry.manga.id == anime.id) {
             // Append new episodes
             val newChapters = lastEntry.chapters.addUniqueById(episodes)
 
@@ -50,7 +50,7 @@ class DownloadPendingDeleter(
             // Last entry matches the manga, reuse it to avoid decoding json from preferences
             lastEntry.copy(chapters = newChapters)
         } else {
-            val existingEntry = preferences.getString(manga.id.toString(), null)
+            val existingEntry = preferences.getString(anime.id.toString(), null)
             if (existingEntry != null) {
                 // Existing entry found on preferences, decode json and add the new episode
                 val savedEntry = json.decodeFromString<Entry>(existingEntry)
@@ -64,7 +64,7 @@ class DownloadPendingDeleter(
                 savedEntry.copy(chapters = newChapters)
             } else {
                 // No entry has been found yet, create a new one
-                Entry(episodes.map { it.toEntry() }, manga.toEntry())
+                Entry(episodes.map { it.toEntry() }, anime.toEntry())
             }
         }
 

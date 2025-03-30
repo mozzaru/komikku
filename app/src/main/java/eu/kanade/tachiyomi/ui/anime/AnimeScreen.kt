@@ -326,7 +326,7 @@ class AnimeScreen(
             onAllEpisodeSelected = screenModel::toggleAllSelection,
             onInvertSelection = screenModel::invertSelection,
             // KMK -->
-            getAnimeState = { screenModel.getManga(initialManga = it) },
+            getAnimeState = { screenModel.getManga(initialAnime = it) },
             onRelatedAnimesScreenClick = {
                 if (successState.isRelatedMangasFetched == null) {
                     scope.launchIO { screenModel.fetchRelatedMangasFromSource(onDemand = true) }
@@ -392,7 +392,7 @@ class AnimeScreen(
                     onDismissRequest = onDismissRequest,
                     onEditCategories = { navigator.push(CategoryScreen()) },
                     onConfirm = { include, _ ->
-                        screenModel.moveMangaToCategoriesAndAddToLibrary(dialog.manga, include)
+                        screenModel.moveMangaToCategoriesAndAddToLibrary(dialog.anime, include)
                     },
                 )
             }
@@ -508,17 +508,17 @@ class AnimeScreen(
 
             is AnimeScreenModel.Dialog.SetFetchInterval -> {
                 SetIntervalDialog(
-                    interval = dialog.manga.fetchInterval,
-                    nextUpdate = dialog.manga.expectedNextUpdate,
+                    interval = dialog.anime.fetchInterval,
+                    nextUpdate = dialog.anime.expectedNextUpdate,
                     onDismissRequest = onDismissRequest,
-                    onValueChanged = { interval: Int -> screenModel.setFetchInterval(dialog.manga, interval) }
+                    onValueChanged = { interval: Int -> screenModel.setFetchInterval(dialog.anime, interval) }
                         .takeIf { screenModel.isUpdateIntervalEnabled },
                 )
             }
             // SY -->
             is AnimeScreenModel.Dialog.EditMangaInfo -> {
                 EditAnimeDialog(
-                    manga = dialog.manga,
+                    anime = dialog.anime,
                     // KMK -->
                     coverRatio = coverRatio,
                     // KMK <--
@@ -557,8 +557,8 @@ class AnimeScreen(
     }
 
     @Suppress("LocalVariableName")
-    private fun getMangaUrl(manga_: Anime?, source_: Source?): String? {
-        val manga = manga_ ?: return null
+    private fun getMangaUrl(anime_: Anime?, source_: Source?): String? {
+        val manga = anime_ ?: return null
         val source = source_ as? HttpSource ?: return null
 
         return try {
@@ -569,12 +569,12 @@ class AnimeScreen(
     }
 
     @Suppress("LocalVariableName")
-    private fun openMangaInWebView(navigator: Navigator, manga_: Anime?, source_: Source?) {
-        getMangaUrl(manga_, source_)?.let { url ->
+    private fun openMangaInWebView(navigator: Navigator, anime_: Anime?, source_: Source?) {
+        getMangaUrl(anime_, source_)?.let { url ->
             navigator.push(
                 WebViewScreen(
                     url = url,
-                    initialTitle = manga_?.title,
+                    initialTitle = anime_?.title,
                     sourceId = source_?.id,
                 ),
             )
@@ -582,9 +582,9 @@ class AnimeScreen(
     }
 
     @Suppress("LocalVariableName")
-    private fun shareManga(context: Context, manga_: Anime?, source_: Source?) {
+    private fun shareManga(context: Context, anime_: Anime?, source_: Source?) {
         try {
-            getMangaUrl(manga_, source_)?.let { url ->
+            getMangaUrl(anime_, source_)?.let { url ->
                 val intent = url.toUri().toShareIntent(context, type = "text/plain")
                 context.startActivity(
                     Intent.createChooser(
@@ -692,8 +692,8 @@ class AnimeScreen(
      * Copy Manga URL to Clipboard
      */
     @Suppress("LocalVariableName")
-    private fun copyMangaUrl(context: Context, manga_: Anime?, source_: Source?) {
-        val manga = manga_ ?: return
+    private fun copyMangaUrl(context: Context, anime_: Anime?, source_: Source?) {
+        val manga = anime_ ?: return
         val source = source_ as? HttpSource ?: return
         val url = source.getAnimeUrl(manga.toSAnime())
         context.copyToClipboard(url, url)
@@ -703,12 +703,12 @@ class AnimeScreen(
     /**
      * Initiates source migration for the specific manga.
      */
-    private fun migrateManga(navigator: Navigator, manga: Anime, toMangaId: Long? = null) {
+    private fun migrateManga(navigator: Navigator, anime: Anime, toMangaId: Long? = null) {
         // SY -->
         PreMigrationScreen.navigateToMigration(
             Injekt.get<UnsortedPreferences>().skipPreMigration().get(),
             navigator,
-            manga.id,
+            anime.id,
             toMangaId,
         )
         // SY <--
@@ -736,8 +736,8 @@ class AnimeScreen(
     /**
      * Called when click Merge on an entry to search for entries to merge.
      */
-    private fun openSmartSearch(navigator: Navigator, manga: Anime) {
-        val smartSearchConfig = SourcesScreen.SmartSearchConfig(manga.title, manga.id)
+    private fun openSmartSearch(navigator: Navigator, anime: Anime) {
+        val smartSearchConfig = SourcesScreen.SmartSearchConfig(anime.title, anime.id)
 
         navigator.push(SourcesScreen(smartSearchConfig))
     }
@@ -746,13 +746,13 @@ class AnimeScreen(
     private fun mergeWithAnother(
         navigator: Navigator,
         context: Context,
-        manga: Anime,
+        anime: Anime,
         smartSearchMerge: suspend (Anime, Long) -> Anime,
     ) {
         launchUI {
             try {
                 val mergedManga = withNonCancellableContext {
-                    smartSearchMerge(manga, smartSearchConfig?.origMangaId!!)
+                    smartSearchMerge(anime, smartSearchConfig?.origMangaId!!)
                 }
 
                 navigator.popUntil { it is SourcesScreen }
@@ -775,10 +775,10 @@ class AnimeScreen(
     // EXH <--
 
     // AZ -->
-    private fun openRecommends(context: Context, navigator: Navigator, source: Source?, manga: Anime) {
+    private fun openRecommends(context: Context, navigator: Navigator, source: Source?, anime: Anime) {
         source ?: return
         if (source is CatalogueSource) {
-            navigator.push(RecommendsScreen(manga.id, source.id))
+            navigator.push(RecommendsScreen(anime.id, source.id))
         }
     }
     // AZ <--

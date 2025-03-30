@@ -35,24 +35,24 @@ class GetUpcomingAnime(
 
     // KMK -->
     suspend fun updatingAnimes(): List<Anime> {
-        val libraryManga = getLibraryAnime.await()
+        val libraryAnime = getLibraryAnime.await()
 
         val categoriesToUpdate = libraryPreferences.updateCategories().get().map(String::toLong)
-        val includedManga = if (categoriesToUpdate.isNotEmpty()) {
-            libraryManga.filter { it.category in categoriesToUpdate }
+        val includedAnime = if (categoriesToUpdate.isNotEmpty()) {
+            libraryAnime.filter { it.category in categoriesToUpdate }
         } else {
-            libraryManga
+            libraryAnime
         }
 
         val categoriesToExclude = libraryPreferences.updateCategoriesExclude().get().map { it.toLong() }
-        val excludedMangaIds = if (categoriesToExclude.isNotEmpty()) {
-            libraryManga.filter { it.category in categoriesToExclude }.map { it.anime.id }
+        val excludedAnimeIds = if (categoriesToExclude.isNotEmpty()) {
+            libraryAnime.filter { it.category in categoriesToExclude }.map { it.anime.id }
         } else {
             emptyList()
         }
 
-        val listToUpdate = includedManga
-            .filterNot { it.anime.id in excludedMangaIds }
+        val listToUpdate = includedAnime
+            .filterNot { it.anime.id in excludedAnimeIds }
 
         val restrictions = libraryPreferences.autoUpdateAnimeRestrictions().get()
         val today = LocalDate.now().atStartOfDay(ZoneId.systemDefault()).toEpochSecond() * 1000

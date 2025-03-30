@@ -141,7 +141,7 @@ fun FeedScreen(
                         ) {
                             FeedItem(
                                 item = item,
-                                getMangaState = { getAnimeState(it) },
+                                getAnimeState = { getAnimeState(it) },
                                 onClickManga = onClickManga,
                                 // KMK -->
                                 onLongClickManga = onLongClickManga,
@@ -159,7 +159,7 @@ fun FeedScreen(
 @Composable
 fun FeedItem(
     item: FeedItemUI,
-    getMangaState: @Composable ((Anime) -> State<Anime>),
+    getAnimeState: @Composable ((Anime) -> State<Anime>),
     onClickManga: (Anime) -> Unit,
     // KMK -->
     onLongClickManga: (Anime) -> Unit,
@@ -176,7 +176,7 @@ fun FeedItem(
         else -> {
             GlobalSearchCardRow(
                 titles = item.results,
-                getAnime = getMangaState,
+                getAnime = getAnimeState,
                 onClick = onClickManga,
                 // KMK -->
                 onLongClick = onLongClickManga,

@@ -29,9 +29,9 @@ class DeleteLibraryUpdateErrors(
         }
     }
 
-    suspend fun deleteMangaError(mangaId: Long) = withNonCancellableContext {
+    suspend fun deleteAnimeError(animeId: Long) = withNonCancellableContext {
         try {
-            libraryUpdateErrorRepository.deleteAnimeError(mangaId)
+            libraryUpdateErrorRepository.deleteAnimeError(animeId)
             Result.Success
         } catch (e: Exception) {
             logcat(LogPriority.ERROR, e)
@@ -39,7 +39,7 @@ class DeleteLibraryUpdateErrors(
         }
     }
 
-    suspend fun cleanUnrelevantMangaErrors() = withNonCancellableContext {
+    suspend fun cleanUnrelevantAnimeErrors() = withNonCancellableContext {
         try {
             libraryUpdateErrorRepository.cleanUnrelevantAnimeErrors()
             Result.Success

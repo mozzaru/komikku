@@ -8,33 +8,33 @@ fun List<Double>.missingEpisodesCount(): Int {
         return 0
     }
 
-    val chapters = this
-        // Ignore unknown chapter numbers
+    val episodes = this
+        // Ignore unknown episode numbers
         .filterNot { it == -1.0 }
         // Convert to integers, as we cannot check if 16.5 is missing
         .map(Double::toInt)
-        // Only keep unique chapters so that -1 or 16 are not counted multiple times
+        // Only keep unique episodes so that -1 or 16 are not counted multiple times
         .distinct()
         .sorted()
 
-    if (chapters.isEmpty()) {
+    if (episodes.isEmpty()) {
         return 0
     }
 
-    var missingChaptersCount = 0
-    var previousChapter = 0 // The actual chapter number, not the array index
+    var missingEpisodesCount = 0
+    var previousEpisode = 0 // The actual episode number, not the array index
 
-    // We go from 0 to lastChapter - Make sure to use the current index instead of the value
-    for (i in chapters.indices) {
-        val currentChapter = chapters[i]
-        if (currentChapter > previousChapter + 1) {
-            // Add the amount of missing chapters
-            missingChaptersCount += currentChapter - previousChapter - 1
+    // We go from 0 to lastEpisode - Make sure to use the current index instead of the value
+    for (i in episodes.indices) {
+        val currentEpisode = episodes[i]
+        if (currentEpisode > previousEpisode + 1) {
+            // Add the amount of missing episodes
+            missingEpisodesCount += currentEpisode - previousEpisode - 1
         }
-        previousChapter = currentChapter
+        previousEpisode = currentEpisode
     }
 
-    return missingChaptersCount
+    return missingEpisodesCount
 }
 
 fun calculateEpisodeGap(higherEpisode: Episode?, lowerEpisode: Episode?): Int {
@@ -43,7 +43,7 @@ fun calculateEpisodeGap(higherEpisode: Episode?, lowerEpisode: Episode?): Int {
     return calculateEpisodeGap(higherEpisode.episodeNumber, lowerEpisode.episodeNumber)
 }
 
-fun calculateEpisodeGap(higherChapterNumber: Double, lowerChapterNumber: Double): Int {
-    if (higherChapterNumber < 0.0 || lowerChapterNumber < 0.0) return 0
-    return floor(higherChapterNumber).toInt() - floor(lowerChapterNumber).toInt() - 1
+fun calculateEpisodeGap(higherEpisodeNumber: Double, lowerEpisodeNumber: Double): Int {
+    if (higherEpisodeNumber < 0.0 || lowerEpisodeNumber < 0.0) return 0
+    return floor(higherEpisodeNumber).toInt() - floor(lowerEpisodeNumber).toInt() - 1
 }

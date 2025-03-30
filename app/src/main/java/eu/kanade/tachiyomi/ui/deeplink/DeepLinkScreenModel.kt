@@ -61,12 +61,12 @@ class DeepLinkScreenModel(
         }
     }
 
-    private suspend fun getEpisodeFromSEpisode(sEpisode: SEpisode, manga: Anime, source: Source): Episode? {
-        val localChapter = getEpisodeByUrlAndAnimeId.await(sEpisode.url, manga.id)
+    private suspend fun getEpisodeFromSEpisode(sEpisode: SEpisode, anime: Anime, source: Source): Episode? {
+        val localChapter = getEpisodeByUrlAndAnimeId.await(sEpisode.url, anime.id)
 
         return if (localChapter == null) {
-            val sourceChapters = source.getEpisodeList(manga.toSAnime())
-            val newChapters = syncEpisodesWithSource.await(sourceChapters, manga, source, false)
+            val sourceChapters = source.getEpisodeList(anime.toSAnime())
+            val newChapters = syncEpisodesWithSource.await(sourceChapters, anime, source, false)
             newChapters.find { it.url == sEpisode.url }
         } else {
             localChapter
@@ -86,6 +86,6 @@ class DeepLinkScreenModel(
         data object NoResults : State
 
         @Immutable
-        data class Result(val manga: Anime, val chapterId: Long? = null) : State
+        data class Result(val anime: Anime, val chapterId: Long? = null) : State
     }
 }

@@ -1,9 +1,9 @@
 package eu.kanade.tachiyomi.source.online
 
 import eu.kanade.tachiyomi.source.model.AnimesPage
-import eu.kanade.tachiyomi.source.model.Video
 import eu.kanade.tachiyomi.source.model.SAnime
 import eu.kanade.tachiyomi.source.model.SEpisode
+import eu.kanade.tachiyomi.source.model.Video
 import eu.kanade.tachiyomi.util.asJsoup
 import okhttp3.Response
 import org.jsoup.nodes.Document

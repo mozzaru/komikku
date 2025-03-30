@@ -10,12 +10,12 @@ import tachiyomi.domain.episode.model.Episode
  * Gets next unseen episode with filters and sorting applied
  */
 fun List<Episode>.getNextUnseen(
-    manga: Anime,
+    anime: Anime,
     downloadManager: DownloadManager /* SY --> */,
-    mergedManga: Map<Long, Anime>, /* SY <-- */
+    mergedAnime: Map<Long, Anime>, /* SY <-- */
 ): Episode? {
-    return applyFilters(manga, downloadManager/* SY --> */, mergedManga/* SY <-- */).let { chapters ->
-        if (manga.sortDescending()) {
+    return applyFilters(anime, downloadManager/* SY --> */, mergedAnime/* SY <-- */).let { chapters ->
+        if (anime.sortDescending()) {
             chapters.findLast { !it.seen }
         } else {
             chapters.find { !it.seen }
@@ -26,9 +26,9 @@ fun List<Episode>.getNextUnseen(
 /**
  * Gets next unseen episode with filters and sorting applied
  */
-fun List<EpisodeList.Item>.getNextUnseen(manga: Anime): Episode? {
-    return applyFilters(manga).let { chapters ->
-        if (manga.sortDescending()) {
+fun List<EpisodeList.Item>.getNextUnseen(anime: Anime): Episode? {
+    return applyFilters(anime).let { chapters ->
+        if (anime.sortDescending()) {
             chapters.findLast { !it.episode.seen }
         } else {
             chapters.find { !it.episode.seen }

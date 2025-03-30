@@ -404,7 +404,7 @@ data class BrowseSourceScreen(
             is BrowseSourceScreenModel.Dialog.AddDuplicateManga -> {
                 DuplicateAnimeDialog(
                     onDismissRequest = onDismissRequest,
-                    onConfirm = { screenModel.addFavorite(dialog.manga) },
+                    onConfirm = { screenModel.addFavorite(dialog.anime) },
                     onOpenAnime = { navigator.push(AnimeScreen(dialog.duplicate.id)) },
                     onMigrate = {
                         // SY -->
@@ -412,7 +412,7 @@ data class BrowseSourceScreen(
                             Injekt.get<UnsortedPreferences>().skipPreMigration().get(),
                             navigator,
                             dialog.duplicate.id,
-                            dialog.manga.id,
+                            dialog.anime.id,
                         )
                         // SY <--
                     },
@@ -425,9 +425,9 @@ data class BrowseSourceScreen(
                 RemoveAnimeDialog(
                     onDismissRequest = onDismissRequest,
                     onConfirm = {
-                        screenModel.changeMangaFavorite(dialog.manga)
+                        screenModel.changeMangaFavorite(dialog.anime)
                     },
-                    animeToRemove = dialog.manga,
+                    animeToRemove = dialog.anime,
                 )
             }
             is BrowseSourceScreenModel.Dialog.ChangeMangaCategory -> {
@@ -436,8 +436,8 @@ data class BrowseSourceScreen(
                     onDismissRequest = onDismissRequest,
                     onEditCategories = { navigator.push(CategoryScreen()) },
                     onConfirm = { include, _ ->
-                        screenModel.changeMangaFavorite(dialog.manga)
-                        screenModel.moveMangaToCategories(dialog.manga, include)
+                        screenModel.changeMangaFavorite(dialog.anime)
+                        screenModel.moveMangaToCategories(dialog.anime, include)
                     },
                 )
             }

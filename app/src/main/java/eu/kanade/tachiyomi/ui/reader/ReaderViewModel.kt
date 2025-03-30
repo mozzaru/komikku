@@ -141,8 +141,8 @@ class ReaderViewModel @JvmOverloads constructor(
     /**
      * The manga loaded in the reader. It can be null when instantiated for a short time.
      */
-    val manga: Anime?
-        get() = state.value.manga
+    val anime: Anime?
+        get() = state.value.anime
 
     /**
      * The episode id of the currently loaded episode. Used to restore from process kill.
@@ -163,7 +163,7 @@ class ReaderViewModel @JvmOverloads constructor(
         }
 
     /**
-     * The episode loader for the loaded manga. It'll be null until [manga] is set.
+     * The episode loader for the loaded manga. It'll be null until [anime] is set.
      */
     private var loader: ChapterLoader? = null
 
@@ -179,7 +179,7 @@ class ReaderViewModel @JvmOverloads constructor(
      * time in a background thread to avoid blocking the UI.
      */
     private val episodeList by lazy {
-        val manga = manga!!
+        val manga = anime!!
         // SY -->
         val (chapters, mangaMap) = runBlocking {
             if (manga.source == MERGED_SOURCE_ID) {
@@ -259,7 +259,7 @@ class ReaderViewModel @JvmOverloads constructor(
     }
 
     private val incognitoMode = preferences.incognitoMode().get()
-    private val downloadAheadAmount = downloadPreferences.autoDownloadWhileReading().get()
+    private val downloadAheadAmount = downloadPreferences.autoDownloadWhileWatching().get()
 
     init {
         // To save state
@@ -321,7 +321,7 @@ class ReaderViewModel @JvmOverloads constructor(
      * Whether this presenter is initialized yet.
      */
     fun needsInit(): Boolean {
-        return manga == null
+        return anime == null
     }
 
     /**
@@ -356,9 +356,9 @@ class ReaderViewModel @JvmOverloads constructor(
                     // SY <--
                     mutableState.update {
                         it.copy(
-                            manga = manga,
+                            anime = manga,
                             /* SY --> */
-                            mergedManga = mergedManga,
+                            mergedAnime = mergedManga,
                             dateRelativeTime = relativeTime,
                             ehAutoscrollFreq = if (autoScrollFreq == -1f) {
                                 ""
@@ -377,11 +377,11 @@ class ReaderViewModel @JvmOverloads constructor(
                         context = context,
                         downloadManager = downloadManager,
                         downloadProvider = downloadProvider,
-                        manga = manga,
+                        anime = manga,
                         source = source, /* SY --> */
                         sourceManager = sourceManager,
                         mergedReferences = mergedReferences,
-                        mergedManga = mergedManga, /* SY <-- */
+                        mergedAnime = mergedManga, /* SY <-- */
                     )
 
                     loadChapter(
@@ -410,7 +410,7 @@ class ReaderViewModel @JvmOverloads constructor(
         return episodeList.map {
             ReaderChapterItem(
                 episode = it.episode.toDomainEpisode()!!,
-                manga = manga!!,
+                anime = anime!!,
                 isCurrent = it.episode.id == currentChapter?.episode?.id,
                 dateFormat = UiPreferences.dateFormat(uiPreferences.dateFormat().get()),
             )
@@ -518,7 +518,7 @@ class ReaderViewModel @JvmOverloads constructor(
         }
 
         if (chapter.pageLoader?.isLocal == false) {
-            val manga = manga ?: return
+            val manga = anime ?: return
             val dbChapter = chapter.episode
             val isDownloaded = downloadManager.isEpisodeDownloaded(
                 dbChapter.name,
@@ -593,7 +593,7 @@ class ReaderViewModel @JvmOverloads constructor(
 
     private fun downloadNextChapters() {
         if (downloadAheadAmount == 0) return
-        val manga = manga ?: return
+        val manga = anime ?: return
 
         // Only download ahead if current + next episode is already downloaded too to avoid jank
         if (getCurrentChapter()?.pageLoader !is DownloadPageLoader) return
@@ -641,7 +641,7 @@ class ReaderViewModel @JvmOverloads constructor(
      * @param currentChapter current episode, which is going to be marked as read.
      */
     private fun deleteChapterIfNeeded(currentChapter: ReaderChapter) {
-        val removeAfterReadSlots = downloadPreferences.removeAfterReadSlots().get()
+        val removeAfterReadSlots = downloadPreferences.removeAfterSeenSlots().get()
         if (removeAfterReadSlots == -1) return
 
         // Determine which episode should be deleted and enqueue
@@ -687,7 +687,7 @@ class ReaderViewModel @JvmOverloads constructor(
                 readerChapter.episode.seen = true
                 // SY -->
                 if (readerChapter.episode.episode_number >= 0 && readerPreferences.markReadDupe().get()) {
-                    getEpisodesByAnimeId.await(manga!!.id).sortedByDescending { it.sourceOrder }
+                    getEpisodesByAnimeId.await(anime!!.id).sortedByDescending { it.sourceOrder }
                         .filter {
                             it.id != readerChapter.episode.id &&
                                 !it.seen &&
@@ -781,7 +781,7 @@ class ReaderViewModel @JvmOverloads constructor(
         return state.value.currentChapter
     }
 
-    fun getSource() = manga?.source?.let { sourceManager.getOrStub(it) } as? HttpSource
+    fun getSource() = anime?.source?.let { sourceManager.getOrStub(it) } as? HttpSource
 
     fun getChapterUrl(): String? {
         val sEpisode = getCurrentChapter()?.episode ?: return null
@@ -839,7 +839,7 @@ class ReaderViewModel @JvmOverloads constructor(
      */
     fun getMangaReadingMode(resolveDefault: Boolean = true): Int {
         val default = readerPreferences.defaultReadingMode().get()
-        val manga = manga ?: return default
+        val manga = anime ?: return default
         val readingMode = ReadingMode.fromPreference(manga.readingMode.toInt())
         // SY -->
         return when {
@@ -857,7 +857,7 @@ class ReaderViewModel @JvmOverloads constructor(
      * Updates the viewer position for the open manga.
      */
     fun setMangaReadingMode(readingMode: ReadingMode) {
-        val manga = manga ?: return
+        val manga = anime ?: return
         runBlocking(Dispatchers.IO) {
             setAnimeViewerFlags.awaitSetReadingMode(manga.id, readingMode.flagValue.toLong())
             val currChapters = state.value.viewerChapters
@@ -868,7 +868,7 @@ class ReaderViewModel @JvmOverloads constructor(
 
                 mutableState.update {
                     it.copy(
-                        manga = getAnime.await(manga.id),
+                        anime = getAnime.await(manga.id),
                         viewerChapters = currChapters,
                     )
                 }
@@ -882,10 +882,10 @@ class ReaderViewModel @JvmOverloads constructor(
      */
     fun getMangaOrientation(resolveDefault: Boolean = true): Int {
         val default = readerPreferences.defaultOrientationType().get()
-        val orientation = ReaderOrientation.fromPreference(manga?.readerOrientation?.toInt())
+        val orientation = ReaderOrientation.fromPreference(anime?.readerOrientation?.toInt())
         return when {
             resolveDefault && orientation == ReaderOrientation.DEFAULT -> default
-            else -> manga?.readerOrientation?.toInt() ?: default
+            else -> anime?.readerOrientation?.toInt() ?: default
         }
     }
 
@@ -893,7 +893,7 @@ class ReaderViewModel @JvmOverloads constructor(
      * Updates the orientation type for the open manga.
      */
     fun setMangaOrientationType(orientation: ReaderOrientation) {
-        val manga = manga ?: return
+        val manga = anime ?: return
         viewModelScope.launchIO {
             setAnimeViewerFlags.awaitSetOrientation(manga.id, orientation.flagValue.toLong())
             val currChapters = state.value.viewerChapters
@@ -904,7 +904,7 @@ class ReaderViewModel @JvmOverloads constructor(
 
                 mutableState.update {
                     it.copy(
-                        manga = getAnime.await(manga.id),
+                        anime = getAnime.await(manga.id),
                         viewerChapters = currChapters,
                     )
                 }
@@ -930,16 +930,16 @@ class ReaderViewModel @JvmOverloads constructor(
     // SY <--
 
     /**
-     * Generate a filename for the given [manga] and [page]
+     * Generate a filename for the given [anime] and [page]
      */
     private fun generateFilename(
-        manga: Anime,
+        anime: Anime,
         page: ReaderVideo,
     ): String {
         val chapter = page.chapter.episode
         val filenameSuffix = " - ${page.number}"
         return DiskUtil.buildValidFilename(
-            "${manga.title} - ${chapter.name}".takeBytes(DiskUtil.MAX_FILE_NAME_BYTES - filenameSuffix.byteSize()),
+            "${anime.title} - ${chapter.name}".takeBytes(DiskUtil.MAX_FILE_NAME_BYTES - filenameSuffix.byteSize()),
         ) + filenameSuffix
     }
 
@@ -1030,7 +1030,7 @@ class ReaderViewModel @JvmOverloads constructor(
         }
         // SY <--
         if (page?.status != Video.State.READY) return
-        val manga = manga ?: return
+        val manga = anime ?: return
 
         val context = Injekt.get<Application>()
         val notifier = SaveImageNotifier(context)
@@ -1076,7 +1076,7 @@ class ReaderViewModel @JvmOverloads constructor(
         if (firstPage.status != Video.State.READY) return
         if (secondPage?.status != Video.State.READY) return
 
-        val manga = manga ?: return
+        val manga = anime ?: return
 
         val context = Injekt.get<Application>()
         val notifier = SaveImageNotifier(context)
@@ -1091,7 +1091,7 @@ class ReaderViewModel @JvmOverloads constructor(
                     isLTR = isLTR,
                     bg = bg,
                     location = Location.Pictures.create(DiskUtil.buildValidFilename(manga.title)),
-                    manga = manga,
+                    anime = manga,
                 )
                 eventChannel.send(Event.SavedImage(SaveImageResult.Success(uri)))
             } catch (e: Throwable) {
@@ -1107,7 +1107,7 @@ class ReaderViewModel @JvmOverloads constructor(
         isLTR: Boolean,
         @ColorInt bg: Int,
         location: Location,
-        manga: Anime,
+        anime: Anime,
     ): Uri {
         val stream1 = page1.stream!!
         ImageUtil.findImageType(stream1) ?: throw Exception("Not an image")
@@ -1121,7 +1121,7 @@ class ReaderViewModel @JvmOverloads constructor(
         // Build destination file.
         val filenameSuffix = " - ${page1.number}-${page2.number}.jpg"
         val filename = DiskUtil.buildValidFilename(
-            "${manga.title} - ${chapter.name}".takeBytes(MAX_FILE_NAME_BYTES - filenameSuffix.byteSize()),
+            "${anime.title} - ${chapter.name}".takeBytes(MAX_FILE_NAME_BYTES - filenameSuffix.byteSize()),
         ) + filenameSuffix
 
         return imageSaver.save(
@@ -1155,7 +1155,7 @@ class ReaderViewModel @JvmOverloads constructor(
         }
         // SY <--
         if (page?.status != Video.State.READY) return
-        val manga = manga ?: return
+        val manga = anime ?: return
 
         val context = Injekt.get<Application>()
         val destDir = context.cacheImageDir
@@ -1188,7 +1188,7 @@ class ReaderViewModel @JvmOverloads constructor(
 
         if (firstPage.status != Video.State.READY) return
         if (secondPage?.status != Video.State.READY) return
-        val manga = manga ?: return
+        val manga = anime ?: return
 
         val context = Injekt.get<Application>()
         val destDir = context.cacheImageDir
@@ -1202,7 +1202,7 @@ class ReaderViewModel @JvmOverloads constructor(
                     isLTR = isLTR,
                     bg = bg,
                     location = Location.Cache,
-                    manga = manga,
+                    anime = manga,
                 )
                 eventChannel.send(if (copyToClipboard) Event.CopyImage(uri) else Event.ShareImage(uri, firstPage, secondPage))
             }
@@ -1224,7 +1224,7 @@ class ReaderViewModel @JvmOverloads constructor(
         }
         // SY <--
         if (page?.status != Video.State.READY) return
-        val manga = manga ?: return
+        val manga = anime ?: return
         val stream = page.stream ?: return
 
         viewModelScope.launchNonCancellable {
@@ -1261,7 +1261,7 @@ class ReaderViewModel @JvmOverloads constructor(
         if (incognitoMode) return
         if (!trackPreferences.autoUpdateTrack().get()) return
 
-        val manga = manga ?: return
+        val manga = anime ?: return
         val context = Injekt.get<Application>()
 
         viewModelScope.launchNonCancellable {
@@ -1275,10 +1275,10 @@ class ReaderViewModel @JvmOverloads constructor(
      */
     private fun enqueueDeleteReadChapters(chapter: ReaderChapter) {
         if (!chapter.episode.seen) return
-        val mergedManga = state.value.mergedManga
+        val mergedManga = state.value.mergedAnime
         // SY -->
         val manga = if (mergedManga.isNullOrEmpty()) {
-            manga
+            anime
         } else {
             mergedManga[chapter.episode.anime_id]
         } ?: return
@@ -1302,7 +1302,7 @@ class ReaderViewModel @JvmOverloads constructor(
 
     @Immutable
     data class State(
-        val manga: Anime? = null,
+        val anime: Anime? = null,
         val viewerChapters: ViewerChapters? = null,
         val bookmarked: Boolean = false,
         val isLoadingAdjacentChapter: Boolean = false,
@@ -1319,7 +1319,7 @@ class ReaderViewModel @JvmOverloads constructor(
         // SY -->
         /** for display page number in double-page mode */
         val currentPageText: String = "",
-        val mergedManga: Map<Long, Anime>? = null,
+        val mergedAnime: Map<Long, Anime>? = null,
         val ehUtilsVisible: Boolean = false,
         val lastShiftDoubleState: Boolean? = null,
         val indexPageToShift: Int? = null,

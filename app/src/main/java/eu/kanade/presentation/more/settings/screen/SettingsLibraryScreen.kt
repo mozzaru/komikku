@@ -233,7 +233,7 @@ object SettingsLibraryScreen : SearchableSettings {
                 ),
                 // SY -->
                 Preference.PreferenceItem.SwitchPreference(
-                    pref = libraryPreferences.libraryReadDuplicateChapters(),
+                    pref = libraryPreferences.libraryMarkDuplicateEpisodes(),
                     title = stringResource(SYMR.strings.pref_library_mark_duplicate_chapters),
                     subtitle = stringResource(SYMR.strings.pref_library_mark_duplicate_chapters_summary),
                 ),

@@ -16,16 +16,16 @@ class GetAnimeWithEpisodes(
         return combine(
             animeRepository.getAnimeByIdAsFlow(id),
             episodeRepository.getEpisodeByAnimeIdAsFlow(id, applyScanlatorFilter),
-        ) { manga, chapters ->
-            Pair(manga, chapters)
+        ) { anime, episodes ->
+            Pair(anime, episodes)
         }
     }
 
-    suspend fun awaitManga(id: Long): Anime {
+    suspend fun awaitAnime(id: Long): Anime {
         return animeRepository.getAnimeById(id)
     }
 
-    suspend fun awaitChapters(id: Long, applyScanlatorFilter: Boolean = false): List<Episode> {
+    suspend fun awaitEpisodes(id: Long, applyScanlatorFilter: Boolean = false): List<Episode> {
         return episodeRepository.getEpisodeByAnimeId(id, applyScanlatorFilter)
     }
 }

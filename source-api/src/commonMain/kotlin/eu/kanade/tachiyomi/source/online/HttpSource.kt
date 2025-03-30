@@ -10,9 +10,9 @@ import eu.kanade.tachiyomi.network.newCachelessCallWithProgress
 import eu.kanade.tachiyomi.source.CatalogueSource
 import eu.kanade.tachiyomi.source.model.AnimesPage
 import eu.kanade.tachiyomi.source.model.FilterList
-import eu.kanade.tachiyomi.source.model.Video
 import eu.kanade.tachiyomi.source.model.SAnime
 import eu.kanade.tachiyomi.source.model.SEpisode
+import eu.kanade.tachiyomi.source.model.Video
 import exh.log.maybeInjectEHLogger
 import kotlinx.coroutines.async
 import kotlinx.coroutines.coroutineScope

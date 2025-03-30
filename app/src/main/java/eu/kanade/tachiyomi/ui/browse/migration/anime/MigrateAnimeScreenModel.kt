@@ -70,8 +70,8 @@ class MigrateAnimeScreenModel(
     }
 
     // KMK -->
-    private fun toMigrationMangaScreenItems(animes: List<Anime>): List<MigrateAnimeItem> {
-        return animes.map { manga ->
+    private fun toMigrationMangaScreenItems(mangases: List<Anime>): List<MigrateAnimeItem> {
+        return mangases.map { manga ->
             MigrateAnimeItem(
                 anime = manga,
                 selected = manga.id in selectedMangaIds,

@@ -100,7 +100,7 @@ fun SourceFeedScreen(
     onClickSearch: (String) -> Unit,
     searchQuery: String?,
     onSearchQueryChange: (String?) -> Unit,
-    getMangaState: @Composable (Anime) -> State<Anime>,
+    getAnimeState: @Composable (Anime) -> State<Anime>,
     // KMK -->
     navigateUp: () -> Unit,
     onWebViewClick: (() -> Unit)?,
@@ -170,7 +170,7 @@ fun SourceFeedScreen(
                     SourceFeedList(
                         items = items,
                         paddingValues = paddingValues,
-                        getMangaState = getMangaState,
+                        getAnimeState = getAnimeState,
                         onClickBrowse = onClickBrowse,
                         onClickLatest = onClickLatest,
                         onClickSavedSearch = onClickSavedSearch,
@@ -194,7 +194,7 @@ fun SourceFeedScreen(
 fun SourceFeedList(
     items: ImmutableList<SourceFeedUI>,
     paddingValues: PaddingValues,
-    getMangaState: @Composable ((Anime) -> State<Anime>),
+    getAnimeState: @Composable ((Anime) -> State<Anime>),
     onClickBrowse: () -> Unit,
     onClickLatest: () -> Unit,
     onClickSavedSearch: (SavedSearch) -> Unit,
@@ -251,7 +251,7 @@ fun SourceFeedList(
             ) {
                 SourceFeedItem(
                     item = item,
-                    getMangaState = { getMangaState(it) },
+                    getAnimeState = { getAnimeState(it) },
                     onClickManga = onClickManga,
                     // KMK -->
                     onLongClickManga = onLongClickManga,
@@ -266,7 +266,7 @@ fun SourceFeedList(
 @Composable
 fun SourceFeedItem(
     item: SourceFeedUI,
-    getMangaState: @Composable ((Anime) -> State<Anime>),
+    getAnimeState: @Composable ((Anime) -> State<Anime>),
     onClickManga: (Anime) -> Unit,
     // KMK -->
     onLongClickManga: (Anime) -> Unit,
@@ -284,7 +284,7 @@ fun SourceFeedItem(
         else -> {
             GlobalSearchCardRow(
                 titles = item.results.orEmpty(),
-                getAnime = getMangaState,
+                getAnime = getAnimeState,
                 onClick = onClickManga,
                 // KMK -->
                 onLongClick = onLongClickManga,

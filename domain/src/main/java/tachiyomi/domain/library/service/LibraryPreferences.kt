@@ -62,7 +62,7 @@ class LibraryPreferences(
         ),
     )
     fun autoUpdateAnimeRestrictions() = preferenceStore.getStringSet(
-        "library_update_manga_restriction",
+        "library_update_anime_restriction",
         setOf(
             ANIME_HAS_UNSEEN,
             ANIME_NON_COMPLETED,
@@ -74,7 +74,7 @@ class LibraryPreferences(
     fun autoUpdateMetadata() = preferenceStore.getBoolean("auto_update_metadata", false)
 
     fun showContinueWatchingButton() = preferenceStore.getBoolean(
-        "display_continue_reading_button",
+        "display_continue_watching_button",
         false,
     )
 
@@ -85,7 +85,7 @@ class LibraryPreferences(
         TriState.DISABLED,
     )
 
-    fun filterUnseen() = preferenceStore.getEnum("pref_filter_library_unread_v2", TriState.DISABLED)
+    fun filterUnseen() = preferenceStore.getEnum("pref_filter_library_unseen_v2", TriState.DISABLED)
 
     fun filterStarted() = preferenceStore.getEnum(
         "pref_filter_library_started_v2",
@@ -113,7 +113,7 @@ class LibraryPreferences(
         TriState.DISABLED,
     )
 
-    fun libraryReadDuplicateChapters() = preferenceStore.getBoolean("pref_library_mark_duplicate_chapters", false)
+    fun libraryMarkDuplicateEpisodes() = preferenceStore.getBoolean("pref_library_mark_duplicate_episodes", false)
     // SY <--
 
     fun filterTracking(id: Int) = preferenceStore.getEnum(
@@ -169,61 +169,61 @@ class LibraryPreferences(
 
     // region Episode
 
-    fun filterChapterByRead() = preferenceStore.getLong(
-        "default_chapter_filter_by_read",
+    fun filterEpisodeBySeen() = preferenceStore.getLong(
+        "default_episode_filter_by_seen",
         Anime.SHOW_ALL,
     )
 
-    fun filterChapterByDownloaded() = preferenceStore.getLong(
-        "default_chapter_filter_by_downloaded",
+    fun filterEpisodeByDownloaded() = preferenceStore.getLong(
+        "default_episode_filter_by_downloaded",
         Anime.SHOW_ALL,
     )
 
-    fun filterChapterByBookmarked() = preferenceStore.getLong(
-        "default_chapter_filter_by_bookmarked",
+    fun filterEpisodeByBookmarked() = preferenceStore.getLong(
+        "default_episode_filter_by_bookmarked",
         Anime.SHOW_ALL,
     )
 
     // and upload date
-    fun sortChapterBySourceOrNumber() = preferenceStore.getLong(
-        "default_chapter_sort_by_source_or_number",
+    fun sortEpisodeBySourceOrNumber() = preferenceStore.getLong(
+        "default_episode_sort_by_source_or_number",
         Anime.EPISODE_SORTING_SOURCE,
     )
 
-    fun displayChapterByNameOrNumber() = preferenceStore.getLong(
-        "default_chapter_display_by_name_or_number",
+    fun displayEpisodeByNameOrNumber() = preferenceStore.getLong(
+        "default_episode_display_by_name_or_number",
         Anime.EPISODE_DISPLAY_NAME,
     )
 
-    fun sortChapterByAscendingOrDescending() = preferenceStore.getLong(
-        "default_chapter_sort_by_ascending_or_descending",
+    fun sortEpisodeByAscendingOrDescending() = preferenceStore.getLong(
+        "default_episode_sort_by_ascending_or_descending",
         Anime.EPISODE_SORT_DESC,
     )
 
-    fun setChapterSettingsDefault(manga: Anime) {
-        filterChapterByRead().set(manga.unseenFilterRaw)
-        filterChapterByDownloaded().set(manga.downloadedFilterRaw)
-        filterChapterByBookmarked().set(manga.bookmarkedFilterRaw)
-        sortChapterBySourceOrNumber().set(manga.sorting)
-        displayChapterByNameOrNumber().set(manga.displayMode)
-        sortChapterByAscendingOrDescending().set(
-            if (manga.sortDescending()) Anime.EPISODE_SORT_DESC else Anime.EPISODE_SORT_ASC,
+    fun setEpisodeSettingsDefault(anime: Anime) {
+        filterEpisodeBySeen().set(anime.unseenFilterRaw)
+        filterEpisodeByDownloaded().set(anime.downloadedFilterRaw)
+        filterEpisodeByBookmarked().set(anime.bookmarkedFilterRaw)
+        sortEpisodeBySourceOrNumber().set(anime.sorting)
+        displayEpisodeByNameOrNumber().set(anime.displayMode)
+        sortEpisodeByAscendingOrDescending().set(
+            if (anime.sortDescending()) Anime.EPISODE_SORT_DESC else Anime.EPISODE_SORT_ASC,
         )
     }
 
-    fun autoClearChapterCache() = preferenceStore.getBoolean("auto_clear_chapter_cache", false)
+    fun autoClearEpisdoeCache() = preferenceStore.getBoolean("auto_clear_episode_cache", false)
 
     // endregion
 
     // region Swipe Actions
 
     fun swipeToStartAction() = preferenceStore.getEnum(
-        "pref_chapter_swipe_end_action",
+        "pref_episode_swipe_end_action",
         EpisodeSwipeAction.ToggleBookmark,
     )
 
     fun swipeToEndAction() = preferenceStore.getEnum(
-        "pref_chapter_swipe_start_action",
+        "pref_episode_swipe_start_action",
         EpisodeSwipeAction.ToggleSeen,
     )
 
@@ -251,9 +251,9 @@ class LibraryPreferences(
         const val DEVICE_NETWORK_NOT_METERED = "network_not_metered"
         const val DEVICE_CHARGING = "ac"
 
-        const val ANIME_NON_COMPLETED = "manga_ongoing"
-        const val ANIME_HAS_UNSEEN = "manga_fully_read"
-        const val ANIME_NON_SEEN = "manga_started"
-        const val ANIME_OUTSIDE_RELEASE_PERIOD = "manga_outside_release_period"
+        const val ANIME_NON_COMPLETED = "anime_ongoing"
+        const val ANIME_HAS_UNSEEN = "anime_fully_seen"
+        const val ANIME_NON_SEEN = "anime_started"
+        const val ANIME_OUTSIDE_RELEASE_PERIOD = "anime_outside_release_period"
     }
 }

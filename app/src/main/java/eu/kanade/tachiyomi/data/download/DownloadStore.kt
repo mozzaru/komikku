@@ -98,9 +98,9 @@ class DownloadStore(
 
         val downloads = mutableListOf<Download>()
         if (objs.isNotEmpty()) {
-            val cachedManga = mutableMapOf<Long, Anime?>()
+            val cachedAnime = mutableMapOf<Long, Anime?>()
             for ((mangaId, chapterId) in objs) {
-                val manga = cachedManga.getOrPut(mangaId) {
+                val manga = cachedAnime.getOrPut(mangaId) {
                     runBlocking { getAnime.await(mangaId) }
                 } ?: continue
                 val source = sourceManager.get(manga.source) as? HttpSource ?: continue
