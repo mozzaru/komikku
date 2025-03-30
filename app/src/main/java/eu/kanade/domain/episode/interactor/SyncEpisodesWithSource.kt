@@ -8,12 +8,12 @@ import eu.kanade.domain.episode.model.toSEpisode
 import eu.kanade.tachiyomi.data.download.DownloadManager
 import eu.kanade.tachiyomi.data.download.DownloadProvider
 import eu.kanade.tachiyomi.source.Source
-import eu.kanade.tachiyomi.source.model.SEpisode
+import eu.kanade.tachiyomi.source.model.SChapter
 import eu.kanade.tachiyomi.source.online.HttpSource
 import tachiyomi.data.episode.EpisodeSanitizer
 import tachiyomi.data.source.NoResultsException
 import tachiyomi.domain.manga.model.Manga
-import tachiyomi.domain.chapter.interactor.GetEpisodesByAnimeId
+import tachiyomi.domain.chapter.interactor.GetChaptersByMangaId
 import tachiyomi.domain.chapter.interactor.ShouldUpdateDbEpisode
 import tachiyomi.domain.chapter.interactor.UpdateEpisode
 import tachiyomi.domain.chapter.model.Episode
@@ -32,7 +32,7 @@ class SyncEpisodesWithSource(
     private val shouldUpdateDbEpisode: ShouldUpdateDbEpisode,
     private val updateAnime: UpdateAnime,
     private val updateEpisode: UpdateEpisode,
-    private val getEpisodesByAnimeId: GetEpisodesByAnimeId,
+    private val getChaptersByMangaId: GetChaptersByMangaId,
     private val getExcludedScanlators: GetExcludedScanlators,
 ) {
 
@@ -45,7 +45,7 @@ class SyncEpisodesWithSource(
      * @return Newly added episodes
      */
     suspend fun await(
-        rawSourceEpisodes: List<SEpisode>,
+        rawSourceEpisodes: List<SChapter>,
         manga: Manga,
         source: Source,
         manualFetch: Boolean = false,
@@ -67,7 +67,7 @@ class SyncEpisodesWithSource(
                     .copy(animeId = manga.id, sourceOrder = i.toLong())
             }
 
-        val dbEpisodes = getEpisodesByAnimeId.await(manga.id)
+        val dbEpisodes = getChaptersByMangaId.await(manga.id)
 
         val newEpisodes = mutableListOf<Episode>()
         val updatedEpisodes = mutableListOf<Episode>()
@@ -87,7 +87,7 @@ class SyncEpisodesWithSource(
             // Update metadata from source if necessary.
             if (source is HttpSource) {
                 val sEpisode = episode.toSEpisode()
-                source.prepareNewEpisode(sEpisode, manga.toSAnime())
+                source.prepareNewChapter(sEpisode, manga.toSAnime())
                 episode = episode.copyFromSEpisode(sEpisode)
             }
 

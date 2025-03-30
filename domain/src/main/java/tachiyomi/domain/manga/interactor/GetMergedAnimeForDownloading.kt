@@ -1,13 +1,13 @@
 package tachiyomi.domain.manga.interactor
 
 import tachiyomi.domain.manga.model.Manga
-import tachiyomi.domain.manga.repository.AnimeMergeRepository
+import tachiyomi.domain.manga.repository.MangaMergeRepository
 
 class GetMergedAnimeForDownloading(
-    private val animeMergeRepository: AnimeMergeRepository,
+    private val mangaMergeRepository: MangaMergeRepository,
 ) {
 
     suspend fun await(mergeId: Long): List<Manga> {
-        return animeMergeRepository.getMergeAnimeForDownloading(mergeId)
+        return mangaMergeRepository.getMergeMangaForDownloading(mergeId)
     }
 }

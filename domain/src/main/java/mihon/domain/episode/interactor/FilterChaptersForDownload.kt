@@ -4,20 +4,20 @@ import exh.source.MERGED_SOURCE_ID
 import tachiyomi.domain.manga.model.Manga
 import tachiyomi.domain.category.interactor.GetCategories
 import tachiyomi.domain.download.service.DownloadPreferences
-import tachiyomi.domain.chapter.interactor.GetEpisodesByAnimeId
-import tachiyomi.domain.chapter.interactor.GetMergedEpisodesByAnimeId
+import tachiyomi.domain.chapter.interactor.GetChaptersByMangaId
+import tachiyomi.domain.chapter.interactor.GetMergedChaptersByMangaId
 import tachiyomi.domain.chapter.model.Episode
 
 /**
  * Interactor responsible for determining which chapters of a manga should be downloaded.
  *
- * @property getEpisodesByAnimeId Interactor for retrieving chapters by manga ID.
+ * @property getChaptersByMangaId Interactor for retrieving chapters by manga ID.
  * @property downloadPreferences User preferences related to chapter downloads.
  * @property getCategories Interactor for retrieving categories associated with a manga.
  */
-class FilterEpisodesForDownload(
-    private val getEpisodesByAnimeId: GetEpisodesByAnimeId,
-    private val getMergedEpisodesByAnimeId: GetMergedEpisodesByAnimeId,
+class FilterChaptersForDownload(
+    private val getChaptersByMangaId: GetChaptersByMangaId,
+    private val getMergedChaptersByMangaId: GetMergedChaptersByMangaId,
     private val downloadPreferences: DownloadPreferences,
     private val getCategories: GetCategories,
 ) {
@@ -43,9 +43,9 @@ class FilterEpisodesForDownload(
 
         // SY -->
         val existingChapters = if (manga.source == MERGED_SOURCE_ID) {
-            getMergedEpisodesByAnimeId.await(manga.id)
+            getMergedChaptersByMangaId.await(manga.id)
         } else {
-            getEpisodesByAnimeId.await(manga.id)
+            getChaptersByMangaId.await(manga.id)
         }
 
         val readChapterNumbers = existingChapters

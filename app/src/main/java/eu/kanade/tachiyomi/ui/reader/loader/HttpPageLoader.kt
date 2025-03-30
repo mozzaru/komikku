@@ -86,7 +86,7 @@ internal class HttpPageLoader(
             if (e is CancellationException) {
                 throw e
             }
-            source.getVideoList(chapter.episode)
+            source.getPageList(chapter.episode)
         }
         // SY -->
         val rp = pages.mapIndexed { index, page ->
@@ -206,7 +206,7 @@ internal class HttpPageLoader(
         try {
             if (page.videoUrl.isNullOrEmpty()) {
                 page.status = Page.State.LOAD_PAGE
-                page.videoUrl = source.getVideoUrl(page)
+                page.videoUrl = source.getImageUrl(page)
             }
             val imageUrl = page.videoUrl!!
 

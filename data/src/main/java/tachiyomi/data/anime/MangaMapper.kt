@@ -2,10 +2,10 @@ package tachiyomi.data.anime
 
 import eu.kanade.tachiyomi.source.model.UpdateStrategy
 import tachiyomi.domain.manga.model.Manga
-import tachiyomi.domain.library.model.LibraryAnime
+import tachiyomi.domain.library.model.LibraryManga
 
-object AnimeMapper {
-    fun mapAnime(
+object MangaMapper {
+    fun mapManga(
         id: Long,
         source: Long,
         url: String,
@@ -21,7 +21,7 @@ object AnimeMapper {
         nextUpdate: Long?,
         initialized: Boolean,
         viewerFlags: Long,
-        episodeFlags: Long,
+        chapterFlags: Long,
         coverLastModified: Long,
         dateAdded: Long,
         // SY -->
@@ -44,7 +44,7 @@ object AnimeMapper {
         fetchInterval = calculateInterval.toInt(),
         dateAdded = dateAdded,
         viewerFlags = viewerFlags,
-        chapterFlags = episodeFlags,
+        chapterFlags = chapterFlags,
         coverLastModified = coverLastModified,
         url = url,
         // SY -->
@@ -63,7 +63,7 @@ object AnimeMapper {
         version = version,
     )
 
-    fun mapLibraryAnime(
+    fun mapLibraryManga(
         id: Long,
         source: Long,
         url: String,
@@ -79,7 +79,7 @@ object AnimeMapper {
         nextUpdate: Long?,
         initialized: Boolean,
         viewerFlags: Long,
-        episodeFlags: Long,
+        chapterFlags: Long,
         coverLastModified: Long,
         dateAdded: Long,
         // SY -->
@@ -93,17 +93,17 @@ object AnimeMapper {
         version: Long,
         isSyncing: Long,
         totalCount: Long,
-        seenCount: Double,
+        readCount: Double,
         latestUpload: Long,
-        episodeFetchedAt: Long,
-        lastSeen: Long,
+        chapterFetchedAt: Long,
+        lastRead: Long,
         bookmarkCount: Double,
         // AM (FILLERMARK) -->
         fillermarkCount: Double,
         // <-- AM (FILLERMARK)
         category: Long,
-    ): LibraryAnime = LibraryAnime(
-        manga = mapAnime(
+    ): LibraryManga = LibraryManga(
+        manga = mapManga(
             id,
             source,
             url,
@@ -119,7 +119,7 @@ object AnimeMapper {
             nextUpdate,
             initialized,
             viewerFlags,
-            episodeFlags,
+            chapterFlags,
             coverLastModified,
             dateAdded,
             // SY -->
@@ -133,14 +133,14 @@ object AnimeMapper {
             isSyncing,
         ),
         category = category,
-        totalEpisodes = totalCount,
-        seenCount = seenCount.toLong(),
+        totalChapters = totalCount,
+        readCount = readCount.toLong(),
         bookmarkCount = bookmarkCount.toLong(),
         // AM (FILLERMARK) -->
         fillermarkCount = fillermarkCount.toLong(),
         // <-- AM (FILLERMARK)
         latestUpload = latestUpload,
-        episodeFetchedAt = episodeFetchedAt,
-        lastSeen = lastSeen,
+        chapterFetchedAt = chapterFetchedAt,
+        lastRead = lastRead,
     )
 }

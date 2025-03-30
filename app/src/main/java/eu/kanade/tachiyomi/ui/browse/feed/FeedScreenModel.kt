@@ -297,17 +297,17 @@ open class FeedScreenModel(
                                         itemUI.source.getLatestUpdates(1)
                                         // KMK -->
                                     } else {
-                                        itemUI.source.getPopularAnime(1)
+                                        itemUI.source.getPopularManga(1)
                                     }
                                     // KMK <--
                                 } else {
-                                    itemUI.source.getSearchAnime(
+                                    itemUI.source.getSearchManga(
                                         1,
                                         itemUI.savedSearch.query.orEmpty(),
                                         getFilterList(itemUI.savedSearch, itemUI.source),
                                     )
                                 }
-                            }.animes
+                            }.mangas
                         } else {
                             emptyList()
                         }

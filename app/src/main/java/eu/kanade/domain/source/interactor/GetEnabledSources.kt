@@ -1,6 +1,7 @@
 package eu.kanade.domain.source.interactor
 
 import eu.kanade.domain.source.service.SourcePreferences
+import exh.source.BlacklistedSources
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.distinctUntilChanged

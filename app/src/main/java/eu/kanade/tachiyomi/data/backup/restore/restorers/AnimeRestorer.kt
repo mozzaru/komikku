@@ -9,15 +9,15 @@ import eu.kanade.tachiyomi.data.backup.models.BackupMergedMangaReference
 import eu.kanade.tachiyomi.data.backup.models.BackupTracking
 import tachiyomi.data.DatabaseHandler
 import tachiyomi.data.UpdateStrategyColumnAdapter
-import tachiyomi.data.anime.AnimeMapper
-import tachiyomi.data.anime.MergedAnimeMapper
+import tachiyomi.data.anime.MangaMapper
+import tachiyomi.data.anime.MergedMangaMapper
 import tachiyomi.domain.manga.interactor.FetchInterval
 import tachiyomi.domain.manga.interactor.GetAnimeByUrlAndSourceId
 import tachiyomi.domain.manga.interactor.SetCustomAnimeInfo
 import tachiyomi.domain.manga.model.Manga
-import tachiyomi.domain.manga.model.CustomAnimeInfo
+import tachiyomi.domain.manga.model.CustomMangaInfo
 import tachiyomi.domain.category.interactor.GetCategories
-import tachiyomi.domain.chapter.interactor.GetEpisodesByAnimeId
+import tachiyomi.domain.chapter.interactor.GetChaptersByMangaId
 import tachiyomi.domain.chapter.model.Episode
 import tachiyomi.domain.track.interactor.GetTracks
 import tachiyomi.domain.track.interactor.InsertTrack
@@ -34,7 +34,7 @@ class AnimeRestorer(
     private val handler: DatabaseHandler = Injekt.get(),
     private val getCategories: GetCategories = Injekt.get(),
     private val getAnimeByUrlAndSourceId: GetAnimeByUrlAndSourceId = Injekt.get(),
-    private val getEpisodesByAnimeId: GetEpisodesByAnimeId = Injekt.get(),
+    private val getChaptersByMangaId: GetChaptersByMangaId = Injekt.get(),
     private val updateAnime: UpdateAnime = Injekt.get(),
     private val getTracks: GetTracks = Injekt.get(),
     private val insertTrack: InsertTrack = Injekt.get(),
@@ -168,7 +168,7 @@ class AnimeRestorer(
     }
 
     private suspend fun restoreChapters(manga: Manga, backupEpisodes: List<BackupEpisode>) {
-        val dbChaptersByUrl = getEpisodesByAnimeId.await(manga.id)
+        val dbChaptersByUrl = getChaptersByMangaId.await(manga.id)
             .associateBy { it.url }
 
         val (existingChapters, newChapters) = backupEpisodes
@@ -323,7 +323,7 @@ class AnimeRestorer(
         excludedScanlators: List<String>,
         // SY -->
         mergedMangaReferences: List<BackupMergedMangaReference>,
-        customManga: CustomAnimeInfo?,
+        customManga: CustomMangaInfo?,
         // SY <--
     ): Manga {
         restoreCategories(manga, categories, backupCategories)
@@ -481,7 +481,7 @@ class AnimeRestorer(
     ) {
         // Get merged manga references from file and from db
         val dbMergedMangaReferences = handler.awaitList {
-            mergedQueries.selectAll(MergedAnimeMapper::map)
+            mergedQueries.selectAll(MergedMangaMapper::map)
         }
 
         // Iterate over them
@@ -491,7 +491,7 @@ class AnimeRestorer(
             // Store the inserted id in the backupMergedMangaReference
             if (dbMergedMangaReferences.none {
                     backupMergedMangaReference.mergeUrl == it.mergeUrl &&
-                        backupMergedMangaReference.mangaUrl == it.animeUrl
+                        backupMergedMangaReference.mangaUrl == it.mangaUrl
                 }
             ) {
                 // Let the db assign the id
@@ -499,22 +499,22 @@ class AnimeRestorer(
                     animesQueries.getAnimeByUrlAndSource(
                         backupMergedMangaReference.mangaUrl,
                         backupMergedMangaReference.mangaSourceId,
-                        AnimeMapper::mapAnime,
+                        MangaMapper::mapManga,
                     )
                 } ?: return@forEach
                 backupMergedMangaReference.getMergedMangaReference().run {
                     handler.await {
                         mergedQueries.insert(
-                            infoAnime = isInfoAnime,
-                            getEpisodeUpdates = getEpisodeUpdates,
-                            episodeSortMode = episodeSortMode.toLong(),
-                            episodePriority = episodePriority.toLong(),
-                            downloadEpisodes = downloadEpisodes,
+                            infoAnime = isInfoManga,
+                            getEpisodeUpdates = getChapterUpdates,
+                            episodeSortMode = chapterSortMode.toLong(),
+                            episodePriority = chapterPriority.toLong(),
+                            downloadEpisodes = downloadChapters,
                             mergeId = mergeMangaId,
                             mergeUrl = mergeUrl,
                             animeId = mergedManga.id,
-                            animeUrl = animeUrl,
-                            animeSource = animeSourceId,
+                            animeUrl = mangaUrl,
+                            animeSource = mangaSourceId,
                         )
                     }
                 }
@@ -522,12 +522,12 @@ class AnimeRestorer(
         }
     }
 
-    private fun restoreEditedInfo(mangaJson: CustomAnimeInfo?) {
+    private fun restoreEditedInfo(mangaJson: CustomMangaInfo?) {
         mangaJson ?: return
         setCustomAnimeInfo.set(mangaJson)
     }
 
-    private fun BackupAnime.getCustomMangaInfo(): CustomAnimeInfo? {
+    private fun BackupAnime.getCustomMangaInfo(): CustomMangaInfo? {
         if (customTitle != null ||
             customArtist != null ||
             customAuthor != null ||
@@ -536,7 +536,7 @@ class AnimeRestorer(
             customGenre != null ||
             customStatus != 0
         ) {
-            return CustomAnimeInfo(
+            return CustomMangaInfo(
                 id = 0L,
                 title = customTitle,
                 author = customAuthor,

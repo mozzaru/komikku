@@ -27,7 +27,7 @@ import eu.kanade.tachiyomi.ui.anime.MergedAnimeData
 import eu.kanade.tachiyomi.util.system.toast
 import exh.source.MERGED_SOURCE_ID
 import tachiyomi.domain.manga.model.Manga
-import tachiyomi.domain.manga.model.MergedAnimeReference
+import tachiyomi.domain.manga.model.MergedMangaReference
 import tachiyomi.i18n.MR
 import tachiyomi.i18n.sy.SYMR
 import tachiyomi.presentation.core.i18n.stringResource
@@ -35,12 +35,12 @@ import tachiyomi.presentation.core.i18n.stringResource
 @Stable
 class EditMergedSettingsState(
     private val context: Context,
-    private val onDeleteClick: (MergedAnimeReference) -> Unit,
+    private val onDeleteClick: (MergedMangaReference) -> Unit,
     private val onDismissRequest: () -> Unit,
-    private val onPositiveClick: (List<MergedAnimeReference>) -> Unit,
+    private val onPositiveClick: (List<MergedMangaReference>) -> Unit,
 ) : EditMergedMangaAdapter.EditMergedMangaItemListener {
-    var mergedMangas: List<Pair<Manga?, MergedAnimeReference>> by mutableStateOf(emptyList())
-    var mergeReference: MergedAnimeReference? by mutableStateOf(null)
+    var mergedMangas: List<Pair<Manga?, MergedMangaReference>> by mutableStateOf(emptyList())
+    var mergeReference: MergedMangaReference? by mutableStateOf(null)
     var mergedMangaAdapter: EditMergedMangaAdapter? by mutableStateOf(null)
     var mergedMangaHeaderAdapter: EditMergedSettingsHeaderAdapter? by mutableStateOf(null)
 
@@ -48,19 +48,19 @@ class EditMergedSettingsState(
         context: Context,
         binding: EditMergedSettingsDialogBinding,
         mergedManga: List<Manga>,
-        mergedReferences: List<MergedAnimeReference>,
+        mergedReferences: List<MergedMangaReference>,
     ) {
         if (mergedReferences.isEmpty() || mergedReferences.size == 1) {
             context.toast(SYMR.strings.merged_references_invalid)
             onDismissRequest()
         }
         mergedMangas += mergedReferences.filter {
-            it.animeSourceId != MERGED_SOURCE_ID
-        }.map { reference -> mergedManga.firstOrNull { it.id == reference.animeId } to reference }
-        mergeReference = mergedReferences.firstOrNull { it.animeSourceId == MERGED_SOURCE_ID }
+            it.mangaSourceId != MERGED_SOURCE_ID
+        }.map { reference -> mergedManga.firstOrNull { it.id == reference.mangaId } to reference }
+        mergeReference = mergedReferences.firstOrNull { it.mangaSourceId == MERGED_SOURCE_ID }
 
         val isPriorityOrder =
-            mergeReference?.let { it.episodeSortMode == MergedAnimeReference.EPISODE_SORT_PRIORITY } ?: false
+            mergeReference?.let { it.chapterSortMode == MergedMangaReference.EPISODE_SORT_PRIORITY } ?: false
 
         mergedMangaAdapter = EditMergedMangaAdapter(this, isPriorityOrder)
         mergedMangaHeaderAdapter = EditMergedSettingsHeaderAdapter(this, mergedMangaAdapter!!)
@@ -73,7 +73,7 @@ class EditMergedSettingsState(
         mergedMangaAdapter?.updateDataSet(
             mergedMangas.map {
                 it.toModel()
-            }.sortedBy { it.mergedAnimeReference.episodePriority },
+            }.sortedBy { it.mergedMangaReference.chapterPriority },
         )
     }
 
@@ -81,8 +81,8 @@ class EditMergedSettingsState(
         val mergedMangaAdapter = mergedMangaAdapter ?: return
         mergedMangas = mergedMangas.map { (manga, reference) ->
             manga to reference.copy(
-                episodePriority = mergedMangaAdapter.currentItems.indexOfFirst {
-                    reference.id == it.mergedAnimeReference.id
+                chapterPriority = mergedMangaAdapter.currentItems.indexOfFirst {
+                    reference.id == it.mergedMangaReference.id
                 },
             )
         }
@@ -90,7 +90,7 @@ class EditMergedSettingsState(
 
     override fun onDeleteClick(position: Int) {
         val mergedMangaAdapter = mergedMangaAdapter ?: return
-        val mergeMangaReference = mergedMangaAdapter.currentItems.getOrNull(position)?.mergedAnimeReference ?: return
+        val mergeMangaReference = mergedMangaAdapter.currentItems.getOrNull(position)?.mergedMangaReference ?: return
 
         MaterialAlertDialogBuilder(context)
             .setTitle(SYMR.strings.delete_merged_entry.getString(context))
@@ -115,7 +115,7 @@ class EditMergedSettingsState(
     }
 
     private fun toggleChapterUpdates(position: Int) {
-        val adapterReference = mergedMangaAdapter?.currentItems?.getOrNull(position)?.mergedAnimeReference
+        val adapterReference = mergedMangaAdapter?.currentItems?.getOrNull(position)?.mergedMangaReference
             ?: return
         mergedMangas = mergedMangas.map { pair ->
             val (manga, reference) = pair
@@ -125,11 +125,11 @@ class EditMergedSettingsState(
                 it is EditMergedMangaHolder && it.reference.id == reference.id
             }?.let {
                 if (it is EditMergedMangaHolder) {
-                    it.updateChapterUpdatesIcon(!reference.getEpisodeUpdates)
+                    it.updateChapterUpdatesIcon(!reference.getChapterUpdates)
                 }
             } ?: context.toast(SYMR.strings.merged_chapter_updates_error)
 
-            manga to reference.copy(getEpisodeUpdates = !reference.getEpisodeUpdates)
+            manga to reference.copy(getChapterUpdates = !reference.getChapterUpdates)
         }
     }
 
@@ -145,7 +145,7 @@ class EditMergedSettingsState(
     }
 
     private fun toggleChapterDownloads(position: Int) {
-        val adapterReference = mergedMangaAdapter?.currentItems?.getOrNull(position)?.mergedAnimeReference
+        val adapterReference = mergedMangaAdapter?.currentItems?.getOrNull(position)?.mergedMangaReference
             ?: return
         mergedMangas = mergedMangas.map { pair ->
             val (manga, reference) = pair
@@ -155,11 +155,11 @@ class EditMergedSettingsState(
                 it is EditMergedMangaHolder && it.reference.id == reference.id
             }?.let {
                 if (it is EditMergedMangaHolder) {
-                    it.updateDownloadChaptersIcon(!reference.downloadEpisodes)
+                    it.updateDownloadChaptersIcon(!reference.downloadChapters)
                 }
             } ?: context.toast(SYMR.strings.merged_toggle_download_chapters_error)
 
-            manga to reference.copy(downloadEpisodes = !reference.downloadEpisodes)
+            manga to reference.copy(downloadChapters = !reference.downloadChapters)
         }
     }
 
@@ -173,8 +173,8 @@ class EditMergedSettingsState(
 fun EditMergedSettingsDialog(
     onDismissRequest: () -> Unit,
     mergedData: MergedAnimeData,
-    onDeleteClick: (MergedAnimeReference) -> Unit,
-    onPositiveClick: (List<MergedAnimeReference>) -> Unit,
+    onDeleteClick: (MergedMangaReference) -> Unit,
+    onPositiveClick: (List<MergedMangaReference>) -> Unit,
 ) {
     val context = LocalContext.current
     val state = remember {
@@ -214,6 +214,6 @@ fun EditMergedSettingsDialog(
     )
 }
 
-private fun Pair<Manga?, MergedAnimeReference>.toModel(): EditMergedMangaItem {
+private fun Pair<Manga?, MergedMangaReference>.toModel(): EditMergedMangaItem {
     return EditMergedMangaItem(first, second)
 }

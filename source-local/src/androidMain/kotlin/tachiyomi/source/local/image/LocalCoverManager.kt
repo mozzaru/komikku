@@ -2,7 +2,7 @@ package tachiyomi.source.local.image
 
 import android.content.Context
 import com.hippo.unifile.UniFile
-import eu.kanade.tachiyomi.source.model.SAnime
+import eu.kanade.tachiyomi.source.model.SManga
 import eu.kanade.tachiyomi.util.storage.DiskUtil
 import mihon.core.archive.ZipWriter
 import tachiyomi.core.common.storage.nameWithoutExtension
@@ -18,8 +18,8 @@ actual class LocalCoverManager(
     private val fileSystem: LocalSourceFileSystem,
 ) {
 
-    actual fun find(animeUrl: String): UniFile? {
-        return fileSystem.getFilesInAnimeDirectory(animeUrl)
+    actual fun find(mangaUrl: String): UniFile? {
+        return fileSystem.getFilesInMangaDirectory(mangaUrl)
             // Get all file whose names start with "cover"
             .filter { it.isFile && it.nameWithoutExtension.equals("cover", ignoreCase = true) }
             // Get the first actual image
@@ -29,19 +29,19 @@ actual class LocalCoverManager(
     }
 
     actual fun update(
-        anime: SAnime,
+        manga: SManga,
         inputStream: InputStream,
         // SY -->
         encrypted: Boolean,
         // SY <--
     ): UniFile? {
-        val directory = fileSystem.getAnimeDirectory(anime.url)
+        val directory = fileSystem.getMangaDirectory(manga.url)
         if (directory == null) {
             inputStream.close()
             return null
         }
 
-        var targetFile = find(anime.url)
+        var targetFile = find(manga.url)
         if (targetFile == null) {
             // SY -->
             targetFile = if (encrypted) {
@@ -62,7 +62,7 @@ actual class LocalCoverManager(
                 }
                 DiskUtil.createNoMediaFile(directory, context)
 
-                anime.thumbnail_url = targetFile.uri.toString()
+                manga.thumbnail_url = targetFile.uri.toString()
                 return targetFile
             } else {
                 // SY <--
@@ -70,7 +70,7 @@ actual class LocalCoverManager(
                     input.copyTo(output)
                 }
                 DiskUtil.createNoMediaFile(directory, context)
-                anime.thumbnail_url = targetFile.uri.toString()
+                manga.thumbnail_url = targetFile.uri.toString()
                 return targetFile
             }
         }

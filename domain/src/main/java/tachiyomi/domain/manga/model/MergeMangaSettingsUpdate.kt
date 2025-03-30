@@ -1,6 +1,6 @@
 package tachiyomi.domain.manga.model
 
-data class MergeAnimeSettingsUpdate(
+data class MergeMangaSettingsUpdate(
     val id: Long,
     var isInfoAnime: Boolean?,
     var getEpisodeUpdates: Boolean?,

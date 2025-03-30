@@ -43,8 +43,8 @@ import tachiyomi.domain.manga.interactor.NetworkToLocalAnime
 import tachiyomi.domain.manga.model.Manga
 import tachiyomi.domain.manga.model.MangaUpdate
 import tachiyomi.domain.category.interactor.GetCategories
-import tachiyomi.domain.category.interactor.SetAnimeCategories
-import tachiyomi.domain.chapter.interactor.GetEpisodesByAnimeId
+import tachiyomi.domain.category.interactor.SetMangaCategories
+import tachiyomi.domain.chapter.interactor.GetChaptersByMangaId
 import tachiyomi.domain.chapter.interactor.UpdateEpisode
 import tachiyomi.domain.chapter.model.Episode
 import tachiyomi.domain.chapter.model.EpisodeUpdate
@@ -72,12 +72,12 @@ class MigrationListScreenModel(
     private val updateAnime: UpdateAnime = Injekt.get(),
     private val syncEpisodesWithSource: SyncEpisodesWithSource = Injekt.get(),
     private val updateEpisode: UpdateEpisode = Injekt.get(),
-    private val getEpisodesByAnimeId: GetEpisodesByAnimeId = Injekt.get(),
+    private val getChaptersByMangaId: GetChaptersByMangaId = Injekt.get(),
     private val getMergedReferencesById: GetMergedReferencesById = Injekt.get(),
     private val getHistoryByAnimeId: GetHistoryByAnimeId = Injekt.get(),
     private val upsertHistory: UpsertHistory = Injekt.get(),
     private val getCategories: GetCategories = Injekt.get(),
-    private val setAnimeCategories: SetAnimeCategories = Injekt.get(),
+    private val setMangaCategories: SetMangaCategories = Injekt.get(),
     private val getTracks: GetTracks = Injekt.get(),
     private val insertTrack: InsertTrack = Injekt.get(),
     private val deleteTrack: DeleteTrack = Injekt.get(),
@@ -123,7 +123,7 @@ class MigrationListScreenModel(
                                 sourcesString = sourceManager.getOrStub(manga.source).getNameForAnimeInfo(
                                     if (manga.source == MERGED_SOURCE_ID) {
                                         getMergedReferencesById.await(manga.id)
-                                            .map { sourceManager.getOrStub(it.animeSourceId) }
+                                            .map { sourceManager.getOrStub(it.mangaSourceId) }
                                     } else {
                                         null
                                     },
@@ -144,7 +144,7 @@ class MigrationListScreenModel(
     suspend fun getManga(result: SearchResult.Result) = getManga(result.id)
     suspend fun getManga(id: Long) = getAnime.await(id)
     suspend fun getChapterInfo(result: SearchResult.Result) = getChapterInfo(result.id)
-    private suspend fun getChapterInfo(id: Long) = getEpisodesByAnimeId.await(id).let { chapters ->
+    private suspend fun getChapterInfo(id: Long) = getChaptersByMangaId.await(id).let { chapters ->
         MigratingAnime.EpisodeInfo(
             latestChapter = chapters.maxOfOrNull { it.episodeNumber },
             chapterCount = chapters.size,
@@ -192,7 +192,7 @@ class MigrationListScreenModel(
                                 if (localManga != null) {
                                     val source = sourceManager.get(localManga.source) as? CatalogueSource
                                     if (source != null) {
-                                        val chapters = source.getEpisodeList(localManga.toSAnime())
+                                        val chapters = source.getChapterList(localManga.toSAnime())
                                         try {
                                             syncEpisodesWithSource.await(chapters, localManga, source)
                                         } catch (_: Exception) {
@@ -222,7 +222,7 @@ class MigrationListScreenModel(
                                                 !(searchResult.url == mangaObj.url && source.id == mangaObj.source)
                                             ) {
                                                 val localManga = networkToLocalAnime.await(searchResult)
-                                                val chapters = source.getEpisodeList(localManga.toSAnime())
+                                                val chapters = source.getChapterList(localManga.toSAnime())
 
                                                 try {
                                                     syncEpisodesWithSource.await(chapters, localManga, source)
@@ -256,7 +256,7 @@ class MigrationListScreenModel(
                                     if (searchResult != null) {
                                         val localManga = networkToLocalAnime.await(searchResult)
                                         val chapters = try {
-                                            source.getEpisodeList(localManga.toSAnime())
+                                            source.getChapterList(localManga.toSAnime())
                                         } catch (e: Exception) {
                                             this@MigrationListScreenModel.logcat(LogPriority.ERROR, e)
                                             emptyList()
@@ -289,7 +289,7 @@ class MigrationListScreenModel(
 
                 if (result != null && result.thumbnailUrl == null) {
                     try {
-                        val newManga = sourceManager.getOrStub(result.source).getAnimeDetails(result.toSAnime())
+                        val newManga = sourceManager.getOrStub(result.source).getMangaDetails(result.toSAnime())
                         updateAnime.awaitUpdateFromSource(result, newManga, true)
                     } catch (e: CancellationException) {
                         // Ignore cancellations
@@ -346,10 +346,10 @@ class MigrationListScreenModel(
         val flags = preferences.migrateFlags().get()
         // Update episodes read
         if (MigrationFlags.hasChapters(flags)) {
-            val prevMangaChapters = getEpisodesByAnimeId.await(prevManga.id)
+            val prevMangaChapters = getChaptersByMangaId.await(prevManga.id)
             val maxEpisodeRead = prevMangaChapters.filter(Episode::seen)
                 .maxOfOrNull(Episode::episodeNumber)
-            val dbChapters = getEpisodesByAnimeId.await(manga.id)
+            val dbChapters = getChaptersByMangaId.await(manga.id)
             val prevHistoryList = getHistoryByAnimeId.await(prevManga.id)
 
             val episodeUpdates = mutableListOf<EpisodeUpdate>()
@@ -390,7 +390,7 @@ class MigrationListScreenModel(
         // Update categories
         if (MigrationFlags.hasCategories(flags)) {
             val categories = getCategories.await(prevManga.id)
-            setAnimeCategories.await(manga.id, categories.map { it.id })
+            setMangaCategories.await(manga.id, categories.map { it.id })
         }
         // Update track
         if (MigrationFlags.hasTracks(flags)) {
@@ -449,7 +449,7 @@ class MigrationListScreenModel(
                 val localManga = networkToLocalAnime.await(manga)
                 try {
                     val source = sourceManager.get(manga.source)!!
-                    val chapters = source.getEpisodeList(localManga.toSAnime())
+                    val chapters = source.getChapterList(localManga.toSAnime())
                     syncEpisodesWithSource.await(chapters, localManga, source)
                 } catch (e: Exception) {
                     return@async null
@@ -459,7 +459,7 @@ class MigrationListScreenModel(
 
             if (result != null) {
                 try {
-                    val newManga = sourceManager.getOrStub(result.source).getAnimeDetails(result.toSAnime())
+                    val newManga = sourceManager.getOrStub(result.source).getMangaDetails(result.toSAnime())
                     updateAnime.awaitUpdateFromSource(result, newManga, true)
                 } catch (e: CancellationException) {
                     // Ignore cancellations

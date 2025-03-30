@@ -2,26 +2,26 @@ package tachiyomi.domain.library.model
 
 import tachiyomi.domain.manga.model.Manga
 
-data class LibraryAnime(
+data class LibraryManga(
     val manga: Manga,
     val category: Long,
-    val totalEpisodes: Long,
-    val seenCount: Long,
+    val totalChapters: Long,
+    val readCount: Long,
     val bookmarkCount: Long,
     // AM (FILLERMARK) -->
     val fillermarkCount: Long,
     // <-- AM (FILLERMARK)
     val latestUpload: Long,
-    val episodeFetchedAt: Long,
-    val lastSeen: Long,
+    val chapterFetchedAt: Long,
+    val lastRead: Long,
 ) {
     val id: Long = manga.id
 
     val unseenCount
-        get() = totalEpisodes - seenCount
+        get() = totalChapters - readCount
 
     val hasBookmarks
         get() = bookmarkCount > 0
 
-    val hasStarted = seenCount > 0
+    val hasStarted = readCount > 0
 }

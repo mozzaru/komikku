@@ -54,7 +54,7 @@ import eu.kanade.tachiyomi.data.track.TrackerManager
 import eu.kanade.tachiyomi.network.HttpException
 import eu.kanade.tachiyomi.source.Source
 import eu.kanade.tachiyomi.source.getNameForAnimeInfo
-import eu.kanade.tachiyomi.source.model.SAnime
+import eu.kanade.tachiyomi.source.model.SManga
 import eu.kanade.tachiyomi.source.online.all.MergedSource
 import eu.kanade.tachiyomi.ui.anime.RelatedAnime.Companion.isLoading
 import eu.kanade.tachiyomi.ui.anime.RelatedAnime.Companion.removeDuplicates
@@ -86,7 +86,7 @@ import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.isActive
 import kotlinx.coroutines.launch
 import logcat.LogPriority
-import mihon.domain.episode.interactor.FilterEpisodesForDownload
+import mihon.domain.episode.interactor.FilterChaptersForDownload
 import tachiyomi.core.common.i18n.stringResource
 import tachiyomi.core.common.preference.CheckboxState
 import tachiyomi.core.common.preference.TriState
@@ -110,16 +110,16 @@ import tachiyomi.domain.manga.interactor.UpdateMergedSettings
 import tachiyomi.domain.manga.model.Manga
 import tachiyomi.domain.manga.model.MangaCover
 import tachiyomi.domain.manga.model.MangaUpdate
-import tachiyomi.domain.manga.model.CustomAnimeInfo
-import tachiyomi.domain.manga.model.MergeAnimeSettingsUpdate
-import tachiyomi.domain.manga.model.MergedAnimeReference
+import tachiyomi.domain.manga.model.CustomMangaInfo
+import tachiyomi.domain.manga.model.MergeMangaSettingsUpdate
+import tachiyomi.domain.manga.model.MergedMangaReference
 import tachiyomi.domain.manga.model.applyFilter
 import tachiyomi.domain.manga.model.asMangaCover
-import tachiyomi.domain.manga.repository.AnimeRepository
+import tachiyomi.domain.manga.repository.MangaRepository
 import tachiyomi.domain.category.interactor.GetCategories
-import tachiyomi.domain.category.interactor.SetAnimeCategories
+import tachiyomi.domain.category.interactor.SetMangaCategories
 import tachiyomi.domain.category.model.Category
-import tachiyomi.domain.chapter.interactor.GetMergedEpisodesByAnimeId
+import tachiyomi.domain.chapter.interactor.GetMergedChaptersByMangaId
 import tachiyomi.domain.chapter.interactor.SetAnimeDefaultEpisodeFlags
 import tachiyomi.domain.chapter.interactor.UpdateEpisode
 import tachiyomi.domain.chapter.model.Episode
@@ -162,7 +162,7 @@ class AnimeScreenModel(
     // SY -->
     private val sourceManager: SourceManager = Injekt.get(),
     private val getAnime: GetAnime = Injekt.get(),
-    private val getMergedEpisodesByAnimeId: GetMergedEpisodesByAnimeId = Injekt.get(),
+    private val getMergedChaptersByMangaId: GetMergedChaptersByMangaId = Injekt.get(),
     private val getMergedAnimeById: GetMergedAnimeById = Injekt.get(),
     private val getMergedReferencesById: GetMergedReferencesById = Injekt.get(),
     // KMK -->
@@ -186,9 +186,9 @@ class AnimeScreenModel(
     private val getCategories: GetCategories = Injekt.get(),
     private val getTracks: GetTracks = Injekt.get(),
     private val addTracks: AddTracks = Injekt.get(),
-    private val setAnimeCategories: SetAnimeCategories = Injekt.get(),
-    private val animeRepository: AnimeRepository = Injekt.get(),
-    private val filterEpisodesForDownload: FilterEpisodesForDownload = Injekt.get(),
+    private val setMangaCategories: SetMangaCategories = Injekt.get(),
+    private val mangaRepository: MangaRepository = Injekt.get(),
+    private val filterChaptersForDownload: FilterChaptersForDownload = Injekt.get(),
     val snackbarHostState: SnackbarHostState = SnackbarHostState(),
 ) : StateScreenModel<AnimeScreenModel.State>(State.Loading) {
 
@@ -222,7 +222,7 @@ class AnimeScreenModel(
     private val skipFiltered by readerPreferences.skipFiltered().asState(screenModelScope)
 
     val isUpdateIntervalEnabled =
-        LibraryPreferences.ANIME_OUTSIDE_RELEASE_PERIOD in libraryPreferences.autoUpdateAnimeRestrictions().get()
+        LibraryPreferences.ANIME_OUTSIDE_RELEASE_PERIOD in libraryPreferences.autoUpdateMangaRestrictions().get()
 
     private val selectedPositions: Array<Int> = arrayOf(-1, -1) // first and last selected index in list
     private val selectedChapterIds: HashSet<Long> = HashSet()
@@ -255,7 +255,7 @@ class AnimeScreenModel(
             getAnimeWithEpisodes.subscribe(mangaId, applyScanlatorFilter = true).distinctUntilChanged()
                 // SY -->
                 .combine(
-                    getMergedEpisodesByAnimeId.subscribe(mangaId, true, applyScanlatorFilter = true)
+                    getMergedChaptersByMangaId.subscribe(mangaId, true, applyScanlatorFilter = true)
                         .distinctUntilChanged(),
                 ) { (manga, chapters), mergedChapters ->
                     if (manga.source == MERGED_SOURCE_ID) {
@@ -276,7 +276,7 @@ class AnimeScreenModel(
                             MergedAnimeData(
                                 references,
                                 manga.associateBy { it.id },
-                                references.map { it.animeSourceId }.distinct()
+                                references.map { it.mangaSourceId }.distinct()
                                     .map { sourceManager.getOrStub(it) },
                             )
                         } else {
@@ -350,7 +350,7 @@ class AnimeScreenModel(
                 MergedAnimeData(
                     references,
                     getMergedAnimeById.await(mangaId).associateBy { it.id },
-                    references.map { it.animeSourceId }.distinct()
+                    references.map { it.mangaSourceId }.distinct()
                         .map { sourceManager.getOrStub(it) },
                 )
             }
@@ -358,7 +358,7 @@ class AnimeScreenModel(
                 if (manga.source ==
                     MERGED_SOURCE_ID
                 ) {
-                    getMergedEpisodesByAnimeId.await(mangaId, applyScanlatorFilter = true)
+                    getMergedChaptersByMangaId.await(mangaId, applyScanlatorFilter = true)
                 } else {
                     getAnimeWithEpisodes.awaitChapters(mangaId, applyScanlatorFilter = true)
                 }
@@ -529,7 +529,7 @@ class AnimeScreenModel(
         val state = successState ?: return
         try {
             withIOContext {
-                val networkManga = state.source.getAnimeDetails(state.manga.toSAnime())
+                val networkManga = state.source.getMangaDetails(state.manga.toSAnime())
                 updateAnime.awaitUpdateFromSource(state.manga, networkManga, manualFetch)
             }
         } catch (e: Throwable) {
@@ -571,7 +571,7 @@ class AnimeScreenModel(
                 ogStatus = status ?: 0,
                 lastUpdate = manga.lastUpdate + 1,
             )
-            (sourceManager.get(LocalSource.ID) as LocalSource).updateAnimeInfo(manga.toSAnime())
+            (sourceManager.get(LocalSource.ID) as LocalSource).updateMangaInfo(manga.toSAnime())
             screenModelScope.launchNonCancellable {
                 updateAnime.await(
                     MangaUpdate(
@@ -593,7 +593,7 @@ class AnimeScreenModel(
                 null
             }
             setCustomAnimeInfo.set(
-                CustomAnimeInfo(
+                CustomMangaInfo(
                     state.manga.id,
                     title?.trimOrNull(),
                     author?.trimOrNull(),
@@ -632,18 +632,18 @@ class AnimeScreenModel(
     }
     // KMK <--
 
-    fun updateMergeSettings(mergedAnimeReferences: List<MergedAnimeReference>) {
+    fun updateMergeSettings(mergedMangaReferences: List<MergedMangaReference>) {
         screenModelScope.launchNonCancellable {
-            if (mergedAnimeReferences.isNotEmpty()) {
+            if (mergedMangaReferences.isNotEmpty()) {
                 updateMergedSettings.awaitAll(
-                    mergedAnimeReferences.map {
-                        MergeAnimeSettingsUpdate(
+                    mergedMangaReferences.map {
+                        MergeMangaSettingsUpdate(
                             id = it.id,
-                            isInfoAnime = it.isInfoAnime,
-                            getEpisodeUpdates = it.getEpisodeUpdates,
-                            episodePriority = it.episodePriority,
-                            downloadEpisodes = it.downloadEpisodes,
-                            episodeSortMode = it.episodeSortMode,
+                            isInfoAnime = it.isInfoManga,
+                            getEpisodeUpdates = it.getChapterUpdates,
+                            episodePriority = it.chapterPriority,
+                            downloadEpisodes = it.downloadChapters,
+                            episodeSortMode = it.chapterSortMode,
                         )
                     },
                 )
@@ -651,7 +651,7 @@ class AnimeScreenModel(
         }
     }
 
-    fun deleteMerge(reference: MergedAnimeReference) {
+    fun deleteMerge(reference: MergedMangaReference) {
         screenModelScope.launchNonCancellable {
             deleteMergeById.await(reference.id)
         }
@@ -768,7 +768,7 @@ class AnimeScreenModel(
                     manga.copy(fetchInterval = -interval),
                 )
             ) {
-                val updatedManga = animeRepository.getAnimeById(manga.id)
+                val updatedManga = mangaRepository.getMangaById(manga.id)
                 updateSuccessState { it.copy(manga = updatedManga) }
             }
         }
@@ -839,7 +839,7 @@ class AnimeScreenModel(
 
     private fun moveMangaToCategory(categoryIds: List<Long>) {
         screenModelScope.launchIO {
-            setAnimeCategories.await(mangaId, categoryIds)
+            setMangaCategories.await(mangaId, categoryIds)
         }
     }
 
@@ -973,7 +973,7 @@ class AnimeScreenModel(
                 // SY -->
                 if (state.source !is MergedSource) {
                     // SY <--
-                    val chapters = state.source.getEpisodeList(state.manga.toSAnime())
+                    val chapters = state.source.getChapterList(state.manga.toSAnime())
 
                     val newChapters = syncEpisodesWithSource.await(
                         chapters,
@@ -1002,7 +1002,7 @@ class AnimeScreenModel(
             screenModelScope.launch {
                 snackbarHostState.showSnackbar(message = message)
             }
-            val newManga = animeRepository.getAnimeById(mangaId)
+            val newManga = mangaRepository.getMangaById(mangaId)
             updateSuccessState { it.copy(manga = newManga, isRefreshingData = false) }
         }
     }
@@ -1041,7 +1041,7 @@ class AnimeScreenModel(
 
         try {
             if (state.source !is StubSource && relatedMangasEnabled) {
-                state.source.getRelatedAnimeList(state.manga.toSAnime(), { e -> exceptionHandler(e) }) { pair, _ ->
+                state.source.getRelatedMangaList(state.manga.toSAnime(), { e -> exceptionHandler(e) }) { pair, _ ->
                     /* Push found related mangas into collection */
                     val relatedAnime = RelatedAnime.Success.fromPair(pair) { mangaList ->
                         mangaList.map {
@@ -1324,7 +1324,7 @@ class AnimeScreenModel(
     private fun downloadNewChapters(episodes: List<Episode>) {
         screenModelScope.launchNonCancellable {
             val manga = successState?.manga ?: return@launchNonCancellable
-            val chaptersToDownload = filterEpisodesForDownload.await(manga, episodes)
+            val chaptersToDownload = filterChaptersForDownload.await(manga, episodes)
 
             if (chaptersToDownload.isNotEmpty()) {
                 downloadChapters(chaptersToDownload)
@@ -1747,7 +1747,7 @@ class AnimeScreenModel(
 
 // SY -->
 data class MergedAnimeData(
-    val references: List<MergedAnimeReference>,
+    val references: List<MergedMangaReference>,
     val manga: Map<Long, Manga>,
     val sources: List<Source>,
 )
@@ -1789,8 +1789,8 @@ sealed interface RelatedAnime {
 
         companion object {
             suspend fun fromPair(
-                pair: Pair<String, List<SAnime>>,
-                toManga: suspend (mangaList: List<SAnime>) -> List<Manga>,
+                pair: Pair<String, List<SManga>>,
+                toManga: suspend (mangaList: List<SManga>) -> List<Manga>,
             ) = Success(pair.first, toManga(pair.second))
         }
     }

@@ -84,8 +84,8 @@ import tachiyomi.domain.manga.interactor.GetMergedAnimeById
 import tachiyomi.domain.manga.interactor.GetMergedReferencesById
 import tachiyomi.domain.manga.model.Manga
 import tachiyomi.domain.download.service.DownloadPreferences
-import tachiyomi.domain.chapter.interactor.GetEpisodesByAnimeId
-import tachiyomi.domain.chapter.interactor.GetMergedEpisodesByAnimeId
+import tachiyomi.domain.chapter.interactor.GetChaptersByMangaId
+import tachiyomi.domain.chapter.interactor.GetMergedChaptersByMangaId
 import tachiyomi.domain.chapter.interactor.UpdateEpisode
 import tachiyomi.domain.chapter.model.Episode
 import tachiyomi.domain.chapter.model.EpisodeUpdate
@@ -117,7 +117,7 @@ class ReaderViewModel @JvmOverloads constructor(
     private val trackPreferences: TrackPreferences = Injekt.get(),
     private val trackEpisode: TrackEpisode = Injekt.get(),
     private val getAnime: GetAnime = Injekt.get(),
-    private val getEpisodesByAnimeId: GetEpisodesByAnimeId = Injekt.get(),
+    private val getChaptersByMangaId: GetChaptersByMangaId = Injekt.get(),
     private val getNextEpisodes: GetNextEpisodes = Injekt.get(),
     private val upsertHistory: UpsertHistory = Injekt.get(),
     private val updateEpisode: UpdateEpisode = Injekt.get(),
@@ -127,7 +127,7 @@ class ReaderViewModel @JvmOverloads constructor(
     private val uiPreferences: UiPreferences = Injekt.get(),
     private val getMergedAnimeById: GetMergedAnimeById = Injekt.get(),
     private val getMergedReferencesById: GetMergedReferencesById = Injekt.get(),
-    private val getMergedEpisodesByAnimeId: GetMergedEpisodesByAnimeId = Injekt.get(),
+    private val getMergedChaptersByMangaId: GetMergedChaptersByMangaId = Injekt.get(),
     private val setSeenStatus: SetSeenStatus = Injekt.get(),
     // SY <--
 ) : ViewModel() {
@@ -183,11 +183,11 @@ class ReaderViewModel @JvmOverloads constructor(
         // SY -->
         val (chapters, mangaMap) = runBlocking {
             if (manga.source == MERGED_SOURCE_ID) {
-                getMergedEpisodesByAnimeId.await(manga.id, applyScanlatorFilter = true) to
+                getMergedChaptersByMangaId.await(manga.id, applyScanlatorFilter = true) to
                     getMergedAnimeById.await(manga.id)
                         .associateBy { it.id }
             } else {
-                getEpisodesByAnimeId.await(manga.id, applyScanlatorFilter = true) to null
+                getChaptersByMangaId.await(manga.id, applyScanlatorFilter = true) to null
             }
         }
         fun isChapterDownloaded(episode: Episode): Boolean {
@@ -686,12 +686,12 @@ class ReaderViewModel @JvmOverloads constructor(
                 // SY <--
                 readerChapter.episode.seen = true
                 // SY -->
-                if (readerChapter.episode.episode_number >= 0 && readerPreferences.markReadDupe().get()) {
-                    getEpisodesByAnimeId.await(manga!!.id).sortedByDescending { it.sourceOrder }
+                if (readerChapter.episode.chapter_number >= 0 && readerPreferences.markReadDupe().get()) {
+                    getChaptersByMangaId.await(manga!!.id).sortedByDescending { it.sourceOrder }
                         .filter {
                             it.id != readerChapter.episode.id &&
                                 !it.seen &&
-                                it.episodeNumber.toFloat() == readerChapter.episode.episode_number
+                                it.episodeNumber.toFloat() == readerChapter.episode.chapter_number
                         }
                         .ifEmpty { null }
                         ?.also {
@@ -788,7 +788,7 @@ class ReaderViewModel @JvmOverloads constructor(
         val source = getSource() ?: return null
 
         return try {
-            source.getEpisodeUrl(sEpisode)
+            source.getChapterUrl(sEpisode)
         } catch (e: Exception) {
             logcat(LogPriority.ERROR, e)
             null
@@ -1265,7 +1265,7 @@ class ReaderViewModel @JvmOverloads constructor(
         val context = Injekt.get<Application>()
 
         viewModelScope.launchNonCancellable {
-            trackEpisode.await(context, manga.id, readerChapter.episode.episode_number.toDouble())
+            trackEpisode.await(context, manga.id, readerChapter.episode.chapter_number.toDouble())
         }
     }
 

@@ -1,48 +1,46 @@
 package eu.kanade.tachiyomi.source.model
 
-typealias AnimesPage = MangasPage
-
 /* SY --> */
-open /* SY <-- */ class MangasPage(open val animes: List<SAnime>, open val hasNextPage: Boolean) {
+open /* SY <-- */ class MangasPage(open val mangas: List<SManga>, open val hasNextPage: Boolean) {
     // SY -->
     override fun equals(other: Any?): Boolean {
         if (this === other) return true
-        if (other !is AnimesPage) return false
+        if (other !is MangasPage) return false
 
-        if (animes != other.animes) return false
+        if (mangas != other.mangas) return false
         if (hasNextPage != other.hasNextPage) return false
 
         return true
     }
 
     override fun hashCode(): Int {
-        var result = animes.hashCode()
+        var result = mangas.hashCode()
         result = 31 * result + hasNextPage.hashCode()
         return result
     }
     // SY <--
 
-    fun copy(animes: List<SAnime> = this.animes, hasNextPage: Boolean = this.hasNextPage): AnimesPage {
-        return AnimesPage(animes, hasNextPage)
+    fun copy(mangas: List<SManga> = this.mangas, hasNextPage: Boolean = this.hasNextPage): MangasPage {
+        return MangasPage(mangas, hasNextPage)
     }
 
     override fun toString(): String {
-        return "AnimesPage(animes=$animes, hasNextPage=$hasNextPage)"
+        return "AnimesPage(animes=$mangas, hasNextPage=$hasNextPage)"
     }
 }
 
 // SY -->
-class MetadataAnimesPage(
-    override val animes: List<SAnime>,
+class MetadataMangasPage(
+    override val mangas: List<SManga>,
     override val hasNextPage: Boolean,
     val nextKey: Long? = null,
-) : AnimesPage(animes, hasNextPage) {
+) : MangasPage(mangas, hasNextPage) {
     fun copy(
-        animes: List<SAnime> = this.animes,
+        mangas: List<SManga> = this.mangas,
         hasNextPage: Boolean = this.hasNextPage,
         nextKey: Long? = this.nextKey,
-    ): AnimesPage {
-        return MetadataAnimesPage(animes, hasNextPage, nextKey)
+    ): MangasPage {
+        return MetadataMangasPage(mangas, hasNextPage, nextKey)
     }
 
     override fun equals(other: Any?): Boolean {
@@ -50,9 +48,9 @@ class MetadataAnimesPage(
         if (javaClass != other?.javaClass) return false
         if (!super.equals(other)) return false
 
-        other as MetadataAnimesPage
+        other as MetadataMangasPage
 
-        if (animes != other.animes) return false
+        if (mangas != other.mangas) return false
         if (hasNextPage != other.hasNextPage) return false
         if (nextKey != other.nextKey) return false
 
@@ -61,7 +59,7 @@ class MetadataAnimesPage(
 
     override fun hashCode(): Int {
         var result = super.hashCode()
-        result = 31 * result + animes.hashCode()
+        result = 31 * result + mangas.hashCode()
         result = 31 * result + hasNextPage.hashCode()
         result = 31 * result + nextKey.hashCode()
         return result
@@ -69,7 +67,7 @@ class MetadataAnimesPage(
 
     override fun toString(): String {
         return "MetadataAnimesPage(" +
-            "animes=$animes, " +
+            "animes=$mangas, " +
             "hasNextPage=$hasNextPage, " +
             "nextKey=$nextKey" +
             ")"

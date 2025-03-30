@@ -1,12 +1,12 @@
 package tachiyomi.domain.manga.interactor
 
-import tachiyomi.domain.manga.repository.AnimeMergeRepository
+import tachiyomi.domain.manga.repository.MangaMergeRepository
 
 class DeleteByMergeId(
-    private val animeMergeRepository: AnimeMergeRepository,
+    private val mangaMergeRepository: MangaMergeRepository,
 ) {
 
     suspend fun await(id: Long) {
-        return animeMergeRepository.deleteByMergeId(id)
+        return mangaMergeRepository.deleteByMergeId(id)
     }
 }

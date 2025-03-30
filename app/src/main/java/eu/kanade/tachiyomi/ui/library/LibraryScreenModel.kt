@@ -31,7 +31,7 @@ import eu.kanade.tachiyomi.data.download.DownloadManager
 import eu.kanade.tachiyomi.data.track.TrackStatus
 import eu.kanade.tachiyomi.data.track.TrackerManager
 import eu.kanade.tachiyomi.source.Source
-import eu.kanade.tachiyomi.source.model.SAnime
+import eu.kanade.tachiyomi.source.model.SManga
 import eu.kanade.tachiyomi.source.online.HttpSource
 import eu.kanade.tachiyomi.source.online.all.MergedSource
 import eu.kanade.tachiyomi.util.episode.getNextUnseen
@@ -71,21 +71,21 @@ import tachiyomi.core.common.util.lang.compareToWithCollator
 import tachiyomi.core.common.util.lang.launchIO
 import tachiyomi.core.common.util.lang.launchNonCancellable
 import tachiyomi.core.common.util.lang.withIOContext
-import tachiyomi.domain.manga.interactor.GetLibraryAnime
+import tachiyomi.domain.manga.interactor.GetLibraryManga
 import tachiyomi.domain.manga.interactor.GetMergedAnimeById
 import tachiyomi.domain.manga.interactor.SetCustomAnimeInfo
 import tachiyomi.domain.manga.model.Manga
 import tachiyomi.domain.manga.model.MangaUpdate
-import tachiyomi.domain.manga.model.CustomAnimeInfo
+import tachiyomi.domain.manga.model.CustomMangaInfo
 import tachiyomi.domain.manga.model.applyFilter
 import tachiyomi.domain.category.interactor.GetCategories
-import tachiyomi.domain.category.interactor.SetAnimeCategories
+import tachiyomi.domain.category.interactor.SetMangaCategories
 import tachiyomi.domain.category.model.Category
-import tachiyomi.domain.chapter.interactor.GetEpisodesByAnimeId
-import tachiyomi.domain.chapter.interactor.GetMergedEpisodesByAnimeId
+import tachiyomi.domain.chapter.interactor.GetChaptersByMangaId
+import tachiyomi.domain.chapter.interactor.GetMergedChaptersByMangaId
 import tachiyomi.domain.chapter.model.Episode
 import tachiyomi.domain.history.interactor.GetNextEpisodes
-import tachiyomi.domain.library.model.LibraryAnime
+import tachiyomi.domain.library.model.LibraryManga
 import tachiyomi.domain.library.model.LibraryDisplayMode
 import tachiyomi.domain.library.model.LibraryGroup
 import tachiyomi.domain.library.model.LibrarySort
@@ -111,14 +111,14 @@ import tachiyomi.domain.source.model.Source as DomainSource
 typealias LibraryMap = Map<Category, List<LibraryItem>>
 
 class LibraryScreenModel(
-    private val getLibraryAnime: GetLibraryAnime = Injekt.get(),
+    private val getLibraryManga: GetLibraryManga = Injekt.get(),
     private val getCategories: GetCategories = Injekt.get(),
     private val getTracksPerAnime: GetTracksPerAnime = Injekt.get(),
     private val getNextEpisodes: GetNextEpisodes = Injekt.get(),
-    private val getEpisodesByAnimeId: GetEpisodesByAnimeId = Injekt.get(),
+    private val getChaptersByMangaId: GetChaptersByMangaId = Injekt.get(),
     private val setSeenStatus: SetSeenStatus = Injekt.get(),
     private val updateAnime: UpdateAnime = Injekt.get(),
-    private val setAnimeCategories: SetAnimeCategories = Injekt.get(),
+    private val setAnimeCategories: SetMangaCategories = Injekt.get(),
     private val preferences: BasePreferences = Injekt.get(),
     private val libraryPreferences: LibraryPreferences = Injekt.get(),
     private val coverCache: CoverCache = Injekt.get(),
@@ -131,7 +131,7 @@ class LibraryScreenModel(
     private val getTracks: GetTracks = Injekt.get(),
     private val searchEngine: SearchEngine = Injekt.get(),
     private val setCustomAnimeInfo: SetCustomAnimeInfo = Injekt.get(),
-    private val getMergedEpisodesByAnimeId: GetMergedEpisodesByAnimeId = Injekt.get(),
+    private val getMergedChaptersByMangaId: GetMergedChaptersByMangaId = Injekt.get(),
     syncPreferences: SyncPreferences = Injekt.get(),
     // SY <--
     // KMK -->
@@ -283,31 +283,31 @@ class LibraryScreenModel(
 
         val filterFnDownloaded: (LibraryItem) -> Boolean = {
             applyFilter(filterDownloaded) {
-                it.libraryAnime.manga.isLocal() ||
+                it.libraryManga.manga.isLocal() ||
                     it.downloadCount > 0 ||
-                    downloadManager.getDownloadCount(it.libraryAnime.manga) > 0
+                    downloadManager.getDownloadCount(it.libraryManga.manga) > 0
             }
         }
 
         val filterFnUnread: (LibraryItem) -> Boolean = {
-            applyFilter(filterUnread) { it.libraryAnime.unseenCount > 0 }
+            applyFilter(filterUnread) { it.libraryManga.unseenCount > 0 }
         }
 
         val filterFnStarted: (LibraryItem) -> Boolean = {
-            applyFilter(filterStarted) { it.libraryAnime.hasStarted }
+            applyFilter(filterStarted) { it.libraryManga.hasStarted }
         }
 
         val filterFnBookmarked: (LibraryItem) -> Boolean = {
-            applyFilter(filterBookmarked) { it.libraryAnime.hasBookmarks }
+            applyFilter(filterBookmarked) { it.libraryManga.hasBookmarks }
         }
 
         val filterFnCompleted: (LibraryItem) -> Boolean = {
-            applyFilter(filterCompleted) { it.libraryAnime.manga.status.toInt() == SAnime.COMPLETED }
+            applyFilter(filterCompleted) { it.libraryManga.manga.status.toInt() == SManga.COMPLETED }
         }
 
         val filterFnIntervalCustom: (LibraryItem) -> Boolean = {
             if (skipOutsideReleasePeriod) {
-                applyFilter(filterIntervalCustom) { it.libraryAnime.manga.fetchInterval < 0 }
+                applyFilter(filterIntervalCustom) { it.libraryManga.manga.fetchInterval < 0 }
             } else {
                 true
             }
@@ -315,7 +315,7 @@ class LibraryScreenModel(
 
         // SY -->
         val filterFnLewd: (LibraryItem) -> Boolean = {
-            applyFilter(filterLewd) { it.libraryAnime.manga.isLewd() }
+            applyFilter(filterLewd) { it.libraryManga.manga.isLewd() }
         }
         // SY <--
 
@@ -323,7 +323,7 @@ class LibraryScreenModel(
             if (isNotLoggedInAnyTrack || trackFiltersIsIgnored) return@tracking true
 
             val mangaTracks = trackMap
-                .mapValues { entry -> entry.value.map { it.trackerId } }[item.libraryAnime.id]
+                .mapValues { entry -> entry.value.map { it.trackerId } }[item.libraryManga.id]
                 .orEmpty()
 
             val isExcluded = excludedTracks.isNotEmpty() && mangaTracks.fastAny { it in excludedTracks }
@@ -374,7 +374,7 @@ class LibraryScreenModel(
         // SY <--
 
         val sortAlphabetically: (LibraryItem, LibraryItem) -> Int = { i1, i2 ->
-            i1.libraryAnime.manga.title.lowercase().compareToWithCollator(i2.libraryAnime.manga.title.lowercase())
+            i1.libraryManga.manga.title.lowercase().compareToWithCollator(i2.libraryManga.manga.title.lowercase())
         }
 
         val defaultTrackerScoreSortValue = -1.0
@@ -400,33 +400,33 @@ class LibraryScreenModel(
                     sortAlphabetically(i1, i2)
                 }
                 LibrarySort.Type.LastSeen -> {
-                    i1.libraryAnime.lastSeen.compareTo(i2.libraryAnime.lastSeen)
+                    i1.libraryManga.lastRead.compareTo(i2.libraryManga.lastRead)
                 }
                 LibrarySort.Type.LastUpdate -> {
-                    i1.libraryAnime.manga.lastUpdate.compareTo(i2.libraryAnime.manga.lastUpdate)
+                    i1.libraryManga.manga.lastUpdate.compareTo(i2.libraryManga.manga.lastUpdate)
                 }
                 LibrarySort.Type.UnseenCount -> when {
                     // Ensure unread content comes first
-                    i1.libraryAnime.unseenCount == i2.libraryAnime.unseenCount -> 0
-                    i1.libraryAnime.unseenCount == 0L -> if (sort.isAscending) 1 else -1
-                    i2.libraryAnime.unseenCount == 0L -> if (sort.isAscending) -1 else 1
-                    else -> i1.libraryAnime.unseenCount.compareTo(i2.libraryAnime.unseenCount)
+                    i1.libraryManga.unseenCount == i2.libraryManga.unseenCount -> 0
+                    i1.libraryManga.unseenCount == 0L -> if (sort.isAscending) 1 else -1
+                    i2.libraryManga.unseenCount == 0L -> if (sort.isAscending) -1 else 1
+                    else -> i1.libraryManga.unseenCount.compareTo(i2.libraryManga.unseenCount)
                 }
                 LibrarySort.Type.TotalEpisodes -> {
-                    i1.libraryAnime.totalEpisodes.compareTo(i2.libraryAnime.totalEpisodes)
+                    i1.libraryManga.totalChapters.compareTo(i2.libraryManga.totalChapters)
                 }
                 LibrarySort.Type.LatestEpisode -> {
-                    i1.libraryAnime.latestUpload.compareTo(i2.libraryAnime.latestUpload)
+                    i1.libraryManga.latestUpload.compareTo(i2.libraryManga.latestUpload)
                 }
                 LibrarySort.Type.EpisodeFetchDate -> {
-                    i1.libraryAnime.episodeFetchedAt.compareTo(i2.libraryAnime.episodeFetchedAt)
+                    i1.libraryManga.chapterFetchedAt.compareTo(i2.libraryManga.chapterFetchedAt)
                 }
                 LibrarySort.Type.DateAdded -> {
-                    i1.libraryAnime.manga.dateAdded.compareTo(i2.libraryAnime.manga.dateAdded)
+                    i1.libraryManga.manga.dateAdded.compareTo(i2.libraryManga.manga.dateAdded)
                 }
                 LibrarySort.Type.TrackerMean -> {
-                    val item1Score = trackerScores[i1.libraryAnime.id] ?: defaultTrackerScoreSortValue
-                    val item2Score = trackerScores[i2.libraryAnime.id] ?: defaultTrackerScoreSortValue
+                    val item1Score = trackerScores[i1.libraryManga.id] ?: defaultTrackerScoreSortValue
+                    val item2Score = trackerScores[i2.libraryManga.id] ?: defaultTrackerScoreSortValue
                     item1Score.compareTo(item2Score)
                 }
                 LibrarySort.Type.Random -> {
@@ -435,10 +435,10 @@ class LibraryScreenModel(
                 // SY -->
                 LibrarySort.Type.TagList -> {
                     val manga1IndexOfTag = listOfTags.indexOfFirst {
-                        i1.libraryAnime.manga.genre?.contains(it) ?: false
+                        i1.libraryManga.manga.genre?.contains(it) ?: false
                     }
                     val manga2IndexOfTag = listOfTags.indexOfFirst {
-                        i2.libraryAnime.manga.genre?.contains(it) ?: false
+                        i2.libraryManga.manga.genre?.contains(it) ?: false
                     }
                     manga1IndexOfTag.compareTo(manga2IndexOfTag)
                 }
@@ -466,7 +466,7 @@ class LibraryScreenModel(
             libraryPreferences.downloadBadge().changes(),
             libraryPreferences.localBadge().changes(),
             libraryPreferences.languageBadge().changes(),
-            libraryPreferences.autoUpdateAnimeRestrictions().changes(),
+            libraryPreferences.autoUpdateMangaRestrictions().changes(),
 
             preferences.downloadedOnly().changes(),
             libraryPreferences.filterDownloaded().changes(),
@@ -511,7 +511,7 @@ class LibraryScreenModel(
      */
     private fun getLibraryFlow(): Flow<LibraryMap> {
         val libraryMangasFlow = combine(
-            getLibraryAnime.subscribe(),
+            getLibraryManga.subscribe(),
             getLibraryItemPreferencesFlow(),
             downloadCache.changes,
         ) { libraryMangaList, prefs, _ ->
@@ -559,7 +559,7 @@ class LibraryScreenModel(
                         // KMK <--
                     )
                 }
-                .groupBy { it.libraryAnime.category }
+                .groupBy { it.libraryManga.category }
         }
 
         return combine(
@@ -603,13 +603,13 @@ class LibraryScreenModel(
                         false,
                         // KMK <--
                     ) to
-                        values.flatten().distinctBy { it.libraryAnime.manga.id },
+                        values.flatten().distinctBy { it.libraryManga.manga.id },
                 )
             }
             else -> {
                 getGroupedMangaItems(
                     groupType = groupType,
-                    libraryManga = this.values.flatten().distinctBy { it.libraryAnime.manga.id },
+                    libraryManga = this.values.flatten().distinctBy { it.libraryManga.manga.id },
                 )
             }
         }
@@ -654,9 +654,9 @@ class LibraryScreenModel(
         // SY -->
         val mergedManga = getMergedAnimeById.await(manga.id).associateBy { it.id }
         return if (manga.id == MERGED_SOURCE_ID) {
-            getMergedEpisodesByAnimeId.await(manga.id, applyScanlatorFilter = true)
+            getMergedChaptersByMangaId.await(manga.id, applyScanlatorFilter = true)
         } else {
-            getEpisodesByAnimeId.await(manga.id, applyScanlatorFilter = true)
+            getChaptersByMangaId.await(manga.id, applyScanlatorFilter = true)
         }.getNextUnseen(manga, downloadManager, mergedManga)
         // SY <--
     }
@@ -744,7 +744,7 @@ class LibraryScreenModel(
     // SY -->
     fun resetInfo() {
         state.value.selection.fastForEach { (manga) ->
-            val mangaInfo = CustomAnimeInfo(
+            val mangaInfo = CustomMangaInfo(
                 id = manga.id,
                 title = null,
                 author = null,
@@ -875,12 +875,12 @@ class LibraryScreenModel(
     ): String {
         return when (groupType) {
             LibraryGroup.BY_STATUS -> when (category?.id) {
-                SAnime.ONGOING.toLong() -> context.stringResource(MR.strings.ongoing)
-                SAnime.LICENSED.toLong() -> context.stringResource(MR.strings.licensed)
-                SAnime.CANCELLED.toLong() -> context.stringResource(MR.strings.cancelled)
-                SAnime.ON_HIATUS.toLong() -> context.stringResource(MR.strings.on_hiatus)
-                SAnime.PUBLISHING_FINISHED.toLong() -> context.stringResource(MR.strings.publishing_finished)
-                SAnime.COMPLETED.toLong() -> context.stringResource(MR.strings.completed)
+                SManga.ONGOING.toLong() -> context.stringResource(MR.strings.ongoing)
+                SManga.LICENSED.toLong() -> context.stringResource(MR.strings.licensed)
+                SManga.CANCELLED.toLong() -> context.stringResource(MR.strings.cancelled)
+                SManga.ON_HIATUS.toLong() -> context.stringResource(MR.strings.on_hiatus)
+                SManga.PUBLISHING_FINISHED.toLong() -> context.stringResource(MR.strings.publishing_finished)
+                SManga.COMPLETED.toLong() -> context.stringResource(MR.strings.completed)
                 else -> context.stringResource(MR.strings.unknown)
             }
             LibraryGroup.BY_SOURCE -> if (category?.id == LocalSource.ID) {
@@ -908,15 +908,15 @@ class LibraryScreenModel(
                 emptyMap()
             }
             val sources = unfiltered
-                .distinctBy { it.libraryAnime.manga.source }
-                .fastMapNotNull { sourceManager.get(it.libraryAnime.manga.source) }
+                .distinctBy { it.libraryManga.manga.source }
+                .fastMapNotNull { sourceManager.get(it.libraryManga.manga.source) }
                 .associateBy { it.id }
             unfiltered.asFlow().cancellable().filter { item ->
-                val mangaId = item.libraryAnime.manga.id
-                val sourceId = item.libraryAnime.manga.source
+                val mangaId = item.libraryManga.manga.id
+                val sourceId = item.libraryManga.manga.source
                 filterManga(
                     queries = parsedQuery,
-                    libraryAnime = item.libraryAnime,
+                    libraryManga = item.libraryManga,
                     tracks = tracks[mangaId],
                     source = sources[sourceId],
                     loggedInTrackServices = loggedInTrackServices,
@@ -929,13 +929,13 @@ class LibraryScreenModel(
 
     private fun filterManga(
         queries: List<QueryComponent>,
-        libraryAnime: LibraryAnime,
+        libraryManga: LibraryManga,
         tracks: List<Track>?,
         source: Source?,
         checkGenre: Boolean = true,
         loggedInTrackServices: Map<Long, TriState>,
     ): Boolean {
-        val manga = libraryAnime.manga
+        val manga = libraryManga.manga
         val sourceIdString = manga.source.takeUnless { it == LocalSource.ID }?.toString()
         val genre = if (checkGenre) manga.genre.orEmpty() else emptyList()
         val context = Injekt.get<Application>()
@@ -1008,7 +1008,7 @@ class LibraryScreenModel(
         mutableState.update { it.copy(selection = persistentListOf()) }
     }
 
-    fun toggleSelection(manga: LibraryAnime) {
+    fun toggleSelection(manga: LibraryManga) {
         mutableState.update { state ->
             val newSelection = state.selection.mutate { list ->
                 if (list.fastAny { it.id == manga.id }) {
@@ -1025,7 +1025,7 @@ class LibraryScreenModel(
      * Selects all mangas between and including the given manga and the last pressed manga from the
      * same category as the given manga
      */
-    fun toggleRangeSelection(manga: LibraryAnime) {
+    fun toggleRangeSelection(manga: LibraryManga) {
         mutableState.update { state ->
             val newSelection = state.selection.mutate { list ->
                 val lastSelected = list.lastOrNull()
@@ -1035,7 +1035,7 @@ class LibraryScreenModel(
                 }
 
                 val items = state.getLibraryItemsByCategoryId(manga.category)
-                    ?.fastMap { it.libraryAnime }.orEmpty()
+                    ?.fastMap { it.libraryManga }.orEmpty()
                 val lastMangaIndex = items.indexOf(lastSelected)
                 val curMangaIndex = items.indexOf(manga)
 
@@ -1062,7 +1062,7 @@ class LibraryScreenModel(
                 val selectedIds = list.fastMap { it.id }
                 state.getLibraryItemsByCategoryId(categoryId)
                     ?.fastMapNotNull { item ->
-                        item.libraryAnime.takeUnless { it.id in selectedIds }
+                        item.libraryManga.takeUnless { it.id in selectedIds }
                     }
                     ?.let { list.addAll(it) }
             }
@@ -1074,7 +1074,7 @@ class LibraryScreenModel(
         mutableState.update { state ->
             val newSelection = state.selection.mutate { list ->
                 val categoryId = state.categories[index].id
-                val items = state.getLibraryItemsByCategoryId(categoryId)?.fastMap { it.libraryAnime }.orEmpty()
+                val items = state.getLibraryItemsByCategoryId(categoryId)?.fastMap { it.libraryManga }.orEmpty()
                 val selectedIds = list.fastMap { it.id }
                 val (toRemove, toAdd) = items.fastPartition { it.id in selectedIds }
                 val toRemoveIds = toRemove.fastMap { it.id }
@@ -1149,7 +1149,7 @@ class LibraryScreenModel(
             LibraryGroup.BY_TRACK_STATUS -> {
                 val tracks = runBlocking { getTracks.await() }.groupBy { it.animeId }
                 libraryManga.groupBy { item ->
-                    val status = tracks[item.libraryAnime.manga.id]?.firstNotNullOfOrNull { track ->
+                    val status = tracks[item.libraryManga.manga.id]?.firstNotNullOfOrNull { track ->
                         TrackStatus.parseTrackerStatus(trackerManager, track.trackerId, track.status)
                     } ?: TrackStatus.OTHER
 
@@ -1174,7 +1174,7 @@ class LibraryScreenModel(
             LibraryGroup.BY_SOURCE -> {
                 val sources: List<Long>
                 libraryManga.groupBy { item ->
-                    item.libraryAnime.manga.source
+                    item.libraryManga.manga.source
                 }.also {
                     sources = it.keys
                         .map {
@@ -1201,26 +1201,26 @@ class LibraryScreenModel(
             }
             else -> {
                 libraryManga.groupBy { item ->
-                    item.libraryAnime.manga.status
+                    item.libraryManga.manga.status
                 }.mapKeys {
                     Category(
                         id = it.key + 1,
                         name = when (it.key) {
-                            SAnime.ONGOING.toLong() -> context.stringResource(MR.strings.ongoing)
-                            SAnime.LICENSED.toLong() -> context.stringResource(MR.strings.licensed)
-                            SAnime.CANCELLED.toLong() -> context.stringResource(MR.strings.cancelled)
-                            SAnime.ON_HIATUS.toLong() -> context.stringResource(MR.strings.on_hiatus)
-                            SAnime.PUBLISHING_FINISHED.toLong() -> context.stringResource(MR.strings.publishing_finished)
-                            SAnime.COMPLETED.toLong() -> context.stringResource(MR.strings.completed)
+                            SManga.ONGOING.toLong() -> context.stringResource(MR.strings.ongoing)
+                            SManga.LICENSED.toLong() -> context.stringResource(MR.strings.licensed)
+                            SManga.CANCELLED.toLong() -> context.stringResource(MR.strings.cancelled)
+                            SManga.ON_HIATUS.toLong() -> context.stringResource(MR.strings.on_hiatus)
+                            SManga.PUBLISHING_FINISHED.toLong() -> context.stringResource(MR.strings.publishing_finished)
+                            SManga.COMPLETED.toLong() -> context.stringResource(MR.strings.completed)
                             else -> context.stringResource(MR.strings.unknown)
                         },
                         order = when (it.key) {
-                            SAnime.ONGOING.toLong() -> 1
-                            SAnime.LICENSED.toLong() -> 2
-                            SAnime.CANCELLED.toLong() -> 3
-                            SAnime.ON_HIATUS.toLong() -> 4
-                            SAnime.PUBLISHING_FINISHED.toLong() -> 5
-                            SAnime.COMPLETED.toLong() -> 6
+                            SManga.ONGOING.toLong() -> 1
+                            SManga.LICENSED.toLong() -> 2
+                            SManga.CANCELLED.toLong() -> 3
+                            SManga.ON_HIATUS.toLong() -> 4
+                            SManga.PUBLISHING_FINISHED.toLong() -> 5
+                            SManga.COMPLETED.toLong() -> 6
                             else -> 7
                         },
                         flags = 0,
@@ -1239,7 +1239,7 @@ class LibraryScreenModel(
      * Will get first merged manga in the list as target merging.
      * If there is no merged manga, then it will use the first one in list to create a new target.
      */
-    suspend fun smartSearchMerge(selectedMangas: PersistentList<LibraryAnime>): Long? {
+    suspend fun smartSearchMerge(selectedMangas: PersistentList<LibraryManga>): Long? {
         val mergedManga = selectedMangas.firstOrNull { it.manga.source == MERGED_SOURCE_ID }?.let { listOf(it) }
             ?: emptyList()
         val mergingMangas = selectedMangas.filterNot { it.manga.source == MERGED_SOURCE_ID }
@@ -1282,7 +1282,7 @@ class LibraryScreenModel(
         val isLoading: Boolean = true,
         val library: LibraryMap = emptyMap(),
         val searchQuery: String? = null,
-        val selection: PersistentList<LibraryAnime> = persistentListOf(),
+        val selection: PersistentList<LibraryManga> = persistentListOf(),
         val hasActiveFilters: Boolean = false,
         val showCategoryTabs: Boolean = false,
         val showMangaCount: Boolean = false,
@@ -1297,7 +1297,7 @@ class LibraryScreenModel(
         private val libraryCount by lazy {
             library.values
                 .flatten()
-                .fastDistinctBy { it.libraryAnime.manga.id }
+                .fastDistinctBy { it.libraryManga.manga.id }
                 .size
         }
 

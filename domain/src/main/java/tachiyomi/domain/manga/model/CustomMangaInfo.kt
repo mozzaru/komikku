@@ -1,6 +1,6 @@
 package tachiyomi.domain.manga.model
 
-data class CustomAnimeInfo(
+data class CustomMangaInfo(
     val id: Long,
     val title: String?,
     val author: String? = null,

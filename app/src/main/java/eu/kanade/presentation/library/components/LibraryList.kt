@@ -10,7 +10,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.util.fastAny
 import eu.kanade.tachiyomi.ui.library.LibraryItem
 import tachiyomi.domain.manga.model.MangaCover
-import tachiyomi.domain.library.model.LibraryAnime
+import tachiyomi.domain.library.model.LibraryManga
 import tachiyomi.presentation.core.components.FastScrollLazyColumn
 import tachiyomi.presentation.core.util.plus
 
@@ -18,10 +18,10 @@ import tachiyomi.presentation.core.util.plus
 internal fun LibraryList(
     items: List<LibraryItem>,
     contentPadding: PaddingValues,
-    selection: List<LibraryAnime>,
-    onClick: (LibraryAnime) -> Unit,
-    onLongClick: (LibraryAnime) -> Unit,
-    onClickContinueReading: ((LibraryAnime) -> Unit)?,
+    selection: List<LibraryManga>,
+    onClick: (LibraryManga) -> Unit,
+    onLongClick: (LibraryManga) -> Unit,
+    onClickContinueReading: ((LibraryManga) -> Unit)?,
     searchQuery: String?,
     onGlobalSearchClicked: () -> Unit,
 ) {
@@ -43,9 +43,9 @@ internal fun LibraryList(
             items = items,
             contentType = { "library_list_item" },
         ) { libraryItem ->
-            val anime = libraryItem.libraryAnime.manga
+            val anime = libraryItem.libraryManga.manga
             AnimeListItem(
-                isSelected = selection.fastAny { it.id == libraryItem.libraryAnime.id },
+                isSelected = selection.fastAny { it.id == libraryItem.libraryManga.id },
                 title = anime.title,
                 coverData = MangaCover(
                     mangaId = anime.id,
@@ -68,10 +68,10 @@ internal fun LibraryList(
                     SourceIconBadge(source = libraryItem.source)
                     // KMK <--
                 },
-                onLongClick = { onLongClick(libraryItem.libraryAnime) },
-                onClick = { onClick(libraryItem.libraryAnime) },
+                onLongClick = { onLongClick(libraryItem.libraryManga) },
+                onClick = { onClick(libraryItem.libraryManga) },
                 onClickContinueReading = if (onClickContinueReading != null && libraryItem.unseenCount > 0) {
-                    { onClickContinueReading(libraryItem.libraryAnime) }
+                    { onClickContinueReading(libraryItem.libraryManga) }
                 } else {
                     null
                 },

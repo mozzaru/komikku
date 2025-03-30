@@ -3,23 +3,23 @@ package tachiyomi.domain.manga.interactor
 import kotlinx.coroutines.flow.Flow
 import logcat.LogPriority
 import tachiyomi.core.common.util.system.logcat
-import tachiyomi.domain.manga.model.MergedAnimeReference
-import tachiyomi.domain.manga.repository.AnimeMergeRepository
+import tachiyomi.domain.manga.model.MergedMangaReference
+import tachiyomi.domain.manga.repository.MangaMergeRepository
 
 class GetMergedReferencesById(
-    private val animeMergeRepository: AnimeMergeRepository,
+    private val mangaMergeRepository: MangaMergeRepository,
 ) {
 
-    suspend fun await(id: Long): List<MergedAnimeReference> {
+    suspend fun await(id: Long): List<MergedMangaReference> {
         return try {
-            animeMergeRepository.getReferencesById(id)
+            mangaMergeRepository.getReferencesById(id)
         } catch (e: Exception) {
             logcat(LogPriority.ERROR, e)
             emptyList()
         }
     }
 
-    suspend fun subscribe(id: Long): Flow<List<MergedAnimeReference>> {
-        return animeMergeRepository.subscribeReferencesById(id)
+    suspend fun subscribe(id: Long): Flow<List<MergedMangaReference>> {
+        return mangaMergeRepository.subscribeReferencesById(id)
     }
 }

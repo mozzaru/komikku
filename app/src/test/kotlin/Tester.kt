@@ -16,8 +16,8 @@ import org.junit.jupiter.api.Disabled
 import org.junit.jupiter.api.Test
 import tachiyomi.domain.manga.interactor.GetCustomMangaInfo
 import tachiyomi.domain.manga.model.Manga
-import tachiyomi.domain.manga.model.CustomAnimeInfo
-import tachiyomi.domain.manga.repository.CustomAnimeRepository
+import tachiyomi.domain.manga.model.CustomMangaInfo
+import tachiyomi.domain.manga.repository.CustomMangaRepository
 import tachiyomi.domain.category.interactor.GetCategories
 import tachiyomi.domain.category.model.Category
 import uy.kohesive.injekt.Injekt
@@ -140,9 +140,9 @@ class Tester {
         fun before() {
             Injekt.addSingletonFactory {
                 GetCustomMangaInfo(
-                    object : CustomAnimeRepository {
-                        override fun get(animeId: Long) = null
-                        override fun set(animeInfo: CustomAnimeInfo) = Unit
+                    object : CustomMangaRepository {
+                        override fun get(mangaId: Long) = null
+                        override fun set(mangaInfo: CustomMangaInfo) = Unit
                     },
                 )
             }

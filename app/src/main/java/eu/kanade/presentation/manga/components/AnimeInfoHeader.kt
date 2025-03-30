@@ -82,7 +82,7 @@ import coil3.request.crossfade
 import eu.kanade.domain.ui.UiPreferences
 import eu.kanade.presentation.components.DropdownMenu
 import eu.kanade.tachiyomi.R
-import eu.kanade.tachiyomi.source.model.SAnime
+import eu.kanade.tachiyomi.source.model.SManga
 import eu.kanade.tachiyomi.util.system.copyToClipboard
 import tachiyomi.domain.manga.interactor.FetchInterval
 import tachiyomi.domain.manga.model.Manga
@@ -230,8 +230,8 @@ fun AnimeActionRow(
 ) {
     // KMK -->
     val libraryPreferences: LibraryPreferences = Injekt.get()
-    val restrictions = libraryPreferences.autoUpdateAnimeRestrictions().get()
-    val notSkipCompleted = ANIME_NON_COMPLETED !in restrictions || status != SAnime.COMPLETED.toLong()
+    val restrictions = libraryPreferences.autoUpdateMangaRestrictions().get()
+    val notSkipCompleted = ANIME_NON_COMPLETED !in restrictions || status != SManga.COMPLETED.toLong()
     val selectedInterval by remember(interval) { mutableIntStateOf(if (interval < 0) -interval else 0) }
     // KMK <--
     val defaultActionButtonColor = MaterialTheme.colorScheme.onSurface.copy(alpha = DISABLED_ALPHA)
@@ -748,12 +748,12 @@ private fun ColumnScope.AnimeContentInfo(
     ) {
         Icon(
             imageVector = when (status) {
-                SAnime.ONGOING.toLong() -> Icons.Outlined.Schedule
-                SAnime.COMPLETED.toLong() -> Icons.Outlined.DoneAll
-                SAnime.LICENSED.toLong() -> Icons.Outlined.AttachMoney
-                SAnime.PUBLISHING_FINISHED.toLong() -> Icons.Outlined.Done
-                SAnime.CANCELLED.toLong() -> Icons.Outlined.Close
-                SAnime.ON_HIATUS.toLong() -> Icons.Outlined.Pause
+                SManga.ONGOING.toLong() -> Icons.Outlined.Schedule
+                SManga.COMPLETED.toLong() -> Icons.Outlined.DoneAll
+                SManga.LICENSED.toLong() -> Icons.Outlined.AttachMoney
+                SManga.PUBLISHING_FINISHED.toLong() -> Icons.Outlined.Done
+                SManga.CANCELLED.toLong() -> Icons.Outlined.Close
+                SManga.ON_HIATUS.toLong() -> Icons.Outlined.Pause
                 else -> Icons.Outlined.Block
             },
             contentDescription = null,
@@ -764,12 +764,12 @@ private fun ColumnScope.AnimeContentInfo(
         ProvideTextStyle(MaterialTheme.typography.bodyMedium) {
             Text(
                 text = when (status) {
-                    SAnime.ONGOING.toLong() -> stringResource(MR.strings.ongoing)
-                    SAnime.COMPLETED.toLong() -> stringResource(MR.strings.completed)
-                    SAnime.LICENSED.toLong() -> stringResource(MR.strings.licensed)
-                    SAnime.PUBLISHING_FINISHED.toLong() -> stringResource(MR.strings.publishing_finished)
-                    SAnime.CANCELLED.toLong() -> stringResource(MR.strings.cancelled)
-                    SAnime.ON_HIATUS.toLong() -> stringResource(MR.strings.on_hiatus)
+                    SManga.ONGOING.toLong() -> stringResource(MR.strings.ongoing)
+                    SManga.COMPLETED.toLong() -> stringResource(MR.strings.completed)
+                    SManga.LICENSED.toLong() -> stringResource(MR.strings.licensed)
+                    SManga.PUBLISHING_FINISHED.toLong() -> stringResource(MR.strings.publishing_finished)
+                    SManga.CANCELLED.toLong() -> stringResource(MR.strings.cancelled)
+                    SManga.ON_HIATUS.toLong() -> stringResource(MR.strings.on_hiatus)
                     else -> stringResource(MR.strings.unknown)
                 },
                 overflow = TextOverflow.Ellipsis,

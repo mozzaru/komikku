@@ -20,7 +20,7 @@ import eu.kanade.tachiyomi.ui.library.LibraryItem
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import tachiyomi.domain.category.model.Category
-import tachiyomi.domain.library.model.LibraryAnime
+import tachiyomi.domain.library.model.LibraryManga
 import tachiyomi.domain.library.model.LibraryDisplayMode
 import tachiyomi.presentation.core.components.material.PullRefresh
 import kotlin.time.Duration.Companion.seconds
@@ -29,16 +29,16 @@ import kotlin.time.Duration.Companion.seconds
 fun LibraryContent(
     categories: List<Category>,
     searchQuery: String?,
-    selection: List<LibraryAnime>,
+    selection: List<LibraryManga>,
     contentPadding: PaddingValues,
     currentPage: () -> Int,
     hasActiveFilters: Boolean,
     showPageTabs: Boolean,
     onChangeCurrentPage: (Int) -> Unit,
     onMangaClicked: (Long) -> Unit,
-    onContinueReadingClicked: ((LibraryAnime) -> Unit)?,
-    onToggleSelection: (LibraryAnime) -> Unit,
-    onToggleRangeSelection: (LibraryAnime) -> Unit,
+    onContinueReadingClicked: ((LibraryManga) -> Unit)?,
+    onToggleSelection: (LibraryManga) -> Unit,
+    onToggleRangeSelection: (LibraryManga) -> Unit,
     onRefresh: (Category?) -> Boolean,
     onGlobalSearchClicked: () -> Unit,
     getNumberOfMangaForCategory: (Category) -> Int?,
@@ -75,7 +75,7 @@ fun LibraryContent(
         }
 
         val notSelectionMode = selection.isEmpty()
-        val onClickManga = { manga: LibraryAnime ->
+        val onClickManga = { manga: LibraryManga ->
             if (notSelectionMode) {
                 onMangaClicked(manga.manga.id)
             } else {

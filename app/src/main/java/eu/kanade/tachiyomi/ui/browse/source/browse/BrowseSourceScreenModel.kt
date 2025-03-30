@@ -57,7 +57,7 @@ import tachiyomi.domain.manga.interactor.NetworkToLocalAnime
 import tachiyomi.domain.manga.model.Manga
 import tachiyomi.domain.manga.model.toMangaUpdate
 import tachiyomi.domain.category.interactor.GetCategories
-import tachiyomi.domain.category.interactor.SetAnimeCategories
+import tachiyomi.domain.category.interactor.SetMangaCategories
 import tachiyomi.domain.category.model.Category
 import tachiyomi.domain.chapter.interactor.SetAnimeDefaultEpisodeFlags
 import tachiyomi.domain.library.service.LibraryPreferences
@@ -90,7 +90,7 @@ open class BrowseSourceScreenModel(
     private val getRemoteAnime: GetRemoteAnime = Injekt.get(),
     private val getDuplicateLibraryAnime: GetDuplicateLibraryAnime = Injekt.get(),
     private val getCategories: GetCategories = Injekt.get(),
-    private val setAnimeCategories: SetAnimeCategories = Injekt.get(),
+    private val setMangaCategories: SetMangaCategories = Injekt.get(),
     private val setAnimeDefaultEpisodeFlags: SetAnimeDefaultEpisodeFlags = Injekt.get(),
     private val getAnime: GetAnime = Injekt.get(),
     val networkToLocalAnime: NetworkToLocalAnime = Injekt.get(),
@@ -423,7 +423,7 @@ open class BrowseSourceScreenModel(
 
     fun moveMangaToCategories(manga: Manga, categoryIds: List<Long>) {
         screenModelScope.launchIO {
-            setAnimeCategories.await(
+            setMangaCategories.await(
                 mangaId = manga.id,
                 categoryIds = categoryIds.toList(),
             )

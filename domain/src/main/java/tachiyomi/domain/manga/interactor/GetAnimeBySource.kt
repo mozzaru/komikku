@@ -1,13 +1,13 @@
 package tachiyomi.domain.manga.interactor
 
 import tachiyomi.domain.manga.model.Manga
-import tachiyomi.domain.manga.repository.AnimeRepository
+import tachiyomi.domain.manga.repository.MangaRepository
 
 class GetAnimeBySource(
-    private val animeRepository: AnimeRepository,
+    private val mangaRepository: MangaRepository,
 ) {
 
     suspend fun await(sourceId: Long): List<Manga> {
-        return animeRepository.getAnimeBySourceId(sourceId)
+        return mangaRepository.getMangaBySourceId(sourceId)
     }
 }

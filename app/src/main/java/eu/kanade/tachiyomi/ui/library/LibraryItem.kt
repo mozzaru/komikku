@@ -1,13 +1,13 @@
 package eu.kanade.tachiyomi.ui.library
 
-import tachiyomi.domain.library.model.LibraryAnime
+import tachiyomi.domain.library.model.LibraryManga
 import tachiyomi.domain.source.model.Source
 import tachiyomi.domain.source.service.SourceManager
 import uy.kohesive.injekt.Injekt
 import uy.kohesive.injekt.api.get
 
 data class LibraryItem(
-    val libraryAnime: LibraryAnime,
+    val libraryManga: LibraryManga,
     val downloadCount: Long = -1,
     val unseenCount: Long = -1,
     val isLocal: Boolean = false,

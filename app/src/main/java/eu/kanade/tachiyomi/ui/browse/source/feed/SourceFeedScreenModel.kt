@@ -216,15 +216,15 @@ open class SourceFeedScreenModel(
                     val page = try {
                         withContext(coroutineDispatcher) {
                             when (sourceFeed) {
-                                is SourceFeedUI.Browse -> source.getPopularAnime(1)
+                                is SourceFeedUI.Browse -> source.getPopularManga(1)
                                 is SourceFeedUI.Latest -> source.getLatestUpdates(1)
-                                is SourceFeedUI.SourceSavedSearch -> source.getSearchAnime(
+                                is SourceFeedUI.SourceSavedSearch -> source.getSearchManga(
                                     page = 1,
                                     query = sourceFeed.savedSearch.query.orEmpty(),
                                     filters = getFilterList(sourceFeed.savedSearch, source),
                                 )
                             }
-                        }.animes
+                        }.mangas
                     } catch (e: Exception) {
                         emptyList()
                     }

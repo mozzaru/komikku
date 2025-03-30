@@ -1,28 +1,28 @@
 package eu.kanade.domain.episode.model
 
 import eu.kanade.tachiyomi.data.database.models.EpisodeImpl
-import eu.kanade.tachiyomi.source.model.SEpisode
+import eu.kanade.tachiyomi.source.model.SChapter
 import tachiyomi.domain.chapter.model.Episode
 import eu.kanade.tachiyomi.data.database.models.Episode as DbEpisode
 
 // TODO: Remove when all deps are migrated
-fun Episode.toSEpisode(): SEpisode {
-    return SEpisode.create().also {
+fun Episode.toSEpisode(): SChapter {
+    return SChapter.create().also {
         it.url = url
         it.name = name
         it.date_upload = dateUpload
-        it.episode_number = episodeNumber.toFloat()
+        it.chapter_number = episodeNumber.toFloat()
         it.scanlator = scanlator
     }
 }
 
-fun Episode.copyFromSEpisode(sEpisode: SEpisode): Episode {
+fun Episode.copyFromSEpisode(sChapter: SChapter): Episode {
     return this.copy(
-        name = sEpisode.name,
-        url = sEpisode.url,
-        dateUpload = sEpisode.date_upload,
-        episodeNumber = sEpisode.episode_number.toDouble(),
-        scanlator = sEpisode.scanlator?.ifBlank { null }?.trim(),
+        name = sChapter.name,
+        url = sChapter.url,
+        dateUpload = sChapter.date_upload,
+        episodeNumber = sChapter.chapter_number.toDouble(),
+        scanlator = sChapter.scanlator?.ifBlank { null }?.trim(),
     )
 }
 
@@ -37,7 +37,7 @@ fun Episode.toDbEpisode(): DbEpisode = EpisodeImpl().also {
     it.last_second_seen = lastSecondSeen
     it.date_fetch = dateFetch
     it.date_upload = dateUpload
-    it.episode_number = episodeNumber.toFloat()
+    it.chapter_number = episodeNumber.toFloat()
     it.source_order = sourceOrder.toInt()
     it.last_modified = lastModifiedAt
 }

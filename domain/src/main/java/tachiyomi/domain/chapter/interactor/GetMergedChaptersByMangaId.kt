@@ -7,11 +7,11 @@ import kotlinx.coroutines.flow.flowOf
 import logcat.LogPriority
 import tachiyomi.core.common.util.system.logcat
 import tachiyomi.domain.manga.interactor.GetMergedReferencesById
-import tachiyomi.domain.manga.model.MergedAnimeReference
+import tachiyomi.domain.manga.model.MergedMangaReference
 import tachiyomi.domain.chapter.model.Episode
 import tachiyomi.domain.chapter.repository.EpisodeRepository
 
-class GetMergedEpisodesByAnimeId(
+class GetMergedChaptersByMangaId(
     private val episodeRepository: EpisodeRepository,
     private val getMergedReferencesById: GetMergedReferencesById,
 ) {
@@ -57,7 +57,7 @@ class GetMergedEpisodesByAnimeId(
     }
 
     private fun transformMergedChapters(
-        mangaReferences: List<MergedAnimeReference>,
+        mangaReferences: List<MergedMangaReference>,
         episodeList: List<Episode>,
         dedupe: Boolean,
     ): List<Episode> {
@@ -65,18 +65,18 @@ class GetMergedEpisodesByAnimeId(
     }
 
     private fun dedupeChapterList(
-        mangaReferences: List<MergedAnimeReference>,
+        mangaReferences: List<MergedMangaReference>,
         episodeList: List<Episode>,
     ): List<Episode> {
-        return when (mangaReferences.firstOrNull { it.animeSourceId == MERGED_SOURCE_ID }?.episodeSortMode) {
-            MergedAnimeReference.EPISODE_SORT_NO_DEDUPE, MergedAnimeReference.EPISODE_SORT_NONE -> episodeList
-            MergedAnimeReference.EPISODE_SORT_PRIORITY -> dedupeByPriority(mangaReferences, episodeList)
-            MergedAnimeReference.EPISODE_SORT_MOST_EPISODES -> {
+        return when (mangaReferences.firstOrNull { it.mangaSourceId == MERGED_SOURCE_ID }?.chapterSortMode) {
+            MergedMangaReference.EPISODE_SORT_NO_DEDUPE, MergedMangaReference.EPISODE_SORT_NONE -> episodeList
+            MergedMangaReference.EPISODE_SORT_PRIORITY -> dedupeByPriority(mangaReferences, episodeList)
+            MergedMangaReference.EPISODE_SORT_MOST_EPISODES -> {
                 findSourceWithMostChapters(episodeList)?.let { mangaId ->
                     episodeList.filter { it.animeId == mangaId }
                 } ?: episodeList
             }
-            MergedAnimeReference.EPISODE_SORT_HIGHEST_EPISODE_NUMBER -> {
+            MergedMangaReference.EPISODE_SORT_HIGHEST_EPISODE_NUMBER -> {
                 findSourceWithHighestChapterNumber(episodeList)?.let { mangaId ->
                     episodeList.filter { it.animeId == mangaId }
                 } ?: episodeList
@@ -94,7 +94,7 @@ class GetMergedEpisodesByAnimeId(
     }
 
     private fun dedupeByPriority(
-        mangaReferences: List<MergedAnimeReference>,
+        mangaReferences: List<MergedMangaReference>,
         episodeList: List<Episode>,
     ): List<Episode> {
         val sortedEpisodeList = mutableListOf<Episode>()
@@ -103,7 +103,7 @@ class GetMergedEpisodesByAnimeId(
         episodeList.groupBy { it.animeId }
             .entries
             .sortedBy { (mangaId) ->
-                mangaReferences.find { it.animeId == mangaId }?.episodePriority ?: Int.MAX_VALUE
+                mangaReferences.find { it.mangaId == mangaId }?.chapterPriority ?: Int.MAX_VALUE
             }
             .forEach { (_, chapters) ->
                 existingChapterIndex = -1

@@ -1,8 +1,8 @@
 package eu.kanade.tachiyomi.source.online
 
 import eu.kanade.tachiyomi.source.Source
-import eu.kanade.tachiyomi.source.model.SAnime
-import eu.kanade.tachiyomi.source.model.SEpisode
+import eu.kanade.tachiyomi.source.model.SManga
+import eu.kanade.tachiyomi.source.model.SChapter
 
 /**
  * A source that may handle opening an SAnime or SEpisode for a given URI.
@@ -25,7 +25,7 @@ interface ResolvableSource : Source {
      *
      * @since extensions-lib 1.5
      */
-    suspend fun getAnime(uri: String): SAnime?
+    suspend fun getManga(uri: String): SManga?
 
     /**
      * Called if [getUriType] is [UriType.Chapter].
@@ -33,7 +33,7 @@ interface ResolvableSource : Source {
      *
      * @since extensions-lib 1.5
      */
-    suspend fun getEpisode(uri: String): SEpisode?
+    suspend fun getChapter(uri: String): SChapter?
 }
 
 sealed interface UriType {

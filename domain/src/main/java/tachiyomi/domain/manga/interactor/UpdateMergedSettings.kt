@@ -1,17 +1,17 @@
 package tachiyomi.domain.manga.interactor
 
-import tachiyomi.domain.manga.model.MergeAnimeSettingsUpdate
-import tachiyomi.domain.manga.repository.AnimeMergeRepository
+import tachiyomi.domain.manga.model.MergeMangaSettingsUpdate
+import tachiyomi.domain.manga.repository.MangaMergeRepository
 
 class UpdateMergedSettings(
-    private val animeMergeRepository: AnimeMergeRepository,
+    private val mangaMergeRepository: MangaMergeRepository,
 ) {
 
-    suspend fun await(mergeUpdate: MergeAnimeSettingsUpdate): Boolean {
-        return animeMergeRepository.updateSettings(mergeUpdate)
+    suspend fun await(mergeUpdate: MergeMangaSettingsUpdate): Boolean {
+        return mangaMergeRepository.updateSettings(mergeUpdate)
     }
 
-    suspend fun awaitAll(values: List<MergeAnimeSettingsUpdate>): Boolean {
-        return animeMergeRepository.updateAllSettings(values)
+    suspend fun awaitAll(values: List<MergeMangaSettingsUpdate>): Boolean {
+        return mangaMergeRepository.updateAllSettings(values)
     }
 }

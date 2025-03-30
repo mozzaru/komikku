@@ -31,7 +31,7 @@ import tachiyomi.core.common.util.system.logcat
 import tachiyomi.domain.manga.interactor.GetFavorites
 import tachiyomi.domain.manga.interactor.GetMergedAnime
 import tachiyomi.domain.manga.model.Manga
-import tachiyomi.domain.manga.repository.AnimeRepository
+import tachiyomi.domain.manga.repository.MangaRepository
 import tachiyomi.domain.backup.service.BackupPreferences
 import tachiyomi.i18n.MR
 import uy.kohesive.injekt.Injekt
@@ -49,7 +49,7 @@ class BackupCreator(
     private val parser: ProtoBuf = Injekt.get(),
     private val getFavorites: GetFavorites = Injekt.get(),
     private val backupPreferences: BackupPreferences = Injekt.get(),
-    private val animeRepository: AnimeRepository = Injekt.get(),
+    private val mangaRepository: MangaRepository = Injekt.get(),
 
     private val categoriesBackupCreator: CategoriesBackupCreator = CategoriesBackupCreator(),
     private val animeBackupCreator: AnimeBackupCreator = AnimeBackupCreator(),
@@ -89,7 +89,7 @@ class BackupCreator(
                 throw IllegalStateException(context.stringResource(MR.strings.create_backup_file_error))
             }
 
-            val nonFavoriteManga = if (options.seenEntries) animeRepository.getSeenAnimeNotInLibrary() else emptyList()
+            val nonFavoriteManga = if (options.seenEntries) mangaRepository.getSeenAnimeNotInLibrary() else emptyList()
             // SY -->
             val mergedManga = getMergedAnime.await()
             // SY <--

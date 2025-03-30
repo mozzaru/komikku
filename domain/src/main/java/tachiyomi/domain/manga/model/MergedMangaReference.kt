@@ -1,23 +1,23 @@
 package tachiyomi.domain.manga.model
 
-data class MergedAnimeReference(
+data class MergedMangaReference(
     // Tag identifier, unique
     val id: Long,
 
     // The anime where it grabs the updated anime info
-    val isInfoAnime: Boolean,
+    val isInfoManga: Boolean,
 
     // If false the anime will not grab episode updates
-    val getEpisodeUpdates: Boolean,
+    val getChapterUpdates: Boolean,
 
     // The mode in which the episodes are handled, only set in the main merge reference
-    val episodeSortMode: Int,
+    val chapterSortMode: Int,
 
     // episode priority the deduplication uses
-    val episodePriority: Int,
+    val chapterPriority: Int,
 
     // Set if you want it to download new episodes
-    val downloadEpisodes: Boolean,
+    val downloadChapters: Boolean,
 
     // merged anime this reference is attached to
     val mergeId: Long?,
@@ -26,13 +26,13 @@ data class MergedAnimeReference(
     val mergeUrl: String,
 
     // anime id included in the merge this reference is attached to
-    val animeId: Long?,
+    val mangaId: Long?,
 
     // anime url included in the merge this reference is attached to
-    val animeUrl: String,
+    val mangaUrl: String,
 
     // source of the anime that is merged into this merge
-    val animeSourceId: Long,
+    val mangaSourceId: Long,
 ) {
     companion object {
         const val EPISODE_SORT_NONE = 0

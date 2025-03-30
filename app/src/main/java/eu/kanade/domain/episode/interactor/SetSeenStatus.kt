@@ -11,9 +11,9 @@ import logcat.LogPriority
 import tachiyomi.core.common.util.lang.withNonCancellableContext
 import tachiyomi.core.common.util.system.logcat
 import tachiyomi.domain.manga.model.Manga
-import tachiyomi.domain.manga.repository.AnimeRepository
+import tachiyomi.domain.manga.repository.MangaRepository
 import tachiyomi.domain.download.service.DownloadPreferences
-import tachiyomi.domain.chapter.interactor.GetMergedEpisodesByAnimeId
+import tachiyomi.domain.chapter.interactor.GetMergedChaptersByMangaId
 import tachiyomi.domain.chapter.model.Episode
 import tachiyomi.domain.chapter.model.EpisodeUpdate
 import tachiyomi.domain.chapter.repository.EpisodeRepository
@@ -21,10 +21,10 @@ import tachiyomi.domain.chapter.repository.EpisodeRepository
 class SetSeenStatus(
     private val downloadPreferences: DownloadPreferences,
     private val deleteDownload: DeleteDownload,
-    private val animeRepository: AnimeRepository,
+    private val mangaRepository: MangaRepository,
     private val episodeRepository: EpisodeRepository,
     // SY -->
-    private val getMergedEpisodesByAnimeId: GetMergedEpisodesByAnimeId,
+    private val getMergedChaptersByMangaId: GetMergedChaptersByMangaId,
     // SY <--
 ) {
 
@@ -89,7 +89,7 @@ class SetSeenStatus(
                 .groupBy { it.animeId }
                 .forEach { (animeId, episodes) ->
                     deleteDownload.awaitAll(
-                        manga = animeRepository.getAnimeById(animeId),
+                        manga = mangaRepository.getMangaById(animeId),
                         episodes = episodes.toTypedArray(),
                     )
                 }
@@ -111,7 +111,7 @@ class SetSeenStatus(
     private suspend fun awaitMerged(animeId: Long, seen: Boolean) = withNonCancellableContext f@{
         return@f await(
             seen = seen,
-            episodes = getMergedEpisodesByAnimeId
+            episodes = getMergedChaptersByMangaId
                 .await(animeId, dedupe = false)
                 .toTypedArray(),
         )

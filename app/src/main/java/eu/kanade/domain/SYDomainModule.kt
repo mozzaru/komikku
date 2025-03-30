@@ -15,8 +15,8 @@ import eu.kanade.domain.source.interactor.RenameSourceCategory
 import eu.kanade.domain.source.interactor.SetSourceCategories
 import eu.kanade.domain.source.interactor.ToggleExcludeFromDataSaver
 import exh.search.SearchEngine
-import tachiyomi.data.anime.AnimeMergeRepositoryImpl
-import tachiyomi.data.anime.CustomAnimeRepositoryImpl
+import tachiyomi.data.anime.MangaMergeRepositoryImpl
+import tachiyomi.data.anime.CustomMangaRepositoryImpl
 import tachiyomi.data.source.FeedSavedSearchRepositoryImpl
 import tachiyomi.data.source.SavedSearchRepositoryImpl
 import tachiyomi.domain.manga.interactor.DeleteAnimeById
@@ -33,11 +33,11 @@ import tachiyomi.domain.manga.interactor.GetSeenAnimeNotInLibraryView
 import tachiyomi.domain.manga.interactor.InsertMergedReference
 import tachiyomi.domain.manga.interactor.SetCustomAnimeInfo
 import tachiyomi.domain.manga.interactor.UpdateMergedSettings
-import tachiyomi.domain.manga.repository.AnimeMergeRepository
-import tachiyomi.domain.manga.repository.CustomAnimeRepository
+import tachiyomi.domain.manga.repository.MangaMergeRepository
+import tachiyomi.domain.manga.repository.CustomMangaRepository
 import tachiyomi.domain.chapter.interactor.DeleteEpisodes
 import tachiyomi.domain.chapter.interactor.GetEpisodeByUrl
-import tachiyomi.domain.chapter.interactor.GetMergedEpisodesByAnimeId
+import tachiyomi.domain.chapter.interactor.GetMergedChaptersByMangaId
 import tachiyomi.domain.history.interactor.GetHistoryByAnimeId
 import tachiyomi.domain.source.interactor.CountFeedSavedSearchBySourceId
 import tachiyomi.domain.source.interactor.CountFeedSavedSearchGlobal
@@ -87,11 +87,11 @@ class SYDomainModule : InjektModule {
         addFactory { IsTrackUnfollowed() }
         addFactory { GetSeenAnimeNotInLibraryView(get()) }
 
-        addSingletonFactory<AnimeMergeRepository> { AnimeMergeRepositoryImpl(get()) }
+        addSingletonFactory<MangaMergeRepository> { MangaMergeRepositoryImpl(get()) }
         addFactory { GetMergedAnime(get()) }
         addFactory { GetMergedAnimeById(get()) }
         addFactory { GetMergedReferencesById(get()) }
-        addFactory { GetMergedEpisodesByAnimeId(get(), get()) }
+        addFactory { GetMergedChaptersByMangaId(get(), get()) }
         addFactory { InsertMergedReference(get()) }
         addFactory { UpdateMergedSettings(get()) }
         addFactory { DeleteByMergeId(get()) }
@@ -121,7 +121,7 @@ class SYDomainModule : InjektModule {
         addFactory { ReorderFeed(get()) }
         // KMK <--
 
-        addSingletonFactory<CustomAnimeRepository> { CustomAnimeRepositoryImpl(get<Application>()) }
+        addSingletonFactory<CustomMangaRepository> { CustomMangaRepositoryImpl(get<Application>()) }
         addFactory { GetCustomMangaInfo(get()) }
         addFactory { SetCustomAnimeInfo(get()) }
     }

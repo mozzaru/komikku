@@ -2,17 +2,17 @@ package tachiyomi.domain.history.interactor
 
 import exh.source.MERGED_SOURCE_ID
 import tachiyomi.domain.manga.interactor.GetAnime
-import tachiyomi.domain.chapter.interactor.GetEpisodesByAnimeId
-import tachiyomi.domain.chapter.interactor.GetMergedEpisodesByAnimeId
+import tachiyomi.domain.chapter.interactor.GetChaptersByMangaId
+import tachiyomi.domain.chapter.interactor.GetMergedChaptersByMangaId
 import tachiyomi.domain.chapter.model.Episode
 import tachiyomi.domain.chapter.service.getEpisodeSort
 import tachiyomi.domain.history.repository.HistoryRepository
 import kotlin.math.max
 
 class GetNextEpisodes(
-    private val getEpisodesByAnimeId: GetEpisodesByAnimeId,
+    private val getChaptersByMangaId: GetChaptersByMangaId,
     // SY -->
-    private val getMergedEpisodesByAnimeId: GetMergedEpisodesByAnimeId,
+    private val getMergedChaptersByMangaId: GetMergedChaptersByMangaId,
     // SY <--
     private val getAnime: GetAnime,
     private val historyRepository: HistoryRepository,
@@ -28,7 +28,7 @@ class GetNextEpisodes(
 
         // SY -->
         if (anime.source == MERGED_SOURCE_ID) {
-            val episodes = getMergedEpisodesByAnimeId.await(animeId, applyScanlatorFilter = true)
+            val episodes = getMergedChaptersByMangaId.await(animeId, applyScanlatorFilter = true)
                 .sortedWith(getEpisodeSort(anime, sortDescending = false))
 
             return if (onlyUnseen) {
@@ -39,7 +39,7 @@ class GetNextEpisodes(
         }
         // SY <--
 
-        val episodes = getEpisodesByAnimeId.await(animeId, applyScanlatorFilter = true)
+        val episodes = getChaptersByMangaId.await(animeId, applyScanlatorFilter = true)
             .sortedWith(getEpisodeSort(anime, sortDescending = false))
 
         return if (onlyUnseen) {

@@ -48,7 +48,7 @@ import tachiyomi.domain.manga.interactor.GetDuplicateLibraryAnime
 import tachiyomi.domain.manga.model.Manga
 import tachiyomi.domain.manga.model.toMangaUpdate
 import tachiyomi.domain.category.interactor.GetCategories
-import tachiyomi.domain.category.interactor.SetAnimeCategories
+import tachiyomi.domain.category.interactor.SetMangaCategories
 import tachiyomi.domain.category.model.Category
 import tachiyomi.domain.chapter.interactor.SetAnimeDefaultEpisodeFlags
 import tachiyomi.domain.library.service.LibraryPreferences
@@ -65,7 +65,7 @@ class BulkFavoriteScreenModel(
     private val libraryPreferences: LibraryPreferences = Injekt.get(),
     private val getDuplicateLibraryAnime: GetDuplicateLibraryAnime = Injekt.get(),
     private val getCategories: GetCategories = Injekt.get(),
-    private val setAnimeCategories: SetAnimeCategories = Injekt.get(),
+    private val setMangaCategories: SetMangaCategories = Injekt.get(),
     private val updateAnime: UpdateAnime = Injekt.get(),
     private val coverCache: CoverCache = Injekt.get(),
     private val setAnimeDefaultEpisodeFlags: SetAnimeDefaultEpisodeFlags = Injekt.get(),
@@ -254,7 +254,7 @@ class BulkFavoriteScreenModel(
 
     private fun moveMangaToCategory(mangaId: Long, categoryIds: List<Long>) {
         screenModelScope.launchIO {
-            setAnimeCategories.await(mangaId, categoryIds)
+            setMangaCategories.await(mangaId, categoryIds)
         }
     }
 
@@ -304,7 +304,7 @@ class BulkFavoriteScreenModel(
 
     fun moveMangaToCategories(manga: Manga, categoryIds: List<Long>) {
         screenModelScope.launchIO {
-            setAnimeCategories.await(
+            setMangaCategories.await(
                 mangaId = manga.id,
                 categoryIds = categoryIds.toList(),
             )

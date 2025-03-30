@@ -4,15 +4,15 @@ import kotlinx.coroutines.flow.Flow
 import logcat.LogPriority
 import tachiyomi.core.common.util.system.logcat
 import tachiyomi.domain.manga.model.Manga
-import tachiyomi.domain.manga.repository.AnimeRepository
+import tachiyomi.domain.manga.repository.MangaRepository
 
 class GetAnime(
-    private val animeRepository: AnimeRepository,
+    private val mangaRepository: MangaRepository,
 ) {
 
     suspend fun await(id: Long): Manga? {
         return try {
-            animeRepository.getAnimeById(id)
+            mangaRepository.getMangaById(id)
         } catch (e: Exception) {
             logcat(LogPriority.ERROR, e)
             null
@@ -20,16 +20,16 @@ class GetAnime(
     }
 
     suspend fun subscribe(id: Long): Flow<Manga> {
-        return animeRepository.getAnimeByIdAsFlow(id)
+        return mangaRepository.getAnimeByIdAsFlow(id)
     }
 
     fun subscribe(url: String, sourceId: Long): Flow<Manga?> {
-        return animeRepository.getAnimeByUrlAndSourceIdAsFlow(url, sourceId)
+        return mangaRepository.getAnimeByUrlAndSourceIdAsFlow(url, sourceId)
     }
 
     // SY -->
     suspend fun await(url: String, sourceId: Long): Manga? {
-        return animeRepository.getAnimeByUrlAndSourceId(url, sourceId)
+        return mangaRepository.getAnimeByUrlAndSourceId(url, sourceId)
     }
     // SY <--
 }

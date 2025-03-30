@@ -355,7 +355,7 @@ class Downloader(
             // If the page list already exists, start from the file
             val pageList = download.pages ?: run {
                 // Otherwise, pull page list from network and add them to download object
-                val videos = download.source.getVideoList(download.episode.toSEpisode())
+                val videos = download.source.getPageList(download.episode.toSEpisode())
 
                 if (videos.isEmpty()) {
                     throw Exception(context.stringResource(MR.strings.page_list_empty_error))
@@ -388,7 +388,7 @@ class Downloader(
                         if (video.videoUrl.isNullOrEmpty()) {
                             video.status = Page.State.LOAD_PAGE
                             try {
-                                video.videoUrl = download.source.getVideoUrl(video)
+                                video.videoUrl = download.source.getImageUrl(video)
                             } catch (e: Throwable) {
                                 video.status = Page.State.ERROR
                             }
@@ -651,7 +651,7 @@ class Downloader(
             .mapNotNull { track ->
                 track.remoteUrl.takeUnless { url -> url.isBlank() }?.trim()
             }
-            .plus(source.getEpisodeUrl(episode.toSEpisode()).trim())
+            .plus(source.getChapterUrl(episode.toSEpisode()).trim())
             .distinct()
 
         val comicInfo = getComicInfo(

@@ -4,15 +4,15 @@ import kotlinx.coroutines.flow.Flow
 import logcat.LogPriority
 import tachiyomi.core.common.util.system.logcat
 import tachiyomi.domain.manga.model.Manga
-import tachiyomi.domain.manga.repository.AnimeMergeRepository
+import tachiyomi.domain.manga.repository.MangaMergeRepository
 
 class GetMergedAnime(
-    private val animeMergeRepository: AnimeMergeRepository,
+    private val mangaMergeRepository: MangaMergeRepository,
 ) {
 
     suspend fun await(): List<Manga> {
         return try {
-            animeMergeRepository.getMergedAnime()
+            mangaMergeRepository.getMergedManga()
         } catch (e: Exception) {
             logcat(LogPriority.ERROR, e)
             emptyList()
@@ -20,6 +20,6 @@ class GetMergedAnime(
     }
 
     suspend fun subscribe(): Flow<List<Manga>> {
-        return animeMergeRepository.subscribeMergedAnime()
+        return mangaMergeRepository.subscribeMergedManga()
     }
 }

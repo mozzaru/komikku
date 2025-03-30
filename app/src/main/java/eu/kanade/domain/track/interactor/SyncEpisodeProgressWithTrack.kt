@@ -5,7 +5,7 @@ import eu.kanade.domain.track.service.TrackPreferences
 import eu.kanade.tachiyomi.data.track.Tracker
 import logcat.LogPriority
 import tachiyomi.core.common.util.system.logcat
-import tachiyomi.domain.chapter.interactor.GetEpisodesByAnimeId
+import tachiyomi.domain.chapter.interactor.GetChaptersByMangaId
 import tachiyomi.domain.chapter.interactor.UpdateEpisode
 import tachiyomi.domain.chapter.model.toEpisodeUpdate
 import tachiyomi.domain.track.interactor.InsertTrack
@@ -17,7 +17,7 @@ import kotlin.math.max
 class SyncEpisodeProgressWithTrack(
     private val updateEpisode: UpdateEpisode,
     private val insertTrack: InsertTrack,
-    private val getEpisodesByAnimeId: GetEpisodesByAnimeId,
+    private val getChaptersByMangaId: GetChaptersByMangaId,
 ) {
     val trackPreferences: TrackPreferences = Injekt.get()
 
@@ -33,7 +33,7 @@ class SyncEpisodeProgressWithTrack(
         // <-- KKM
 
         // Current episodes in database, sort by source's order because database's order is a mess
-        val dbEpisodes = getEpisodesByAnimeId.await(animeId)
+        val dbEpisodes = getChaptersByMangaId.await(animeId)
             // KMK -->
             .sortedByDescending { it.sourceOrder }
             // KMK <--

@@ -1,11 +1,11 @@
 package tachiyomi.domain.manga.interactor
 
-import tachiyomi.domain.manga.model.CustomAnimeInfo
-import tachiyomi.domain.manga.repository.CustomAnimeRepository
+import tachiyomi.domain.manga.model.CustomMangaInfo
+import tachiyomi.domain.manga.repository.CustomMangaRepository
 
 class SetCustomAnimeInfo(
-    private val customAnimeRepository: CustomAnimeRepository,
+    private val customMangaRepository: CustomMangaRepository,
 ) {
 
-    fun set(mangaInfo: CustomAnimeInfo) = customAnimeRepository.set(mangaInfo)
+    fun set(mangaInfo: CustomMangaInfo) = customMangaRepository.set(mangaInfo)
 }

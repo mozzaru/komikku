@@ -4,7 +4,7 @@ import eu.kanade.domain.anime.interactor.UpdateAnime
 import eu.kanade.domain.anime.model.hasCustomCover
 import eu.kanade.domain.anime.model.toSAnime
 import eu.kanade.tachiyomi.data.cache.CoverCache
-import eu.kanade.tachiyomi.source.model.SAnime
+import eu.kanade.tachiyomi.source.model.SManga
 import tachiyomi.domain.manga.model.Manga
 import tachiyomi.source.local.image.LocalCoverManager
 import tachiyomi.source.local.isLocal
@@ -16,7 +16,7 @@ import java.time.Instant
 /**
  * Call before updating [Manga.thumbnailUrl] to ensure old cover can be cleared from cache
  */
-fun Manga.prepUpdateCover(coverCache: CoverCache, remoteManga: SAnime, refreshSameUrl: Boolean): Manga {
+fun Manga.prepUpdateCover(coverCache: CoverCache, remoteManga: SManga, refreshSameUrl: Boolean): Manga {
     // Never refresh covers if the new url is null, as the current url has possibly become invalid
     val newUrl = remoteManga.thumbnail_url ?: return this
 

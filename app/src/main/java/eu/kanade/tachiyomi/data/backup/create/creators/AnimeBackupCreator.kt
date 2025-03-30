@@ -12,7 +12,7 @@ import exh.source.MERGED_SOURCE_ID
 import tachiyomi.data.DatabaseHandler
 import tachiyomi.domain.manga.interactor.GetCustomMangaInfo
 import tachiyomi.domain.manga.model.Manga
-import tachiyomi.domain.manga.model.CustomAnimeInfo
+import tachiyomi.domain.manga.model.CustomMangaInfo
 import tachiyomi.domain.category.interactor.GetCategories
 import tachiyomi.domain.history.interactor.GetHistory
 import uy.kohesive.injekt.Injekt
@@ -101,7 +101,7 @@ class AnimeBackupCreator(
     }
 }
 
-private fun Manga.toBackupManga(/* SY --> */customAnimeInfo: CustomAnimeInfo?/* SY <-- */) =
+private fun Manga.toBackupManga(/* SY --> */customMangaInfo: CustomMangaInfo?/* SY <-- */) =
     BackupAnime(
         url = this.url,
         title = this.title,
@@ -123,7 +123,7 @@ private fun Manga.toBackupManga(/* SY --> */customAnimeInfo: CustomAnimeInfo?/* 
         version = this.version,
         // SY -->
     ).also { backupManga ->
-        customAnimeInfo?.let {
+        customMangaInfo?.let {
             backupManga.customTitle = it.title
             backupManga.customArtist = it.artist
             backupManga.customAuthor = it.author

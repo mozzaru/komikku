@@ -2,14 +2,14 @@ package tachiyomi.domain.manga.interactor
 
 import tachiyomi.domain.manga.model.Manga
 import tachiyomi.domain.manga.model.MangaUpdate
-import tachiyomi.domain.manga.repository.AnimeRepository
+import tachiyomi.domain.manga.repository.MangaRepository
 
 class SetAnimeEpisodeFlags(
-    private val animeRepository: AnimeRepository,
+    private val mangaRepository: MangaRepository,
 ) {
 
     suspend fun awaitSetDownloadedFilter(manga: Manga, flag: Long): Boolean {
-        return animeRepository.update(
+        return mangaRepository.update(
             MangaUpdate(
                 id = manga.id,
                 chapterFlags = manga.chapterFlags.setFlag(flag, Manga.EPISODE_DOWNLOADED_MASK),
@@ -18,7 +18,7 @@ class SetAnimeEpisodeFlags(
     }
 
     suspend fun awaitSetUnreadFilter(manga: Manga, flag: Long): Boolean {
-        return animeRepository.update(
+        return mangaRepository.update(
             MangaUpdate(
                 id = manga.id,
                 chapterFlags = manga.chapterFlags.setFlag(flag, Manga.EPISODE_UNSEEN_MASK),
@@ -27,7 +27,7 @@ class SetAnimeEpisodeFlags(
     }
 
     suspend fun awaitSetBookmarkFilter(manga: Manga, flag: Long): Boolean {
-        return animeRepository.update(
+        return mangaRepository.update(
             MangaUpdate(
                 id = manga.id,
                 chapterFlags = manga.chapterFlags.setFlag(flag, Manga.EPISODE_BOOKMARKED_MASK),
@@ -36,7 +36,7 @@ class SetAnimeEpisodeFlags(
     }
 
     suspend fun awaitSetDisplayMode(manga: Manga, flag: Long): Boolean {
-        return animeRepository.update(
+        return mangaRepository.update(
             MangaUpdate(
                 id = manga.id,
                 chapterFlags = manga.chapterFlags.setFlag(flag, Manga.EPISODE_DISPLAY_MASK),
@@ -61,7 +61,7 @@ class SetAnimeEpisodeFlags(
                     .setFlag(Manga.EPISODE_SORT_ASC, Manga.EPISODE_SORT_DIR_MASK)
             }
         }
-        return animeRepository.update(
+        return mangaRepository.update(
             MangaUpdate(
                 id = manga.id,
                 chapterFlags = newFlags,
@@ -78,7 +78,7 @@ class SetAnimeEpisodeFlags(
         sortingDirection: Long,
         displayMode: Long,
     ): Boolean {
-        return animeRepository.update(
+        return mangaRepository.update(
             MangaUpdate(
                 id = animeId,
                 chapterFlags = 0L.setFlag(unseenFilter, Manga.EPISODE_UNSEEN_MASK)

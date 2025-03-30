@@ -11,16 +11,16 @@ import eu.kanade.presentation.more.stats.StatsScreenState
 import eu.kanade.presentation.more.stats.data.StatsData
 import eu.kanade.tachiyomi.data.download.DownloadManager
 import eu.kanade.tachiyomi.data.track.TrackerManager
-import eu.kanade.tachiyomi.source.model.SAnime
+import eu.kanade.tachiyomi.source.model.SManga
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.flow.update
-import tachiyomi.domain.manga.interactor.GetLibraryAnime
+import tachiyomi.domain.manga.interactor.GetLibraryManga
 import tachiyomi.domain.manga.interactor.GetSeenAnimeNotInLibraryView
 import tachiyomi.domain.history.interactor.GetTotalWatchDuration
-import tachiyomi.domain.library.model.LibraryAnime
+import tachiyomi.domain.library.model.LibraryManga
 import tachiyomi.domain.library.service.LibraryPreferences
 import tachiyomi.domain.library.service.LibraryPreferences.Companion.ANIME_HAS_UNSEEN
 import tachiyomi.domain.library.service.LibraryPreferences.Companion.ANIME_NON_COMPLETED
@@ -33,7 +33,7 @@ import uy.kohesive.injekt.api.get
 
 class StatsScreenModel(
     private val downloadManager: DownloadManager = Injekt.get(),
-    private val getLibraryAnime: GetLibraryAnime = Injekt.get(),
+    private val getLibraryManga: GetLibraryManga = Injekt.get(),
     private val getTotalWatchDuration: GetTotalWatchDuration = Injekt.get(),
     private val getTracks: GetTracks = Injekt.get(),
     private val preferences: LibraryPreferences = Injekt.get(),
@@ -54,7 +54,7 @@ class StatsScreenModel(
         // SY -->
         _allRead.onEach { allRead ->
             mutableState.update { StatsScreenState.Loading }
-            val libraryManga = getLibraryAnime.await() + if (allRead) {
+            val libraryManga = getLibraryManga.await() + if (allRead) {
                 getSeenAnimeNotInLibraryView.await()
             } else {
                 emptyList()
@@ -71,7 +71,7 @@ class StatsScreenModel(
             val overviewStatData = StatsData.Overview(
                 libraryMangaCount = distinctLibraryManga.size,
                 completedMangaCount = distinctLibraryManga.count {
-                    it.manga.status.toInt() == SAnime.COMPLETED && it.unseenCount == 0L
+                    it.manga.status.toInt() == SManga.COMPLETED && it.unseenCount == 0L
                 },
                 totalReadDuration = getTotalWatchDuration.await(),
             )
@@ -83,8 +83,8 @@ class StatsScreenModel(
             )
 
             val chaptersStatData = StatsData.Chapters(
-                totalChapterCount = distinctLibraryManga.sumOf { it.totalEpisodes }.toInt(),
-                readChapterCount = distinctLibraryManga.sumOf { it.seenCount }.toInt(),
+                totalChapterCount = distinctLibraryManga.sumOf { it.totalChapters }.toInt(),
+                readChapterCount = distinctLibraryManga.sumOf { it.readCount }.toInt(),
                 downloadCount = downloadManager.getDownloadCount(),
             )
 
@@ -107,37 +107,37 @@ class StatsScreenModel(
         // SY <--
     }
 
-    private fun getGlobalUpdateItemCount(libraryAnime: List<LibraryAnime>): Int {
+    private fun getGlobalUpdateItemCount(libraryManga: List<LibraryManga>): Int {
         val includedCategories = preferences.updateCategories().get().map { it.toLong() }
         val includedManga = if (includedCategories.isNotEmpty()) {
-            libraryAnime.filter { it.category in includedCategories }
+            libraryManga.filter { it.category in includedCategories }
         } else {
-            libraryAnime
+            libraryManga
         }
 
         val excludedCategories = preferences.updateCategoriesExclude().get().map { it.toLong() }
         val excludedMangaIds = if (excludedCategories.isNotEmpty()) {
-            libraryAnime.fastMapNotNull { manga ->
+            libraryManga.fastMapNotNull { manga ->
                 manga.id.takeIf { manga.category in excludedCategories }
             }
         } else {
             emptyList()
         }
 
-        val updateRestrictions = preferences.autoUpdateAnimeRestrictions().get()
+        val updateRestrictions = preferences.autoUpdateMangaRestrictions().get()
         return includedManga
             .fastFilterNot { it.manga.id in excludedMangaIds }
             .fastDistinctBy { it.manga.id }
             .fastCountNot {
-                (ANIME_NON_COMPLETED in updateRestrictions && it.manga.status.toInt() == SAnime.COMPLETED) ||
+                (ANIME_NON_COMPLETED in updateRestrictions && it.manga.status.toInt() == SManga.COMPLETED) ||
                     (ANIME_HAS_UNSEEN in updateRestrictions && it.unseenCount != 0L) ||
-                    (ANIME_NON_SEEN in updateRestrictions && it.totalEpisodes > 0 && !it.hasStarted)
+                    (ANIME_NON_SEEN in updateRestrictions && it.totalChapters > 0 && !it.hasStarted)
             }
     }
 
-    private suspend fun getMangaTrackMap(libraryAnime: List<LibraryAnime>): Map<Long, List<Track>> {
+    private suspend fun getMangaTrackMap(libraryManga: List<LibraryManga>): Map<Long, List<Track>> {
         val loggedInTrackerIds = loggedInTrackers.map { it.id }.toHashSet()
-        return libraryAnime.associate { manga ->
+        return libraryManga.associate { manga ->
             val tracks = getTracks.await(manga.id)
                 .fastFilter { it.trackerId in loggedInTrackerIds }
 

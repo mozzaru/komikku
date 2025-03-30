@@ -51,7 +51,7 @@ import eu.kanade.tachiyomi.data.track.EnhancedTracker
 import eu.kanade.tachiyomi.data.track.Tracker
 import eu.kanade.tachiyomi.data.track.TrackerManager
 import eu.kanade.tachiyomi.databinding.EditMangaDialogBinding
-import eu.kanade.tachiyomi.source.model.SAnime
+import eu.kanade.tachiyomi.source.model.SManga
 import eu.kanade.tachiyomi.util.lang.chop
 import eu.kanade.tachiyomi.util.system.dpToPx
 import eu.kanade.tachiyomi.util.system.toast
@@ -134,12 +134,12 @@ fun EditAnimeDialog(
                         binding.mangaGenresTags.getTextStrings(),
                         binding.status.selectedItemPosition.let {
                             when (it) {
-                                1 -> SAnime.ONGOING
-                                2 -> SAnime.COMPLETED
-                                3 -> SAnime.LICENSED
-                                4 -> SAnime.PUBLISHING_FINISHED
-                                5 -> SAnime.CANCELLED
-                                6 -> SAnime.ON_HIATUS
+                                1 -> SManga.ONGOING
+                                2 -> SManga.COMPLETED
+                                3 -> SManga.LICENSED
+                                4 -> SManga.PUBLISHING_FINISHED
+                                5 -> SManga.CANCELLED
+                                6 -> SManga.ON_HIATUS
                                 else -> null
                             }
                         }?.toLong(),
@@ -302,13 +302,13 @@ private fun onViewCreated(
     if (manga.status != manga.ogStatus) {
         binding.status.setSelection(
             when (manga.status.toInt()) {
-                SAnime.UNKNOWN -> 0
-                SAnime.ONGOING -> 1
-                SAnime.COMPLETED -> 2
-                SAnime.LICENSED -> 3
-                SAnime.PUBLISHING_FINISHED, 61 -> 4
-                SAnime.CANCELLED, 62 -> 5
-                SAnime.ON_HIATUS, 63 -> 6
+                SManga.UNKNOWN -> 0
+                SManga.ONGOING -> 1
+                SManga.COMPLETED -> 2
+                SManga.LICENSED -> 3
+                SManga.PUBLISHING_FINISHED, 61 -> 4
+                SManga.CANCELLED, 62 -> 5
+                SManga.ON_HIATUS, 63 -> 6
                 else -> 0
             },
         )

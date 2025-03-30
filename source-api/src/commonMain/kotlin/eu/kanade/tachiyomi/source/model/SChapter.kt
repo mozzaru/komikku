@@ -4,7 +4,6 @@ package eu.kanade.tachiyomi.source.model
 
 import java.io.Serializable
 
-typealias SEpisode = SChapter
 interface SChapter : Serializable {
 
     var url: String
@@ -13,21 +12,21 @@ interface SChapter : Serializable {
 
     var date_upload: Long
 
-    var episode_number: Float
+    var chapter_number: Float
 
     var scanlator: String?
 
-    fun copyFrom(other: SEpisode) {
+    fun copyFrom(other: SChapter) {
         name = other.name
         url = other.url
         date_upload = other.date_upload
-        episode_number = other.episode_number
+        chapter_number = other.chapter_number
         scanlator = other.scanlator
     }
 
     companion object {
-        fun create(): SEpisode {
-            return SEpisodeImpl()
+        fun create(): SChapter {
+            return SChapterImpl()
         }
 
         // SY -->
@@ -35,14 +34,14 @@ interface SChapter : Serializable {
             name: String,
             url: String,
             date_upload: Long = 0,
-            episode_number: Float = -1F,
+            chapter_number: Float = -1F,
             scanlator: String? = null,
-        ): SEpisode {
+        ): SChapter {
             return create().apply {
                 this.name = name
                 this.url = url
                 this.date_upload = date_upload
-                this.episode_number = episode_number
+                this.chapter_number = chapter_number
                 this.scanlator = scanlator
             }
         }
