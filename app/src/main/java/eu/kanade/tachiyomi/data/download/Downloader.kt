@@ -10,7 +10,7 @@ import eu.kanade.tachiyomi.data.download.model.Download
 import eu.kanade.tachiyomi.data.library.LibraryUpdateNotifier
 import eu.kanade.tachiyomi.data.notification.NotificationHandler
 import eu.kanade.tachiyomi.source.UnmeteredSource
-import eu.kanade.tachiyomi.source.model.Page
+import eu.kanade.tachiyomi.source.model.Video
 import eu.kanade.tachiyomi.source.online.HttpSource
 import eu.kanade.tachiyomi.util.storage.DiskUtil
 import eu.kanade.tachiyomi.util.storage.DiskUtil.NOMEDIA_FILE
@@ -353,7 +353,7 @@ class Downloader(
 
         try {
             // If the page list already exists, start from the file
-            val pageList = download.pages ?: run {
+            val pageList = download.videos ?: run {
                 // Otherwise, pull page list from network and add them to download object
                 val videos = download.source.getVideoList(download.episode.toSEpisode())
 
@@ -361,9 +361,9 @@ class Downloader(
                     throw Exception(context.stringResource(MR.strings.page_list_empty_error))
                 }
                 // Don't trust index from source
-                val reIndexedPages = videos.mapIndexed { index, video -> Page(index, video.url, video.videoUrl, video.uri) }
-                download.pages = reIndexedPages
-                reIndexedPages
+                val reIndexedVideos = videos.mapIndexed { index, video -> Video(index, video.url, video.videoUrl, video.uri) }
+                download.videos = reIndexedVideos
+                reIndexedVideos
             }
 
             val dataSaver = if (sourcePreferences.dataSaverDownloader().get()) {
@@ -386,11 +386,11 @@ class Downloader(
                     flow {
                         // Fetch image URL if necessary
                         if (video.videoUrl.isNullOrEmpty()) {
-                            video.status = Page.State.LOAD_PAGE
+                            video.status = Video.State.LOAD_PAGE
                             try {
                                 video.videoUrl = download.source.getVideoUrl(video)
                             } catch (e: Throwable) {
-                                video.status = Page.State.ERROR
+                                video.status = Video.State.ERROR
                             }
                         }
 
@@ -440,18 +440,18 @@ class Downloader(
     /**
      * Gets the image from the filesystem if it exists or downloads it otherwise.
      *
-     * @param page the page to download.
+     * @param video the page to download.
      * @param download the download of the page.
      * @param tmpDir the temporary directory of the download.
      */
-    private suspend fun getOrDownloadImage(page: Page, download: Download, tmpDir: UniFile, dataSaver: DataSaver) {
+    private suspend fun getOrDownloadImage(video: Video, download: Download, tmpDir: UniFile, dataSaver: DataSaver) {
         // If the image URL is empty, do nothing
-        if (page.videoUrl == null) {
+        if (video.videoUrl == null) {
             return
         }
 
-        val digitCount = (download.pages?.size ?: 0).toString().length.coerceAtLeast(3)
-        val filename = "%0${digitCount}d".format(Locale.ENGLISH, page.number)
+        val digitCount = (download.videos?.size ?: 0).toString().length.coerceAtLeast(3)
+        val filename = "%0${digitCount}d".format(Locale.ENGLISH, video.number)
         val tmpFile = tmpDir.findFile("$filename.tmp")
 
         // Delete temp file if it exists
@@ -466,22 +466,22 @@ class Downloader(
             // If the image is already downloaded, do nothing. Otherwise download from network
             val file = when {
                 imageFile != null -> imageFile
-                episodeCache.isImageInCache(page.videoUrl!!) ->
-                    copyImageFromCache(episodeCache.getImageFile(page.videoUrl!!), tmpDir, filename)
-                else -> downloadImage(page, download.source, tmpDir, filename, dataSaver)
+                episodeCache.isImageInCache(video.videoUrl!!) ->
+                    copyImageFromCache(episodeCache.getImageFile(video.videoUrl!!), tmpDir, filename)
+                else -> downloadImage(video, download.source, tmpDir, filename, dataSaver)
             }
 
             // When the page is ready, set page path, progress (just in case) and status
-            splitTallImageIfNeeded(page, tmpDir)
+            splitTallImageIfNeeded(video, tmpDir)
 
-            page.uri = file.uri
-            page.progress = 100
-            page.status = Page.State.READY
+            video.uri = file.uri
+            video.progress = 100
+            video.status = Video.State.READY
         } catch (e: Throwable) {
             if (e is CancellationException) throw e
             // Mark this page as error and allow to download the remaining
-            page.progress = 0
-            page.status = Page.State.ERROR
+            video.progress = 0
+            video.status = Video.State.ERROR
             notifier.onError(e.message, download.episode.name, download.anime.title, download.anime.id)
         }
     }
@@ -489,22 +489,22 @@ class Downloader(
     /**
      * Downloads the image from network to a file in tmpDir.
      *
-     * @param page the page to download.
+     * @param video the page to download.
      * @param source the source of the page.
      * @param tmpDir the temporary directory of the download.
      * @param filename the filename of the image.
      */
     private suspend fun downloadImage(
-        page: Page,
+        video: Video,
         source: HttpSource,
         tmpDir: UniFile,
         filename: String,
         dataSaver: DataSaver,
     ): UniFile {
-        page.status = Page.State.DOWNLOAD_IMAGE
-        page.progress = 0
+        video.status = Video.State.DOWNLOAD_IMAGE
+        video.progress = 0
         return flow {
-            val response = source.getImage(page, dataSaver)
+            val response = source.getImage(video, dataSaver)
             val file = tmpDir.createFile("$filename.tmp")!!
             try {
                 response.body.source().saveTo(file.openOutputStream())
@@ -561,13 +561,13 @@ class Downloader(
         return ImageUtil.getExtensionFromMimeType(mime) { file.openInputStream() }
     }
 
-    private fun splitTallImageIfNeeded(page: Page, tmpDir: UniFile) {
+    private fun splitTallImageIfNeeded(video: Video, tmpDir: UniFile) {
         if (!downloadPreferences.splitTallImages().get()) return
 
         try {
-            val filenamePrefix = "%03d".format(Locale.ENGLISH, page.number)
+            val filenamePrefix = "%03d".format(Locale.ENGLISH, video.number)
             val imageFile = tmpDir.listFiles()?.firstOrNull { it.name.orEmpty().startsWith(filenamePrefix) }
-                ?: error(context.stringResource(MR.strings.download_notifier_split_page_not_found, page.number))
+                ?: error(context.stringResource(MR.strings.download_notifier_split_page_not_found, video.number))
 
             // If the original page was previously split, then skip
             if (imageFile.name.orEmpty().startsWith("${filenamePrefix}__")) return
@@ -593,7 +593,7 @@ class Downloader(
         tmpDir: UniFile,
     ): Boolean {
         // Page list hasn't been initialized
-        val downloadPageCount = download.pages?.size ?: return false
+        val downloadPageCount = download.videos?.size ?: return false
 
         // Ensure that all pages have been downloaded
         if (download.downloadedImages != downloadPageCount) {

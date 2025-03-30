@@ -1,6 +1,6 @@
 package eu.kanade.tachiyomi.data.download.model
 
-import eu.kanade.tachiyomi.source.model.Page
+import eu.kanade.tachiyomi.source.model.Video
 import eu.kanade.tachiyomi.source.online.HttpSource
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -23,13 +23,13 @@ data class Download(
     val anime: Anime,
     val episode: Episode,
 ) {
-    var pages: List<Page>? = null
+    var videos: List<Video>? = null
 
     val totalProgress: Int
-        get() = pages?.sumOf(Page::progress) ?: 0
+        get() = videos?.sumOf(Video::progress) ?: 0
 
     val downloadedImages: Int
-        get() = pages?.count { it.status == Page.State.READY } ?: 0
+        get() = videos?.count { it.status == Video.State.READY } ?: 0
 
     @Transient
     private val _statusFlow = MutableStateFlow(State.NOT_DOWNLOADED)
@@ -44,14 +44,14 @@ data class Download(
 
     @Transient
     val progressFlow = flow {
-        if (pages == null) {
+        if (videos == null) {
             emit(0)
-            while (pages == null) {
+            while (videos == null) {
                 delay(50)
             }
         }
 
-        val progressFlows = pages!!.map(Page::progressFlow)
+        val progressFlows = videos!!.map(Video::progressFlow)
         emitAll(combine(progressFlows) { it.average().toInt() })
     }
         .distinctUntilChanged()
@@ -59,8 +59,8 @@ data class Download(
 
     val progress: Int
         get() {
-            val pages = pages ?: return 0
-            return pages.map(Page::progress).average().toInt()
+            val pages = videos ?: return 0
+            return pages.map(Video::progress).average().toInt()
         }
 
     enum class State(val value: Int) {

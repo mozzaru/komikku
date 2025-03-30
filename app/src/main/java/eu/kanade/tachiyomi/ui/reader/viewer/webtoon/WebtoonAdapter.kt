@@ -7,7 +7,7 @@ import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.RecyclerView
 import eu.kanade.tachiyomi.ui.reader.model.ChapterTransition
 import eu.kanade.tachiyomi.ui.reader.model.ReaderChapter
-import eu.kanade.tachiyomi.ui.reader.model.ReaderPage
+import eu.kanade.tachiyomi.ui.reader.model.ReaderVideo
 import eu.kanade.tachiyomi.ui.reader.model.ViewerChapters
 import eu.kanade.tachiyomi.ui.reader.viewer.ReaderPageImageView
 import eu.kanade.tachiyomi.ui.reader.viewer.calculateChapterGap
@@ -110,7 +110,7 @@ class WebtoonAdapter(
      */
     override fun getItemViewType(position: Int): Int {
         return when (val item = items[position]) {
-            is ReaderPage -> PAGE_VIEW
+            is ReaderVideo -> PAGE_VIEW
             is ChapterTransition -> TRANSITION_VIEW
             else -> error("Unknown view type for ${item.javaClass}")
         }
@@ -151,7 +151,7 @@ class WebtoonAdapter(
     override fun onBindViewHolder(holder: RecyclerView.ViewHolder, position: Int) {
         val item = items[position]
         when (holder) {
-            is WebtoonPageHolder -> holder.bind(item as ReaderPage)
+            is WebtoonPageHolder -> holder.bind(item as ReaderVideo)
             is WebtoonTransitionHolder -> holder.bind(item as ChapterTransition)
         }
     }

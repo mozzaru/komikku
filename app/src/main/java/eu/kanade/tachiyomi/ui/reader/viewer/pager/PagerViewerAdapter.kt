@@ -4,10 +4,10 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.annotation.ColorInt
 import eu.kanade.tachiyomi.ui.reader.model.ChapterTransition
-import eu.kanade.tachiyomi.ui.reader.model.InsertPage
+import eu.kanade.tachiyomi.ui.reader.model.InsertVideo
 import eu.kanade.tachiyomi.ui.reader.model.ReaderChapter
 import eu.kanade.tachiyomi.ui.reader.model.ReaderItem
-import eu.kanade.tachiyomi.ui.reader.model.ReaderPage
+import eu.kanade.tachiyomi.ui.reader.model.ReaderVideo
 import eu.kanade.tachiyomi.ui.reader.model.ViewerChapters
 import eu.kanade.tachiyomi.ui.reader.viewer.calculateChapterGap
 import eu.kanade.tachiyomi.util.system.createReaderThemeContext
@@ -40,7 +40,7 @@ class PagerViewerAdapter(
     /**
      * Holds preprocessed items so they don't get removed when changing episode
      */
-    private var preprocessed: MutableMap<Int, InsertPage> = mutableMapOf()
+    private var preprocessed: MutableMap<Int, InsertVideo> = mutableMapOf()
 
     var nextTransition: ChapterTransition.Next? = null
         private set
@@ -49,7 +49,7 @@ class PagerViewerAdapter(
 
     // SY -->
     /** Page used to start the shifted pages */
-    var pageToShift: ReaderPage? = null
+    var pageToShift: ReaderVideo? = null
 
     /** Varibles used to check if config of the pages have changed */
     private var shifted = viewer.config.shiftDoublePage
@@ -89,7 +89,7 @@ class PagerViewerAdapter(
             newItems.add(ChapterTransition.Prev(chapters.currChapter, chapters.prevChapter))
         }
 
-        var insertPageLastPage: InsertPage? = null
+        var insertPageLastPage: InsertVideo? = null
 
         // Add current episode.
         val currPages = chapters.currChapter.pages
@@ -134,7 +134,7 @@ class PagerViewerAdapter(
         }
 
         // Resets double-page splits, else insert pages get misplaced
-        subItems.filterIsInstance<InsertPage>().also { subItems.removeAll(it) }
+        subItems.filterIsInstance<InsertVideo>().also { subItems.removeAll(it) }
 
         preprocessed = mutableMapOf()
         subItems = newItems.toMutableList()
@@ -169,11 +169,11 @@ class PagerViewerAdapter(
         val item = joinedItems[position].first
         val item2 = joinedItems[position].second
         return when (item) {
-            is ReaderPage -> PagerPageHolder(
+            is ReaderVideo -> PagerPageHolder(
                 readerThemedContext,
                 viewer,
                 item,
-                item2 as? ReaderPage,
+                item2 as? ReaderVideo,
                 // KMK -->
                 seedColor = seedColor,
                 // KMK <--
@@ -205,8 +205,8 @@ class PagerViewerAdapter(
         return POSITION_NONE
     }
 
-    fun onPageSplit(currentPage: Any?, newPage: InsertPage) {
-        if (currentPage !is ReaderPage) return
+    fun onPageSplit(currentPage: Any?, newPage: InsertVideo) {
+        if (currentPage !is ReaderVideo) return
 
         val currentIndex = joinedItems.indexOfFirst { it.first == currentPage }
 
@@ -224,12 +224,12 @@ class PagerViewerAdapter(
         }
 
         // It will enter a endless cycle of insert pages
-        if (viewer is R2LPagerViewer && placeAtIndex - 1 >= 0 && joinedItems[placeAtIndex - 1].first is InsertPage) {
+        if (viewer is R2LPagerViewer && placeAtIndex - 1 >= 0 && joinedItems[placeAtIndex - 1].first is InsertVideo) {
             return
         }
 
         // Same here it will enter a endless cycle of insert pages
-        if (joinedItems[placeAtIndex].first is InsertPage) {
+        if (joinedItems[placeAtIndex].first is InsertVideo) {
             return
         }
 
@@ -239,7 +239,7 @@ class PagerViewerAdapter(
     }
 
     fun cleanupPageSplit() {
-        val insertPages = joinedItems.filter { it.first is InsertPage }
+        val insertPages = joinedItems.filter { it.first is InsertVideo }
         joinedItems.removeAll(insertPages)
         notifyDataSetChanged()
     }
@@ -254,7 +254,7 @@ class PagerViewerAdapter(
         if (!viewer.config.doublePages) {
             // If not in double mode, set up items like before
             subItems.forEach { readerItem ->
-                if (readerItem is ReaderPage) {
+                if (readerItem is ReaderVideo) {
                     readerItem.shiftedPage = false
                 }
             }
@@ -263,14 +263,14 @@ class PagerViewerAdapter(
                 joinedItems.reverse()
             }
         } else {
-            val pagedItems = mutableListOf<MutableList<ReaderPage?>>()
+            val pagedItems = mutableListOf<MutableList<ReaderVideo?>>()
             val otherItems = mutableListOf<ReaderItem>()
             pagedItems.add(mutableListOf())
 
             // Step 1: segment the pages and transition pages
             subItems.forEach { readerItem ->
                 when (readerItem) {
-                    is ReaderPage -> {
+                    is ReaderVideo -> {
                         if (pagedItems.last().isNotEmpty() &&
                             pagedItems.last().last()?.chapter?.episode?.id != readerItem.chapter.episode.id
                         ) {
@@ -366,10 +366,10 @@ class PagerViewerAdapter(
         // We will however shift to the first page of the new episode if the last page we were are
         // on is not in the new episode that has loaded
         val newPage = when {
-            oldCurrent?.first is ReaderPage &&
-                (oldCurrent.first as ReaderPage).chapter != currentChapter &&
+            oldCurrent?.first is ReaderVideo &&
+                (oldCurrent.first as ReaderVideo).chapter != currentChapter &&
                 (oldCurrent.second as? ChapterTransition)?.from != currentChapter ->
-                subItems.find { it is ReaderPage && it.chapter == currentChapter }
+                subItems.find { it is ReaderVideo && it.chapter == currentChapter }
             useSecondPage -> oldCurrent?.second ?: oldCurrent?.first
             else -> oldCurrent?.first ?: return
         }
@@ -377,13 +377,13 @@ class PagerViewerAdapter(
         val index = when {
             newPage is ChapterTransition && joinedItems.none { it.first == newPage || it.second == newPage } -> {
                 val filteredPages = joinedItems.filter {
-                    it.first is ReaderPage &&
-                        (it.first as ReaderPage).chapter == newPage.to
+                    it.first is ReaderVideo &&
+                        (it.first as ReaderVideo).chapter == newPage.to
                 }
                 val page = if (newPage is ChapterTransition.Next) {
-                    filteredPages.minByOrNull { (it.first as ReaderPage).index }?.first
+                    filteredPages.minByOrNull { (it.first as ReaderVideo).index }?.first
                 } else {
-                    filteredPages.maxByOrNull { (it.first as ReaderPage).index }?.first
+                    filteredPages.maxByOrNull { (it.first as ReaderVideo).index }?.first
                 }
                 joinedItems.indexOfFirst { it.first == page || it.second == page }
             }
@@ -393,10 +393,10 @@ class PagerViewerAdapter(
         viewer.pager.setCurrentItem(index, false)
     }
 
-    fun splitDoublePages(current: ReaderPage) {
+    fun splitDoublePages(current: ReaderVideo) {
         val oldCurrent = joinedItems.getOrNull(viewer.pager.currentItem)
-        val oldSecondPage = oldCurrent?.second as? ReaderPage
-        val oldFirstPage = oldCurrent?.first as? ReaderPage
+        val oldSecondPage = oldCurrent?.second as? ReaderVideo
+        val oldFirstPage = oldCurrent?.first as? ReaderVideo
         val oldPage = oldSecondPage ?: oldFirstPage
 
         setJoinedItems(oldSecondPage == current || (current.index + 1) < (oldPage?.index ?: 0))

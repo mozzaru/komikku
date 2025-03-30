@@ -1,11 +1,8 @@
 package eu.kanade.tachiyomi.source
 
-import eu.kanade.tachiyomi.source.model.Page
-import eu.kanade.tachiyomi.source.model.SAnime
-import eu.kanade.tachiyomi.source.model.SChapter
-import eu.kanade.tachiyomi.source.model.SEpisode
-import eu.kanade.tachiyomi.source.model.SManga
 import eu.kanade.tachiyomi.source.model.Video
+import eu.kanade.tachiyomi.source.model.SAnime
+import eu.kanade.tachiyomi.source.model.SEpisode
 
 /**
  * A basic interface for creating a source. It could be an online source, a local source, stub source, etc.
@@ -42,8 +39,7 @@ interface Source {
      * @param anime the anime to update.
      * @return the updated anime.
      */
-    suspend fun getAnimeDetails(anime: SAnime): SAnime = getMangaDetails(anime)
-    suspend fun getMangaDetails(manga: SManga): SManga = throw UnsupportedOperationException()
+    suspend fun getAnimeDetails(anime: SAnime): SAnime = throw UnsupportedOperationException()
 
     /**
      * Get all the available episodes for a anime.
@@ -52,8 +48,7 @@ interface Source {
      * @param anime the anime to update.
      * @return the episodes for the anime.
      */
-    suspend fun getEpisodeList(anime: SAnime): List<SEpisode> = getChapterList(anime)
-    suspend fun getChapterList(manga: SManga): List<SChapter> = throw UnsupportedOperationException()
+    suspend fun getEpisodeList(anime: SAnime): List<SEpisode> = throw UnsupportedOperationException()
 
     /**
      * Get the list of videos a episode has. Videos should be returned
@@ -63,8 +58,7 @@ interface Source {
      * @param episode the episode.
      * @return the videos for the episode.
      */
-    suspend fun getVideoList(episode: SEpisode): List<Video> = getPageList(episode)
-    suspend fun getPageList(chapter: SChapter): List<Page> = throw UnsupportedOperationException()
+    suspend fun getVideoList(episode: SEpisode): List<Video> = throw UnsupportedOperationException()
 
     // KMK -->
     /**
@@ -78,11 +72,6 @@ interface Source {
         anime: SAnime,
         exceptionHandler: (Throwable) -> Unit,
         pushResults: suspend (relatedAnime: Pair<String, List<SAnime>>, completed: Boolean) -> Unit,
-    ): Unit = getRelatedMangaList(anime, exceptionHandler, pushResults)
-    suspend fun getRelatedMangaList(
-        manga: SManga,
-        exceptionHandler: (Throwable) -> Unit,
-        pushResults: suspend (relatedManga: Pair<String, List<SManga>>, completed: Boolean) -> Unit,
     ): Unit = throw UnsupportedOperationException()
     // KMK <--
 }

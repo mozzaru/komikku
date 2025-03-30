@@ -8,7 +8,7 @@ import eu.kanade.tachiyomi.R
 import eu.kanade.tachiyomi.data.download.DownloadManager
 import eu.kanade.tachiyomi.data.download.model.Download
 import eu.kanade.tachiyomi.databinding.DownloadListBinding
-import eu.kanade.tachiyomi.source.model.Page
+import eu.kanade.tachiyomi.source.model.Video
 import eu.kanade.tachiyomi.ui.anime.AnimeScreen
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
@@ -228,11 +228,11 @@ class DownloadQueueScreenModel(
      */
     private fun launchProgressJob(download: Download) {
         val job = screenModelScope.launch {
-            while (download.pages == null) {
+            while (download.videos == null) {
                 delay(50)
             }
 
-            val progressFlows = download.pages!!.map(Page::progressFlow)
+            val progressFlows = download.videos!!.map(Video::progressFlow)
             combine(progressFlows, Array<Int>::sum)
                 .distinctUntilChanged()
                 .debounce(50)

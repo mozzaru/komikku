@@ -1,13 +1,9 @@
 package eu.kanade.tachiyomi.source.online
 
 import eu.kanade.tachiyomi.source.model.AnimesPage
-import eu.kanade.tachiyomi.source.model.MangasPage
-import eu.kanade.tachiyomi.source.model.Page
-import eu.kanade.tachiyomi.source.model.SAnime
-import eu.kanade.tachiyomi.source.model.SChapter
-import eu.kanade.tachiyomi.source.model.SEpisode
-import eu.kanade.tachiyomi.source.model.SManga
 import eu.kanade.tachiyomi.source.model.Video
+import eu.kanade.tachiyomi.source.model.SAnime
+import eu.kanade.tachiyomi.source.model.SEpisode
 import eu.kanade.tachiyomi.util.asJsoup
 import okhttp3.Response
 import org.jsoup.nodes.Document
@@ -25,15 +21,14 @@ abstract class ParsedHttpSource : HttpSource() {
      *
      * @param response the response from the site.
      */
-    override fun popularAnimeParse(response: Response): AnimesPage = popularMangaParse(response)
-    override fun popularMangaParse(response: Response): MangasPage {
+    override fun popularAnimeParse(response: Response): AnimesPage {
         val document = response.asJsoup()
 
-        val animes = document.select(popularAnimeSelector()).map { element ->
-            popularAnimeFromElement(element)
+        val animes = document.select(this.popularAnimeSelector()).map { element ->
+            this.popularAnimeFromElement(element)
         }
 
-        val hasNextPage = popularAnimeNextPageSelector()?.let { selector ->
+        val hasNextPage = this.popularAnimeNextPageSelector()?.let { selector ->
             document.select(selector).first()
         } != null
 
@@ -43,8 +38,7 @@ abstract class ParsedHttpSource : HttpSource() {
     /**
      * Returns the Jsoup selector that returns a list of [Element] corresponding to each anime.
      */
-    protected open fun popularAnimeSelector(): String = popularMangaSelector()
-    protected abstract fun popularMangaSelector(): String
+    protected abstract fun popularAnimeSelector(): String
 
     /**
      * Returns a anime from the given [element]. Most sites only show the title and the url, it's
@@ -52,15 +46,13 @@ abstract class ParsedHttpSource : HttpSource() {
      *
      * @param element an element obtained from [popularAnimeSelector].
      */
-    protected open fun popularAnimeFromElement(element: Element): SAnime = popularMangaFromElement(element)
-    protected abstract fun popularMangaFromElement(element: Element): SManga
+    protected abstract fun popularAnimeFromElement(element: Element): SAnime
 
     /**
      * Returns the Jsoup selector that returns the <a> tag linking to the next page, or null if
      * there's no next page.
      */
-    protected open fun popularAnimeNextPageSelector(): String? = popularMangaNextPageSelector()
-    protected abstract fun popularMangaNextPageSelector(): String?
+    protected abstract fun popularAnimeNextPageSelector(): String?
 
     /**
      * Parses the response from the site and returns a [AnimesPage] object.
@@ -68,15 +60,14 @@ abstract class ParsedHttpSource : HttpSource() {
      *
      * @param response the response from the site.
      */
-    override fun searchAnimeParse(response: Response): AnimesPage = searchMangaParse(response)
-    override fun searchMangaParse(response: Response): MangasPage {
+    override fun searchAnimeParse(response: Response): AnimesPage {
         val document = response.asJsoup()
 
-        val animes = document.select(searchAnimeSelector()).map { element ->
-            searchAnimeFromElement(element)
+        val animes = document.select(this.searchAnimeSelector()).map { element ->
+            this.searchAnimeFromElement(element)
         }
 
-        val hasNextPage = searchAnimeNextPageSelector()?.let { selector ->
+        val hasNextPage = this.searchAnimeNextPageSelector()?.let { selector ->
             document.select(selector).first()
         } != null
 
@@ -86,8 +77,7 @@ abstract class ParsedHttpSource : HttpSource() {
     /**
      * Returns the Jsoup selector that returns a list of [Element] corresponding to each anime.
      */
-    protected open fun searchAnimeSelector(): String = searchMangaSelector()
-    protected abstract fun searchMangaSelector(): String
+    protected abstract fun searchAnimeSelector(): String
 
     /**
      * Returns a anime from the given [element]. Most sites only show the title and the url, it's
@@ -95,15 +85,13 @@ abstract class ParsedHttpSource : HttpSource() {
      *
      * @param element an element obtained from [searchAnimeSelector].
      */
-    protected open fun searchAnimeFromElement(element: Element): SAnime = searchMangaFromElement(element)
-    protected abstract fun searchMangaFromElement(element: Element): SManga
+    protected abstract fun searchAnimeFromElement(element: Element): SAnime
 
     /**
      * Returns the Jsoup selector that returns the <a> tag linking to the next page, or null if
      * there's no next page.
      */
-    protected open fun searchAnimeNextPageSelector(): String? = searchMangaNextPageSelector()
-    protected abstract fun searchMangaNextPageSelector(): String?
+    protected abstract fun searchAnimeNextPageSelector(): String?
 
     /**
      * Parses the response from the site and returns a [AnimesPage] object.
@@ -150,9 +138,8 @@ abstract class ParsedHttpSource : HttpSource() {
      *
      * @param response the response from the site.
      */
-    override fun animeDetailsParse(response: Response): SAnime = mangaDetailsParse(response)
-    override fun mangaDetailsParse(response: Response): SAnime {
-        return animeDetailsParse(response.asJsoup())
+    override fun animeDetailsParse(response: Response): SAnime {
+        return this.animeDetailsParse(response.asJsoup())
     }
 
     /**
@@ -160,8 +147,7 @@ abstract class ParsedHttpSource : HttpSource() {
      *
      * @param document the parsed document.
      */
-    protected open fun animeDetailsParse(document: Document): SAnime = mangaDetailsParse(document)
-    protected abstract fun mangaDetailsParse(document: Document): SManga
+    protected abstract fun animeDetailsParse(document: Document): SAnime
 
     // KMK -->
     /**
@@ -171,10 +157,9 @@ abstract class ParsedHttpSource : HttpSource() {
      * @since komikku/extensions-lib 1.6
      * @param response the response from the site.
      */
-    override fun relatedAnimeListParse(response: Response): List<SAnime> = relatedMangaListParse(response)
-    override fun relatedMangaListParse(response: Response): List<SManga> {
+    override fun relatedAnimeListParse(response: Response): List<SAnime> {
         return response.asJsoup()
-            .select(relatedAnimeListSelector()).map { relatedAnimeFromElement(it) }
+            .select(this.relatedAnimeListSelector()).map { this.relatedAnimeFromElement(it) }
     }
 
     /**
@@ -182,8 +167,7 @@ abstract class ParsedHttpSource : HttpSource() {
      *
      * @since komikku/extensions-lib 1.6
      */
-    protected open fun relatedAnimeListSelector(): String = relatedMangaListSelector()
-    protected open fun relatedMangaListSelector(): String = popularAnimeSelector()
+    protected open fun relatedAnimeListSelector(): String = this.popularAnimeSelector()
 
     /**
      * Returns a anime from the given element.
@@ -191,8 +175,7 @@ abstract class ParsedHttpSource : HttpSource() {
      * @since komikku/extensions-lib 1.6
      * @param element an element obtained from [relatedAnimeListSelector].
      */
-    protected open fun relatedAnimeFromElement(element: Element): SAnime = relatedAnimeFromElement(element)
-    protected open fun relatedMangaFromElement(element: Element): SManga = popularAnimeFromElement(element)
+    protected open fun relatedAnimeFromElement(element: Element): SAnime = this.popularAnimeFromElement(element)
     // KMK <--
 
     /**
@@ -201,25 +184,22 @@ abstract class ParsedHttpSource : HttpSource() {
      *
      * @param response the response from the site.
      */
-    override fun episodeListParse(response: Response): List<SEpisode> = chapterListParse(response)
-    override fun chapterListParse(response: Response): List<SChapter> {
+    override fun episodeListParse(response: Response): List<SEpisode> {
         val document = response.asJsoup()
-        return document.select(episodeListSelector()).map { episodeFromElement(it) }
+        return document.select(this.episodeListSelector()).map { this.episodeFromElement(it) }
     }
 
     /**
      * Returns the Jsoup selector that returns a list of [Element] corresponding to each episode.
      */
-    protected open fun episodeListSelector(): String = chapterListSelector()
-    protected abstract fun chapterListSelector(): String
+    protected abstract fun episodeListSelector(): String
 
     /**
      * Returns a episode from the given element.
      *
      * @param element an element obtained from [episodeListSelector].
      */
-    protected open fun episodeFromElement(element: Element): SEpisode = chapterFromElement(element)
-    protected abstract fun chapterFromElement(element: Element): SChapter
+    protected abstract fun episodeFromElement(element: Element): SEpisode
 
     /**
      * Parses the response from the site and returns the video list.
@@ -227,8 +207,7 @@ abstract class ParsedHttpSource : HttpSource() {
      *
      * @param response the response from the site.
      */
-    override fun videoListParse(response: Response): List<Video> = pageListParse(response)
-    override fun pageListParse(response: Response): List<Page> {
+    override fun videoListParse(response: Response): List<Video> {
         return videoListParse(response.asJsoup())
     }
 
@@ -237,8 +216,7 @@ abstract class ParsedHttpSource : HttpSource() {
      *
      * @param document the parsed document.
      */
-    protected open fun videoListParse(document: Document): List<Video> = pageListParse(document)
-    protected abstract fun pageListParse(document: Document): List<Page>
+    protected abstract fun videoListParse(document: Document): List<Video>
 
     /**
      * Parse the response from the site and returns the absolute url to the source video.

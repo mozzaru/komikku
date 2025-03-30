@@ -49,7 +49,7 @@ class UpcomingScreenModel(
         // KMK -->
         screenModelScope.launch {
             mutableState.update { state ->
-                val updatingItems = getUpcomingAnime.updatingMangas().toUpcomingUIModels()
+                val updatingItems = getUpcomingAnime.updatingAnimes().toUpcomingUIModels()
                 state.copy(
                     isLoadingUpdating = false,
                     updatingItems = updatingItems,

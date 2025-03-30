@@ -7,9 +7,9 @@ import eu.kanade.tachiyomi.data.database.models.toDomainEpisode
 import eu.kanade.tachiyomi.data.download.DownloadManager
 import eu.kanade.tachiyomi.data.download.DownloadProvider
 import eu.kanade.tachiyomi.source.Source
-import eu.kanade.tachiyomi.source.model.Page
+import eu.kanade.tachiyomi.source.model.Video
 import eu.kanade.tachiyomi.ui.reader.model.ReaderChapter
-import eu.kanade.tachiyomi.ui.reader.model.ReaderPage
+import eu.kanade.tachiyomi.ui.reader.model.ReaderVideo
 import mihon.core.archive.archiveReader
 import tachiyomi.domain.anime.model.Anime
 import uy.kohesive.injekt.injectLazy
@@ -31,7 +31,7 @@ internal class DownloadPageLoader(
 
     override var isLocal: Boolean = true
 
-    override suspend fun getPages(): List<ReaderPage> {
+    override suspend fun getPages(): List<ReaderVideo> {
         val dbChapter = chapter.episode
         val chapterPath = downloadProvider.findEpisodeDir(dbChapter.name, dbChapter.scanlator, /* SY --> */ manga.ogTitle /* SY <-- */, source)
         return if (chapterPath?.isFile == true) {
@@ -46,23 +46,23 @@ internal class DownloadPageLoader(
         archivePageLoader?.recycle()
     }
 
-    private suspend fun getPagesFromArchive(file: UniFile): List<ReaderPage> {
+    private suspend fun getPagesFromArchive(file: UniFile): List<ReaderVideo> {
         val loader = ArchivePageLoader(file.archiveReader(context)).also { archivePageLoader = it }
         return loader.getPages()
     }
 
-    private fun getPagesFromDirectory(): List<ReaderPage> {
+    private fun getPagesFromDirectory(): List<ReaderVideo> {
         val pages = downloadManager.buildPageList(source, manga, chapter.episode.toDomainEpisode()!!)
         return pages.map { page ->
-            ReaderPage(page.index, page.url, page.videoUrl) {
+            ReaderVideo(page.index, page.url, page.videoUrl) {
                 context.contentResolver.openInputStream(page.uri ?: Uri.EMPTY)!!
             }.apply {
-                status = Page.State.READY
+                status = Video.State.READY
             }
         }
     }
 
-    override suspend fun loadPage(page: ReaderPage) {
+    override suspend fun loadPage(page: ReaderVideo) {
         archivePageLoader?.loadPage(page)
     }
 }

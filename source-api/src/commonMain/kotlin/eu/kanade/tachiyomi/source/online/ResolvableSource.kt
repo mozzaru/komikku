@@ -20,7 +20,7 @@ interface ResolvableSource : Source {
     fun getUriType(uri: String): UriType
 
     /**
-     * Called if [getUriType] is [UriType.Manga].
+     * Called if [getUriType] is [UriType.Anime].
      * Returns the corresponding SAnime, if possible.
      *
      * @since extensions-lib 1.5
@@ -28,7 +28,7 @@ interface ResolvableSource : Source {
     suspend fun getAnime(uri: String): SAnime?
 
     /**
-     * Called if [getUriType] is [UriType.Chapter].
+     * Called if [getUriType] is [UriType.Episode].
      * Returns the corresponding SEpisode, if possible.
      *
      * @since extensions-lib 1.5
@@ -37,7 +37,7 @@ interface ResolvableSource : Source {
 }
 
 sealed interface UriType {
-    data object Manga : UriType
-    data object Chapter : UriType
+    data object Anime : UriType
+    data object Episode : UriType
     data object Unknown : UriType
 }

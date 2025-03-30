@@ -41,7 +41,7 @@ class DownloadHolder(private val view: View, val adapter: DownloadAdapter) :
         binding.mangaFullTitle.text = download.anime.title
 
         // Update the progress bar and the number of downloaded pages
-        val pages = download.pages
+        val pages = download.videos
         if (pages == null) {
             binding.downloadProgress.progress = 0
             binding.downloadProgress.max = 1
@@ -61,7 +61,7 @@ class DownloadHolder(private val view: View, val adapter: DownloadAdapter) :
      * Updates the progress bar of the download.
      */
     fun notifyProgress() {
-        val pages = download.pages ?: return
+        val pages = download.videos ?: return
         if (binding.downloadProgress.max == 1) {
             binding.downloadProgress.max = pages.size * 100
         }
@@ -72,7 +72,7 @@ class DownloadHolder(private val view: View, val adapter: DownloadAdapter) :
      * Updates the text field of the number of downloaded pages.
      */
     fun notifyDownloadedPages() {
-        val pages = download.pages ?: return
+        val pages = download.videos ?: return
         binding.downloadProgressText.text = "${download.downloadedImages}/${pages.size}"
     }
 

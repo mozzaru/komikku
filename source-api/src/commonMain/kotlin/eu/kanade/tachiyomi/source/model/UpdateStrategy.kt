@@ -17,7 +17,7 @@ enum class UpdateStrategy {
     /**
      * Series marked as only fetch once will be automatically skipped
      * during library updates. Useful for cases where the series is previously
-     * known to be finished and have only a single chapter, for example.
+     * known to be finished and have only a single episode, for example.
      */
     ONLY_FETCH_ONCE,
 }

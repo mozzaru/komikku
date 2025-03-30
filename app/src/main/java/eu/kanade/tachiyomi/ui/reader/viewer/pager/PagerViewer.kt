@@ -15,9 +15,9 @@ import eu.kanade.tachiyomi.R
 import eu.kanade.tachiyomi.data.download.DownloadManager
 import eu.kanade.tachiyomi.ui.reader.ReaderActivity
 import eu.kanade.tachiyomi.ui.reader.model.ChapterTransition
-import eu.kanade.tachiyomi.ui.reader.model.InsertPage
+import eu.kanade.tachiyomi.ui.reader.model.InsertVideo
 import eu.kanade.tachiyomi.ui.reader.model.ReaderItem
-import eu.kanade.tachiyomi.ui.reader.model.ReaderPage
+import eu.kanade.tachiyomi.ui.reader.model.ReaderVideo
 import eu.kanade.tachiyomi.ui.reader.model.ViewerChapters
 import eu.kanade.tachiyomi.ui.reader.viewer.Viewer
 import eu.kanade.tachiyomi.ui.reader.viewer.ViewerNavigation.NavigationRegion
@@ -141,9 +141,9 @@ abstract class PagerViewer(
         pager.longTapListener = f@{
             if (activity.viewModel.state.value.menuVisible || config.longTapEnabled) {
                 val item = adapter.joinedItems.getOrNull(pager.currentItem)
-                val firstPage = item?.first as? ReaderPage
-                val secondPage = item?.second as? ReaderPage
-                if (firstPage is ReaderPage) {
+                val firstPage = item?.first as? ReaderVideo
+                val secondPage = item?.second as? ReaderVideo
+                if (firstPage is ReaderVideo) {
                     activity.onPageLongTap(firstPage, secondPage)
                     return@f true
                 }
@@ -191,42 +191,42 @@ abstract class PagerViewer(
     /**
      * Returns the PagerPageHolder for the provided page
      */
-    private fun getPageHolder(page: ReaderPage): PagerPageHolder? =
+    private fun getPageHolder(page: ReaderVideo): PagerPageHolder? =
         pager.children
             .filterIsInstance<PagerPageHolder>()
             .firstOrNull { it.item.first == page || it.item.second == page }
 
     /**
-     * Called when a new page (either a [ReaderPage] or [ChapterTransition]) is marked as active
+     * Called when a new page (either a [ReaderVideo] or [ChapterTransition]) is marked as active
      */
     fun onPageChange(position: Int) {
         val pagePair = adapter.joinedItems.getOrNull(position)
         val page = pagePair?.first
         if (page != null && currentPage != page) {
-            val allowPreload = checkAllowPreload(page as? ReaderPage)
+            val allowPreload = checkAllowPreload(page as? ReaderVideo)
             val forward = when {
-                currentPage is ReaderPage && page is ReaderPage -> {
+                currentPage is ReaderVideo && page is ReaderVideo -> {
                     // if both pages have the same number, it's a split page with an InsertPage
-                    if (page.number == (currentPage as ReaderPage).number) {
+                    if (page.number == (currentPage as ReaderVideo).number) {
                         // the InsertPage is always the second in the reading direction
-                        page is InsertPage
+                        page is InsertVideo
                     } else {
-                        page.number > (currentPage as ReaderPage).number
+                        page.number > (currentPage as ReaderVideo).number
                     }
                 }
-                currentPage is ChapterTransition.Prev && page is ReaderPage ->
+                currentPage is ChapterTransition.Prev && page is ReaderVideo ->
                     false
                 else -> true
             }
             currentPage = page
             when (page) {
-                is ReaderPage -> onReaderPageSelected(page, allowPreload, forward, pagePair.second != null)
+                is ReaderVideo -> onReaderPageSelected(page, allowPreload, forward, pagePair.second != null)
                 is ChapterTransition -> onTransitionSelected(page)
             }
         }
     }
 
-    private fun checkAllowPreload(page: ReaderPage?): Boolean {
+    private fun checkAllowPreload(page: ReaderVideo?): Boolean {
         // Page is transition page - preload allowed
         page ?: return true
 
@@ -239,17 +239,17 @@ abstract class PagerViewer(
         // 3. Next episode page
         return when (page.chapter) {
             (currentPage as? ChapterTransition.Next)?.to -> true
-            (currentPage as? ReaderPage)?.chapter -> true
+            (currentPage as? ReaderVideo)?.chapter -> true
             adapter.nextTransition?.to -> true
             else -> false
         }
     }
 
     /**
-     * Called when a [ReaderPage] is marked as active. It notifies the
+     * Called when a [ReaderVideo] is marked as active. It notifies the
      * activity of the change and requests the preload of the next episode if this is the last page.
      */
-    private fun onReaderPageSelected(page: ReaderPage, allowPreload: Boolean, forward: Boolean, hasExtraPage: Boolean) {
+    private fun onReaderPageSelected(page: ReaderVideo, allowPreload: Boolean, forward: Boolean, hasExtraPage: Boolean) {
         val pages = page.chapter.pages ?: return
         logcat { "onReaderPageSelected: ${page.number}/${pages.size}" }
         activity.onPageSelected(page, hasExtraPage)
@@ -258,7 +258,7 @@ abstract class PagerViewer(
         getPageHolder(page)?.onPageSelected(forward)
 
         // Skip preload on inserts it causes unwanted page jumping
-        if (page is InsertPage) {
+        if (page is InsertVideo) {
             return
         }
 
@@ -319,7 +319,7 @@ abstract class PagerViewer(
     /**
      * Tells this viewer to move to the given [page].
      */
-    override fun moveToPage(page: ReaderPage) {
+    override fun moveToPage(page: ReaderVideo) {
         val position = adapter.joinedItems.indexOfFirst { it.first == page || it.second == page }
         if (position != -1) {
             val currentPosition = pager.currentItem
@@ -332,7 +332,7 @@ abstract class PagerViewer(
                 // Instead just update the page count in ui
                 val joinedItem = adapter.joinedItems.firstOrNull { it.first == page || it.second == page }
                 activity.onPageSelected(
-                    joinedItem?.first as? ReaderPage ?: page,
+                    joinedItem?.first as? ReaderVideo ?: page,
                     joinedItem?.second != null,
                 )
             }
@@ -360,7 +360,7 @@ abstract class PagerViewer(
      */
     protected open fun moveRight() {
         if (pager.currentItem != adapter.count - 1) {
-            val holder = (currentPage as? ReaderPage)?.let(::getPageHolder)
+            val holder = (currentPage as? ReaderVideo)?.let(::getPageHolder)
             if (holder != null && config.navigateToPan && holder.canPanRight()) {
                 holder.panRight()
             } else {
@@ -374,7 +374,7 @@ abstract class PagerViewer(
      */
     protected open fun moveLeft() {
         if (pager.currentItem != 0) {
-            val holder = (currentPage as? ReaderPage)?.let(::getPageHolder)
+            val holder = (currentPage as? ReaderVideo)?.let(::getPageHolder)
             if (holder != null && config.navigateToPan && holder.canPanLeft()) {
                 holder.panLeft()
             } else {
@@ -471,7 +471,7 @@ abstract class PagerViewer(
         return false
     }
 
-    fun onPageSplit(currentPage: ReaderPage, newPage: InsertPage) {
+    fun onPageSplit(currentPage: ReaderVideo, newPage: InsertVideo) {
         activity.runOnUiThread {
             // Need to insert on UI thread else images will go blank
             adapter.onPageSplit(currentPage, newPage)
@@ -493,14 +493,14 @@ abstract class PagerViewer(
         onPageChange(pager.currentItem)
     }
 
-    fun updateShifting(page: ReaderPage? = null) {
-        adapter.pageToShift = page ?: adapter.joinedItems.getOrNull(pager.currentItem)?.first as? ReaderPage
+    fun updateShifting(page: ReaderVideo? = null) {
+        adapter.pageToShift = page ?: adapter.joinedItems.getOrNull(pager.currentItem)?.first as? ReaderVideo
     }
 
-    fun splitDoublePages(currentPage: ReaderPage) {
+    fun splitDoublePages(currentPage: ReaderVideo) {
         adapter.splitDoublePages(currentPage)
     }
 
-    fun getShiftedPage(): ReaderPage? = adapter.pageToShift
+    fun getShiftedPage(): ReaderVideo? = adapter.pageToShift
     // SY <--
 }

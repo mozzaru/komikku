@@ -131,10 +131,10 @@ object SettingsDownloadScreen : SearchableSettings {
         downloadPreferences: DownloadPreferences,
         allCategories: List<Category>,
     ): Preference.PreferenceGroup {
-        val downloadNewChaptersPref = downloadPreferences.downloadNewChapters()
-        val downloadNewUnreadChaptersOnlyPref = downloadPreferences.downloadNewUnreadChaptersOnly()
-        val downloadNewChapterCategoriesPref = downloadPreferences.downloadNewChapterCategories()
-        val downloadNewChapterCategoriesExcludePref = downloadPreferences.downloadNewChapterCategoriesExclude()
+        val downloadNewChaptersPref = downloadPreferences.downloadNewEpisodes()
+        val downloadNewUnreadChaptersOnlyPref = downloadPreferences.downloadNewUnseenEpisodesOnly()
+        val downloadNewChapterCategoriesPref = downloadPreferences.downloadNewEpisodeCategories()
+        val downloadNewChapterCategoriesExcludePref = downloadPreferences.downloadNewEpisodeCategoriesExclude()
 
         val downloadNewChapters by downloadNewChaptersPref.collectAsState()
 

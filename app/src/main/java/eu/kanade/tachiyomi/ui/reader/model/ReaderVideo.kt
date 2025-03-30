@@ -1,9 +1,9 @@
 package eu.kanade.tachiyomi.ui.reader.model
 
-import eu.kanade.tachiyomi.source.model.Page
+import eu.kanade.tachiyomi.source.model.Video
 import java.io.InputStream
 
-open class ReaderPage(
+open class ReaderVideo(
     index: Int,
     url: String = "",
     imageUrl: String? = null,
@@ -15,7 +15,7 @@ open class ReaderPage(
     // SY <--
     var stream: (() -> InputStream)? = null,
 
-) : Page(index, url, imageUrl, null), ReaderItem {
+) : Video(index, url, imageUrl, null), ReaderItem {
 
     open lateinit var chapter: ReaderChapter
 

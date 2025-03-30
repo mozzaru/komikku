@@ -31,19 +31,19 @@ class DownloadPreferences(
         emptySet(),
     )
 
-    fun downloadNewChapters() = preferenceStore.getBoolean("download_new", false)
+    fun downloadNewEpisodes() = preferenceStore.getBoolean("download_new", false)
 
-    fun downloadNewChapterCategories() = preferenceStore.getStringSet(
+    fun downloadNewEpisodeCategories() = preferenceStore.getStringSet(
         "download_new_categories",
         emptySet(),
     )
 
-    fun downloadNewChapterCategoriesExclude() = preferenceStore.getStringSet(
+    fun downloadNewEpisodeCategoriesExclude() = preferenceStore.getStringSet(
         "download_new_categories_exclude",
         emptySet(),
     )
 
-    fun downloadNewUnreadChaptersOnly() = preferenceStore.getBoolean("download_new_unread_chapters_only", false)
+    fun downloadNewUnseenEpisodesOnly() = preferenceStore.getBoolean("download_new_unread_chapters_only", false)
 
     // KMK -->
     fun downloadCacheRenewInterval() = preferenceStore.getInt("download_cache_renew_interval", 1)

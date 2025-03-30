@@ -83,7 +83,7 @@ import eu.kanade.tachiyomi.data.coil.TachiyomiImageDecoder
 import eu.kanade.tachiyomi.data.notification.NotificationReceiver
 import eu.kanade.tachiyomi.data.notification.Notifications
 import eu.kanade.tachiyomi.databinding.ReaderActivityBinding
-import eu.kanade.tachiyomi.source.model.Page
+import eu.kanade.tachiyomi.source.model.Video
 import eu.kanade.tachiyomi.source.online.HttpSource
 import eu.kanade.tachiyomi.ui.base.activity.BaseActivity
 import eu.kanade.tachiyomi.ui.main.MainActivity
@@ -92,7 +92,7 @@ import eu.kanade.tachiyomi.ui.reader.ReaderViewModel.SetAsCoverResult.Error
 import eu.kanade.tachiyomi.ui.reader.ReaderViewModel.SetAsCoverResult.Success
 import eu.kanade.tachiyomi.ui.reader.loader.HttpPageLoader
 import eu.kanade.tachiyomi.ui.reader.model.ReaderChapter
-import eu.kanade.tachiyomi.ui.reader.model.ReaderPage
+import eu.kanade.tachiyomi.ui.reader.model.ReaderVideo
 import eu.kanade.tachiyomi.ui.reader.model.ViewerChapters
 import eu.kanade.tachiyomi.ui.reader.setting.ReaderOrientation
 import eu.kanade.tachiyomi.ui.reader.setting.ReaderPreferences
@@ -830,7 +830,7 @@ class ReaderActivity : BaseActivity() {
             ?.pages
             ?.forEachIndexed { _, page ->
                 var shouldQueuePage = false
-                if (page.status == Page.State.ERROR) {
+                if (page.status == Video.State.ERROR) {
                     shouldQueuePage = true
                 } /*else if (page.status == Page.LOAD_PAGE ||
                                     page.status == Page.DOWNLOAD_IMAGE) {
@@ -838,7 +838,7 @@ class ReaderActivity : BaseActivity() {
                             }*/
 
                 if (shouldQueuePage) {
-                    page.status = Page.State.QUEUE
+                    page.status = Video.State.QUEUE
                 } else {
                     return@forEachIndexed
                 }
@@ -863,11 +863,11 @@ class ReaderActivity : BaseActivity() {
             return
         }
 
-        if (curPage.status == Page.State.ERROR) {
+        if (curPage.status == Video.State.ERROR) {
             toast(SYMR.strings.eh_boost_page_errored)
-        } else if (curPage.status == Page.State.LOAD_PAGE || curPage.status == Page.State.DOWNLOAD_IMAGE) {
+        } else if (curPage.status == Video.State.LOAD_PAGE || curPage.status == Video.State.DOWNLOAD_IMAGE) {
             toast(SYMR.strings.eh_boost_page_downloading)
-        } else if (curPage.status == Page.State.READY) {
+        } else if (curPage.status == Video.State.READY) {
             toast(SYMR.strings.eh_boost_page_downloaded)
         } else {
             val loader = (viewModel.state.value.viewerChapters?.currChapter?.pageLoader as? HttpPageLoader)
@@ -880,9 +880,9 @@ class ReaderActivity : BaseActivity() {
         }
     }
 
-    private fun exhCurrentpage(): ReaderPage? {
+    private fun exhCurrentpage(): ReaderVideo? {
         val viewer = viewModel.state.value.viewer
-        val currentPage = (((viewer as? PagerViewer)?.currentPage ?: (viewer as? WebtoonViewer)?.currentPage) as? ReaderPage)?.index
+        val currentPage = (((viewer as? PagerViewer)?.currentPage ?: (viewer as? WebtoonViewer)?.currentPage) as? ReaderVideo)?.index
         return currentPage?.let { viewModel.state.value.viewerChapters?.currChapter?.pages?.getOrNull(it) }
     }
 
@@ -1155,7 +1155,7 @@ class ReaderActivity : BaseActivity() {
      * bottom menu and delegates the change to the presenter.
      */
     @SuppressLint("SetTextI18n")
-    fun onPageSelected(page: ReaderPage, hasExtraPage: Boolean = false) {
+    fun onPageSelected(page: ReaderVideo, hasExtraPage: Boolean = false) {
         // SY -->
         val currentPageText = if (hasExtraPage) {
             val invertDoublePage = (viewModel.state.value.viewer as? PagerViewer)?.config?.invertDoublePages ?: false
@@ -1177,7 +1177,7 @@ class ReaderActivity : BaseActivity() {
      * Called from the viewer whenever a [page] is long clicked. A bottom sheet with a list of
      * actions to perform is shown.
      */
-    fun onPageLongTap(page: ReaderPage, extraPage: ReaderPage? = null) {
+    fun onPageLongTap(page: ReaderVideo, extraPage: ReaderVideo? = null) {
         // SY -->
         viewModel.openPageDialog(page, extraPage)
         // SY <--
@@ -1221,7 +1221,7 @@ class ReaderActivity : BaseActivity() {
      * Called from the presenter when a page is ready to be shared. It shows Android's default
      * sharing tool.
      */
-    fun onShareImageResult(uri: Uri, page: ReaderPage /* SY --> */, secondPage: ReaderPage? = null /* SY <-- */) {
+    fun onShareImageResult(uri: Uri, page: ReaderVideo /* SY --> */, secondPage: ReaderVideo? = null /* SY <-- */) {
         val manga = viewModel.manga ?: return
         val chapter = page.chapter.episode
 

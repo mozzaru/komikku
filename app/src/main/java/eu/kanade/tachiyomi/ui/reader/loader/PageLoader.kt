@@ -1,7 +1,7 @@
 package eu.kanade.tachiyomi.ui.reader.loader
 
 import androidx.annotation.CallSuper
-import eu.kanade.tachiyomi.ui.reader.model.ReaderPage
+import eu.kanade.tachiyomi.ui.reader.model.ReaderVideo
 
 /**
  * A loader used to load pages into the reader. Any open resources must be cleaned up when the
@@ -20,20 +20,20 @@ abstract class PageLoader {
     /**
      * Returns the list of pages of a episode.
      */
-    abstract suspend fun getPages(): List<ReaderPage>
+    abstract suspend fun getPages(): List<ReaderVideo>
 
     /**
      * Loads the page. May also preload other pages.
      * Progress of the page loading should be followed via [page.statusFlow].
      * [loadPage] is not currently guaranteed to complete, so it should be launched asynchronously.
      */
-    open suspend fun loadPage(page: ReaderPage) {}
+    open suspend fun loadPage(page: ReaderVideo) {}
 
     /**
      * Retries the given [page] in case it failed to load. This method only makes sense when an
      * online source is used.
      */
-    open fun retryPage(page: ReaderPage) {}
+    open fun retryPage(page: ReaderVideo) {}
 
     /**
      * Recycles this loader. Implementations must override this method to clean up any active

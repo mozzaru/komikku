@@ -26,15 +26,15 @@ import eu.kanade.tachiyomi.data.saver.Image
 import eu.kanade.tachiyomi.data.saver.ImageSaver
 import eu.kanade.tachiyomi.data.saver.Location
 import eu.kanade.tachiyomi.data.sync.SyncDataJob
-import eu.kanade.tachiyomi.source.model.Page
+import eu.kanade.tachiyomi.source.model.Video
 import eu.kanade.tachiyomi.source.online.HttpSource
 import eu.kanade.tachiyomi.source.online.all.MergedSource
 import eu.kanade.tachiyomi.ui.reader.chapter.ReaderChapterItem
 import eu.kanade.tachiyomi.ui.reader.loader.ChapterLoader
 import eu.kanade.tachiyomi.ui.reader.loader.DownloadPageLoader
-import eu.kanade.tachiyomi.ui.reader.model.InsertPage
+import eu.kanade.tachiyomi.ui.reader.model.InsertVideo
 import eu.kanade.tachiyomi.ui.reader.model.ReaderChapter
-import eu.kanade.tachiyomi.ui.reader.model.ReaderPage
+import eu.kanade.tachiyomi.ui.reader.model.ReaderVideo
 import eu.kanade.tachiyomi.ui.reader.model.ViewerChapters
 import eu.kanade.tachiyomi.ui.reader.setting.ReaderOrientation
 import eu.kanade.tachiyomi.ui.reader.setting.ReaderPreferences
@@ -560,9 +560,9 @@ class ReaderViewModel @JvmOverloads constructor(
      * read, update tracking services, enqueue downloaded episode deletion, and updating the active episode if this
      * [page]'s episode is different from the currently active.
      */
-    fun onPageSelected(page: ReaderPage, currentPageText: String /* SY --> */, hasExtraPage: Boolean /* SY <-- */) {
+    fun onPageSelected(page: ReaderVideo, currentPageText: String /* SY --> */, hasExtraPage: Boolean /* SY <-- */) {
         // InsertPage doesn't change page progress
-        if (page is InsertPage) {
+        if (page is InsertVideo) {
             return
         }
 
@@ -662,10 +662,10 @@ class ReaderViewModel @JvmOverloads constructor(
      */
     private suspend fun updateChapterProgress(
         readerChapter: ReaderChapter,
-        page: Page/* SY --> */,
+        video: Video/* SY --> */,
         hasExtraPage: Boolean, /* SY <-- */
     ) {
-        val pageIndex = page.index
+        val pageIndex = video.index
         val syncTriggerOpt = syncPreferences.getSyncTriggerOptions()
         val isSyncEnabled = syncPreferences.isSyncEnabled()
 
@@ -675,13 +675,13 @@ class ReaderViewModel @JvmOverloads constructor(
         readerChapter.requestedPage = pageIndex
         chapterPageIndex = pageIndex
 
-        if (!incognitoMode && page.status != Page.State.ERROR) {
+        if (!incognitoMode && video.status != Video.State.ERROR) {
             readerChapter.episode.last_second_seen = pageIndex.toLong()
 
             // SY -->
             if (
                 readerChapter.pages?.lastIndex == pageIndex ||
-                (hasExtraPage && readerChapter.pages?.lastIndex?.minus(1) == page.index)
+                (hasExtraPage && readerChapter.pages?.lastIndex?.minus(1) == video.index)
             ) {
                 // SY <--
                 readerChapter.episode.seen = true
@@ -934,7 +934,7 @@ class ReaderViewModel @JvmOverloads constructor(
      */
     private fun generateFilename(
         manga: Anime,
-        page: ReaderPage,
+        page: ReaderVideo,
     ): String {
         val chapter = page.chapter.episode
         val filenameSuffix = " - ${page.number}"
@@ -1001,7 +1001,7 @@ class ReaderViewModel @JvmOverloads constructor(
         mutableState.update { it.copy(dialog = Dialog.OrientationModeSelect) }
     }
 
-    fun openPageDialog(page: ReaderPage/* SY --> */, extraPage: ReaderPage? = null/* SY <-- */) {
+    fun openPageDialog(page: ReaderVideo/* SY --> */, extraPage: ReaderVideo? = null/* SY <-- */) {
         mutableState.update { it.copy(dialog = Dialog.PageActions(page, extraPage)) }
     }
 
@@ -1029,7 +1029,7 @@ class ReaderViewModel @JvmOverloads constructor(
             (state.value.dialog as? Dialog.PageActions)?.page
         }
         // SY <--
-        if (page?.status != Page.State.READY) return
+        if (page?.status != Video.State.READY) return
         val manga = manga ?: return
 
         val context = Injekt.get<Application>()
@@ -1073,8 +1073,8 @@ class ReaderViewModel @JvmOverloads constructor(
         val isLTR = (viewer !is R2LPagerViewer) xor (viewer.config.invertDoublePages)
         val bg = viewer.config.pageCanvasColor
 
-        if (firstPage.status != Page.State.READY) return
-        if (secondPage?.status != Page.State.READY) return
+        if (firstPage.status != Video.State.READY) return
+        if (secondPage?.status != Video.State.READY) return
 
         val manga = manga ?: return
 
@@ -1102,8 +1102,8 @@ class ReaderViewModel @JvmOverloads constructor(
     }
 
     private fun saveImages(
-        page1: ReaderPage,
-        page2: ReaderPage,
+        page1: ReaderVideo,
+        page2: ReaderVideo,
         isLTR: Boolean,
         @ColorInt bg: Int,
         location: Location,
@@ -1154,7 +1154,7 @@ class ReaderViewModel @JvmOverloads constructor(
             (state.value.dialog as? Dialog.PageActions)?.page
         }
         // SY <--
-        if (page?.status != Page.State.READY) return
+        if (page?.status != Video.State.READY) return
         val manga = manga ?: return
 
         val context = Injekt.get<Application>()
@@ -1186,8 +1186,8 @@ class ReaderViewModel @JvmOverloads constructor(
         val isLTR = (viewer !is R2LPagerViewer) xor (viewer.config.invertDoublePages)
         val bg = viewer.config.pageCanvasColor
 
-        if (firstPage.status != Page.State.READY) return
-        if (secondPage?.status != Page.State.READY) return
+        if (firstPage.status != Video.State.READY) return
+        if (secondPage?.status != Video.State.READY) return
         val manga = manga ?: return
 
         val context = Injekt.get<Application>()
@@ -1223,7 +1223,7 @@ class ReaderViewModel @JvmOverloads constructor(
             (state.value.dialog as? Dialog.PageActions)?.page
         }
         // SY <--
-        if (page?.status != Page.State.READY) return
+        if (page?.status != Video.State.READY) return
         val manga = manga ?: return
         val stream = page.stream ?: return
 
@@ -1349,8 +1349,8 @@ class ReaderViewModel @JvmOverloads constructor(
         // SY <--
 
         data class PageActions(
-            val page: ReaderPage/* SY --> */,
-            val extraPage: ReaderPage? = null, /* SY <-- */
+            val page: ReaderVideo/* SY --> */,
+            val extraPage: ReaderVideo? = null, /* SY <-- */
         ) : Dialog
 
         // SY -->
@@ -1369,8 +1369,8 @@ class ReaderViewModel @JvmOverloads constructor(
         data class SavedImage(val result: SaveImageResult) : Event
         data class ShareImage(
             val uri: Uri,
-            val page: ReaderPage/* SY --> */,
-            val secondPage: ReaderPage? = null, /* SY <-- */
+            val page: ReaderVideo/* SY --> */,
+            val secondPage: ReaderVideo? = null, /* SY <-- */
         ) : Event
         data class CopyImage(val uri: Uri) : Event
     }

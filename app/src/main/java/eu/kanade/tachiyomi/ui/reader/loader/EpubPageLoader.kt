@@ -1,7 +1,7 @@
 package eu.kanade.tachiyomi.ui.reader.loader
 
-import eu.kanade.tachiyomi.source.model.Page
-import eu.kanade.tachiyomi.ui.reader.model.ReaderPage
+import eu.kanade.tachiyomi.source.model.Video
+import eu.kanade.tachiyomi.ui.reader.model.ReaderVideo
 import mihon.core.archive.EpubReader
 
 /**
@@ -11,16 +11,16 @@ internal class EpubPageLoader(private val reader: EpubReader) : PageLoader() {
 
     override var isLocal: Boolean = true
 
-    override suspend fun getPages(): List<ReaderPage> {
+    override suspend fun getPages(): List<ReaderVideo> {
         return reader.getImagesFromPages().mapIndexed { i, path ->
-            ReaderPage(i).apply {
+            ReaderVideo(i).apply {
                 stream = { reader.getInputStream(path)!! }
-                status = Page.State.READY
+                status = Video.State.READY
             }
         }
     }
 
-    override suspend fun loadPage(page: ReaderPage) {
+    override suspend fun loadPage(page: ReaderVideo) {
         check(!isRecycled)
     }
 

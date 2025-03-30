@@ -1,6 +1,6 @@
 package eu.kanade.tachiyomi.ui.reader.model
 
-class InsertPage(val parent: ReaderPage) : ReaderPage(parent.index, parent.url, parent.videoUrl) {
+class InsertVideo(val parent: ReaderVideo) : ReaderVideo(parent.index, parent.url, parent.videoUrl) {
 
     override var chapter: ReaderChapter = parent.chapter
 

@@ -7,9 +7,9 @@ import android.view.LayoutInflater
 import androidx.annotation.ColorInt
 import androidx.core.view.isVisible
 import eu.kanade.tachiyomi.databinding.ReaderErrorBinding
-import eu.kanade.tachiyomi.source.model.Page
-import eu.kanade.tachiyomi.ui.reader.model.InsertPage
-import eu.kanade.tachiyomi.ui.reader.model.ReaderPage
+import eu.kanade.tachiyomi.source.model.Video
+import eu.kanade.tachiyomi.ui.reader.model.InsertVideo
+import eu.kanade.tachiyomi.ui.reader.model.ReaderVideo
 import eu.kanade.tachiyomi.ui.reader.viewer.ReaderPageImageView
 import eu.kanade.tachiyomi.ui.reader.viewer.ReaderProgressIndicator
 import eu.kanade.tachiyomi.ui.webview.WebViewActivity
@@ -38,8 +38,8 @@ import kotlin.math.max
 class PagerPageHolder(
     readerThemedContext: Context,
     val viewer: PagerViewer,
-    val page: ReaderPage,
-    private var extraPage: ReaderPage? = null,
+    val page: ReaderVideo,
+    private var extraPage: ReaderVideo? = null,
     // KMK -->
     @ColorInt private val seedColor: Int? = null,
     // KMK <--
@@ -122,16 +122,16 @@ class PagerPageHolder(
             }
             page.statusFlow.collectLatest { state ->
                 when (state) {
-                    Page.State.QUEUE -> setQueued()
-                    Page.State.LOAD_PAGE -> setLoading()
-                    Page.State.DOWNLOAD_IMAGE -> {
+                    Video.State.QUEUE -> setQueued()
+                    Video.State.LOAD_PAGE -> setLoading()
+                    Video.State.DOWNLOAD_IMAGE -> {
                         setDownloading()
                         page.progressFlow.collectLatest { value ->
                             progressIndicator?.setProgress(value)
                         }
                     }
-                    Page.State.READY -> setImage()
-                    Page.State.ERROR -> setError()
+                    Video.State.READY -> setImage()
+                    Video.State.ERROR -> setError()
                 }
             }
         }
@@ -228,7 +228,7 @@ class PagerPageHolder(
         }
     }
 
-    private fun process(page: ReaderPage, imageSource: BufferedSource): BufferedSource {
+    private fun process(page: ReaderVideo, imageSource: BufferedSource): BufferedSource {
         if (viewer.config.dualPageRotateToFit) {
             return rotateDualPage(imageSource)
         }
@@ -237,7 +237,7 @@ class PagerPageHolder(
             return imageSource
         }
 
-        if (page is InsertPage) {
+        if (page is InsertVideo) {
             return splitInHalf(imageSource)
         }
 
@@ -380,10 +380,10 @@ class PagerPageHolder(
 
     private fun splitInHalf(imageSource: BufferedSource): BufferedSource {
         var side = when {
-            viewer is L2RPagerViewer && page is InsertPage -> ImageUtil.Side.RIGHT
-            viewer !is L2RPagerViewer && page is InsertPage -> ImageUtil.Side.LEFT
-            viewer is L2RPagerViewer && page !is InsertPage -> ImageUtil.Side.LEFT
-            viewer !is L2RPagerViewer && page !is InsertPage -> ImageUtil.Side.RIGHT
+            viewer is L2RPagerViewer && page is InsertVideo -> ImageUtil.Side.RIGHT
+            viewer !is L2RPagerViewer && page is InsertVideo -> ImageUtil.Side.LEFT
+            viewer is L2RPagerViewer && page !is InsertVideo -> ImageUtil.Side.LEFT
+            viewer !is L2RPagerViewer && page !is InsertVideo -> ImageUtil.Side.RIGHT
             else -> error("We should choose a side!")
         }
 
@@ -407,8 +407,8 @@ class PagerPageHolder(
         return ImageUtil.splitInHalf(imageSource, side, sideMargin)
     }
 
-    private fun onPageSplit(page: ReaderPage) {
-        val newPage = InsertPage(page)
+    private fun onPageSplit(page: ReaderVideo) {
+        val newPage = InsertVideo(page)
         viewer.onPageSplit(page, newPage)
     }
 

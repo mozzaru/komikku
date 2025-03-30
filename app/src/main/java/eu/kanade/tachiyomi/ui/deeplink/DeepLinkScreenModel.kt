@@ -41,7 +41,7 @@ class DeepLinkScreenModel(
                 getMangaFromSManga(it, source.id)
             }
 
-            val chapter = if (source?.getUriType(query) == UriType.Chapter && manga != null) {
+            val chapter = if (source?.getUriType(query) == UriType.Episode && manga != null) {
                 source.getEpisode(query)?.let { getEpisodeFromSEpisode(it, manga, source) }
             } else {
                 null

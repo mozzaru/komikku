@@ -3,7 +3,7 @@ package eu.kanade.tachiyomi.ui.reader.viewer
 import android.view.KeyEvent
 import android.view.MotionEvent
 import android.view.View
-import eu.kanade.tachiyomi.ui.reader.model.ReaderPage
+import eu.kanade.tachiyomi.ui.reader.model.ReaderVideo
 import eu.kanade.tachiyomi.ui.reader.model.ViewerChapters
 
 /**
@@ -29,7 +29,7 @@ interface Viewer {
     /**
      * Tells this viewer to move to the given [page].
      */
-    fun moveToPage(page: ReaderPage)
+    fun moveToPage(page: ReaderVideo)
 
     /**
      * Called from the containing activity when a key [event] is received. It should return true

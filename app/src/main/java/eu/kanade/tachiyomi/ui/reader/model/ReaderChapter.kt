@@ -15,7 +15,7 @@ data class ReaderChapter(val episode: Episode) {
             stateFlow.value = value
         }
 
-    val pages: List<ReaderPage>?
+    val pages: List<ReaderVideo>?
         get() = (state as? State.Loaded)?.pages
 
     var pageLoader: PageLoader? = null
@@ -46,6 +46,6 @@ data class ReaderChapter(val episode: Episode) {
         data object Wait : State
         data object Loading : State
         data class Error(val error: Throwable) : State
-        data class Loaded(val pages: List<ReaderPage>) : State
+        data class Loaded(val pages: List<ReaderVideo>) : State
     }
 }

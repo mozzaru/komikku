@@ -12,8 +12,8 @@ import androidx.core.view.updateLayoutParams
 import androidx.core.view.updateMargins
 import com.davemorrissey.labs.subscaleview.SubsamplingScaleImageView
 import eu.kanade.tachiyomi.databinding.ReaderErrorBinding
-import eu.kanade.tachiyomi.source.model.Page
-import eu.kanade.tachiyomi.ui.reader.model.ReaderPage
+import eu.kanade.tachiyomi.source.model.Video
+import eu.kanade.tachiyomi.ui.reader.model.ReaderVideo
 import eu.kanade.tachiyomi.ui.reader.viewer.ReaderPageImageView
 import eu.kanade.tachiyomi.ui.reader.viewer.ReaderProgressIndicator
 import eu.kanade.tachiyomi.ui.webview.WebViewActivity
@@ -72,7 +72,7 @@ class WebtoonPageHolder(
     /**
      * Page of a episode.
      */
-    private var page: ReaderPage? = null
+    private var page: ReaderVideo? = null
 
     private val scope = MainScope()
 
@@ -92,7 +92,7 @@ class WebtoonPageHolder(
     /**
      * Binds the given [page] with this view holder, subscribing to its state.
      */
-    fun bind(page: ReaderPage) {
+    fun bind(page: ReaderVideo) {
         this.page = page
         loadJob?.cancel()
         loadJob = scope.launch { loadPageAndProcessStatus() }
@@ -140,16 +140,16 @@ class WebtoonPageHolder(
             }
             page.statusFlow.collectLatest { state ->
                 when (state) {
-                    Page.State.QUEUE -> setQueued()
-                    Page.State.LOAD_PAGE -> setLoading()
-                    Page.State.DOWNLOAD_IMAGE -> {
+                    Video.State.QUEUE -> setQueued()
+                    Video.State.LOAD_PAGE -> setLoading()
+                    Video.State.DOWNLOAD_IMAGE -> {
                         setDownloading()
                         page.progressFlow.collectLatest { value ->
                             progressIndicator.setProgress(value)
                         }
                     }
-                    Page.State.READY -> setImage()
-                    Page.State.ERROR -> setError()
+                    Video.State.READY -> setImage()
+                    Video.State.ERROR -> setError()
                 }
             }
         }

@@ -3,10 +3,10 @@ package eu.kanade.tachiyomi.ui.reader.loader
 import eu.kanade.domain.source.service.SourcePreferences
 import eu.kanade.tachiyomi.data.cache.EpisodeCache
 import eu.kanade.tachiyomi.data.database.models.toDomainEpisode
-import eu.kanade.tachiyomi.source.model.Page
+import eu.kanade.tachiyomi.source.model.Video
 import eu.kanade.tachiyomi.source.online.HttpSource
 import eu.kanade.tachiyomi.ui.reader.model.ReaderChapter
-import eu.kanade.tachiyomi.ui.reader.model.ReaderPage
+import eu.kanade.tachiyomi.ui.reader.model.ReaderVideo
 import eu.kanade.tachiyomi.ui.reader.setting.ReaderPreferences
 import exh.util.DataSaver
 import exh.util.DataSaver.Companion.getImage
@@ -65,7 +65,7 @@ internal class HttpPageLoader(
                         emit(runInterruptible { queue.take() }.page)
                     }
                 }
-                    .filter { it.status == Page.State.QUEUE }
+                    .filter { it.status == Video.State.QUEUE }
                     .collect(::internalLoadPage)
             }
             // EXH -->
@@ -79,7 +79,7 @@ internal class HttpPageLoader(
      * Returns the page list for a episode. It tries to return the page list from the local cache,
      * otherwise fallbacks to network.
      */
-    override suspend fun getPages(): List<ReaderPage> {
+    override suspend fun getPages(): List<ReaderVideo> {
         val pages = try {
             episodeCache.getPageListFromCache(chapter.episode.toDomainEpisode()!!)
         } catch (e: Throwable) {
@@ -91,11 +91,11 @@ internal class HttpPageLoader(
         // SY -->
         val rp = pages.mapIndexed { index, page ->
             // Don't trust sources and use our own indexing
-            ReaderPage(index, page.url, page.videoUrl)
+            ReaderVideo(index, page.url, page.videoUrl)
         }
         if (readerPreferences.aggressivePageLoading().get()) {
             rp.forEach {
-                if (it.status == Page.State.QUEUE) {
+                if (it.status == Video.State.QUEUE) {
                     queue.offer(PriorityPage(it, 0))
                 }
             }
@@ -107,21 +107,21 @@ internal class HttpPageLoader(
     /**
      * Loads a page through the queue. Handles re-enqueueing pages if they were evicted from the cache.
      */
-    override suspend fun loadPage(page: ReaderPage) = withIOContext {
+    override suspend fun loadPage(page: ReaderVideo) = withIOContext {
         val imageUrl = page.videoUrl
 
         // Check if the image has been deleted
-        if (page.status == Page.State.READY && imageUrl != null && !episodeCache.isImageInCache(imageUrl)) {
-            page.status = Page.State.QUEUE
+        if (page.status == Video.State.READY && imageUrl != null && !episodeCache.isImageInCache(imageUrl)) {
+            page.status = Video.State.QUEUE
         }
 
         // Automatically retry failed pages when subscribed to this page
-        if (page.status == Page.State.ERROR) {
-            page.status = Page.State.QUEUE
+        if (page.status == Video.State.ERROR) {
+            page.status = Video.State.QUEUE
         }
 
         val queuedPages = mutableListOf<PriorityPage>()
-        if (page.status == Page.State.QUEUE) {
+        if (page.status == Video.State.QUEUE) {
             queuedPages += PriorityPage(page, 1).also { queue.offer(it) }
         }
         queuedPages += preloadNextPages(page, preloadSize)
@@ -129,7 +129,7 @@ internal class HttpPageLoader(
         suspendCancellableCoroutine<Nothing> { continuation ->
             continuation.invokeOnCancellation {
                 queuedPages.forEach {
-                    if (it.page.status == Page.State.QUEUE) {
+                    if (it.page.status == Video.State.QUEUE) {
                         queue.remove(it)
                     }
                 }
@@ -140,9 +140,9 @@ internal class HttpPageLoader(
     /**
      * Retries a page. This method is only called from user interaction on the viewer.
      */
-    override fun retryPage(page: ReaderPage) {
-        if (page.status == Page.State.ERROR) {
-            page.status = Page.State.QUEUE
+    override fun retryPage(page: ReaderVideo) {
+        if (page.status == Video.State.ERROR) {
+            page.status = Video.State.QUEUE
         }
         // EXH -->
         if (readerPreferences.readerInstantRetry().get()) // EXH <--
@@ -164,7 +164,7 @@ internal class HttpPageLoader(
             launchIO {
                 try {
                     // Convert to pages without reader information
-                    val pagesToSave = pages.map { Page(it.index, it.url, it.videoUrl) }
+                    val pagesToSave = pages.map { Video(it.index, it.url, it.videoUrl) }
                     episodeCache.putPageListToCache(chapter.episode.toDomainEpisode()!!, pagesToSave)
                 } catch (e: Throwable) {
                     if (e is CancellationException) {
@@ -180,7 +180,7 @@ internal class HttpPageLoader(
      *
      * @return a list of [PriorityPage] that were added to the [queue]
      */
-    private fun preloadNextPages(currentPage: ReaderPage, amount: Int): List<PriorityPage> {
+    private fun preloadNextPages(currentPage: ReaderVideo, amount: Int): List<PriorityPage> {
         val pageIndex = currentPage.index
         val pages = currentPage.chapter.pages ?: return emptyList()
         if (pageIndex == pages.lastIndex) return emptyList()
@@ -188,7 +188,7 @@ internal class HttpPageLoader(
         return pages
             .subList(pageIndex + 1, min(pageIndex + 1 + amount, pages.size))
             .mapNotNull {
-                if (it.status == Page.State.QUEUE) {
+                if (it.status == Video.State.QUEUE) {
                     PriorityPage(it, 0).apply { queue.offer(this) }
                 } else {
                     null
@@ -202,24 +202,24 @@ internal class HttpPageLoader(
      *
      * @param page the page whose source image has to be downloaded.
      */
-    private suspend fun internalLoadPage(page: ReaderPage) {
+    private suspend fun internalLoadPage(page: ReaderVideo) {
         try {
             if (page.videoUrl.isNullOrEmpty()) {
-                page.status = Page.State.LOAD_PAGE
+                page.status = Video.State.LOAD_PAGE
                 page.videoUrl = source.getVideoUrl(page)
             }
             val imageUrl = page.videoUrl!!
 
             if (!episodeCache.isImageInCache(imageUrl)) {
-                page.status = Page.State.DOWNLOAD_IMAGE
+                page.status = Video.State.DOWNLOAD_IMAGE
                 val imageResponse = source.getImage(page, dataSaver)
                 episodeCache.putImageToCache(imageUrl, imageResponse)
             }
 
             page.stream = { episodeCache.getImageFile(imageUrl).inputStream() }
-            page.status = Page.State.READY
+            page.status = Video.State.READY
         } catch (e: Throwable) {
-            page.status = Page.State.ERROR
+            page.status = Video.State.ERROR
             if (e is CancellationException) {
                 throw e
             }
@@ -227,8 +227,8 @@ internal class HttpPageLoader(
     }
 
     // EXH -->
-    fun boostPage(page: ReaderPage) {
-        if (page.status == Page.State.QUEUE) {
+    fun boostPage(page: ReaderVideo) {
+        if (page.status == Video.State.QUEUE) {
             scope.launchIO {
                 loadPage(page)
             }
@@ -241,7 +241,7 @@ internal class HttpPageLoader(
  * Data class used to keep ordering of pages in order to maintain priority.
  */
 private class PriorityPage(
-    val page: ReaderPage,
+    val page: ReaderVideo,
     val priority: Int,
 ) : Comparable<PriorityPage> {
     companion object {

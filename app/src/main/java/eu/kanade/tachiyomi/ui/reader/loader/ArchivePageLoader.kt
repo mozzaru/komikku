@@ -2,8 +2,8 @@ package eu.kanade.tachiyomi.ui.reader.loader
 
 import android.app.Application
 import com.hippo.unifile.UniFile
-import eu.kanade.tachiyomi.source.model.Page
-import eu.kanade.tachiyomi.ui.reader.model.ReaderPage
+import eu.kanade.tachiyomi.source.model.Video
+import eu.kanade.tachiyomi.ui.reader.model.ReaderVideo
 import eu.kanade.tachiyomi.ui.reader.setting.ReaderPreferences
 import eu.kanade.tachiyomi.util.lang.compareToCaseInsensitiveNaturalOrder
 import kotlinx.coroutines.CoroutineScope
@@ -59,7 +59,7 @@ internal class ArchivePageLoader(private val reader: ArchiveReader) : PageLoader
 
     override var isLocal: Boolean = true
 
-    override suspend fun getPages(): List<ReaderPage> = reader.useEntries { entries ->
+    override suspend fun getPages(): List<ReaderVideo> = reader.useEntries { entries ->
         // SY -->
         if (readerPreferences.archiveReaderMode().get() == ReaderPreferences.ArchiveReaderMode.CACHE_TO_DISK) {
             return DirectoryPageLoader(UniFile.fromFile(tmpDir)!!).getPages()
@@ -86,17 +86,17 @@ internal class ArchivePageLoader(private val reader: ArchiveReader) : PageLoader
                     }
                 val imageBytes by lazy { runBlocking { imageBytesDeferred?.await() } }
                 // SY <--
-                ReaderPage(i).apply {
+                ReaderVideo(i).apply {
                     // SY -->
                     stream = { imageBytes?.copyOf()?.inputStream() ?: reader.getInputStream(entry.name)!! }
                     // SY <--
-                    status = Page.State.READY
+                    status = Video.State.READY
                 }
             }
             .toList()
     }
 
-    override suspend fun loadPage(page: ReaderPage) {
+    override suspend fun loadPage(page: ReaderVideo) {
         check(!isRecycled)
     }
 

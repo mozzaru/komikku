@@ -3,7 +3,7 @@ package eu.kanade.tachiyomi.data.cache
 import android.content.Context
 import android.text.format.Formatter
 import com.jakewharton.disklrucache.DiskLruCache
-import eu.kanade.tachiyomi.source.model.Page
+import eu.kanade.tachiyomi.source.model.Video
 import eu.kanade.tachiyomi.ui.reader.setting.ReaderPreferences
 import eu.kanade.tachiyomi.util.storage.DiskUtil
 import eu.kanade.tachiyomi.util.storage.saveTo
@@ -94,7 +94,7 @@ class EpisodeCache(
      * @param episode the episode.
      * @return the list of pages.
      */
-    fun getPageListFromCache(episode: Episode): List<Page> {
+    fun getPageListFromCache(episode: Episode): List<Video> {
         // Get the key for the episode.
         val key = DiskUtil.hashKeyForDisk(getKey(episode))
 
@@ -108,11 +108,11 @@ class EpisodeCache(
      * Add page list to disk cache.
      *
      * @param episode the episode.
-     * @param pages list of pages.
+     * @param videos list of pages.
      */
-    fun putPageListToCache(episode: Episode, pages: List<Page>) {
+    fun putPageListToCache(episode: Episode, videos: List<Video>) {
         // Convert list of pages to json string.
-        val cachedValue = json.encodeToString(pages)
+        val cachedValue = json.encodeToString(videos)
 
         // Initialize the editor (edits the values for an entry).
         var editor: DiskLruCache.Editor? = null

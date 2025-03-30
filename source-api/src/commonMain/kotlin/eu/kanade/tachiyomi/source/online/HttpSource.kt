@@ -10,13 +10,9 @@ import eu.kanade.tachiyomi.network.newCachelessCallWithProgress
 import eu.kanade.tachiyomi.source.CatalogueSource
 import eu.kanade.tachiyomi.source.model.AnimesPage
 import eu.kanade.tachiyomi.source.model.FilterList
-import eu.kanade.tachiyomi.source.model.MangasPage
-import eu.kanade.tachiyomi.source.model.Page
-import eu.kanade.tachiyomi.source.model.SAnime
-import eu.kanade.tachiyomi.source.model.SChapter
-import eu.kanade.tachiyomi.source.model.SEpisode
-import eu.kanade.tachiyomi.source.model.SManga
 import eu.kanade.tachiyomi.source.model.Video
+import eu.kanade.tachiyomi.source.model.SAnime
+import eu.kanade.tachiyomi.source.model.SEpisode
 import exh.log.maybeInjectEHLogger
 import kotlinx.coroutines.async
 import kotlinx.coroutines.coroutineScope
@@ -150,10 +146,9 @@ abstract class HttpSource : CatalogueSource {
      * @since extensions-lib 1.5
      * @param page the page number to retrieve.
      */
-    override suspend fun getPopularAnime(page: Int): AnimesPage = getPopularManga(page)
-    override suspend fun getPopularManga(page: Int): MangasPage {
+    override suspend fun getPopularAnime(page: Int): AnimesPage {
         @Suppress("DEPRECATION")
-        return fetchPopularAnime(page).awaitSingle()
+        return this.fetchPopularAnime(page).awaitSingle()
     }
 
     /**
@@ -163,12 +158,11 @@ abstract class HttpSource : CatalogueSource {
      * @param page the page number to retrieve.
      */
     @Deprecated("Use the non-RxJava API instead", replaceWith = ReplaceWith("getPopularAnime(page)"))
-    open fun fetchPopularAnime(page: Int): Observable<AnimesPage> = fetchPopularManga(page)
-    open fun fetchPopularManga(page: Int): Observable<MangasPage> {
-        return client.newCall(popularAnimeRequest(page))
+    open fun fetchPopularAnime(page: Int): Observable<AnimesPage> {
+        return client.newCall(this.popularAnimeRequest(page))
             .asObservableSuccess()
             .map { response ->
-                popularAnimeParse(response)
+                this.popularAnimeParse(response)
             }
     }
 
@@ -177,16 +171,14 @@ abstract class HttpSource : CatalogueSource {
      *
      * @param page the page number to retrieve.
      */
-    protected open fun popularAnimeRequest(page: Int): Request = popularMangaRequest(page)
-    protected open fun popularMangaRequest(page: Int): Request = throw UnsupportedOperationException("Unsupported!")
+    protected open fun popularAnimeRequest(page: Int): Request = throw UnsupportedOperationException("Unsupported!")
 
     /**
      * Parses the response from the site and returns a [AnimesPage] object.
      *
      * @param response the response from the site.
      */
-    protected open fun popularAnimeParse(response: Response): AnimesPage = popularMangaParse(response)
-    protected open fun popularMangaParse(response: Response): MangasPage = throw UnsupportedOperationException("Unsupported!")
+    protected open fun popularAnimeParse(response: Response): AnimesPage = throw UnsupportedOperationException("Unsupported!")
 
     /**
      * Get a page with a list of anime.
@@ -197,10 +189,9 @@ abstract class HttpSource : CatalogueSource {
      * @param query the search query.
      * @param filters the list of filters to apply.
      */
-    override suspend fun getSearchAnime(page: Int, query: String, filters: FilterList): AnimesPage = getSearchManga(page, query, filters)
-    override suspend fun getSearchManga(page: Int, query: String, filters: FilterList): MangasPage {
+    override suspend fun getSearchAnime(page: Int, query: String, filters: FilterList): AnimesPage {
         @Suppress("DEPRECATION")
-        return fetchSearchAnime(page, query, filters).awaitSingle()
+        return this.fetchSearchAnime(page, query, filters).awaitSingle()
     }
 
     /**
@@ -216,15 +207,10 @@ abstract class HttpSource : CatalogueSource {
         page: Int,
         query: String,
         filters: FilterList,
-    ): Observable<AnimesPage> = fetchSearchManga(page, query, filters)
-    open fun fetchSearchManga(
-        page: Int,
-        query: String,
-        filters: FilterList,
-    ): Observable<MangasPage> {
+    ): Observable<AnimesPage> {
         return Observable.defer {
             try {
-                client.newCall(searchAnimeRequest(page, query, filters)).asObservableSuccess()
+                client.newCall(this.searchAnimeRequest(page, query, filters)).asObservableSuccess()
             } catch (e: NoClassDefFoundError) {
                 // RxJava doesn't handle Errors, which tends to happen during global searches
                 // if an old extension using non-existent classes is still around
@@ -232,7 +218,7 @@ abstract class HttpSource : CatalogueSource {
             }
         }
             .map { response ->
-                searchAnimeParse(response)
+                this.searchAnimeParse(response)
             }
     }
 
@@ -247,11 +233,6 @@ abstract class HttpSource : CatalogueSource {
         page: Int,
         query: String,
         filters: FilterList,
-    ): Request = searchMangaRequest(page, query, filters)
-    protected open fun searchMangaRequest(
-        page: Int,
-        query: String,
-        filters: FilterList,
     ): Request = throw UnsupportedOperationException("Unsupported!")
 
     /**
@@ -259,8 +240,7 @@ abstract class HttpSource : CatalogueSource {
      *
      * @param response the response from the site.
      */
-    protected open fun searchAnimeParse(response: Response): AnimesPage = searchMangaParse(response)
-    protected open fun searchMangaParse(response: Response): MangasPage = throw UnsupportedOperationException("Unsupported!")
+    protected open fun searchAnimeParse(response: Response): AnimesPage = throw UnsupportedOperationException("Unsupported!")
 
     /**
      * Get a page with a list of latest anime updates.
@@ -313,10 +293,9 @@ abstract class HttpSource : CatalogueSource {
      * @param anime the anime to update.
      * @return the updated anime.
      */
-    override suspend fun getAnimeDetails(anime: SAnime): SAnime = getMangaDetails(anime)
-    override suspend fun getMangaDetails(manga: SManga): SManga {
+    override suspend fun getAnimeDetails(anime: SAnime): SAnime {
         @Suppress("DEPRECATION")
-        return fetchAnimeDetails(manga).awaitSingle()
+        return this.fetchAnimeDetails(anime).awaitSingle()
     }
 
     /**
@@ -326,12 +305,11 @@ abstract class HttpSource : CatalogueSource {
      * @param anime the anime to be updated.
      */
     @Deprecated("Use the non-RxJava API instead", replaceWith = ReplaceWith("getAnimeDetails(anime)"))
-    open fun fetchAnimeDetails(anime: SAnime): Observable<SAnime> = fetchMangaDetails(anime)
-    open fun fetchMangaDetails(manga: SManga): Observable<SManga> {
-        return client.newCall(animeDetailsRequest(manga))
+    open fun fetchAnimeDetails(anime: SAnime): Observable<SAnime> {
+        return client.newCall(this.animeDetailsRequest(anime))
             .asObservableSuccess()
             .map { response ->
-                animeDetailsParse(response).apply { initialized = true }
+                this.animeDetailsParse(response).apply { initialized = true }
             }
     }
 
@@ -342,9 +320,8 @@ abstract class HttpSource : CatalogueSource {
      *
      * @param anime the anime to be updated.
      */
-    open fun animeDetailsRequest(anime: SAnime): Request = mangaDetailsRequest(anime)
-    open fun mangaDetailsRequest(manga: SManga): Request {
-        return GET(baseUrl + manga.url, headers)
+    open fun animeDetailsRequest(anime: SAnime): Request {
+        return GET(baseUrl + anime.url, headers)
     }
 
     /**
@@ -352,8 +329,7 @@ abstract class HttpSource : CatalogueSource {
      *
      * @param response the response from the site.
      */
-    protected open fun animeDetailsParse(response: Response): SAnime = mangaDetailsParse(response)
-    protected open fun mangaDetailsParse(response: Response): SManga = throw UnsupportedOperationException("Unsupported!")
+    protected open fun animeDetailsParse(response: Response): SAnime = throw UnsupportedOperationException("Unsupported!")
 
     // KMK -->
     /**
@@ -362,8 +338,7 @@ abstract class HttpSource : CatalogueSource {
      * @default true
      * @since komikku/extensions-lib 1.6
      */
-    override val supportsRelatedAnimes: Boolean get() = supportsRelatedMangas
-    override val supportsRelatedMangas: Boolean get() = true
+    override val supportsRelatedAnimes: Boolean get() = true
 
     /**
      * Fetch related animes for a anime from source/site.
@@ -374,13 +349,12 @@ abstract class HttpSource : CatalogueSource {
      * @return the related animes for the current anime.
      * @throws UnsupportedOperationException if a source doesn't support related animes.
      */
-    override suspend fun fetchRelatedAnimeList(anime: SAnime): List<SAnime> = fetchRelatedMangaList(anime)
-    override suspend fun fetchRelatedMangaList(manga: SManga): List<SManga> = coroutineScope {
+    override suspend fun fetchRelatedAnimeList(anime: SAnime): List<SAnime> = coroutineScope {
         async {
-            client.newCall(relatedAnimeListRequest(manga))
+            client.newCall(this@HttpSource.relatedAnimeListRequest(anime))
                 .execute()
                 .let { response ->
-                    relatedAnimeListParse(response)
+                    this@HttpSource.relatedAnimeListParse(response)
                 }
         }.await()
     }
@@ -393,9 +367,8 @@ abstract class HttpSource : CatalogueSource {
      * @since komikku/extensions-lib 1.6
      * @param anime the anime to look for related animes.
      */
-    protected open fun relatedAnimeListRequest(anime: SAnime): Request = relatedMangaListRequest(anime)
-    protected open fun relatedMangaListRequest(manga: SManga): Request {
-        return animeDetailsRequest(manga)
+    protected open fun relatedAnimeListRequest(anime: SAnime): Request {
+        return this.animeDetailsRequest(anime)
     }
 
     /**
@@ -404,8 +377,7 @@ abstract class HttpSource : CatalogueSource {
      * @since komikku/extensions-lib 1.6
      * @param response the response from the site.
      */
-    protected open fun relatedAnimeListParse(response: Response): List<SAnime> = relatedMangaListParse(response)
-    protected open fun relatedMangaListParse(response: Response): List<SManga> = popularAnimeParse(response).animes
+    protected open fun relatedAnimeListParse(response: Response): List<SAnime> = this.popularAnimeParse(response).animes
     // KMK <--
 
     /**
@@ -415,10 +387,9 @@ abstract class HttpSource : CatalogueSource {
      * @param anime the anime to update.
      * @return the episodes for the anime.
      */
-    override suspend fun getEpisodeList(anime: SAnime): List<SEpisode> = getChapterList(anime)
-    override suspend fun getChapterList(manga: SManga): List<SChapter> {
+    override suspend fun getEpisodeList(anime: SAnime): List<SEpisode> {
         @Suppress("DEPRECATION")
-        return fetchEpisodeList(manga).awaitSingle()
+        return this.fetchEpisodeList(anime).awaitSingle()
     }
 
     /**
@@ -428,12 +399,11 @@ abstract class HttpSource : CatalogueSource {
      * @param anime the anime to look for episodes.
      */
     @Deprecated("Use the non-RxJava API instead", replaceWith = ReplaceWith("getEpisodeList(anime)"))
-    open fun fetchEpisodeList(anime: SAnime): Observable<List<SEpisode>> = fetchChapterList(anime)
-    open fun fetchChapterList(manga: SManga): Observable<List<SChapter>> {
-        return client.newCall(episodeListRequest(manga))
+    open fun fetchEpisodeList(anime: SAnime): Observable<List<SEpisode>> {
+        return client.newCall(this.episodeListRequest(anime))
             .asObservableSuccess()
             .map { response ->
-                episodeListParse(response)
+                this.episodeListParse(response)
             }
     }
 
@@ -444,9 +414,8 @@ abstract class HttpSource : CatalogueSource {
      *
      * @param anime the anime to look for episodes.
      */
-    protected open fun episodeListRequest(anime: SAnime): Request = chapterListRequest(anime)
-    protected open fun chapterListRequest(manga: SManga): Request {
-        return GET(baseUrl + manga.url, headers)
+    protected open fun episodeListRequest(anime: SAnime): Request {
+        return GET(baseUrl + anime.url, headers)
     }
 
     /**
@@ -454,8 +423,7 @@ abstract class HttpSource : CatalogueSource {
      *
      * @param response the response from the site.
      */
-    protected open fun episodeListParse(response: Response): List<SEpisode> = chapterListParse(response)
-    protected open fun chapterListParse(response: Response): List<SChapter> = throw UnsupportedOperationException("Unsupported!")
+    protected open fun episodeListParse(response: Response): List<SEpisode> = throw UnsupportedOperationException("Unsupported!")
 
     /**
      * Parses the response from the site and returns a SEpisode Object.
@@ -463,7 +431,6 @@ abstract class HttpSource : CatalogueSource {
      * @param response the response from the site.
      */
     protected open fun episodePageParse(response: Response): SEpisode = throw UnsupportedOperationException("Not used!")
-    protected open fun chapterPageParse(response: Response): SChapter = episodePageParse(response)
 
     /**
      * Get the list of videos a episode has. Videos should be returned
@@ -473,10 +440,9 @@ abstract class HttpSource : CatalogueSource {
      * @param episode the episode.
      * @return the videos for the episode.
      */
-    override suspend fun getVideoList(episode: SEpisode): List<Video> = getPageList(episode)
-    override suspend fun getPageList(chapter: SChapter): List<Page> {
+    override suspend fun getVideoList(episode: SEpisode): List<Video> {
         @Suppress("DEPRECATION")
-        return fetchVideoList(chapter).awaitSingle()
+        return this.fetchVideoList(episode).awaitSingle()
     }
 
     /**
@@ -486,12 +452,11 @@ abstract class HttpSource : CatalogueSource {
      * @param episode the episode whose video list has to be fetched.
      */
     @Deprecated("Use the non-RxJava API instead", replaceWith = ReplaceWith("getVideoList(episode)"))
-    open fun fetchVideoList(episode: SEpisode): Observable<List<Video>> = fetchPageList(episode)
-    open fun fetchPageList(chapter: SChapter): Observable<List<Page>> {
-        return client.newCall(videoListRequest(chapter))
+    open fun fetchVideoList(episode: SEpisode): Observable<List<Video>> {
+        return client.newCall(videoListRequest(episode))
             .asObservableSuccess()
             .map { response ->
-                videoListParse(response)
+                this.videoListParse(response)
             }
     }
 
@@ -503,8 +468,8 @@ abstract class HttpSource : CatalogueSource {
      * @param episode the episode whose video list has to be fetched.
      */
     protected open fun videoListRequest(episode: SEpisode): Request = pageListRequest(episode)
-    protected open fun pageListRequest(chapter: SChapter): Request {
-        return GET(baseUrl + chapter.url, headers)
+    protected open fun pageListRequest(episode: SEpisode): Request {
+        return GET(baseUrl + episode.url, headers)
     }
 
     /**
@@ -512,8 +477,7 @@ abstract class HttpSource : CatalogueSource {
      *
      * @param response the response from the site.
      */
-    protected open fun videoListParse(response: Response): List<Video> = pageListParse(response)
-    protected open fun pageListParse(response: Response): List<Page> = throw UnsupportedOperationException("Unsupported!")
+    protected open fun videoListParse(response: Response): List<Video> = throw UnsupportedOperationException("Unsupported!")
 
     /**
      * Returns the source url of the image.
@@ -523,9 +487,8 @@ abstract class HttpSource : CatalogueSource {
      * @param video the video whose source image has to be fetched.
      */
     @Suppress("DEPRECATION")
-    open suspend fun getVideoUrl(video: Video): String = getImageUrl(video)
-    open suspend fun getImageUrl(page: Page): String {
-        return fetchVideoUrl(page).awaitSingle()
+    open suspend fun getVideoUrl(video: Video): String {
+        return this.fetchVideoUrl(video).awaitSingle()
     }
 
     /**
@@ -536,9 +499,8 @@ abstract class HttpSource : CatalogueSource {
      * @param video the video whose source URL has to be fetched.
      */
     @Deprecated("Use the non-RxJava API instead", replaceWith = ReplaceWith("getVideoUrl(video)"))
-    open fun fetchVideoUrl(video: Video): Observable<String> = fetchImageUrl(video)
-    open fun fetchImageUrl(page: Page): Observable<String> {
-        return client.newCall(videoUrlRequest(page))
+    open fun fetchVideoUrl(video: Video): Observable<String> {
+        return client.newCall(this.videoUrlRequest(video))
             .asObservableSuccess()
             .map { videoUrlParse(it) }
     }
@@ -550,9 +512,8 @@ abstract class HttpSource : CatalogueSource {
      *
      * @param video the video whose source URL has to be fetched
      */
-    protected open fun videoUrlRequest(video: Video): Request = pageUrlRequest(video)
-    protected open fun pageUrlRequest(page: Page): Request {
-        return GET(page.url, headers)
+    protected open fun videoUrlRequest(video: Video): Request {
+        return GET(video.url, headers)
     }
 
     /**
@@ -571,8 +532,8 @@ abstract class HttpSource : CatalogueSource {
      * @param video the video whose source URL has to be downloaded.
      */
     open suspend fun getVideo(video: Video): Response = getImage(video)
-    open suspend fun getImage(page: Page): Response {
-        return client.newCachelessCallWithProgress(videoRequest(page), page)
+    open suspend fun getImage(video: Video): Response {
+        return client.newCachelessCallWithProgress(videoRequest(video), video)
             .awaitSuccess()
     }
 
@@ -584,8 +545,8 @@ abstract class HttpSource : CatalogueSource {
      * @param video the video whose URL has to be fetched
      */
     protected open fun videoRequest(video: Video): Request = imageRequest(video)
-    protected open fun imageRequest(page: Page): Request {
-        return GET(page.videoUrl!!, headers)
+    protected open fun imageRequest(video: Video): Request {
+        return GET(video.videoUrl!!, headers)
     }
 
     /**
@@ -640,9 +601,8 @@ abstract class HttpSource : CatalogueSource {
      * @param anime the anime
      * @return url of the anime
      */
-    open fun getAnimeUrl(anime: SAnime): String = getMangaUrl(anime)
-    open fun getMangaUrl(manga: SManga): String {
-        return animeDetailsRequest(manga).url.toString()
+    open fun getAnimeUrl(anime: SAnime): String {
+        return this.animeDetailsRequest(anime).url.toString()
     }
 
     /**
@@ -653,9 +613,8 @@ abstract class HttpSource : CatalogueSource {
      * @param episode the episode
      * @return url of the episode
      */
-    open fun getEpisodeUrl(episode: SEpisode): String = getChapterUrl(episode)
-    open fun getChapterUrl(chapter: SChapter): String {
-        return videoListRequest(chapter).url.toString()
+    open fun getEpisodeUrl(episode: SEpisode): String {
+        return videoListRequest(episode).url.toString()
     }
 
     /**
@@ -665,8 +624,7 @@ abstract class HttpSource : CatalogueSource {
      * @param episode the episode to be added.
      * @param anime the anime of the episode.
      */
-    open fun prepareNewEpisode(episode: SEpisode, anime: SAnime) = prepareNewChapter(episode, anime)
-    open fun prepareNewChapter(chapter: SChapter, manga: SManga) {}
+    open fun prepareNewEpisode(episode: SEpisode, anime: SAnime) {}
 
     /**
      * Returns the list of filters for the source.

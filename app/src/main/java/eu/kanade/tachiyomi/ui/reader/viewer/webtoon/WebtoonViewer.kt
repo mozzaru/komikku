@@ -16,7 +16,7 @@ import androidx.recyclerview.widget.WebtoonLayoutManager
 import eu.kanade.tachiyomi.data.download.DownloadManager
 import eu.kanade.tachiyomi.ui.reader.ReaderActivity
 import eu.kanade.tachiyomi.ui.reader.model.ChapterTransition
-import eu.kanade.tachiyomi.ui.reader.model.ReaderPage
+import eu.kanade.tachiyomi.ui.reader.model.ReaderVideo
 import eu.kanade.tachiyomi.ui.reader.model.ViewerChapters
 import eu.kanade.tachiyomi.ui.reader.setting.ReaderPreferences
 import eu.kanade.tachiyomi.ui.reader.viewer.Viewer
@@ -148,7 +148,7 @@ class WebtoonViewer(
                 if (child != null) {
                     val position = recycler.getChildAdapterPosition(child)
                     val item = adapter.items.getOrNull(position)
-                    if (item is ReaderPage) {
+                    if (item is ReaderVideo) {
                         activity.onPageLongTap(item)
                         return@f true
                     }
@@ -182,7 +182,7 @@ class WebtoonViewer(
         frame.addView(recycler)
     }
 
-    private fun checkAllowPreload(page: ReaderPage?): Boolean {
+    private fun checkAllowPreload(page: ReaderVideo?): Boolean {
         // Page is transition page - preload allowed
         page ?: return true
 
@@ -190,13 +190,13 @@ class WebtoonViewer(
         currentPage ?: return true
 
         val nextItem = adapter.items.getOrNull(adapter.items.size - 1)
-        val nextChapter = (nextItem as? ChapterTransition.Next)?.to ?: (nextItem as? ReaderPage)?.chapter
+        val nextChapter = (nextItem as? ChapterTransition.Next)?.to ?: (nextItem as? ReaderVideo)?.chapter
 
         // Allow preload for
         // 1. Going between pages of same episode
         // 2. Next episode page
         return when (page.chapter) {
-            (currentPage as? ReaderPage)?.chapter -> true
+            (currentPage as? ReaderVideo)?.chapter -> true
             nextChapter -> true
             else -> false
         }
@@ -221,7 +221,7 @@ class WebtoonViewer(
      * Called from the RecyclerView listener when a [page] is marked as active. It notifies the
      * activity of the change and requests the preload of the next episode if this is the last page.
      */
-    private fun onPageSelected(page: ReaderPage, allowPreload: Boolean) {
+    private fun onPageSelected(page: ReaderVideo, allowPreload: Boolean) {
         val pages = page.chapter.pages ?: return
         logcat { "onPageSelected: ${page.number}/${pages.size}" }
         activity.onPageSelected(page)
@@ -231,7 +231,7 @@ class WebtoonViewer(
         if (inPreloadRange && allowPreload && page.chapter == adapter.currentChapter) {
             logcat { "Request preload next episode because we're at page ${page.number} of ${pages.size}" }
             val nextItem = adapter.items.getOrNull(adapter.items.size - 1)
-            val transitionChapter = (nextItem as? ChapterTransition.Next)?.to ?: (nextItem as?ReaderPage)?.chapter
+            val transitionChapter = (nextItem as? ChapterTransition.Next)?.to ?: (nextItem as?ReaderVideo)?.chapter
             if (transitionChapter != null) {
                 logcat { "Requesting to preload episode ${transitionChapter.episode.episode_number}" }
                 activity.requestPreloadChapter(transitionChapter)
@@ -270,7 +270,7 @@ class WebtoonViewer(
     /**
      * Tells this viewer to move to the given [page].
      */
-    override fun moveToPage(page: ReaderPage) {
+    override fun moveToPage(page: ReaderVideo) {
         val position = adapter.items.indexOf(page)
         if (position != -1) {
             layoutManager.scrollToPositionWithOffset(position, 0)
@@ -285,11 +285,11 @@ class WebtoonViewer(
     fun onScrolled(pos: Int? = null) {
         val position = pos ?: layoutManager.findLastEndVisibleItemPosition()
         val item = adapter.items.getOrNull(position)
-        val allowPreload = checkAllowPreload(item as? ReaderPage)
+        val allowPreload = checkAllowPreload(item as? ReaderVideo)
         if (item != null && currentPage != item) {
             currentPage = item
             when (item) {
-                is ReaderPage -> onPageSelected(item, allowPreload)
+                is ReaderVideo -> onPageSelected(item, allowPreload)
                 is ChapterTransition -> onTransitionSelected(item)
             }
         }
@@ -326,10 +326,10 @@ class WebtoonViewer(
         // SY -->
         if (!isContinuous && tapByPage) {
             val currentPage = currentPage
-            if (currentPage is ReaderPage) {
+            if (currentPage is ReaderVideo) {
                 val position = adapter.items.indexOf(currentPage)
                 val nextItem = adapter.items.getOrNull(position + 1)
-                if (nextItem is ReaderPage) {
+                if (nextItem is ReaderVideo) {
                     if (config.usePageTransitions) {
                         recycler.smoothScrollToPosition(position + 1)
                     } else {

@@ -4,7 +4,7 @@ import android.content.Context
 import com.hippo.unifile.UniFile
 import eu.kanade.tachiyomi.data.download.model.Download
 import eu.kanade.tachiyomi.source.Source
-import eu.kanade.tachiyomi.source.model.Page
+import eu.kanade.tachiyomi.source.model.Video
 import eu.kanade.tachiyomi.util.storage.DiskUtil
 import exh.log.xLogE
 import kotlinx.coroutines.DelicateCoroutinesApi
@@ -163,7 +163,7 @@ class DownloadManager(
      * @param episode the downloaded episode.
      * @return the list of pages from the episode.
      */
-    fun buildPageList(source: Source, manga: Anime, episode: Episode): List<Page> {
+    fun buildPageList(source: Source, manga: Anime, episode: Episode): List<Video> {
         val chapterDir = provider.findEpisodeDir(
             episode.name,
             episode.scanlator,
@@ -179,7 +179,7 @@ class DownloadManager(
 
         return files.sortedBy { it.name }
             .mapIndexed { i, file ->
-                Page(i, uri = file.uri).apply { status = Page.State.READY }
+                Video(i, uri = file.uri).apply { status = Video.State.READY }
             }
     }
 

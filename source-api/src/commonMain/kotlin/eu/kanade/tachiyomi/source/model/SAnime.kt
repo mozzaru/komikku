@@ -4,8 +4,7 @@ package eu.kanade.tachiyomi.source.model
 
 import java.io.Serializable
 
-typealias SAnime = SManga
-interface SManga : Serializable {
+interface SAnime : Serializable {
 
     var url: String
 

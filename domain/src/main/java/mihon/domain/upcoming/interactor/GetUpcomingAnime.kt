@@ -34,7 +34,7 @@ class GetUpcomingAnime(
     }
 
     // KMK -->
-    suspend fun updatingMangas(): List<Anime> {
+    suspend fun updatingAnimes(): List<Anime> {
         val libraryManga = getLibraryAnime.await()
 
         val categoriesToUpdate = libraryPreferences.updateCategories().get().map(String::toLong)
