@@ -20,7 +20,7 @@ import okhttp3.Response
 import okio.buffer
 import okio.sink
 import tachiyomi.core.common.util.system.logcat
-import tachiyomi.domain.episode.model.Episode
+import tachiyomi.domain.chapter.model.Episode
 import java.io.File
 import java.io.IOException
 

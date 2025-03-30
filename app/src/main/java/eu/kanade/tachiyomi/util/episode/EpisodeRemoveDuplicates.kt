@@ -1,6 +1,6 @@
 package eu.kanade.tachiyomi.util.episode
 
-import tachiyomi.domain.episode.model.Episode
+import tachiyomi.domain.chapter.model.Episode
 
 /**
  * Returns a copy of the list with duplicate episodes removed

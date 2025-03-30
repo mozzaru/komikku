@@ -43,7 +43,7 @@ import tachiyomi.data.DateColumnAdapter
 import tachiyomi.data.History
 import tachiyomi.data.StringListColumnAdapter
 import tachiyomi.data.UpdateStrategyColumnAdapter
-import tachiyomi.domain.anime.interactor.GetCustomAnimeInfo
+import tachiyomi.domain.manga.interactor.GetCustomMangaInfo
 import tachiyomi.domain.source.service.SourceManager
 import tachiyomi.domain.storage.service.StorageManager
 import tachiyomi.source.local.image.LocalCoverManager
@@ -184,7 +184,7 @@ class AppModule(val app: Application) : InjektModule {
             get<DownloadManager>()
 
             // SY -->
-            get<GetCustomAnimeInfo>()
+            get<GetCustomMangaInfo>()
             // SY <--
         }
 

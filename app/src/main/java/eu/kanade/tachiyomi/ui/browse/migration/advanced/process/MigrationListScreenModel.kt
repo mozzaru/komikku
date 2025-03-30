@@ -37,17 +37,17 @@ import tachiyomi.core.common.util.lang.launchIO
 import tachiyomi.core.common.util.lang.withUIContext
 import tachiyomi.core.common.util.system.logcat
 import tachiyomi.domain.UnsortedPreferences
-import tachiyomi.domain.anime.interactor.GetAnime
-import tachiyomi.domain.anime.interactor.GetMergedReferencesById
-import tachiyomi.domain.anime.interactor.NetworkToLocalAnime
-import tachiyomi.domain.anime.model.Anime
-import tachiyomi.domain.anime.model.AnimeUpdate
+import tachiyomi.domain.manga.interactor.GetAnime
+import tachiyomi.domain.manga.interactor.GetMergedReferencesById
+import tachiyomi.domain.manga.interactor.NetworkToLocalAnime
+import tachiyomi.domain.manga.model.Manga
+import tachiyomi.domain.manga.model.MangaUpdate
 import tachiyomi.domain.category.interactor.GetCategories
 import tachiyomi.domain.category.interactor.SetAnimeCategories
-import tachiyomi.domain.episode.interactor.GetEpisodesByAnimeId
-import tachiyomi.domain.episode.interactor.UpdateEpisode
-import tachiyomi.domain.episode.model.Episode
-import tachiyomi.domain.episode.model.EpisodeUpdate
+import tachiyomi.domain.chapter.interactor.GetEpisodesByAnimeId
+import tachiyomi.domain.chapter.interactor.UpdateEpisode
+import tachiyomi.domain.chapter.model.Episode
+import tachiyomi.domain.chapter.model.EpisodeUpdate
 import tachiyomi.domain.history.interactor.GetHistoryByAnimeId
 import tachiyomi.domain.history.interactor.UpsertHistory
 import tachiyomi.domain.history.model.HistoryUpdate
@@ -150,7 +150,7 @@ class MigrationListScreenModel(
             chapterCount = chapters.size,
         )
     }
-    fun getSourceName(manga: Anime) = sourceManager.getOrStub(manga.source).getNameForAnimeInfo()
+    fun getSourceName(manga: Manga) = sourceManager.getOrStub(manga.source).getNameForAnimeInfo()
 
     fun getMigrationSources() = preferences.migrationSources().get().split("/").mapNotNull {
         val value = it.toLongOrNull() ?: return@mapNotNull null
@@ -337,8 +337,8 @@ class MigrationListScreenModel(
     private fun mangasSkipped() = migratingItems.value.orEmpty().count { it.searchResult.value == SearchResult.NotFound }
 
     private suspend fun migrateMangaInternal(
-        prevManga: Anime,
-        manga: Anime,
+        prevManga: Manga,
+        manga: Manga,
         replace: Boolean,
     ) {
         if (prevManga.id == manga.id) return // Nothing to migrate
@@ -407,12 +407,12 @@ class MigrationListScreenModel(
             coverCache.setCustomCoverToCache(manga, coverCache.getCustomCoverFile(prevManga.id).inputStream())
         }
 
-        var animeUpdate = AnimeUpdate(manga.id, favorite = true, dateAdded = System.currentTimeMillis())
-        var prevAnimeUpdate: AnimeUpdate? = null
+        var mangaUpdate = MangaUpdate(manga.id, favorite = true, dateAdded = System.currentTimeMillis())
+        var prevMangaUpdate: MangaUpdate? = null
         // Update extras
         if (MigrationFlags.hasExtra(flags)) {
-            animeUpdate = animeUpdate.copy(
-                episodeFlags = prevManga.episodeFlags,
+            mangaUpdate = mangaUpdate.copy(
+                chapterFlags = prevManga.chapterFlags,
                 viewerFlags = prevManga.viewerFlags,
             )
         }
@@ -425,17 +425,17 @@ class MigrationListScreenModel(
         }
         // Update favorite status
         if (replace) {
-            prevAnimeUpdate = AnimeUpdate(
+            prevMangaUpdate = MangaUpdate(
                 id = prevManga.id,
                 favorite = false,
                 dateAdded = 0,
             )
-            animeUpdate = animeUpdate.copy(
+            mangaUpdate = mangaUpdate.copy(
                 dateAdded = prevManga.dateAdded,
             )
         }
 
-        updateAnime.awaitAll(listOfNotNull(animeUpdate, prevAnimeUpdate))
+        updateAnime.awaitAll(listOfNotNull(mangaUpdate, prevMangaUpdate))
     }
 
     /** Set a manga picked from manual search to be used as migration target */

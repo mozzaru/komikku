@@ -5,9 +5,9 @@ import logcat.LogPriority
 import tachiyomi.core.common.util.lang.toLong
 import tachiyomi.core.common.util.system.logcat
 import tachiyomi.data.DatabaseHandler
-import tachiyomi.domain.episode.model.Episode
-import tachiyomi.domain.episode.model.EpisodeUpdate
-import tachiyomi.domain.episode.repository.EpisodeRepository
+import tachiyomi.domain.chapter.model.Episode
+import tachiyomi.domain.chapter.model.EpisodeUpdate
+import tachiyomi.domain.chapter.repository.EpisodeRepository
 
 class EpisodeRepositoryImpl(
     private val handler: DatabaseHandler,

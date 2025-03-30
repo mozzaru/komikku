@@ -8,8 +8,8 @@ import logcat.LogPriority
 import tachiyomi.core.common.i18n.stringResource
 import tachiyomi.core.common.storage.displayablePath
 import tachiyomi.core.common.util.system.logcat
-import tachiyomi.domain.anime.model.Anime
-import tachiyomi.domain.episode.model.Episode
+import tachiyomi.domain.manga.model.Manga
+import tachiyomi.domain.chapter.model.Episode
 import tachiyomi.domain.storage.service.StorageManager
 import tachiyomi.i18n.MR
 import uy.kohesive.injekt.Injekt
@@ -91,11 +91,11 @@ class DownloadProvider(
      * Returns a list of downloaded directories for the episodes that exist.
      *
      * @param episodes the episodes to query.
-     * @param anime the anime of the episode.
+     * @param manga the anime of the episode.
      * @param source the source of the episode.
      */
-    fun findEpisodeDirs(episodes: List<Episode>, anime: Anime, source: Source): Pair<UniFile?, List<UniFile>> {
-        val animeDir = findAnimeDir(/* SY --> */ anime.ogTitle /* SY <-- */, source) ?: return null to emptyList()
+    fun findEpisodeDirs(episodes: List<Episode>, manga: Manga, source: Source): Pair<UniFile?, List<UniFile>> {
+        val animeDir = findAnimeDir(/* SY --> */ manga.ogTitle /* SY <-- */, source) ?: return null to emptyList()
         return animeDir to episodes.mapNotNull { episode ->
             getValidEpisodeDirNames(episode.name, episode.scanlator).asSequence()
                 .mapNotNull { animeDir.findFile(it) }
@@ -108,15 +108,15 @@ class DownloadProvider(
      * Returns a list of all files in anime directory
      *
      * @param episodes the episodes to query.
-     * @param anime the anime of the episode.
+     * @param manga the anime of the episode.
      * @param source the source of the episode.
      */
     fun findUnmatchedEpisodeDirs(
         episodes: List<Episode>,
-        anime: Anime,
+        manga: Manga,
         source: Source,
     ): List<UniFile> {
-        val animeDir = findAnimeDir(/* SY --> */ anime.ogTitle /* SY <-- */, source) ?: return emptyList()
+        val animeDir = findAnimeDir(/* SY --> */ manga.ogTitle /* SY <-- */, source) ?: return emptyList()
         return animeDir.listFiles().orEmpty().asList().filter {
             episodes.find { chp ->
                 getValidEpisodeDirNames(chp.name, chp.scanlator).any { dir ->

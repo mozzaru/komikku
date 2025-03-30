@@ -8,9 +8,9 @@ import kotlinx.coroutines.runBlocking
 import kotlinx.serialization.Serializable
 import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.Json
-import tachiyomi.domain.anime.interactor.GetAnime
-import tachiyomi.domain.anime.model.Anime
-import tachiyomi.domain.episode.interactor.GetEpisode
+import tachiyomi.domain.manga.interactor.GetAnime
+import tachiyomi.domain.manga.model.Manga
+import tachiyomi.domain.chapter.interactor.GetEpisode
 import tachiyomi.domain.source.service.SourceManager
 import uy.kohesive.injekt.Injekt
 import uy.kohesive.injekt.api.get
@@ -98,7 +98,7 @@ class DownloadStore(
 
         val downloads = mutableListOf<Download>()
         if (objs.isNotEmpty()) {
-            val cachedManga = mutableMapOf<Long, Anime?>()
+            val cachedManga = mutableMapOf<Long, Manga?>()
             for ((mangaId, chapterId) in objs) {
                 val manga = cachedManga.getOrPut(mangaId) {
                     runBlocking { getAnime.await(mangaId) }
@@ -120,7 +120,7 @@ class DownloadStore(
      * @param download the download to serialize.
      */
     private fun serialize(download: Download): String {
-        val obj = DownloadObject(download.anime.id, download.episode.id, counter++)
+        val obj = DownloadObject(download.manga.id, download.episode.id, counter++)
         return json.encodeToString(obj)
     }
 

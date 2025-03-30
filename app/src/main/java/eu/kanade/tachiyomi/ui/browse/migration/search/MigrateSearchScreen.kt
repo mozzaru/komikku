@@ -45,7 +45,7 @@ class MigrateSearchScreen(private val mangaId: Long, private val validSources: L
             navigateUp = navigator::pop,
             onChangeSearchQuery = screenModel::updateSearchQuery,
             onSearch = { screenModel.search() },
-            getAnime = { screenModel.getManga(it) },
+            getManga = { screenModel.getManga(it) },
             onChangeSearchFilter = screenModel::setSourceFilter,
             onToggleResults = screenModel::toggleFilterResults,
             onClickSource = {

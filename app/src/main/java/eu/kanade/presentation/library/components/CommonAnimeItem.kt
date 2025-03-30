@@ -41,15 +41,15 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import eu.kanade.presentation.anime.components.AnimeCover
-import eu.kanade.presentation.anime.components.AnimeCoverHide
-import eu.kanade.presentation.anime.components.RatioSwitchToPanorama
+import eu.kanade.presentation.manga.components.MangaCover
+import eu.kanade.presentation.manga.components.AnimeCoverHide
+import eu.kanade.presentation.manga.components.RatioSwitchToPanorama
 import exh.debug.DebugToggles
 import tachiyomi.i18n.MR
 import tachiyomi.presentation.core.components.BadgeGroup
 import tachiyomi.presentation.core.i18n.stringResource
 import tachiyomi.presentation.core.util.selectedBackground
-import tachiyomi.domain.anime.model.AnimeCover as MangaCoverModel
+import tachiyomi.domain.manga.model.MangaCover as MangaCoverModel
 
 object CommonAnimeItemDefaults {
     val GridHorizontalSpacer = 4.dp
@@ -110,7 +110,7 @@ fun AnimeCompactGridItem(
                     )
                 } else {
                     // KMK <--
-                    AnimeCover.Book(
+                    MangaCover.Book(
                         modifier = Modifier
                             // KMK -->
                             // .alpha(if (isSelected) GridSelectedCoverAlpha else coverAlpha)
@@ -246,7 +246,7 @@ fun AnimeComfortableGridItem(
                         )
                     } else {
                         if (fitToPanoramaCover && usePanoramaCover && coverIsWide) {
-                            AnimeCover.Panorama(
+                            MangaCover.Panorama(
                                 modifier = Modifier
                                     // KMK -->
                                     // .alpha(if (isSelected) GridSelectedCoverAlpha else coverAlpha)
@@ -265,7 +265,7 @@ fun AnimeComfortableGridItem(
                             )
                         } else {
                             // KMK <--
-                            AnimeCover.Book(
+                            MangaCover.Book(
                                 modifier = Modifier
                                     // KMK -->
                                     // .alpha(if (isSelected) GridSelectedCoverAlpha else coverAlpha)
@@ -292,9 +292,9 @@ fun AnimeComfortableGridItem(
                 },
                 // KMK -->
                 ratio = if (fitToPanoramaCover && usePanoramaCover && coverIsWide) {
-                    AnimeCover.Panorama.ratio
+                    MangaCover.Panorama.ratio
                 } else {
-                    AnimeCover.Book.ratio
+                    MangaCover.Book.ratio
                 },
                 // KMK <--
                 badgesStart = coverBadgeStart,
@@ -331,7 +331,7 @@ private fun AnimeGridCover(
     modifier: Modifier = Modifier,
     cover: @Composable BoxScope.() -> Unit = {},
     // KMK -->
-    ratio: Float = AnimeCover.Book.ratio,
+    ratio: Float = MangaCover.Book.ratio,
     // KMK <--
     badgesStart: (@Composable RowScope.() -> Unit)? = null,
     badgesEnd: (@Composable RowScope.() -> Unit)? = null,
@@ -466,7 +466,7 @@ fun AnimeListItem(
             )
         } else {
             // KMK <--
-            AnimeCover.Square(
+            MangaCover.Square(
                 modifier = Modifier
                     // KMK -->
                     // .alpha(coverAlpha)
@@ -477,7 +477,7 @@ fun AnimeListItem(
                 alpha = coverAlpha,
                 bgColor = bgColor ?: (MaterialTheme.colorScheme.surface.takeIf { isSelected }),
                 tint = onBgColor,
-                size = AnimeCover.Size.Big,
+                size = MangaCover.Size.Big,
                 // KMK <--
             )
         }

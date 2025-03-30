@@ -25,8 +25,8 @@ import tachiyomi.core.common.util.lang.launchIO
 import tachiyomi.core.common.util.lang.withIOContext
 import tachiyomi.core.common.util.lang.withUIContext
 import tachiyomi.core.common.util.system.logcat
-import tachiyomi.domain.anime.interactor.GetAnime
-import tachiyomi.domain.anime.model.Anime
+import tachiyomi.domain.manga.interactor.GetAnime
+import tachiyomi.domain.manga.model.Manga
 import tachiyomi.i18n.MR
 import uy.kohesive.injekt.Injekt
 import uy.kohesive.injekt.api.get
@@ -39,7 +39,7 @@ class AnimeCoverScreenModel(
     private val updateAnime: UpdateAnime = Injekt.get(),
 
     val snackbarHostState: SnackbarHostState = SnackbarHostState(),
-) : StateScreenModel<Anime?>(null) {
+) : StateScreenModel<Manga?>(null) {
 
     init {
         screenModelScope.launchIO {

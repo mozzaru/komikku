@@ -5,8 +5,8 @@ import androidx.core.content.edit
 import kotlinx.serialization.Serializable
 import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.Json
-import tachiyomi.domain.anime.model.Anime
-import tachiyomi.domain.episode.model.Episode
+import tachiyomi.domain.manga.model.Manga
+import tachiyomi.domain.chapter.model.Episode
 import uy.kohesive.injekt.Injekt
 import uy.kohesive.injekt.api.get
 
@@ -37,7 +37,7 @@ class DownloadPendingDeleter(
      * @param manga the manga of the episodes.
      */
     @Synchronized
-    fun addChapters(episodes: List<Episode>, manga: Anime) {
+    fun addChapters(episodes: List<Episode>, manga: Manga) {
         val lastEntry = lastAddedEntry
 
         val newEntry = if (lastEntry != null && lastEntry.manga.id == manga.id) {
@@ -83,7 +83,7 @@ class DownloadPendingDeleter(
      * downloader, so don't use them for anything else.
      */
     @Synchronized
-    fun getPendingChapters(): Map<Anime, List<Episode>> {
+    fun getPendingChapters(): Map<Manga, List<Episode>> {
         val entries = decodeAll()
         preferences.edit {
             clear()
@@ -124,7 +124,7 @@ class DownloadPendingDeleter(
     /**
      * Returns a manga entry from a manga model.
      */
-    private fun Anime.toEntry() = MangaEntry(id, url, /* SY --> */ ogTitle /* SY <-- */, source)
+    private fun Manga.toEntry() = MangaEntry(id, url, /* SY --> */ ogTitle /* SY <-- */, source)
 
     /**
      * Returns a episode entry from a episode model.
@@ -134,7 +134,7 @@ class DownloadPendingDeleter(
     /**
      * Returns a manga model from a manga entry.
      */
-    private fun MangaEntry.toModel() = Anime.create().copy(
+    private fun MangaEntry.toModel() = Manga.create().copy(
         url = url,
         // SY -->
         ogTitle = title,

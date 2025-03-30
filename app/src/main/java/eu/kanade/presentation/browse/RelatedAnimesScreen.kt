@@ -30,7 +30,7 @@ import eu.kanade.presentation.browse.components.RelatedAnimesComfortableGrid
 import eu.kanade.presentation.browse.components.RelatedAnimesCompactGrid
 import eu.kanade.presentation.browse.components.RelatedAnimesList
 import eu.kanade.tachiyomi.ui.anime.RelatedAnime
-import tachiyomi.domain.anime.model.Anime
+import tachiyomi.domain.manga.model.Manga
 import tachiyomi.domain.library.model.LibraryDisplayMode
 import tachiyomi.i18n.MR
 import tachiyomi.presentation.core.components.material.padding
@@ -41,15 +41,15 @@ import tachiyomi.presentation.core.screens.LoadingScreen
 @Composable
 fun RelatedAnimesContent(
     relatedAnimes: List<RelatedAnime>?,
-    getMangaState: @Composable (Anime) -> State<Anime>,
+    getMangaState: @Composable (Manga) -> State<Manga>,
     columns: GridCells,
     displayMode: LibraryDisplayMode,
     contentPadding: PaddingValues,
-    onMangaClick: (Anime) -> Unit,
-    onMangaLongClick: (Anime) -> Unit,
+    onMangaClick: (Manga) -> Unit,
+    onMangaLongClick: (Manga) -> Unit,
     onKeywordClick: (String) -> Unit,
     onKeywordLongClick: (String) -> Unit,
-    selection: List<Anime>,
+    selection: List<Manga>,
 ) {
     if (relatedAnimes == null) {
         LoadingScreen(

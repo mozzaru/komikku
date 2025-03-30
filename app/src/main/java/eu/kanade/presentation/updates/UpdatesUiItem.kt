@@ -38,11 +38,11 @@ import androidx.compose.ui.platform.LocalHapticFeedback
 import androidx.compose.ui.text.font.FontStyle
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
-import eu.kanade.presentation.anime.components.AnimeCover
-import eu.kanade.presentation.anime.components.DotSeparatorText
-import eu.kanade.presentation.anime.components.EpisodeDownloadAction
-import eu.kanade.presentation.anime.components.EpisodeDownloadIndicator
-import eu.kanade.presentation.anime.components.RatioSwitchToPanorama
+import eu.kanade.presentation.manga.components.MangaCover
+import eu.kanade.presentation.manga.components.DotSeparatorText
+import eu.kanade.presentation.manga.components.EpisodeDownloadAction
+import eu.kanade.presentation.manga.components.EpisodeDownloadIndicator
+import eu.kanade.presentation.manga.components.RatioSwitchToPanorama
 import eu.kanade.presentation.components.relativeDateText
 import eu.kanade.presentation.util.animateItemFastScroll
 import eu.kanade.presentation.util.relativeTimeSpanString
@@ -204,7 +204,7 @@ private fun UpdatesUiItem(
         val onBgColor = mangaCover.dominantCoverColors?.second
         if (isLeader) {
             if (usePanoramaCover && coverIsWide) {
-                AnimeCover.Panorama(
+                MangaCover.Panorama(
                     modifier = Modifier
                         .padding(top = MaterialTheme.padding.small)
                         .width(UpdateItemPanoramaWidth),
@@ -213,7 +213,7 @@ private fun UpdatesUiItem(
                     // KMK -->
                     bgColor = bgColor,
                     tint = onBgColor,
-                    size = AnimeCover.Size.Medium,
+                    size = MangaCover.Size.Medium,
                     onCoverLoaded = { _, result ->
                         val image = result.result.image
                         coverRatio.floatValue = image.height.toFloat() / image.width
@@ -222,7 +222,7 @@ private fun UpdatesUiItem(
                 )
             } else {
                 // KMK <--
-                AnimeCover.Book(
+                MangaCover.Book(
                     modifier = Modifier
                         // KMK -->
                         .padding(top = MaterialTheme.padding.small)
@@ -233,7 +233,7 @@ private fun UpdatesUiItem(
                     // KMK -->
                     bgColor = bgColor,
                     tint = onBgColor,
-                    size = AnimeCover.Size.Medium,
+                    size = MangaCover.Size.Medium,
                     onCoverLoaded = { _, result ->
                         val image = result.result.image
                         coverRatio.floatValue = image.height.toFloat() / image.width

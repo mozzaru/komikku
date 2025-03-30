@@ -6,14 +6,14 @@ import eu.kanade.domain.anime.model.toSAnime
 import exh.source.MERGED_SOURCE_ID
 import tachiyomi.core.common.i18n.stringResource
 import tachiyomi.core.common.util.lang.withNonCancellableContext
-import tachiyomi.domain.anime.interactor.DeleteAnimeById
-import tachiyomi.domain.anime.interactor.DeleteByMergeId
-import tachiyomi.domain.anime.interactor.GetAnime
-import tachiyomi.domain.anime.interactor.GetMergedReferencesById
-import tachiyomi.domain.anime.interactor.InsertMergedReference
-import tachiyomi.domain.anime.interactor.NetworkToLocalAnime
-import tachiyomi.domain.anime.model.Anime
-import tachiyomi.domain.anime.model.MergedAnimeReference
+import tachiyomi.domain.manga.interactor.DeleteAnimeById
+import tachiyomi.domain.manga.interactor.DeleteByMergeId
+import tachiyomi.domain.manga.interactor.GetAnime
+import tachiyomi.domain.manga.interactor.GetMergedReferencesById
+import tachiyomi.domain.manga.interactor.InsertMergedReference
+import tachiyomi.domain.manga.interactor.NetworkToLocalAnime
+import tachiyomi.domain.manga.model.Manga
+import tachiyomi.domain.manga.model.MergedAnimeReference
 import tachiyomi.domain.category.interactor.GetCategories
 import tachiyomi.domain.category.interactor.SetAnimeCategories
 import tachiyomi.i18n.sy.SYMR
@@ -30,7 +30,7 @@ class SmartSearchMerge(
     private val getCategories: GetCategories = Injekt.get(),
     private val setAnimeCategories: SetAnimeCategories = Injekt.get(),
 ) {
-    suspend fun smartSearchMerge(anime: Anime, originalAnimeId: Long): Anime {
+    suspend fun smartSearchMerge(manga: Manga, originalAnimeId: Long): Manga {
         // KMK -->
         val context = Injekt.get<Application>()
         // KMK <--
@@ -38,7 +38,7 @@ class SmartSearchMerge(
             ?: throw IllegalArgumentException(context.stringResource(SYMR.strings.merge_unknown_entry, originalAnimeId))
         if (originalAnime.source == MERGED_SOURCE_ID) {
             val children = getMergedReferencesById.await(originalAnimeId)
-            if (children.any { it.animeSourceId == anime.source && it.animeUrl == anime.url }) {
+            if (children.any { it.animeSourceId == manga.source && it.animeUrl == manga.url }) {
                 // Merged already
                 return originalAnime
             }
@@ -53,9 +53,9 @@ class SmartSearchMerge(
                     downloadEpisodes = true,
                     mergeId = originalAnime.id,
                     mergeUrl = originalAnime.url,
-                    animeId = anime.id,
-                    animeUrl = anime.url,
-                    animeSourceId = anime.source,
+                    animeId = manga.id,
+                    animeUrl = manga.url,
+                    animeSourceId = manga.source,
                 ),
             )
 
@@ -80,11 +80,11 @@ class SmartSearchMerge(
 
             return originalAnime
         } else {
-            if (anime.id == originalAnimeId) {
+            if (manga.id == originalAnimeId) {
                 // Merged already
                 return originalAnime
             }
-            var mergedAnime = Anime.create()
+            var mergedManga = Manga.create()
                 .copy(
                     url = originalAnime.url,
                     ogTitle = originalAnime.title,
@@ -95,15 +95,15 @@ class SmartSearchMerge(
                     favorite = true,
                     lastUpdate = originalAnime.lastUpdate,
                     viewerFlags = originalAnime.viewerFlags,
-                    episodeFlags = originalAnime.episodeFlags,
+                    chapterFlags = originalAnime.chapterFlags,
                     dateAdded = System.currentTimeMillis(),
                 )
 
-            var existingAnime = getAnime.await(mergedAnime.url, mergedAnime.source)
+            var existingAnime = getAnime.await(mergedManga.url, mergedManga.source)
             while (existingAnime != null) {
                 if (existingAnime.favorite) {
                     // Duplicate entry found -> use it instead
-                    mergedAnime = existingAnime
+                    mergedManga = existingAnime
                     break
                 } else {
                     withNonCancellableContext {
@@ -114,14 +114,14 @@ class SmartSearchMerge(
                     }
                 }
                 // Remove previously merged entry from database (user already removed from favorites)
-                existingAnime = getAnime.await(mergedAnime.url, mergedAnime.source)
+                existingAnime = getAnime.await(mergedManga.url, mergedManga.source)
             }
 
-            mergedAnime = networkToLocalAnime.await(mergedAnime)
+            mergedManga = networkToLocalAnime.await(mergedManga)
 
             getCategories.await(originalAnimeId)
                 .let { categories ->
-                    setAnimeCategories.await(mergedAnime.id, categories.map { it.id })
+                    setAnimeCategories.await(mergedManga.id, categories.map { it.id })
                 }
 
             val originalAnimeReference = MergedAnimeReference(
@@ -131,8 +131,8 @@ class SmartSearchMerge(
                 episodeSortMode = 0,
                 episodePriority = 0,
                 downloadEpisodes = true,
-                mergeId = mergedAnime.id,
-                mergeUrl = mergedAnime.url,
+                mergeId = mergedManga.id,
+                mergeUrl = mergedManga.url,
                 animeId = originalAnime.id,
                 animeUrl = originalAnime.url,
                 animeSourceId = originalAnime.source,
@@ -145,11 +145,11 @@ class SmartSearchMerge(
                 episodeSortMode = 0,
                 episodePriority = 0,
                 downloadEpisodes = true,
-                mergeId = mergedAnime.id,
-                mergeUrl = mergedAnime.url,
-                animeId = anime.id,
-                animeUrl = anime.url,
-                animeSourceId = anime.source,
+                mergeId = mergedManga.id,
+                mergeUrl = mergedManga.url,
+                animeId = manga.id,
+                animeUrl = manga.url,
+                animeSourceId = manga.source,
             )
 
             val mergedAnimeReference = MergedAnimeReference(
@@ -159,16 +159,16 @@ class SmartSearchMerge(
                 episodeSortMode = 0,
                 episodePriority = -1,
                 downloadEpisodes = false,
-                mergeId = mergedAnime.id,
-                mergeUrl = mergedAnime.url,
-                animeId = mergedAnime.id,
-                animeUrl = mergedAnime.url,
+                mergeId = mergedManga.id,
+                mergeUrl = mergedManga.url,
+                animeId = mergedManga.id,
+                animeUrl = mergedManga.url,
                 animeSourceId = MERGED_SOURCE_ID,
             )
 
             insertMergedReference.awaitAll(listOf(originalAnimeReference, newAnimeReference, mergedAnimeReference))
 
-            return mergedAnime
+            return mergedManga
         }
 
         // Note that if the anime are merged in a different order, this won't trigger, but I don't care lol

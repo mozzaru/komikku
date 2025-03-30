@@ -1,12 +1,12 @@
 package mihon.domain.episode.interactor
 
 import exh.source.MERGED_SOURCE_ID
-import tachiyomi.domain.anime.model.Anime
+import tachiyomi.domain.manga.model.Manga
 import tachiyomi.domain.category.interactor.GetCategories
 import tachiyomi.domain.download.service.DownloadPreferences
-import tachiyomi.domain.episode.interactor.GetEpisodesByAnimeId
-import tachiyomi.domain.episode.interactor.GetMergedEpisodesByAnimeId
-import tachiyomi.domain.episode.model.Episode
+import tachiyomi.domain.chapter.interactor.GetEpisodesByAnimeId
+import tachiyomi.domain.chapter.interactor.GetMergedEpisodesByAnimeId
+import tachiyomi.domain.chapter.model.Episode
 
 /**
  * Interactor responsible for determining which chapters of a manga should be downloaded.
@@ -30,7 +30,7 @@ class FilterEpisodesForDownload(
      * @param newEpisodes The list of new chapters available for the manga.
      * @return A list of chapters that should be downloaded
      */
-    suspend fun await(manga: Anime, newEpisodes: List<Episode>): List<Episode> {
+    suspend fun await(manga: Manga, newEpisodes: List<Episode>): List<Episode> {
         if (
             newEpisodes.isEmpty() ||
             !downloadPreferences.downloadNewChapters().get() ||
@@ -64,7 +64,7 @@ class FilterEpisodesForDownload(
      *
      * @return `true` if chapters of the manga should be downloaded
      */
-    private suspend fun Anime.shouldDownloadNewChapters(): Boolean {
+    private suspend fun Manga.shouldDownloadNewChapters(): Boolean {
         if (!favorite) return false
 
         val categories = getCategories.await(id).map { it.id }.ifEmpty { listOf(DEFAULT_CATEGORY_ID) }

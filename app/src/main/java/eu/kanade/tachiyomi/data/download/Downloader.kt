@@ -55,10 +55,10 @@ import tachiyomi.core.common.util.system.ImageUtil
 import tachiyomi.core.common.util.system.logcat
 import tachiyomi.core.metadata.comicinfo.COMIC_INFO_FILE
 import tachiyomi.core.metadata.comicinfo.ComicInfo
-import tachiyomi.domain.anime.model.Anime
+import tachiyomi.domain.manga.model.Manga
 import tachiyomi.domain.category.interactor.GetCategories
 import tachiyomi.domain.download.service.DownloadPreferences
-import tachiyomi.domain.episode.model.Episode
+import tachiyomi.domain.chapter.model.Episode
 import tachiyomi.domain.source.service.SourceManager
 import tachiyomi.domain.track.interactor.GetTracks
 import tachiyomi.i18n.MR
@@ -272,26 +272,26 @@ class Downloader(
     /**
      * Creates a download object for every episode and adds them to the downloads queue.
      *
-     * @param anime the anime of the episodes to download.
+     * @param manga the anime of the episodes to download.
      * @param episodes the list of episodes to download.
      * @param autoStart whether to start the downloader after enqueing the episodes.
      */
-    fun queueEpisodes(anime: Anime, episodes: List<Episode>, autoStart: Boolean) {
+    fun queueEpisodes(manga: Manga, episodes: List<Episode>, autoStart: Boolean) {
         if (episodes.isEmpty()) return
 
-        val source = sourceManager.get(anime.source) as? HttpSource ?: return
+        val source = sourceManager.get(manga.source) as? HttpSource ?: return
         val wasEmpty = queueState.value.isEmpty()
         val episodesToQueue = episodes.asSequence()
             // Filter out those already downloaded.
             .filter {
-                provider.findEpisodeDir(it.name, it.scanlator, /* SY --> */ anime.ogTitle /* SY <-- */, source) == null
+                provider.findEpisodeDir(it.name, it.scanlator, /* SY --> */ manga.ogTitle /* SY <-- */, source) == null
             }
             // Add episodes to queue from the start.
             .sortedByDescending { it.sourceOrder }
             // Filter out those already enqueued.
             .filter { episode -> queueState.value.none { it.episode.id == episode.id } }
             // Create a download for each one.
-            .map { Download(source, anime, it) }
+            .map { Download(source, manga, it) }
             .toList()
 
         if (episodesToQueue.isNotEmpty()) {
@@ -328,11 +328,11 @@ class Downloader(
     private suspend fun downloadEpisode(download: Download) {
         val animeDir: UniFile
         try {
-            animeDir = provider.getAnimeDir(/* SY --> */ download.anime.ogTitle /* SY <-- */, download.source)
+            animeDir = provider.getAnimeDir(/* SY --> */ download.manga.ogTitle /* SY <-- */, download.source)
         } catch (error: Exception) {
             logcat(LogPriority.ERROR, error)
             download.status = Download.State.ERROR
-            notifier.onError(error.message, download.episode.name, download.anime.title, download.anime.id)
+            notifier.onError(error.message, download.episode.name, download.manga.title, download.manga.id)
             return
         }
 
@@ -342,8 +342,8 @@ class Downloader(
             notifier.onError(
                 context.stringResource(MR.strings.download_insufficient_space),
                 download.episode.name,
-                download.anime.title,
-                download.anime.id,
+                download.manga.title,
+                download.manga.id,
             )
             return
         }
@@ -412,7 +412,7 @@ class Downloader(
 
             createComicInfoFile(
                 tmpDir,
-                download.anime,
+                download.manga,
                 download.episode,
                 download.source,
             )
@@ -423,7 +423,7 @@ class Downloader(
             } else {
                 tmpDir.renameTo(episodeDirname)
             }
-            cache.addEpisode(episodeDirname, animeDir, download.anime)
+            cache.addEpisode(episodeDirname, animeDir, download.manga)
 
             DiskUtil.createNoMediaFile(tmpDir, context)
 
@@ -433,7 +433,7 @@ class Downloader(
             // If the page list threw, it will resume here
             logcat(LogPriority.ERROR, error)
             download.status = Download.State.ERROR
-            notifier.onError(error.message, download.episode.name, download.anime.title, download.anime.id)
+            notifier.onError(error.message, download.episode.name, download.manga.title, download.manga.id)
         }
     }
 
@@ -482,7 +482,7 @@ class Downloader(
             // Mark this page as error and allow to download the remaining
             page.progress = 0
             page.status = Page.State.ERROR
-            notifier.onError(e.message, download.episode.name, download.anime.title, download.anime.id)
+            notifier.onError(e.message, download.episode.name, download.manga.title, download.manga.id)
         }
     }
 
@@ -642,12 +642,12 @@ class Downloader(
      */
     private suspend fun createComicInfoFile(
         dir: UniFile,
-        anime: Anime,
+        manga: Manga,
         episode: Episode,
         source: HttpSource,
     ) {
-        val categories = getCategories.await(anime.id).map { it.name.trim() }.takeUnless { it.isEmpty() }
-        val urls = getTracks.await(anime.id)
+        val categories = getCategories.await(manga.id).map { it.name.trim() }.takeUnless { it.isEmpty() }
+        val urls = getTracks.await(manga.id)
             .mapNotNull { track ->
                 track.remoteUrl.takeUnless { url -> url.isBlank() }?.trim()
             }
@@ -655,7 +655,7 @@ class Downloader(
             .distinct()
 
         val comicInfo = getComicInfo(
-            anime,
+            manga,
             episode,
             urls,
             categories,
@@ -715,8 +715,8 @@ class Downloader(
         removeFromQueueIf { it.episode.id in episodeIds }
     }
 
-    fun removeFromQueue(anime: Anime) {
-        removeFromQueueIf { it.anime.id == anime.id }
+    fun removeFromQueue(manga: Manga) {
+        removeFromQueueIf { it.manga.id == manga.id }
     }
 
     private fun internalClearQueue() {

@@ -72,7 +72,7 @@ fun RelatedAnimesScreen(
             } else {
                 BrowseSourceSimpleToolbar(
                     navigateUp = navigateUp,
-                    title = successState.anime.title,
+                    title = successState.manga.title,
                     displayMode = displayMode,
                     onDisplayModeChange = { displayMode = it },
                     scrollBehavior = scrollBehavior,

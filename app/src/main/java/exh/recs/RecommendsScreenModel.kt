@@ -4,7 +4,7 @@ import eu.kanade.tachiyomi.source.CatalogueSource
 import eu.kanade.tachiyomi.source.model.FilterList
 import eu.kanade.tachiyomi.ui.browse.source.browse.BrowseSourceScreenModel
 import kotlinx.coroutines.runBlocking
-import tachiyomi.domain.anime.interactor.GetAnime
+import tachiyomi.domain.manga.interactor.GetAnime
 import tachiyomi.domain.source.repository.SourcePagingSourceType
 import uy.kohesive.injekt.Injekt
 import uy.kohesive.injekt.api.get

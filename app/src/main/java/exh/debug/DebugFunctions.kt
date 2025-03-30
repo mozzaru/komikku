@@ -16,8 +16,8 @@ import mihon.core.migration.MigrationStrategyFactory
 import mihon.core.migration.Migrator
 import mihon.core.migration.migrations.migrations
 import tachiyomi.data.DatabaseHandler
-import tachiyomi.domain.anime.interactor.GetAllAnime
-import tachiyomi.domain.anime.interactor.GetFavorites
+import tachiyomi.domain.manga.interactor.GetAllAnime
+import tachiyomi.domain.manga.interactor.GetFavorites
 import tachiyomi.domain.source.service.SourceManager
 import uy.kohesive.injekt.Injekt
 import uy.kohesive.injekt.api.get

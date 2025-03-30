@@ -12,14 +12,14 @@ import eu.kanade.tachiyomi.source.model.SEpisode
 import eu.kanade.tachiyomi.source.online.HttpSource
 import tachiyomi.data.episode.EpisodeSanitizer
 import tachiyomi.data.source.NoResultsException
-import tachiyomi.domain.anime.model.Anime
-import tachiyomi.domain.episode.interactor.GetEpisodesByAnimeId
-import tachiyomi.domain.episode.interactor.ShouldUpdateDbEpisode
-import tachiyomi.domain.episode.interactor.UpdateEpisode
-import tachiyomi.domain.episode.model.Episode
-import tachiyomi.domain.episode.model.toEpisodeUpdate
-import tachiyomi.domain.episode.repository.EpisodeRepository
-import tachiyomi.domain.episode.service.EpisodeRecognition
+import tachiyomi.domain.manga.model.Manga
+import tachiyomi.domain.chapter.interactor.GetEpisodesByAnimeId
+import tachiyomi.domain.chapter.interactor.ShouldUpdateDbEpisode
+import tachiyomi.domain.chapter.interactor.UpdateEpisode
+import tachiyomi.domain.chapter.model.Episode
+import tachiyomi.domain.chapter.model.toEpisodeUpdate
+import tachiyomi.domain.chapter.repository.EpisodeRepository
+import tachiyomi.domain.chapter.service.EpisodeRecognition
 import tachiyomi.source.local.isLocal
 import java.lang.Long.max
 import java.time.ZonedDateTime
@@ -40,13 +40,13 @@ class SyncEpisodesWithSource(
      * Method to synchronize db episodes with source ones
      *
      * @param rawSourceEpisodes the episodes from the source.
-     * @param anime the anime the episodes belong to.
+     * @param manga the anime the episodes belong to.
      * @param source the source the anime belongs to.
      * @return Newly added episodes
      */
     suspend fun await(
         rawSourceEpisodes: List<SEpisode>,
-        anime: Anime,
+        manga: Manga,
         source: Source,
         manualFetch: Boolean = false,
         fetchWindow: Pair<Long, Long> = Pair(0, 0),
@@ -63,11 +63,11 @@ class SyncEpisodesWithSource(
             .mapIndexed { i, sEpisode ->
                 Episode.create()
                     .copyFromSEpisode(sEpisode)
-                    .copy(name = with(EpisodeSanitizer) { sEpisode.name.sanitize(anime.title) })
-                    .copy(animeId = anime.id, sourceOrder = i.toLong())
+                    .copy(name = with(EpisodeSanitizer) { sEpisode.name.sanitize(manga.title) })
+                    .copy(animeId = manga.id, sourceOrder = i.toLong())
             }
 
-        val dbEpisodes = getEpisodesByAnimeId.await(anime.id)
+        val dbEpisodes = getEpisodesByAnimeId.await(manga.id)
 
         val newEpisodes = mutableListOf<Episode>()
         val updatedEpisodes = mutableListOf<Episode>()
@@ -87,13 +87,13 @@ class SyncEpisodesWithSource(
             // Update metadata from source if necessary.
             if (source is HttpSource) {
                 val sEpisode = episode.toSEpisode()
-                source.prepareNewEpisode(sEpisode, anime.toSAnime())
+                source.prepareNewEpisode(sEpisode, manga.toSAnime())
                 episode = episode.copyFromSEpisode(sEpisode)
             }
 
             // Recognize episode number for the episode.
             val episodeNumber = EpisodeRecognition.parseEpisodeNumber(
-                anime.title,
+                manga.title,
                 episode.name,
                 episode.episodeNumber,
             )
@@ -118,13 +118,13 @@ class SyncEpisodesWithSource(
                             dbEpisode.scanlator,
                             // SY -->
                             // anime.title,
-                            anime.ogTitle,
+                            manga.ogTitle,
                             // SY <--
-                            anime.source,
+                            manga.source,
                         )
 
                     if (shouldRenameEpisode) {
-                        downloadManager.renameEpisode(source, anime, dbEpisode, episode)
+                        downloadManager.renameEpisode(source, manga, dbEpisode, episode)
                     }
                     var toChangeEpisode = dbEpisode.copy(
                         name = episode.name,
@@ -142,9 +142,9 @@ class SyncEpisodesWithSource(
 
         // Return if there's nothing to add, delete, or update to avoid unnecessary db transactions.
         if (newEpisodes.isEmpty() && removedEpisodes.isEmpty() && updatedEpisodes.isEmpty()) {
-            if (manualFetch || anime.fetchInterval == 0 || anime.nextUpdate < fetchWindow.first) {
+            if (manualFetch || manga.fetchInterval == 0 || manga.nextUpdate < fetchWindow.first) {
                 updateAnime.awaitUpdateFetchInterval(
-                    anime,
+                    manga,
                     now,
                     fetchWindow,
                 )
@@ -203,15 +203,15 @@ class SyncEpisodesWithSource(
             val episodeUpdates = updatedEpisodes.map { it.toEpisodeUpdate() }
             updateEpisode.awaitAll(episodeUpdates)
         }
-        updateAnime.awaitUpdateFetchInterval(anime, now, fetchWindow)
+        updateAnime.awaitUpdateFetchInterval(manga, now, fetchWindow)
 
         // Set this anime as updated since episodes were changed
         // Note that last_update actually represents last time the episode list changed at all
-        updateAnime.awaitUpdateLastUpdate(anime.id)
+        updateAnime.awaitUpdateLastUpdate(manga.id)
 
         val reAddedUrls = reAdded.map { it.url }.toHashSet()
 
-        val excludedScanlators = getExcludedScanlators.await(anime.id).toHashSet()
+        val excludedScanlators = getExcludedScanlators.await(manga.id).toHashSet()
 
         return updatedToAdd.filterNot {
             it.url in reAddedUrls || it.scanlator in excludedScanlators

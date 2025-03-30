@@ -28,10 +28,10 @@ import okio.gzip
 import okio.sink
 import tachiyomi.core.common.i18n.stringResource
 import tachiyomi.core.common.util.system.logcat
-import tachiyomi.domain.anime.interactor.GetFavorites
-import tachiyomi.domain.anime.interactor.GetMergedAnime
-import tachiyomi.domain.anime.model.Anime
-import tachiyomi.domain.anime.repository.AnimeRepository
+import tachiyomi.domain.manga.interactor.GetFavorites
+import tachiyomi.domain.manga.interactor.GetMergedAnime
+import tachiyomi.domain.manga.model.Manga
+import tachiyomi.domain.manga.repository.AnimeRepository
 import tachiyomi.domain.backup.service.BackupPreferences
 import tachiyomi.i18n.MR
 import uy.kohesive.injekt.Injekt
@@ -149,7 +149,7 @@ class BackupCreator(
         return categoriesBackupCreator()
     }
 
-    suspend fun backupAnimes(mangas: List<Anime>, options: BackupOptions): List<BackupAnime> {
+    suspend fun backupAnimes(mangas: List<Manga>, options: BackupOptions): List<BackupAnime> {
         if (!options.libraryEntries) return emptyList()
 
         return animeBackupCreator(mangas, options)

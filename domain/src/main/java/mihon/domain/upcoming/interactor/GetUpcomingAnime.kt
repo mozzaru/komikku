@@ -3,9 +3,9 @@ package mihon.domain.upcoming.interactor
 import eu.kanade.tachiyomi.source.model.SAnime
 import eu.kanade.tachiyomi.source.model.UpdateStrategy
 import kotlinx.coroutines.flow.Flow
-import tachiyomi.domain.anime.interactor.GetLibraryAnime
-import tachiyomi.domain.anime.model.Anime
-import tachiyomi.domain.anime.repository.AnimeRepository
+import tachiyomi.domain.manga.interactor.GetLibraryAnime
+import tachiyomi.domain.manga.model.Manga
+import tachiyomi.domain.manga.repository.AnimeRepository
 import tachiyomi.domain.library.service.LibraryPreferences
 import tachiyomi.domain.library.service.LibraryPreferences.Companion.ANIME_HAS_UNSEEN
 import tachiyomi.domain.library.service.LibraryPreferences.Companion.ANIME_NON_COMPLETED
@@ -29,12 +29,12 @@ class GetUpcomingAnime(
         SAnime.PUBLISHING_FINISHED.toLong(),
     )
 
-    suspend fun subscribe(): Flow<List<Anime>> {
+    suspend fun subscribe(): Flow<List<Manga>> {
         return animeRepository.getUpcomingAnime(includedStatuses)
     }
 
     // KMK -->
-    suspend fun updatingMangas(): List<Anime> {
+    suspend fun updatingMangas(): List<Manga> {
         val libraryManga = getLibraryAnime.await()
 
         val categoriesToUpdate = libraryPreferences.updateCategories().get().map(String::toLong)
@@ -46,35 +46,35 @@ class GetUpcomingAnime(
 
         val categoriesToExclude = libraryPreferences.updateCategoriesExclude().get().map { it.toLong() }
         val excludedMangaIds = if (categoriesToExclude.isNotEmpty()) {
-            libraryManga.filter { it.category in categoriesToExclude }.map { it.anime.id }
+            libraryManga.filter { it.category in categoriesToExclude }.map { it.manga.id }
         } else {
             emptyList()
         }
 
         val listToUpdate = includedManga
-            .filterNot { it.anime.id in excludedMangaIds }
+            .filterNot { it.manga.id in excludedMangaIds }
 
         val restrictions = libraryPreferences.autoUpdateAnimeRestrictions().get()
         val today = LocalDate.now().atStartOfDay(ZoneId.systemDefault()).toEpochSecond() * 1000
 
         return listToUpdate
-            .distinctBy { it.anime.id }
+            .distinctBy { it.manga.id }
             .filter {
                 when {
-                    it.anime.updateStrategy != UpdateStrategy.ALWAYS_UPDATE -> false
+                    it.manga.updateStrategy != UpdateStrategy.ALWAYS_UPDATE -> false
 
-                    ANIME_NON_COMPLETED in restrictions && it.anime.status.toInt() == SAnime.COMPLETED -> false
+                    ANIME_NON_COMPLETED in restrictions && it.manga.status.toInt() == SAnime.COMPLETED -> false
 
                     ANIME_HAS_UNSEEN in restrictions && it.unseenCount != 0L -> false
 
                     ANIME_NON_SEEN in restrictions && it.totalEpisodes > 0L && !it.hasStarted -> false
 
-                    ANIME_OUTSIDE_RELEASE_PERIOD in restrictions && it.anime.nextUpdate < today -> false
+                    ANIME_OUTSIDE_RELEASE_PERIOD in restrictions && it.manga.nextUpdate < today -> false
 
                     else -> true
                 }
             }
-            .map { it.anime }
+            .map { it.manga }
             .sortedBy { it.nextUpdate }
     }
     // KMK <--

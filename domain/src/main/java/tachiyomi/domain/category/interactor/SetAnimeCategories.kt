@@ -2,7 +2,7 @@ package tachiyomi.domain.category.interactor
 
 import logcat.LogPriority
 import tachiyomi.core.common.util.system.logcat
-import tachiyomi.domain.anime.repository.AnimeRepository
+import tachiyomi.domain.manga.repository.AnimeRepository
 
 class SetAnimeCategories(
     private val animeRepository: AnimeRepository,

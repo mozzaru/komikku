@@ -79,17 +79,17 @@ import tachiyomi.core.common.util.lang.withUIContext
 import tachiyomi.core.common.util.system.ImageUtil
 import tachiyomi.core.common.util.system.logcat
 import tachiyomi.decoder.ImageDecoder
-import tachiyomi.domain.anime.interactor.GetAnime
-import tachiyomi.domain.anime.interactor.GetMergedAnimeById
-import tachiyomi.domain.anime.interactor.GetMergedReferencesById
-import tachiyomi.domain.anime.model.Anime
+import tachiyomi.domain.manga.interactor.GetAnime
+import tachiyomi.domain.manga.interactor.GetMergedAnimeById
+import tachiyomi.domain.manga.interactor.GetMergedReferencesById
+import tachiyomi.domain.manga.model.Manga
 import tachiyomi.domain.download.service.DownloadPreferences
-import tachiyomi.domain.episode.interactor.GetEpisodesByAnimeId
-import tachiyomi.domain.episode.interactor.GetMergedEpisodesByAnimeId
-import tachiyomi.domain.episode.interactor.UpdateEpisode
-import tachiyomi.domain.episode.model.Episode
-import tachiyomi.domain.episode.model.EpisodeUpdate
-import tachiyomi.domain.episode.service.getEpisodeSort
+import tachiyomi.domain.chapter.interactor.GetEpisodesByAnimeId
+import tachiyomi.domain.chapter.interactor.GetMergedEpisodesByAnimeId
+import tachiyomi.domain.chapter.interactor.UpdateEpisode
+import tachiyomi.domain.chapter.model.Episode
+import tachiyomi.domain.chapter.model.EpisodeUpdate
+import tachiyomi.domain.chapter.service.getEpisodeSort
 import tachiyomi.domain.history.interactor.GetNextEpisodes
 import tachiyomi.domain.history.interactor.UpsertHistory
 import tachiyomi.domain.history.model.HistoryUpdate
@@ -141,7 +141,7 @@ class ReaderViewModel @JvmOverloads constructor(
     /**
      * The manga loaded in the reader. It can be null when instantiated for a short time.
      */
-    val manga: Anime?
+    val manga: Manga?
         get() = state.value.manga
 
     /**
@@ -210,20 +210,20 @@ class ReaderViewModel @JvmOverloads constructor(
                     when {
                         readerPreferences.skipRead().get() && it.seen -> true
                         readerPreferences.skipFiltered().get() -> {
-                            (manga.unseenFilterRaw == Anime.EPISODE_SHOW_SEEN && !it.seen) ||
-                                (manga.unseenFilterRaw == Anime.EPISODE_SHOW_UNSEEN && it.seen) ||
+                            (manga.unseenFilterRaw == Manga.EPISODE_SHOW_SEEN && !it.seen) ||
+                                (manga.unseenFilterRaw == Manga.EPISODE_SHOW_UNSEEN && it.seen) ||
                                 // SY -->
                                 (
-                                    manga.downloadedFilterRaw == Anime.EPISODE_SHOW_DOWNLOADED &&
+                                    manga.downloadedFilterRaw == Manga.EPISODE_SHOW_DOWNLOADED &&
                                         !isChapterDownloaded(it)
                                     ) ||
                                 (
-                                    manga.downloadedFilterRaw == Anime.EPISODE_SHOW_NOT_DOWNLOADED &&
+                                    manga.downloadedFilterRaw == Manga.EPISODE_SHOW_NOT_DOWNLOADED &&
                                         isChapterDownloaded(it)
                                     ) ||
                                 // SY <--
-                                (manga.bookmarkedFilterRaw == Anime.EPISODE_SHOW_BOOKMARKED && !it.bookmark) ||
-                                (manga.bookmarkedFilterRaw == Anime.EPISODE_SHOW_NOT_BOOKMARKED && it.bookmark)
+                                (manga.bookmarkedFilterRaw == Manga.EPISODE_SHOW_BOOKMARKED && !it.bookmark) ||
+                                (manga.bookmarkedFilterRaw == Manga.EPISODE_SHOW_NOT_BOOKMARKED && it.bookmark)
                         }
                         else -> false
                     }
@@ -933,7 +933,7 @@ class ReaderViewModel @JvmOverloads constructor(
      * Generate a filename for the given [manga] and [page]
      */
     private fun generateFilename(
-        manga: Anime,
+        manga: Manga,
         page: ReaderPage,
     ): String {
         val chapter = page.chapter.episode
@@ -1107,7 +1107,7 @@ class ReaderViewModel @JvmOverloads constructor(
         isLTR: Boolean,
         @ColorInt bg: Int,
         location: Location,
-        manga: Anime,
+        manga: Manga,
     ): Uri {
         val stream1 = page1.stream!!
         ImageUtil.findImageType(stream1) ?: throw Exception("Not an image")
@@ -1302,7 +1302,7 @@ class ReaderViewModel @JvmOverloads constructor(
 
     @Immutable
     data class State(
-        val manga: Anime? = null,
+        val manga: Manga? = null,
         val viewerChapters: ViewerChapters? = null,
         val bookmarked: Boolean = false,
         val isLoadingAdjacentChapter: Boolean = false,
@@ -1319,7 +1319,7 @@ class ReaderViewModel @JvmOverloads constructor(
         // SY -->
         /** for display page number in double-page mode */
         val currentPageText: String = "",
-        val mergedManga: Map<Long, Anime>? = null,
+        val mergedManga: Map<Long, Manga>? = null,
         val ehUtilsVisible: Boolean = false,
         val lastShiftDoubleState: Boolean? = null,
         val indexPageToShift: Int? = null,

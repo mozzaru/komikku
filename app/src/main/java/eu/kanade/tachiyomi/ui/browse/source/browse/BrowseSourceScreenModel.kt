@@ -51,15 +51,15 @@ import tachiyomi.core.common.util.lang.launchIO
 import tachiyomi.core.common.util.lang.launchNonCancellable
 import tachiyomi.core.common.util.lang.withUIContext
 import tachiyomi.domain.UnsortedPreferences
-import tachiyomi.domain.anime.interactor.GetAnime
-import tachiyomi.domain.anime.interactor.GetDuplicateLibraryAnime
-import tachiyomi.domain.anime.interactor.NetworkToLocalAnime
-import tachiyomi.domain.anime.model.Anime
-import tachiyomi.domain.anime.model.toAnimeUpdate
+import tachiyomi.domain.manga.interactor.GetAnime
+import tachiyomi.domain.manga.interactor.GetDuplicateLibraryAnime
+import tachiyomi.domain.manga.interactor.NetworkToLocalAnime
+import tachiyomi.domain.manga.model.Manga
+import tachiyomi.domain.manga.model.toMangaUpdate
 import tachiyomi.domain.category.interactor.GetCategories
 import tachiyomi.domain.category.interactor.SetAnimeCategories
 import tachiyomi.domain.category.model.Category
-import tachiyomi.domain.episode.interactor.SetAnimeDefaultEpisodeFlags
+import tachiyomi.domain.chapter.interactor.SetAnimeDefaultEpisodeFlags
 import tachiyomi.domain.library.service.LibraryPreferences
 import tachiyomi.domain.source.interactor.DeleteSavedSearchById
 import tachiyomi.domain.source.interactor.GetRemoteAnime
@@ -339,7 +339,7 @@ open class BrowseSourceScreenModel(
      *
      * @param manga the manga to update.
      */
-    fun changeMangaFavorite(manga: Anime) {
+    fun changeMangaFavorite(manga: Manga) {
         screenModelScope.launch {
             var new = manga.copy(
                 favorite = !manga.favorite,
@@ -356,11 +356,11 @@ open class BrowseSourceScreenModel(
                 addTracks.bindEnhancedTrackers(manga, source)
             }
 
-            updateAnime.await(new.toAnimeUpdate())
+            updateAnime.await(new.toMangaUpdate())
         }
     }
 
-    fun addFavorite(manga: Anime) {
+    fun addFavorite(manga: Manga) {
         screenModelScope.launch {
             val categories = getCategories()
             val defaultCategoryId = libraryPreferences.defaultCategory().get()
@@ -413,15 +413,15 @@ open class BrowseSourceScreenModel(
             .orEmpty()
     }
 
-    suspend fun getDuplicateLibraryManga(manga: Anime): Anime? {
+    suspend fun getDuplicateLibraryManga(manga: Manga): Manga? {
         return getDuplicateLibraryAnime.await(manga).getOrNull(0)
     }
 
-    private fun moveMangaToCategories(manga: Anime, vararg categories: Category) {
+    private fun moveMangaToCategories(manga: Manga, vararg categories: Category) {
         moveMangaToCategories(manga, categories.filter { it.id != 0L }.map { it.id })
     }
 
-    fun moveMangaToCategories(manga: Anime, categoryIds: List<Long>) {
+    fun moveMangaToCategories(manga: Manga, categoryIds: List<Long>) {
         screenModelScope.launchIO {
             setAnimeCategories.await(
                 mangaId = manga.id,
@@ -466,13 +466,13 @@ open class BrowseSourceScreenModel(
 
     sealed interface Dialog {
         data object Filter : Dialog
-        data class RemoveManga(val manga: Anime) : Dialog
-        data class AddDuplicateManga(val manga: Anime, val duplicate: Anime) : Dialog
+        data class RemoveManga(val manga: Manga) : Dialog
+        data class AddDuplicateManga(val manga: Manga, val duplicate: Manga) : Dialog
         data class ChangeMangaCategory(
-            val manga: Anime,
+            val manga: Manga,
             val initialSelection: ImmutableList<CheckboxState.State<Category>>,
         ) : Dialog
-        data class Migrate(val newManga: Anime, val oldManga: Anime) : Dialog
+        data class Migrate(val newManga: Manga, val oldManga: Manga) : Dialog
 
         // SY -->
         data class DeleteSavedSearch(val idToDelete: Long, val name: String) : Dialog

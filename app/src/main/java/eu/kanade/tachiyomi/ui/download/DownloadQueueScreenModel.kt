@@ -95,7 +95,7 @@ class DownloadQueueScreenModel(
                         val (selectedSeries, otherSeries) = adapter?.currentItems
                             ?.filterIsInstance<DownloadItem>()
                             ?.map(DownloadItem::download)
-                            ?.partition { item.download.anime.id == it.anime.id }
+                            ?.partition { item.download.manga.id == it.manga.id }
                             ?: Pair(emptyList(), emptyList())
                         if (menuItem.itemId == R.id.move_to_top_series) {
                             reorder(selectedSeries + otherSeries)
@@ -109,7 +109,7 @@ class DownloadQueueScreenModel(
                     R.id.cancel_series -> {
                         val allDownloadsForSeries = adapter?.currentItems
                             ?.filterIsInstance<DownloadItem>()
-                            ?.filter { item.download.anime.id == it.download.anime.id }
+                            ?.filter { item.download.manga.id == it.download.manga.id }
                             ?.map(DownloadItem::download)
                         if (!allDownloadsForSeries.isNullOrEmpty()) {
                             cancel(allDownloadsForSeries)
@@ -117,7 +117,7 @@ class DownloadQueueScreenModel(
                     }
                     // KMK -->
                     R.id.show_manga -> {
-                        val mangaId = item.download.anime.id
+                        val mangaId = item.download.manga.id
                         showManga(mangaId = mangaId)
                     }
                     // KMK <--

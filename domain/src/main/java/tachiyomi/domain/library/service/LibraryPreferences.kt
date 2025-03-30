@@ -4,7 +4,7 @@ import tachiyomi.core.common.preference.Preference
 import tachiyomi.core.common.preference.PreferenceStore
 import tachiyomi.core.common.preference.TriState
 import tachiyomi.core.common.preference.getEnum
-import tachiyomi.domain.anime.model.Anime
+import tachiyomi.domain.manga.model.Manga
 import tachiyomi.domain.library.model.GroupLibraryMode
 import tachiyomi.domain.library.model.LibraryDisplayMode
 import tachiyomi.domain.library.model.LibraryGroup
@@ -171,43 +171,43 @@ class LibraryPreferences(
 
     fun filterChapterByRead() = preferenceStore.getLong(
         "default_chapter_filter_by_read",
-        Anime.SHOW_ALL,
+        Manga.SHOW_ALL,
     )
 
     fun filterChapterByDownloaded() = preferenceStore.getLong(
         "default_chapter_filter_by_downloaded",
-        Anime.SHOW_ALL,
+        Manga.SHOW_ALL,
     )
 
     fun filterChapterByBookmarked() = preferenceStore.getLong(
         "default_chapter_filter_by_bookmarked",
-        Anime.SHOW_ALL,
+        Manga.SHOW_ALL,
     )
 
     // and upload date
     fun sortChapterBySourceOrNumber() = preferenceStore.getLong(
         "default_chapter_sort_by_source_or_number",
-        Anime.EPISODE_SORTING_SOURCE,
+        Manga.EPISODE_SORTING_SOURCE,
     )
 
     fun displayChapterByNameOrNumber() = preferenceStore.getLong(
         "default_chapter_display_by_name_or_number",
-        Anime.EPISODE_DISPLAY_NAME,
+        Manga.EPISODE_DISPLAY_NAME,
     )
 
     fun sortChapterByAscendingOrDescending() = preferenceStore.getLong(
         "default_chapter_sort_by_ascending_or_descending",
-        Anime.EPISODE_SORT_DESC,
+        Manga.EPISODE_SORT_DESC,
     )
 
-    fun setChapterSettingsDefault(manga: Anime) {
+    fun setChapterSettingsDefault(manga: Manga) {
         filterChapterByRead().set(manga.unseenFilterRaw)
         filterChapterByDownloaded().set(manga.downloadedFilterRaw)
         filterChapterByBookmarked().set(manga.bookmarkedFilterRaw)
         sortChapterBySourceOrNumber().set(manga.sorting)
         displayChapterByNameOrNumber().set(manga.displayMode)
         sortChapterByAscendingOrDescending().set(
-            if (manga.sortDescending()) Anime.EPISODE_SORT_DESC else Anime.EPISODE_SORT_ASC,
+            if (manga.sortDescending()) Manga.EPISODE_SORT_DESC else Manga.EPISODE_SORT_ASC,
         )
     }
 

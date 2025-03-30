@@ -10,17 +10,17 @@ import kotlinx.coroutines.flow.debounce
 import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.emitAll
 import kotlinx.coroutines.flow.flow
-import tachiyomi.domain.anime.interactor.GetAnime
-import tachiyomi.domain.anime.model.Anime
-import tachiyomi.domain.episode.interactor.GetEpisode
-import tachiyomi.domain.episode.model.Episode
+import tachiyomi.domain.manga.interactor.GetAnime
+import tachiyomi.domain.manga.model.Manga
+import tachiyomi.domain.chapter.interactor.GetEpisode
+import tachiyomi.domain.chapter.model.Episode
 import tachiyomi.domain.source.service.SourceManager
 import uy.kohesive.injekt.Injekt
 import uy.kohesive.injekt.api.get
 
 data class Download(
     val source: HttpSource,
-    val anime: Anime,
+    val manga: Manga,
     val episode: Episode,
 ) {
     var pages: List<Page>? = null

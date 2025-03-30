@@ -23,10 +23,10 @@ import tachiyomi.core.common.storage.extension
 import tachiyomi.core.common.util.lang.launchIO
 import tachiyomi.core.common.util.system.ImageUtil
 import tachiyomi.core.common.util.system.logcat
-import tachiyomi.domain.anime.model.Anime
+import tachiyomi.domain.manga.model.Manga
 import tachiyomi.domain.category.interactor.GetCategories
 import tachiyomi.domain.download.service.DownloadPreferences
-import tachiyomi.domain.episode.model.Episode
+import tachiyomi.domain.chapter.model.Episode
 import tachiyomi.domain.source.service.SourceManager
 import tachiyomi.i18n.MR
 import uy.kohesive.injekt.Injekt
@@ -137,7 +137,7 @@ class DownloadManager(
      * @param episodes the list of episodes to enqueue.
      * @param autoStart whether to start the downloader after enqueing the episodes.
      */
-    fun downloadEpisodes(manga: Anime, episodes: List<Episode>, autoStart: Boolean = true) {
+    fun downloadEpisodes(manga: Manga, episodes: List<Episode>, autoStart: Boolean = true) {
         downloader.queueEpisodes(manga, episodes, autoStart)
     }
 
@@ -163,7 +163,7 @@ class DownloadManager(
      * @param episode the downloaded episode.
      * @return the list of pages from the episode.
      */
-    fun buildPageList(source: Source, manga: Anime, episode: Episode): List<Page> {
+    fun buildPageList(source: Source, manga: Manga, episode: Episode): List<Page> {
         val chapterDir = provider.findEpisodeDir(
             episode.name,
             episode.scanlator,
@@ -214,7 +214,7 @@ class DownloadManager(
      *
      * @param manga the manga to check.
      */
-    fun getDownloadCount(manga: Anime): Int {
+    fun getDownloadCount(manga: Manga): Int {
         return cache.getDownloadCount(manga)
     }
 
@@ -231,7 +231,7 @@ class DownloadManager(
      */
     fun deleteEpisodes(
         episodes: List<Episode>,
-        manga: Anime,
+        manga: Manga,
         source: Source,
         // KMK -->
         /** Ignore categories exclusion */
@@ -270,7 +270,7 @@ class DownloadManager(
      * @param source the source of the manga.
      * @param removeQueued whether to also remove queued downloads.
      */
-    fun deleteManga(manga: Anime, source: Source, removeQueued: Boolean = true) {
+    fun deleteManga(manga: Manga, source: Source, removeQueued: Boolean = true) {
         launchIO {
             if (removeQueued) {
                 downloader.removeFromQueue(manga)
@@ -321,7 +321,7 @@ class DownloadManager(
      */
     suspend fun cleanupChapters(
         allEpisodes: List<Episode>,
-        manga: Anime,
+        manga: Manga,
         source: Source,
         removeRead: Boolean,
         removeNonFavorite: Boolean,
@@ -368,7 +368,7 @@ class DownloadManager(
      * @param episodes the list of episodes to delete.
      * @param manga the manga of the episodes.
      */
-    suspend fun enqueueChaptersToDelete(episodes: List<Episode>, manga: Anime) {
+    suspend fun enqueueChaptersToDelete(episodes: List<Episode>, manga: Manga) {
         pendingDeleter.addChapters(getChaptersToDelete(episodes, manga), manga)
     }
 
@@ -417,7 +417,7 @@ class DownloadManager(
      * @param oldEpisode the existing episode with the old name.
      * @param newEpisode the target episode with the new name.
      */
-    suspend fun renameEpisode(source: Source, manga: Anime, oldEpisode: Episode, newEpisode: Episode) {
+    suspend fun renameEpisode(source: Source, manga: Manga, oldEpisode: Episode, newEpisode: Episode) {
         val oldNames = provider.getValidEpisodeDirNames(oldEpisode.name, oldEpisode.scanlator)
         val mangaDir = provider.getAnimeDir(/* SY --> */ manga.ogTitle /* SY <-- */, source)
 
@@ -443,7 +443,7 @@ class DownloadManager(
 
     private suspend fun getChaptersToDelete(
         episodes: List<Episode>,
-        manga: Anime,
+        manga: Manga,
         // KMK -->
         /** Ignore categories exclusion */
         ignoreCategoryExclusion: Boolean = false,

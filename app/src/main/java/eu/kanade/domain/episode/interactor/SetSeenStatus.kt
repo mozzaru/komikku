@@ -10,13 +10,13 @@ import exh.source.MERGED_SOURCE_ID
 import logcat.LogPriority
 import tachiyomi.core.common.util.lang.withNonCancellableContext
 import tachiyomi.core.common.util.system.logcat
-import tachiyomi.domain.anime.model.Anime
-import tachiyomi.domain.anime.repository.AnimeRepository
+import tachiyomi.domain.manga.model.Manga
+import tachiyomi.domain.manga.repository.AnimeRepository
 import tachiyomi.domain.download.service.DownloadPreferences
-import tachiyomi.domain.episode.interactor.GetMergedEpisodesByAnimeId
-import tachiyomi.domain.episode.model.Episode
-import tachiyomi.domain.episode.model.EpisodeUpdate
-import tachiyomi.domain.episode.repository.EpisodeRepository
+import tachiyomi.domain.chapter.interactor.GetMergedEpisodesByAnimeId
+import tachiyomi.domain.chapter.model.Episode
+import tachiyomi.domain.chapter.model.EpisodeUpdate
+import tachiyomi.domain.chapter.repository.EpisodeRepository
 
 class SetSeenStatus(
     private val downloadPreferences: DownloadPreferences,
@@ -89,7 +89,7 @@ class SetSeenStatus(
                 .groupBy { it.animeId }
                 .forEach { (animeId, episodes) ->
                     deleteDownload.awaitAll(
-                        anime = animeRepository.getAnimeById(animeId),
+                        manga = animeRepository.getAnimeById(animeId),
                         episodes = episodes.toTypedArray(),
                     )
                 }
@@ -117,10 +117,10 @@ class SetSeenStatus(
         )
     }
 
-    suspend fun await(anime: Anime, seen: Boolean) = if (anime.source == MERGED_SOURCE_ID) {
-        awaitMerged(anime.id, seen)
+    suspend fun await(manga: Manga, seen: Boolean) = if (manga.source == MERGED_SOURCE_ID) {
+        awaitMerged(manga.id, seen)
     } else {
-        await(anime.id, seen)
+        await(manga.id, seen)
     }
     // SY <--
 

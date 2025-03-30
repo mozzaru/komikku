@@ -1,11 +1,11 @@
 package tachiyomi.domain.history.interactor
 
 import exh.source.MERGED_SOURCE_ID
-import tachiyomi.domain.anime.interactor.GetAnime
-import tachiyomi.domain.episode.interactor.GetEpisodesByAnimeId
-import tachiyomi.domain.episode.interactor.GetMergedEpisodesByAnimeId
-import tachiyomi.domain.episode.model.Episode
-import tachiyomi.domain.episode.service.getEpisodeSort
+import tachiyomi.domain.manga.interactor.GetAnime
+import tachiyomi.domain.chapter.interactor.GetEpisodesByAnimeId
+import tachiyomi.domain.chapter.interactor.GetMergedEpisodesByAnimeId
+import tachiyomi.domain.chapter.model.Episode
+import tachiyomi.domain.chapter.service.getEpisodeSort
 import tachiyomi.domain.history.repository.HistoryRepository
 import kotlin.math.max
 

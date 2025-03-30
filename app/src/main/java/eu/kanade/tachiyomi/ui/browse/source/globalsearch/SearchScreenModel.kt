@@ -25,9 +25,9 @@ import kotlinx.coroutines.isActive
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import tachiyomi.core.common.preference.toggle
-import tachiyomi.domain.anime.interactor.GetAnime
-import tachiyomi.domain.anime.interactor.NetworkToLocalAnime
-import tachiyomi.domain.anime.model.Anime
+import tachiyomi.domain.manga.interactor.GetAnime
+import tachiyomi.domain.manga.interactor.NetworkToLocalAnime
+import tachiyomi.domain.manga.model.Manga
 import tachiyomi.domain.source.service.SourceManager
 import uy.kohesive.injekt.Injekt
 import uy.kohesive.injekt.api.get
@@ -79,13 +79,13 @@ abstract class SearchScreenModel(
     }
 
     @Composable
-    fun getManga(initialAnime: Anime): androidx.compose.runtime.State<Anime> {
-        return produceState(initialValue = initialAnime) {
-            getAnime.subscribe(initialAnime.url, initialAnime.source)
+    fun getManga(initialManga: Manga): androidx.compose.runtime.State<Manga> {
+        return produceState(initialValue = initialManga) {
+            getAnime.subscribe(initialManga.url, initialManga.source)
                 .collectLatest { manga ->
                     value = manga
                         // KMK -->
-                        ?: initialAnime
+                        ?: initialManga
                     // KMK <--
                 }
         }
@@ -252,7 +252,7 @@ sealed interface SearchItemResult {
     ) : SearchItemResult
 
     data class Success(
-        val result: List<Anime>,
+        val result: List<Manga>,
     ) : SearchItemResult {
         val isEmpty: Boolean
             get() = result.isEmpty()

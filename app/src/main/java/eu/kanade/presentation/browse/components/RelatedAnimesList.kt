@@ -13,7 +13,7 @@ import androidx.compose.ui.util.fastAny
 import eu.kanade.presentation.browse.RelatedAnimeTitle
 import eu.kanade.presentation.browse.RelatedAnimesLoadingItem
 import eu.kanade.tachiyomi.ui.anime.RelatedAnime
-import tachiyomi.domain.anime.model.Anime
+import tachiyomi.domain.manga.model.Manga
 import tachiyomi.i18n.MR
 import tachiyomi.i18n.kmk.KMR
 import tachiyomi.presentation.core.components.FastScrollLazyColumn
@@ -24,13 +24,13 @@ import tachiyomi.presentation.core.i18n.stringResource
 @Composable
 fun RelatedAnimesList(
     relatedAnimes: List<RelatedAnime>,
-    getManga: @Composable (Anime) -> State<Anime>,
+    getManga: @Composable (Manga) -> State<Manga>,
     contentPadding: PaddingValues,
-    onMangaClick: (Anime) -> Unit,
-    onMangaLongClick: (Anime) -> Unit,
+    onMangaClick: (Manga) -> Unit,
+    onMangaLongClick: (Manga) -> Unit,
     onKeywordClick: (String) -> Unit,
     onKeywordLongClick: (String) -> Unit,
-    selection: List<Anime>,
+    selection: List<Manga>,
 ) {
     FastScrollLazyColumn(
         // Using modifier instead of contentPadding so we can use stickyHeader
@@ -87,7 +87,7 @@ fun RelatedAnimesList(
                 ) { index ->
                     val manga by getManga(relatedAnime.mangaList[index])
                     BrowseSourceListItem(
-                        anime = manga,
+                        manga = manga,
                         onClick = { onMangaClick(manga) },
                         onLongClick = { onMangaLongClick(manga) },
                         isSelected = selection.fastAny { selected -> selected.id == manga.id },

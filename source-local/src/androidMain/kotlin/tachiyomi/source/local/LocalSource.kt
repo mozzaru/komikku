@@ -33,8 +33,8 @@ import tachiyomi.core.metadata.comicinfo.ComicInfoPublishingStatus
 import tachiyomi.core.metadata.comicinfo.copyFromComicInfo
 import tachiyomi.core.metadata.comicinfo.getComicInfo
 import tachiyomi.core.metadata.tachiyomi.AnimeDetails
-import tachiyomi.domain.anime.model.Anime
-import tachiyomi.domain.episode.service.EpisodeRecognition
+import tachiyomi.domain.manga.model.Manga
+import tachiyomi.domain.chapter.service.EpisodeRecognition
 import tachiyomi.i18n.MR
 import tachiyomi.source.local.filter.OrderBy
 import tachiyomi.source.local.image.LocalCoverManager
@@ -439,7 +439,7 @@ actual class LocalSource(
     }
 }
 
-fun Anime.isLocal(): Boolean = source == LocalSource.ID
+fun Manga.isLocal(): Boolean = source == LocalSource.ID
 
 fun Source.isLocal(): Boolean = id == LocalSource.ID
 

@@ -16,10 +16,10 @@ internal class HistoryWithRelationsProvider : PreviewParameterProvider<HistoryWi
         episodeNumber = 10.2,
         seenAt = Date(1697247357L),
         watchDuration = 123L,
-        coverData = tachiyomi.domain.anime.model.AnimeCover(
-            animeId = 3L,
+        coverData = tachiyomi.domain.manga.model.MangaCover(
+            mangaId = 3L,
             sourceId = 4L,
-            isAnimeFavorite = false,
+            isMangaFavorite = false,
             ogUrl = "https://example.com/cover.png",
             lastModified = 5L,
         ),
@@ -35,10 +35,10 @@ internal class HistoryWithRelationsProvider : PreviewParameterProvider<HistoryWi
         episodeNumber = 10.2,
         seenAt = null,
         watchDuration = 123L,
-        coverData = tachiyomi.domain.anime.model.AnimeCover(
-            animeId = 3L,
+        coverData = tachiyomi.domain.manga.model.MangaCover(
+            mangaId = 3L,
             sourceId = 4L,
-            isAnimeFavorite = false,
+            isMangaFavorite = false,
             ogUrl = "https://example.com/cover.png",
             lastModified = 5L,
         ),
@@ -54,10 +54,10 @@ internal class HistoryWithRelationsProvider : PreviewParameterProvider<HistoryWi
         episodeNumber = -2.0,
         seenAt = Date(1697247357L),
         watchDuration = 123L,
-        coverData = tachiyomi.domain.anime.model.AnimeCover(
-            animeId = 3L,
+        coverData = tachiyomi.domain.manga.model.MangaCover(
+            mangaId = 3L,
             sourceId = 4L,
-            isAnimeFavorite = false,
+            isMangaFavorite = false,
             ogUrl = "https://example.com/cover.png",
             lastModified = 5L,
         ),

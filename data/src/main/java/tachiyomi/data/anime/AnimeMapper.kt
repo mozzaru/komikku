@@ -1,7 +1,7 @@
 package tachiyomi.data.anime
 
 import eu.kanade.tachiyomi.source.model.UpdateStrategy
-import tachiyomi.domain.anime.model.Anime
+import tachiyomi.domain.manga.model.Manga
 import tachiyomi.domain.library.model.LibraryAnime
 
 object AnimeMapper {
@@ -35,7 +35,7 @@ object AnimeMapper {
         version: Long,
         @Suppress("UNUSED_PARAMETER")
         isSyncing: Long,
-    ): Anime = Anime(
+    ): Manga = Manga(
         id = id,
         source = source,
         favorite = favorite,
@@ -44,7 +44,7 @@ object AnimeMapper {
         fetchInterval = calculateInterval.toInt(),
         dateAdded = dateAdded,
         viewerFlags = viewerFlags,
-        episodeFlags = episodeFlags,
+        chapterFlags = episodeFlags,
         coverLastModified = coverLastModified,
         url = url,
         // SY -->
@@ -103,7 +103,7 @@ object AnimeMapper {
         // <-- AM (FILLERMARK)
         category: Long,
     ): LibraryAnime = LibraryAnime(
-        anime = mapAnime(
+        manga = mapAnime(
             id,
             source,
             url,

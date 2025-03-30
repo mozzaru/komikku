@@ -14,10 +14,10 @@ import okio.source
 import org.junit.jupiter.api.BeforeAll
 import org.junit.jupiter.api.Disabled
 import org.junit.jupiter.api.Test
-import tachiyomi.domain.anime.interactor.GetCustomAnimeInfo
-import tachiyomi.domain.anime.model.Anime
-import tachiyomi.domain.anime.model.CustomAnimeInfo
-import tachiyomi.domain.anime.repository.CustomAnimeRepository
+import tachiyomi.domain.manga.interactor.GetCustomMangaInfo
+import tachiyomi.domain.manga.model.Manga
+import tachiyomi.domain.manga.model.CustomAnimeInfo
+import tachiyomi.domain.manga.repository.CustomAnimeRepository
 import tachiyomi.domain.category.interactor.GetCategories
 import tachiyomi.domain.category.model.Category
 import uy.kohesive.injekt.Injekt
@@ -48,21 +48,21 @@ class Tester {
     @Test
     fun localFavoritesStorageTester(): Unit = runBlocking {
         val favorites = listOf(
-            Anime.create().copy(
+            Manga.create().copy(
                 id = 1,
                 favorite = true,
                 source = EXH_SOURCE_ID,
                 url = "/g/gid/token",
             ),
             // an alias for gid2/token2
-            Anime.create().copy(
+            Manga.create().copy(
                 id = 3,
                 favorite = true,
                 source = EXH_SOURCE_ID,
                 url = "/g/gid3/token3",
             ),
             // add this one to library
-            Anime.create().copy(
+            Manga.create().copy(
                 id = 3,
                 favorite = true,
                 source = EXH_SOURCE_ID,
@@ -139,7 +139,7 @@ class Tester {
         @BeforeAll
         fun before() {
             Injekt.addSingletonFactory {
-                GetCustomAnimeInfo(
+                GetCustomMangaInfo(
                     object : CustomAnimeRepository {
                         override fun get(animeId: Long) = null
                         override fun set(animeInfo: CustomAnimeInfo) = Unit

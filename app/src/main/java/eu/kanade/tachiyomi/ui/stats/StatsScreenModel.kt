@@ -17,8 +17,8 @@ import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.flow.update
-import tachiyomi.domain.anime.interactor.GetLibraryAnime
-import tachiyomi.domain.anime.interactor.GetSeenAnimeNotInLibraryView
+import tachiyomi.domain.manga.interactor.GetLibraryAnime
+import tachiyomi.domain.manga.interactor.GetSeenAnimeNotInLibraryView
 import tachiyomi.domain.history.interactor.GetTotalWatchDuration
 import tachiyomi.domain.library.model.LibraryAnime
 import tachiyomi.domain.library.service.LibraryPreferences
@@ -71,7 +71,7 @@ class StatsScreenModel(
             val overviewStatData = StatsData.Overview(
                 libraryMangaCount = distinctLibraryManga.size,
                 completedMangaCount = distinctLibraryManga.count {
-                    it.anime.status.toInt() == SAnime.COMPLETED && it.unseenCount == 0L
+                    it.manga.status.toInt() == SAnime.COMPLETED && it.unseenCount == 0L
                 },
                 totalReadDuration = getTotalWatchDuration.await(),
             )
@@ -79,7 +79,7 @@ class StatsScreenModel(
             val titlesStatData = StatsData.Titles(
                 globalUpdateItemCount = getGlobalUpdateItemCount(libraryManga),
                 startedMangaCount = distinctLibraryManga.count { it.hasStarted },
-                localMangaCount = distinctLibraryManga.count { it.anime.isLocal() },
+                localMangaCount = distinctLibraryManga.count { it.manga.isLocal() },
             )
 
             val chaptersStatData = StatsData.Chapters(
@@ -126,10 +126,10 @@ class StatsScreenModel(
 
         val updateRestrictions = preferences.autoUpdateAnimeRestrictions().get()
         return includedManga
-            .fastFilterNot { it.anime.id in excludedMangaIds }
-            .fastDistinctBy { it.anime.id }
+            .fastFilterNot { it.manga.id in excludedMangaIds }
+            .fastDistinctBy { it.manga.id }
             .fastCountNot {
-                (ANIME_NON_COMPLETED in updateRestrictions && it.anime.status.toInt() == SAnime.COMPLETED) ||
+                (ANIME_NON_COMPLETED in updateRestrictions && it.manga.status.toInt() == SAnime.COMPLETED) ||
                     (ANIME_HAS_UNSEEN in updateRestrictions && it.unseenCount != 0L) ||
                     (ANIME_NON_SEEN in updateRestrictions && it.totalEpisodes > 0 && !it.hasStarted)
             }

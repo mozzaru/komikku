@@ -7,7 +7,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.util.fastAny
 import eu.kanade.tachiyomi.ui.library.LibraryItem
-import tachiyomi.domain.anime.model.AnimeCover
+import tachiyomi.domain.manga.model.MangaCover
 import tachiyomi.domain.library.model.LibraryAnime
 
 @Composable
@@ -34,14 +34,14 @@ internal fun LibraryCompactGrid(
             items = items,
             contentType = { "library_compact_grid_item" },
         ) { libraryItem ->
-            val anime = libraryItem.libraryAnime.anime
+            val anime = libraryItem.libraryAnime.manga
             AnimeCompactGridItem(
                 isSelected = selection.fastAny { it.id == libraryItem.libraryAnime.id },
                 title = anime.title.takeIf { showTitle },
-                coverData = AnimeCover(
-                    animeId = anime.id,
+                coverData = MangaCover(
+                    mangaId = anime.id,
                     sourceId = anime.source,
-                    isAnimeFavorite = anime.favorite,
+                    isMangaFavorite = anime.favorite,
                     ogUrl = anime.thumbnailUrl,
                     lastModified = anime.coverLastModified,
                 ),

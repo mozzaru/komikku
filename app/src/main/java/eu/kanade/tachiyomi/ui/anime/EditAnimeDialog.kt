@@ -44,7 +44,7 @@ import com.google.android.material.chip.Chip
 import com.google.android.material.chip.ChipGroup
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import eu.kanade.domain.ui.UiPreferences
-import eu.kanade.presentation.anime.components.RatioSwitchToPanorama
+import eu.kanade.presentation.manga.components.RatioSwitchToPanorama
 import eu.kanade.presentation.track.components.TrackLogoIcon
 import eu.kanade.tachiyomi.R
 import eu.kanade.tachiyomi.data.track.EnhancedTracker
@@ -70,7 +70,7 @@ import kotlinx.coroutines.launch
 import logcat.LogPriority
 import tachiyomi.core.common.i18n.stringResource
 import tachiyomi.core.common.util.system.logcat
-import tachiyomi.domain.anime.model.Anime
+import tachiyomi.domain.manga.model.Manga
 import tachiyomi.domain.track.interactor.GetTracks
 import tachiyomi.domain.track.model.Track
 import tachiyomi.i18n.MR
@@ -82,7 +82,7 @@ import uy.kohesive.injekt.api.get
 
 @Composable
 fun EditAnimeDialog(
-    manga: Anime,
+    manga: Manga,
     // KMK -->
     coverRatio: MutableFloatState,
     // KMK <--
@@ -257,7 +257,7 @@ data class EditAnimeDialogColors(
 // KMK <--
 
 private fun onViewCreated(
-    manga: Anime,
+    manga: Manga,
     context: Context,
     binding: EditMangaDialogBinding,
     scope: CoroutineScope,
@@ -432,7 +432,7 @@ private fun onViewCreated(
     }
 }
 
-private suspend fun getTrackers(manga: Anime, binding: EditMangaDialogBinding, context: Context, getTracks: GetTracks, trackerManager: TrackerManager, tracks: MutableState<List<Pair<Track, Tracker>>>, showTrackerSelectionDialogue: MutableState<Boolean>) {
+private suspend fun getTrackers(manga: Manga, binding: EditMangaDialogBinding, context: Context, getTracks: GetTracks, trackerManager: TrackerManager, tracks: MutableState<List<Pair<Track, Tracker>>>, showTrackerSelectionDialogue: MutableState<Boolean>) {
     tracks.value = getTracks.await(manga.id).map { track ->
         track to trackerManager.get(track.trackerId)!!
     }
@@ -477,7 +477,7 @@ private suspend fun autofillFromTracker(binding: EditMangaDialogBinding, track: 
 }
 
 private fun resetTags(
-    manga: Anime,
+    manga: Manga,
     binding: EditMangaDialogBinding,
     scope: CoroutineScope,
     // KMK -->
@@ -492,7 +492,7 @@ private fun resetTags(
 }
 
 private fun loadCover(
-    manga: Anime,
+    manga: Manga,
     binding: EditMangaDialogBinding,
     // KMK -->
     coverRatio: MutableFloatState,
@@ -514,7 +514,7 @@ private fun loadCover(
 }
 
 private fun resetInfo(
-    manga: Anime,
+    manga: Manga,
     binding: EditMangaDialogBinding,
     scope: CoroutineScope,
     // KMK -->

@@ -19,25 +19,25 @@ import tachiyomi.data.anime.AnimeMergeRepositoryImpl
 import tachiyomi.data.anime.CustomAnimeRepositoryImpl
 import tachiyomi.data.source.FeedSavedSearchRepositoryImpl
 import tachiyomi.data.source.SavedSearchRepositoryImpl
-import tachiyomi.domain.anime.interactor.DeleteAnimeById
-import tachiyomi.domain.anime.interactor.DeleteByMergeId
-import tachiyomi.domain.anime.interactor.DeleteMergeById
-import tachiyomi.domain.anime.interactor.GetAllAnime
-import tachiyomi.domain.anime.interactor.GetAnimeBySource
-import tachiyomi.domain.anime.interactor.GetCustomAnimeInfo
-import tachiyomi.domain.anime.interactor.GetMergedAnime
-import tachiyomi.domain.anime.interactor.GetMergedAnimeById
-import tachiyomi.domain.anime.interactor.GetMergedAnimeForDownloading
-import tachiyomi.domain.anime.interactor.GetMergedReferencesById
-import tachiyomi.domain.anime.interactor.GetSeenAnimeNotInLibraryView
-import tachiyomi.domain.anime.interactor.InsertMergedReference
-import tachiyomi.domain.anime.interactor.SetCustomAnimeInfo
-import tachiyomi.domain.anime.interactor.UpdateMergedSettings
-import tachiyomi.domain.anime.repository.AnimeMergeRepository
-import tachiyomi.domain.anime.repository.CustomAnimeRepository
-import tachiyomi.domain.episode.interactor.DeleteEpisodes
-import tachiyomi.domain.episode.interactor.GetEpisodeByUrl
-import tachiyomi.domain.episode.interactor.GetMergedEpisodesByAnimeId
+import tachiyomi.domain.manga.interactor.DeleteAnimeById
+import tachiyomi.domain.manga.interactor.DeleteByMergeId
+import tachiyomi.domain.manga.interactor.DeleteMergeById
+import tachiyomi.domain.manga.interactor.GetAllAnime
+import tachiyomi.domain.manga.interactor.GetAnimeBySource
+import tachiyomi.domain.manga.interactor.GetCustomMangaInfo
+import tachiyomi.domain.manga.interactor.GetMergedAnime
+import tachiyomi.domain.manga.interactor.GetMergedAnimeById
+import tachiyomi.domain.manga.interactor.GetMergedAnimeForDownloading
+import tachiyomi.domain.manga.interactor.GetMergedReferencesById
+import tachiyomi.domain.manga.interactor.GetSeenAnimeNotInLibraryView
+import tachiyomi.domain.manga.interactor.InsertMergedReference
+import tachiyomi.domain.manga.interactor.SetCustomAnimeInfo
+import tachiyomi.domain.manga.interactor.UpdateMergedSettings
+import tachiyomi.domain.manga.repository.AnimeMergeRepository
+import tachiyomi.domain.manga.repository.CustomAnimeRepository
+import tachiyomi.domain.chapter.interactor.DeleteEpisodes
+import tachiyomi.domain.chapter.interactor.GetEpisodeByUrl
+import tachiyomi.domain.chapter.interactor.GetMergedEpisodesByAnimeId
 import tachiyomi.domain.history.interactor.GetHistoryByAnimeId
 import tachiyomi.domain.source.interactor.CountFeedSavedSearchBySourceId
 import tachiyomi.domain.source.interactor.CountFeedSavedSearchGlobal
@@ -122,7 +122,7 @@ class SYDomainModule : InjektModule {
         // KMK <--
 
         addSingletonFactory<CustomAnimeRepository> { CustomAnimeRepositoryImpl(get<Application>()) }
-        addFactory { GetCustomAnimeInfo(get()) }
+        addFactory { GetCustomMangaInfo(get()) }
         addFactory { SetCustomAnimeInfo(get()) }
     }
 }

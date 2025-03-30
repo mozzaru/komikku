@@ -13,11 +13,11 @@ import eu.kanade.tachiyomi.source.online.ResolvableSource
 import eu.kanade.tachiyomi.source.online.UriType
 import kotlinx.coroutines.flow.update
 import tachiyomi.core.common.util.lang.launchIO
-import tachiyomi.domain.anime.interactor.GetAnimeByUrlAndSourceId
-import tachiyomi.domain.anime.interactor.NetworkToLocalAnime
-import tachiyomi.domain.anime.model.Anime
-import tachiyomi.domain.episode.interactor.GetEpisodeByUrlAndAnimeId
-import tachiyomi.domain.episode.model.Episode
+import tachiyomi.domain.manga.interactor.GetAnimeByUrlAndSourceId
+import tachiyomi.domain.manga.interactor.NetworkToLocalAnime
+import tachiyomi.domain.manga.model.Manga
+import tachiyomi.domain.chapter.interactor.GetEpisodeByUrlAndAnimeId
+import tachiyomi.domain.chapter.model.Episode
 import tachiyomi.domain.source.service.SourceManager
 import uy.kohesive.injekt.Injekt
 import uy.kohesive.injekt.api.get
@@ -61,7 +61,7 @@ class DeepLinkScreenModel(
         }
     }
 
-    private suspend fun getEpisodeFromSEpisode(sEpisode: SEpisode, manga: Anime, source: Source): Episode? {
+    private suspend fun getEpisodeFromSEpisode(sEpisode: SEpisode, manga: Manga, source: Source): Episode? {
         val localChapter = getEpisodeByUrlAndAnimeId.await(sEpisode.url, manga.id)
 
         return if (localChapter == null) {
@@ -73,7 +73,7 @@ class DeepLinkScreenModel(
         }
     }
 
-    private suspend fun getMangaFromSManga(sAnime: SAnime, sourceId: Long): Anime {
+    private suspend fun getMangaFromSManga(sAnime: SAnime, sourceId: Long): Manga {
         return getAnimeByUrlAndSourceId.await(sAnime.url, sourceId)
             ?: networkToLocalAnime.await(sAnime.toDomainAnime(sourceId))
     }
@@ -86,6 +86,6 @@ class DeepLinkScreenModel(
         data object NoResults : State
 
         @Immutable
-        data class Result(val manga: Anime, val chapterId: Long? = null) : State
+        data class Result(val manga: Manga, val chapterId: Long? = null) : State
     }
 }

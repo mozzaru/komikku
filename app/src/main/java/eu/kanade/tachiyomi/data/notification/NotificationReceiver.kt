@@ -22,13 +22,13 @@ import kotlinx.coroutines.DelicateCoroutinesApi
 import kotlinx.coroutines.runBlocking
 import tachiyomi.core.common.Constants
 import tachiyomi.core.common.util.lang.launchIO
-import tachiyomi.domain.anime.interactor.GetAnime
-import tachiyomi.domain.anime.model.Anime
+import tachiyomi.domain.manga.interactor.GetAnime
+import tachiyomi.domain.manga.model.Manga
 import tachiyomi.domain.download.service.DownloadPreferences
-import tachiyomi.domain.episode.interactor.GetEpisode
-import tachiyomi.domain.episode.interactor.UpdateEpisode
-import tachiyomi.domain.episode.model.Episode
-import tachiyomi.domain.episode.model.toEpisodeUpdate
+import tachiyomi.domain.chapter.interactor.GetEpisode
+import tachiyomi.domain.chapter.interactor.UpdateEpisode
+import tachiyomi.domain.chapter.model.Episode
+import tachiyomi.domain.chapter.model.toEpisodeUpdate
 import tachiyomi.domain.source.service.SourceManager
 import tachiyomi.i18n.MR
 import uy.kohesive.injekt.Injekt
@@ -414,14 +414,14 @@ class NotificationReceiver : BroadcastReceiver() {
          * Returns [PendingIntent] that starts a reader activity containing episode.
          *
          * @param context context of application
-         * @param anime manga of episode
+         * @param manga manga of episode
          * @param episode episode that needs to be opened
          */
-        internal fun openChapterPendingActivity(context: Context, anime: Anime, episode: Episode): PendingIntent {
-            val newIntent = ReaderActivity.newIntent(context, anime.id, episode.id)
+        internal fun openChapterPendingActivity(context: Context, manga: Manga, episode: Episode): PendingIntent {
+            val newIntent = ReaderActivity.newIntent(context, manga.id, episode.id)
             return PendingIntent.getActivity(
                 context,
-                anime.id.hashCode(),
+                manga.id.hashCode(),
                 newIntent,
                 PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE,
             )
@@ -431,18 +431,18 @@ class NotificationReceiver : BroadcastReceiver() {
          * Returns [PendingIntent] that opens the manga info controller.
          *
          * @param context context of application
-         * @param anime manga of episode
+         * @param manga manga of episode
          */
-        internal fun openChapterPendingActivity(context: Context, anime: Anime, groupId: Int): PendingIntent {
+        internal fun openChapterPendingActivity(context: Context, manga: Manga, groupId: Int): PendingIntent {
             val newIntent =
                 Intent(context, MainActivity::class.java).setAction(Constants.SHORTCUT_MANGA)
                     .addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP)
-                    .putExtra(Constants.MANGA_EXTRA, anime.id)
-                    .putExtra("notificationId", anime.id.hashCode())
+                    .putExtra(Constants.MANGA_EXTRA, manga.id)
+                    .putExtra("notificationId", manga.id.hashCode())
                     .putExtra("groupId", groupId)
             return PendingIntent.getActivity(
                 context,
-                anime.id.hashCode(),
+                manga.id.hashCode(),
                 newIntent,
                 PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE,
             )
@@ -456,7 +456,7 @@ class NotificationReceiver : BroadcastReceiver() {
          */
         internal fun markAsReadPendingBroadcast(
             context: Context,
-            manga: Anime,
+            manga: Manga,
             episodes: Array<Episode>,
             groupId: Int,
         ): PendingIntent {
@@ -483,7 +483,7 @@ class NotificationReceiver : BroadcastReceiver() {
          */
         internal fun downloadChaptersPendingBroadcast(
             context: Context,
-            manga: Anime,
+            manga: Manga,
             episodes: Array<Episode>,
             groupId: Int,
         ): PendingIntent {

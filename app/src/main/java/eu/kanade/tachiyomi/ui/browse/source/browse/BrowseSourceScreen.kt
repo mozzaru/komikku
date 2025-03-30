@@ -37,7 +37,7 @@ import cafe.adriel.voyager.core.model.rememberScreenModel
 import cafe.adriel.voyager.navigator.LocalNavigator
 import cafe.adriel.voyager.navigator.currentOrThrow
 import eu.kanade.core.util.ifSourcesLoaded
-import eu.kanade.presentation.anime.DuplicateAnimeDialog
+import eu.kanade.presentation.manga.DuplicateAnimeDialog
 import eu.kanade.presentation.browse.BrowseSourceContent
 import eu.kanade.presentation.browse.MissingSourceScreen
 import eu.kanade.presentation.browse.components.BrowseSourceToolbar
@@ -315,7 +315,7 @@ data class BrowseSourceScreen(
         ) { paddingValues ->
             BrowseSourceContent(
                 source = screenModel.source,
-                animeList = mangaList,
+                mangaList = mangaList,
                 columns = screenModel.getColumnsPreference(LocalConfiguration.current.orientation),
                 displayMode = screenModel.displayMode,
                 snackbarHostState = snackbarHostState,
@@ -427,7 +427,7 @@ data class BrowseSourceScreen(
                     onConfirm = {
                         screenModel.changeMangaFavorite(dialog.manga)
                     },
-                    animeToRemove = dialog.manga,
+                    mangaToRemove = dialog.manga,
                 )
             }
             is BrowseSourceScreenModel.Dialog.ChangeMangaCategory -> {

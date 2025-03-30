@@ -16,8 +16,8 @@ import tachiyomi.core.common.util.lang.withIOContext
 import tachiyomi.core.common.util.lang.withNonCancellableContext
 import tachiyomi.core.common.util.lang.withUIContext
 import tachiyomi.core.common.util.system.logcat
-import tachiyomi.domain.anime.model.Anime
-import tachiyomi.domain.episode.interactor.GetEpisodesByAnimeId
+import tachiyomi.domain.manga.model.Manga
+import tachiyomi.domain.chapter.interactor.GetEpisodesByAnimeId
 import tachiyomi.domain.history.interactor.GetHistory
 import tachiyomi.domain.track.interactor.InsertTrack
 import tachiyomi.i18n.MR
@@ -99,15 +99,15 @@ class AddTracks(
         }
     }
 
-    suspend fun bindEnhancedTrackers(anime: Anime, source: Source) = withNonCancellableContext {
+    suspend fun bindEnhancedTrackers(manga: Manga, source: Source) = withNonCancellableContext {
         withIOContext {
             trackerManager.loggedInTrackers()
                 .filterIsInstance<EnhancedTracker>()
                 .filter { it.accept(source) }
                 .forEach { service ->
                     try {
-                        service.match(anime)?.let { track ->
-                            track.anime_id = anime.id
+                        service.match(manga)?.let { track ->
+                            track.anime_id = manga.id
                             (service as Tracker).bind(track)
                             insertTrack.await(track.toDomainTrack(idRequired = false)!!)
                         }
@@ -115,17 +115,17 @@ class AddTracks(
                         logcat(
                             LogPriority.WARN,
                             e,
-                        ) { "Could not match anime: ${anime.title} with service $service" }
+                        ) { "Could not match anime: ${manga.title} with service $service" }
                     }
                 }
 
             // KMK -->
             val context = Injekt.get<Application>()
-            refreshTracks.await(anime.id)
+            refreshTracks.await(manga.id)
                 .filter { it.first != null }
                 .forEach { (track, e) ->
                     logcat(LogPriority.ERROR, e) {
-                        "Failed to refresh track data animeId=${anime.id} for service ${track!!.id}"
+                        "Failed to refresh track data animeId=${manga.id} for service ${track!!.id}"
                     }
                     withUIContext {
                         context.toast(

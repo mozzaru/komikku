@@ -4,28 +4,28 @@ import kotlinx.coroutines.flow.Flow
 import logcat.LogPriority
 import tachiyomi.core.common.util.system.logcat
 import tachiyomi.data.DatabaseHandler
-import tachiyomi.domain.anime.model.Anime
-import tachiyomi.domain.anime.model.MergeAnimeSettingsUpdate
-import tachiyomi.domain.anime.model.MergedAnimeReference
-import tachiyomi.domain.anime.repository.AnimeMergeRepository
+import tachiyomi.domain.manga.model.Manga
+import tachiyomi.domain.manga.model.MergeAnimeSettingsUpdate
+import tachiyomi.domain.manga.model.MergedAnimeReference
+import tachiyomi.domain.manga.repository.AnimeMergeRepository
 
 class AnimeMergeRepositoryImpl(
     private val handler: DatabaseHandler,
 ) : AnimeMergeRepository {
 
-    override suspend fun getMergedAnime(): List<Anime> {
+    override suspend fun getMergedAnime(): List<Manga> {
         return handler.awaitList { mergedQueries.selectAllMergedAnimes(AnimeMapper::mapAnime) }
     }
 
-    override suspend fun subscribeMergedAnime(): Flow<List<Anime>> {
+    override suspend fun subscribeMergedAnime(): Flow<List<Manga>> {
         return handler.subscribeToList { mergedQueries.selectAllMergedAnimes(AnimeMapper::mapAnime) }
     }
 
-    override suspend fun getMergedAnimeById(id: Long): List<Anime> {
+    override suspend fun getMergedAnimeById(id: Long): List<Manga> {
         return handler.awaitList { mergedQueries.selectMergedAnimesById(id, AnimeMapper::mapAnime) }
     }
 
-    override suspend fun subscribeMergedAnimeById(id: Long): Flow<List<Anime>> {
+    override suspend fun subscribeMergedAnimeById(id: Long): Flow<List<Manga>> {
         return handler.subscribeToList { mergedQueries.selectMergedAnimesById(id, AnimeMapper::mapAnime) }
     }
 
@@ -121,7 +121,7 @@ class AnimeMergeRepositoryImpl(
         }
     }
 
-    override suspend fun getMergeAnimeForDownloading(mergeId: Long): List<Anime> {
+    override suspend fun getMergeAnimeForDownloading(mergeId: Long): List<Manga> {
         return handler.awaitList { mergedQueries.selectMergedAnimesForDownloadingById(mergeId, AnimeMapper::mapAnime) }
     }
 }

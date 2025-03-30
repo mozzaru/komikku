@@ -12,7 +12,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
-import eu.kanade.presentation.anime.components.AnimeEpisodeListItem
+import eu.kanade.presentation.manga.components.AnimeEpisodeListItem
 import eu.kanade.presentation.components.AdaptiveSheet
 import eu.kanade.tachiyomi.data.download.DownloadManager
 import eu.kanade.tachiyomi.data.download.model.Download
@@ -21,7 +21,7 @@ import eu.kanade.tachiyomi.util.lang.toRelativeString
 import kotlinx.collections.immutable.ImmutableList
 import kotlinx.coroutines.flow.filter
 import kotlinx.coroutines.flow.map
-import tachiyomi.domain.episode.model.Episode
+import tachiyomi.domain.chapter.model.Episode
 import tachiyomi.domain.library.service.LibraryPreferences
 import tachiyomi.source.local.isLocal
 import uy.kohesive.injekt.Injekt

@@ -21,12 +21,12 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.unit.dp
-import eu.kanade.presentation.anime.components.AnimeCover
+import eu.kanade.presentation.manga.components.MangaCover
 import eu.kanade.presentation.util.rememberResourceBitmapPainter
 import eu.kanade.tachiyomi.R
 import eu.kanade.tachiyomi.ui.browse.migration.advanced.process.MigratingAnime
 import tachiyomi.core.common.util.lang.withIOContext
-import tachiyomi.domain.anime.model.Anime
+import tachiyomi.domain.manga.model.Manga
 import tachiyomi.i18n.sy.SYMR
 import tachiyomi.presentation.core.i18n.stringResource
 
@@ -35,10 +35,10 @@ fun MigrationItemResult(
     modifier: Modifier,
     migrationItem: MigratingAnime,
     result: MigratingAnime.SearchResult,
-    getManga: suspend (MigratingAnime.SearchResult.Result) -> Anime?,
+    getManga: suspend (MigratingAnime.SearchResult.Result) -> Manga?,
     getEpisodeInfo: suspend (MigratingAnime.SearchResult.Result) -> MigratingAnime.EpisodeInfo,
-    getSourceName: (Anime) -> String,
-    onMigrationItemClick: (Anime) -> Unit,
+    getSourceName: (Manga) -> String,
+    onMigrationItemClick: (Manga) -> Unit,
 ) {
     Box(modifier.height(IntrinsicSize.Min)) {
         when (result) {
@@ -46,7 +46,7 @@ fun MigrationItemResult(
                 modifier = Modifier
                     .widthIn(max = 150.dp)
                     .fillMaxSize()
-                    .aspectRatio(AnimeCover.Book.ratio),
+                    .aspectRatio(MangaCover.Book.ratio),
                 contentAlignment = Alignment.Center,
             ) {
                 CircularProgressIndicator()
@@ -62,7 +62,7 @@ fun MigrationItemResult(
                     contentDescription = null,
                     modifier = Modifier
                         .fillMaxWidth()
-                        .aspectRatio(AnimeCover.Book.ratio)
+                        .aspectRatio(MangaCover.Book.ratio)
                         .clip(MaterialTheme.shapes.extraSmall),
                     contentScale = ContentScale.Crop,
                 )
@@ -73,7 +73,7 @@ fun MigrationItemResult(
                 )
             }
             is MigratingAnime.SearchResult.Result -> {
-                val item by produceState<Triple<Anime, MigratingAnime.EpisodeInfo, String>?>(
+                val item by produceState<Triple<Manga, MigratingAnime.EpisodeInfo, String>?>(
                     initialValue = null,
                     migrationItem,
                     result,

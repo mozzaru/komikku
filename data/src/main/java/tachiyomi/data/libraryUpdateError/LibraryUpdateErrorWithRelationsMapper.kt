@@ -1,6 +1,6 @@
 package tachiyomi.data.libraryUpdateError
 
-import tachiyomi.domain.anime.model.AnimeCover
+import tachiyomi.domain.manga.model.MangaCover
 import tachiyomi.domain.libraryUpdateError.model.LibraryUpdateErrorWithRelations
 
 val libraryUpdateErrorWithRelationsMapper:
@@ -10,10 +10,10 @@ val libraryUpdateErrorWithRelationsMapper:
             animeId = animeId,
             animeTitle = animeTitle,
             animeSource = animeSource,
-            animeCover = AnimeCover(
-                animeId = animeId,
+            mangaCover = MangaCover(
+                mangaId = animeId,
                 sourceId = animeSource,
-                isAnimeFavorite = favorite,
+                isMangaFavorite = favorite,
                 ogUrl = animeThumbnail,
                 lastModified = coverLastModified,
             ),

@@ -85,9 +85,9 @@ import tachiyomi.core.common.util.lang.withUIContext
 import tachiyomi.core.common.util.system.ImageUtil
 import tachiyomi.core.common.util.system.logcat
 import tachiyomi.domain.UnsortedPreferences
-import tachiyomi.domain.anime.interactor.GetAllAnime
-import tachiyomi.domain.anime.interactor.ResetViewerFlags
-import tachiyomi.domain.episode.interactor.GetEpisodesByAnimeId
+import tachiyomi.domain.manga.interactor.GetAllAnime
+import tachiyomi.domain.manga.interactor.ResetViewerFlags
+import tachiyomi.domain.chapter.interactor.GetEpisodesByAnimeId
 import tachiyomi.domain.release.service.AppUpdatePolicy
 import tachiyomi.domain.source.service.SourceManager
 import tachiyomi.i18n.MR

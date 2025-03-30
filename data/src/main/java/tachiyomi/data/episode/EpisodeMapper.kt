@@ -1,6 +1,6 @@
 package tachiyomi.data.episode
 
-import tachiyomi.domain.episode.model.Episode
+import tachiyomi.domain.chapter.model.Episode
 
 object EpisodeMapper {
     fun mapEpisode(

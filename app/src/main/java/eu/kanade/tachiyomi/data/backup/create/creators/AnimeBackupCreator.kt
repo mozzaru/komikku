@@ -10,9 +10,9 @@ import eu.kanade.tachiyomi.data.backup.models.backupTrackMapper
 import eu.kanade.tachiyomi.ui.reader.setting.ReadingMode
 import exh.source.MERGED_SOURCE_ID
 import tachiyomi.data.DatabaseHandler
-import tachiyomi.domain.anime.interactor.GetCustomAnimeInfo
-import tachiyomi.domain.anime.model.Anime
-import tachiyomi.domain.anime.model.CustomAnimeInfo
+import tachiyomi.domain.manga.interactor.GetCustomMangaInfo
+import tachiyomi.domain.manga.model.Manga
+import tachiyomi.domain.manga.model.CustomAnimeInfo
 import tachiyomi.domain.category.interactor.GetCategories
 import tachiyomi.domain.history.interactor.GetHistory
 import uy.kohesive.injekt.Injekt
@@ -23,22 +23,22 @@ class AnimeBackupCreator(
     private val getCategories: GetCategories = Injekt.get(),
     private val getHistory: GetHistory = Injekt.get(),
     // SY -->
-    private val getCustomAnimeInfo: GetCustomAnimeInfo = Injekt.get(),
+    private val getCustomMangaInfo: GetCustomMangaInfo = Injekt.get(),
     // SY <--
 ) {
 
-    suspend operator fun invoke(mangas: List<Anime>, options: BackupOptions): List<BackupAnime> {
+    suspend operator fun invoke(mangas: List<Manga>, options: BackupOptions): List<BackupAnime> {
         return mangas.map {
             backupManga(it, options)
         }
     }
 
-    private suspend fun backupManga(manga: Anime, options: BackupOptions): BackupAnime {
+    private suspend fun backupManga(manga: Manga, options: BackupOptions): BackupAnime {
         // Entry for this manga
         val mangaObject = manga.toBackupManga(
             // SY -->
             if (options.customInfo) {
-                getCustomAnimeInfo.get(manga.id)
+                getCustomMangaInfo.get(manga.id)
             } else {
                 null
             }, /* SY <-- */
@@ -101,7 +101,7 @@ class AnimeBackupCreator(
     }
 }
 
-private fun Anime.toBackupManga(/* SY --> */customAnimeInfo: CustomAnimeInfo?/* SY <-- */) =
+private fun Manga.toBackupManga(/* SY --> */customAnimeInfo: CustomAnimeInfo?/* SY <-- */) =
     BackupAnime(
         url = this.url,
         title = this.title,
@@ -116,7 +116,7 @@ private fun Anime.toBackupManga(/* SY --> */customAnimeInfo: CustomAnimeInfo?/* 
         dateAdded = this.dateAdded,
         viewer = (this.viewerFlags.toInt() and ReadingMode.MASK),
         viewer_flags = this.viewerFlags.toInt(),
-        chapterFlags = this.episodeFlags.toInt(),
+        chapterFlags = this.chapterFlags.toInt(),
         updateStrategy = this.updateStrategy,
         lastModifiedAt = this.lastModifiedAt,
         favoriteModifiedAt = this.favoriteModifiedAt,

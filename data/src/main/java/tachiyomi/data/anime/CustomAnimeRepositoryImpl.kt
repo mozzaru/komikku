@@ -4,8 +4,8 @@ import android.content.Context
 import kotlinx.serialization.Serializable
 import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.Json
-import tachiyomi.domain.anime.model.CustomAnimeInfo
-import tachiyomi.domain.anime.repository.CustomAnimeRepository
+import tachiyomi.domain.manga.model.CustomAnimeInfo
+import tachiyomi.domain.manga.repository.CustomAnimeRepository
 import java.io.File
 
 class CustomAnimeRepositoryImpl(context: Context) : CustomAnimeRepository {

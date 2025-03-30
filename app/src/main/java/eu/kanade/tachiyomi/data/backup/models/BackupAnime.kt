@@ -3,7 +3,7 @@ package eu.kanade.tachiyomi.data.backup.models
 import eu.kanade.tachiyomi.source.model.UpdateStrategy
 import kotlinx.serialization.Serializable
 import kotlinx.serialization.protobuf.ProtoNumber
-import tachiyomi.domain.anime.model.Anime
+import tachiyomi.domain.manga.model.Manga
 
 @Serializable
 data class BackupAnime(
@@ -54,8 +54,8 @@ data class BackupAnime(
     @ProtoNumber(805) var customGenre: List<String>? = null,
 
 ) {
-    fun getMangaImpl(): Anime {
-        return Anime.create().copy(
+    fun getMangaImpl(): Manga {
+        return Manga.create().copy(
             url = this@BackupAnime.url,
             // SY -->
             ogTitle = this@BackupAnime.title,
@@ -70,7 +70,7 @@ data class BackupAnime(
             source = this@BackupAnime.source,
             dateAdded = this@BackupAnime.dateAdded,
             viewerFlags = (this@BackupAnime.viewer_flags ?: this@BackupAnime.viewer).toLong(),
-            episodeFlags = this@BackupAnime.chapterFlags.toLong(),
+            chapterFlags = this@BackupAnime.chapterFlags.toLong(),
             updateStrategy = this@BackupAnime.updateStrategy,
             lastModifiedAt = this@BackupAnime.lastModifiedAt,
             favoriteModifiedAt = this@BackupAnime.favoriteModifiedAt,
