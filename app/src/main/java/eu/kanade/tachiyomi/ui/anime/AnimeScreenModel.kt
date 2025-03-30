@@ -28,7 +28,7 @@ import eu.kanade.domain.anime.interactor.GetExcludedScanlators
 import eu.kanade.domain.anime.interactor.SetExcludedScanlators
 import eu.kanade.domain.anime.interactor.SmartSearchMerge
 import eu.kanade.domain.anime.interactor.UpdateAnime
-import eu.kanade.domain.anime.model.chaptersFiltered
+import eu.kanade.domain.anime.model.episodesFiltered
 import eu.kanade.domain.anime.model.downloadedFilter
 import eu.kanade.domain.anime.model.toDomainAnime
 import eu.kanade.domain.anime.model.toSAnime
@@ -217,7 +217,7 @@ class AnimeScreenModel(
 
     val chapterSwipeStartAction = libraryPreferences.swipeToEndAction().get()
     val chapterSwipeEndAction = libraryPreferences.swipeToStartAction().get()
-    private var autoTrackState = trackPreferences.autoUpdateTrackOnMarkRead().get()
+    private var autoTrackState = trackPreferences.autoUpdateTrackOnMarkSeen().get()
 
     private val skipFiltered by readerPreferences.skipFiltered().asState(screenModelScope)
 
@@ -1724,7 +1724,7 @@ class AnimeScreenModel(
                 get() = excludedScanlators.intersect(availableScanlators).isNotEmpty()
 
             val filterActive: Boolean
-                get() = scanlatorFilterActive || anime.chaptersFiltered()
+                get() = scanlatorFilterActive || anime.episodesFiltered()
 
             /**
              * Applies the view filters to the list of episodes obtained from the database.

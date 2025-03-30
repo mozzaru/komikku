@@ -575,7 +575,7 @@ class ReaderViewModel @JvmOverloads constructor(
 
         // Save last page read and mark as read if needed
         viewModelScope.launchNonCancellable {
-            updateChapterProgress(selectedChapter, page/* SY --> */, hasExtraPage/* SY <-- */)
+            updateEpisodeProgress(selectedChapter, page/* SY --> */, hasExtraPage/* SY <-- */)
         }
 
         if (selectedChapter != getCurrentChapter()) {
@@ -660,7 +660,7 @@ class ReaderViewModel @JvmOverloads constructor(
      * Saves the episode progress (last read page and whether it's read)
      * if incognito mode isn't on.
      */
-    private suspend fun updateChapterProgress(
+    private suspend fun updateEpisodeProgress(
         readerChapter: ReaderChapter,
         video: Video/* SY --> */,
         hasExtraPage: Boolean, /* SY <-- */
@@ -712,7 +712,7 @@ class ReaderViewModel @JvmOverloads constructor(
                 deleteChapterIfNeeded(readerChapter)
 
                 // Check if syncing is enabled for episode read:
-                if (isSyncEnabled && syncTriggerOpt.syncOnChapterRead) {
+                if (isSyncEnabled && syncTriggerOpt.syncOnEpisodeSeen) {
                     SyncDataJob.startNow(Injekt.get<Application>())
                 }
             }
@@ -726,7 +726,7 @@ class ReaderViewModel @JvmOverloads constructor(
             )
 
             // Check if syncing is enabled for episode open:
-            if (isSyncEnabled && syncTriggerOpt.syncOnChapterOpen && readerChapter.episode.last_second_seen.toInt() == 0) {
+            if (isSyncEnabled && syncTriggerOpt.syncOnEpisodeOpen && readerChapter.episode.last_second_seen.toInt() == 0) {
                 SyncDataJob.startNow(Injekt.get<Application>())
             }
         }

@@ -14,21 +14,21 @@ import tachiyomi.source.local.isLocal
  * @return an observable of the list of episodes filtered and sorted.
  */
 fun List<Episode>.applyFilters(
-    manga: Anime,
+    anime: Anime,
     downloadManager: DownloadManager, /* SY --> */
     mergedAnime: Map<Long, Anime>, /* SY <-- */
 ): List<Episode> {
-    val isLocalAnime = manga.isLocal()
-    val unseenFilter = manga.unseenFilter
-    val downloadedFilter = manga.downloadedFilter
-    val bookmarkedFilter = manga.bookmarkedFilter
+    val isLocalAnime = anime.isLocal()
+    val unseenFilter = anime.unseenFilter
+    val downloadedFilter = anime.downloadedFilter
+    val bookmarkedFilter = anime.bookmarkedFilter
 
     return filter { episode -> applyFilter(unseenFilter) { !episode.seen } }
         .filter { episode -> applyFilter(bookmarkedFilter) { episode.bookmark } }
         .filter { episode ->
             // SY -->
             @Suppress("NAME_SHADOWING")
-            val anime = mergedAnime.getOrElse(episode.animeId) { manga }
+            val anime = mergedAnime.getOrElse(episode.animeId) { anime }
             // SY <--
             applyFilter(downloadedFilter) {
                 val downloaded = downloadManager.isEpisodeDownloaded(
@@ -40,7 +40,7 @@ fun List<Episode>.applyFilters(
                 downloaded || isLocalAnime
             }
         }
-        .sortedWith(getEpisodeSort(manga))
+        .sortedWith(getEpisodeSort(anime))
 }
 
 /**

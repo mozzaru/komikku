@@ -59,7 +59,7 @@ class SyncPreferences(
 
             // SY -->
             customInfo = preferenceStore.getBoolean("customInfo", true).get(),
-            seenEntries = preferenceStore.getBoolean("readEntries", true).get(),
+            seenEntries = preferenceStore.getBoolean("seenEntries", true).get(),
             savedSearchesFeeds = preferenceStore.getBoolean("savedSearchesFeeds", true).get(),
             // SY <--
         )
@@ -78,25 +78,25 @@ class SyncPreferences(
 
         // SY -->
         preferenceStore.getBoolean("customInfo", true).set(syncSettings.customInfo)
-        preferenceStore.getBoolean("readEntries", true).set(syncSettings.seenEntries)
+        preferenceStore.getBoolean("seenEntries", true).set(syncSettings.seenEntries)
         preferenceStore.getBoolean("savedSearchesFeeds", true).set(syncSettings.savedSearchesFeeds)
         // SY <--
     }
 
     fun getSyncTriggerOptions(): SyncTriggerOptions {
         return SyncTriggerOptions(
-            syncOnChapterRead = preferenceStore.getBoolean("sync_on_chapter_read", false).get(),
-            syncOnChapterOpen = preferenceStore.getBoolean("sync_on_chapter_open", false).get(),
+            syncOnEpisodeSeen = preferenceStore.getBoolean("sync_on_episode_seen", false).get(),
+            syncOnEpisodeOpen = preferenceStore.getBoolean("sync_on_episode_open", false).get(),
             syncOnAppStart = preferenceStore.getBoolean("sync_on_app_start", false).get(),
             syncOnAppResume = preferenceStore.getBoolean("sync_on_app_resume", false).get(),
         )
     }
 
     fun setSyncTriggerOptions(syncTriggerOptions: SyncTriggerOptions) {
-        preferenceStore.getBoolean("sync_on_chapter_read", false)
-            .set(syncTriggerOptions.syncOnChapterRead)
-        preferenceStore.getBoolean("sync_on_chapter_open", false)
-            .set(syncTriggerOptions.syncOnChapterOpen)
+        preferenceStore.getBoolean("sync_on_episode_seen", false)
+            .set(syncTriggerOptions.syncOnEpisodeSeen)
+        preferenceStore.getBoolean("sync_on_episode_open", false)
+            .set(syncTriggerOptions.syncOnEpisodeOpen)
         preferenceStore.getBoolean("sync_on_app_start", false)
             .set(syncTriggerOptions.syncOnAppStart)
         preferenceStore.getBoolean("sync_on_app_resume", false)

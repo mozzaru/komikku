@@ -46,7 +46,7 @@ class SetSeenStatus(
      *  - [LibraryUpdateJob.updateEpisodeList]: when a anime is updated and has new episode but already seen,
      *  it will mark that new **duplicated** episode as seen & delete downloading/downloaded -> should be treat as
      *  automatically ~ no auto delete
-     *  - [ReaderViewModel.updateChapterProgress]: mark **duplicated** episode as seen after finish watching -> should be
+     *  - [ReaderViewModel.updateEpisodeProgress]: mark **duplicated** episode as seen after finish watching -> should be
      *  treated as not manually mark as seen so not auto-delete (there are cases where episode number is mistaken by volume number)
      */
     suspend fun await(
