@@ -12,7 +12,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.util.fastAny
 import eu.kanade.presentation.browse.RelatedAnimeTitle
 import eu.kanade.presentation.browse.RelatedAnimesLoadingItem
-import eu.kanade.tachiyomi.ui.anime.RelatedAnime
+import eu.kanade.tachiyomi.ui.manga.RelatedManga
 import tachiyomi.domain.manga.model.Manga
 import tachiyomi.i18n.MR
 import tachiyomi.i18n.kmk.KMR
@@ -23,7 +23,7 @@ import tachiyomi.presentation.core.i18n.stringResource
 
 @Composable
 fun RelatedAnimesList(
-    relatedAnimes: List<RelatedAnime>,
+    relatedMangas: List<RelatedManga>,
     getManga: @Composable (Manga) -> State<Manga>,
     contentPadding: PaddingValues,
     onMangaClick: (Manga) -> Unit,
@@ -36,8 +36,8 @@ fun RelatedAnimesList(
         // Using modifier instead of contentPadding so we can use stickyHeader
         modifier = Modifier.padding(contentPadding),
     ) {
-        relatedAnimes.forEach { related ->
-            val isLoading = related is RelatedAnime.Loading
+        relatedMangas.forEach { related ->
+            val isLoading = related is RelatedManga.Loading
             if (isLoading) {
                 item(key = "${related.hashCode()}#divider") { HorizontalDivider() }
                 stickyHeader(key = "$STICKY_HEADER_KEY_PREFIX${related.hashCode()}#header") {
@@ -56,22 +56,22 @@ fun RelatedAnimesList(
                 }
                 item(key = "${related.hashCode()}#content") { RelatedAnimesLoadingItem() }
             } else {
-                val relatedAnime = related as RelatedAnime.Success
+                val relatedManga = related as RelatedManga.Success
                 item(key = "${related.hashCode()}#divider") { HorizontalDivider() }
                 stickyHeader(key = "$STICKY_HEADER_KEY_PREFIX${related.hashCode()}#header") {
                     RelatedAnimeTitle(
-                        title = if (relatedAnime.keyword.isNotBlank()) {
+                        title = if (relatedManga.keyword.isNotBlank()) {
                             stringResource(KMR.strings.related_mangas_more)
                         } else {
                             stringResource(KMR.strings.related_mangas_website_suggestions)
                         },
-                        showArrow = relatedAnime.keyword.isNotBlank(),
+                        showArrow = relatedManga.keyword.isNotBlank(),
                         subtitle = null,
                         onClick = {
-                            if (relatedAnime.keyword.isNotBlank()) onKeywordClick(relatedAnime.keyword)
+                            if (relatedManga.keyword.isNotBlank()) onKeywordClick(relatedManga.keyword)
                         },
                         onLongClick = {
-                            if (relatedAnime.keyword.isNotBlank()) onKeywordLongClick(relatedAnime.keyword)
+                            if (relatedManga.keyword.isNotBlank()) onKeywordLongClick(relatedManga.keyword)
                         },
                         modifier = Modifier
                             .padding(
@@ -82,10 +82,10 @@ fun RelatedAnimesList(
                     )
                 }
                 items(
-                    key = { "related-list-${relatedAnime.mangaList[it].url.hashCode()}" },
-                    count = relatedAnime.mangaList.size,
+                    key = { "related-list-${relatedManga.mangaList[it].url.hashCode()}" },
+                    count = relatedManga.mangaList.size,
                 ) { index ->
-                    val manga by getManga(relatedAnime.mangaList[index])
+                    val manga by getManga(relatedManga.mangaList[index])
                     BrowseSourceListItem(
                         manga = manga,
                         onClick = { onMangaClick(manga) },

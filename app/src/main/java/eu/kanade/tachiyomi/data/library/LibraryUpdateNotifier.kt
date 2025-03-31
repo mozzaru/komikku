@@ -13,7 +13,7 @@ import coil3.imageLoader
 import coil3.request.ImageRequest
 import coil3.request.transformations
 import coil3.transform.CircleCropTransformation
-import eu.kanade.presentation.util.formatEpisodeNumber
+import eu.kanade.presentation.util.formatChapterNumber
 import eu.kanade.tachiyomi.R
 import eu.kanade.tachiyomi.core.security.SecurityPreferences
 import eu.kanade.tachiyomi.data.LibraryUpdateStatus
@@ -312,7 +312,7 @@ class LibraryUpdateNotifier(
         val displayableChapterNumbers = chapters
             .filter { it.isRecognizedNumber }
             .sortedBy { it.episodeNumber }
-            .map { formatEpisodeNumber(it.episodeNumber) }
+            .map { formatChapterNumber(it.episodeNumber) }
             .toSet()
 
         return when (displayableChapterNumbers.size) {

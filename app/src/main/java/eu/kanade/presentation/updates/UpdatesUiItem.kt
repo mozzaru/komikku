@@ -39,9 +39,9 @@ import androidx.compose.ui.text.font.FontStyle
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import eu.kanade.presentation.components.relativeDateText
+import eu.kanade.presentation.manga.components.ChapterDownloadAction
+import eu.kanade.presentation.manga.components.ChapterDownloadIndicator
 import eu.kanade.presentation.manga.components.DotSeparatorText
-import eu.kanade.presentation.manga.components.EpisodeDownloadAction
-import eu.kanade.presentation.manga.components.EpisodeDownloadIndicator
 import eu.kanade.presentation.manga.components.MangaCover
 import eu.kanade.presentation.manga.components.RatioSwitchToPanorama
 import eu.kanade.presentation.util.animateItemFastScroll
@@ -85,7 +85,7 @@ internal fun LazyListScope.updatesUiItems(
     onUpdateSelected: (UpdatesItem, Boolean, Boolean, Boolean) -> Unit,
     onClickCover: (UpdatesItem) -> Unit,
     onClickUpdate: (UpdatesItem) -> Unit,
-    onDownloadChapter: (List<UpdatesItem>, EpisodeDownloadAction) -> Unit,
+    onDownloadChapter: (List<UpdatesItem>, ChapterDownloadAction) -> Unit,
 ) {
     items(
         items = uiModels,
@@ -136,7 +136,7 @@ internal fun LazyListScope.updatesUiItems(
                         }
                     },
                     onClickCover = { onClickCover(updatesItem) }.takeIf { !selectionMode },
-                    onDownloadChapter = { action: EpisodeDownloadAction ->
+                    onDownloadChapter = { action: ChapterDownloadAction ->
                         onDownloadChapter(listOf(updatesItem), action)
                     }.takeIf { !selectionMode },
                     downloadStateProvider = updatesItem.downloadStateProvider,
@@ -162,7 +162,7 @@ private fun UpdatesUiItem(
     onClick: () -> Unit,
     onLongClick: () -> Unit,
     onClickCover: (() -> Unit)?,
-    onDownloadChapter: ((EpisodeDownloadAction) -> Unit)?,
+    onDownloadChapter: ((ChapterDownloadAction) -> Unit)?,
     // Download Indicator
     downloadStateProvider: () -> Download.State,
     downloadProgressProvider: () -> Int,
@@ -314,7 +314,7 @@ private fun UpdatesUiItem(
         }
         // KMK <--
 
-        EpisodeDownloadIndicator(
+        ChapterDownloadIndicator(
             enabled = onDownloadChapter != null,
             modifier = Modifier.padding(start = 4.dp),
             downloadStateProvider = downloadStateProvider,

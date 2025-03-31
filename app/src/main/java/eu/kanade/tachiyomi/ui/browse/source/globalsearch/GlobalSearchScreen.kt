@@ -16,7 +16,6 @@ import cafe.adriel.voyager.navigator.currentOrThrow
 import eu.kanade.core.util.ifSourcesLoaded
 import eu.kanade.presentation.browse.GlobalSearchScreen
 import eu.kanade.presentation.util.Screen
-import eu.kanade.tachiyomi.ui.anime.AnimeScreen
 import eu.kanade.tachiyomi.ui.browse.AddDuplicateAnimeDialog
 import eu.kanade.tachiyomi.ui.browse.AllowDuplicateDialog
 import eu.kanade.tachiyomi.ui.browse.BulkFavoriteScreenModel
@@ -24,6 +23,7 @@ import eu.kanade.tachiyomi.ui.browse.ChangeAnimeCategoryDialog
 import eu.kanade.tachiyomi.ui.browse.ChangeAnimesCategoryDialog
 import eu.kanade.tachiyomi.ui.browse.RemoveAnimeDialog
 import eu.kanade.tachiyomi.ui.browse.source.browse.BrowseSourceScreen
+import eu.kanade.tachiyomi.ui.manga.MangaScreen
 import tachiyomi.core.common.util.lang.launchIO
 import tachiyomi.presentation.core.screens.LoadingScreen
 
@@ -77,7 +77,7 @@ class GlobalSearchScreen(
                             scope.launchIO {
                                 val localManga = screenModel.networkToLocalManga.getLocal(manga)
                                 // KMK <--
-                                navigator.replace(AnimeScreen(localManga.id, true))
+                                navigator.replace(MangaScreen(localManga.id, true))
                             }
                         } else {
                             // Backoff to result screen
@@ -107,7 +107,7 @@ class GlobalSearchScreen(
                             bulkFavoriteScreenModel.toggleSelection(manga)
                         } else {
                             // KMK <--
-                            navigator.push(AnimeScreen(manga.id, true))
+                            navigator.push(MangaScreen(manga.id, true))
                         }
                     }
                 },
@@ -119,7 +119,7 @@ class GlobalSearchScreen(
                             bulkFavoriteScreenModel.addRemoveManga(manga, haptic)
                         } else {
                             // KMK <--
-                            navigator.push(AnimeScreen(manga.id, true))
+                            navigator.push(MangaScreen(manga.id, true))
                         }
                     }
                 },

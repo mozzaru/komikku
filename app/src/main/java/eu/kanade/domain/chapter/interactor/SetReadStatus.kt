@@ -2,8 +2,8 @@ package eu.kanade.domain.chapter.interactor
 
 import eu.kanade.domain.download.interactor.DeleteDownload
 import eu.kanade.tachiyomi.data.library.LibraryUpdateJob
-import eu.kanade.tachiyomi.ui.anime.AnimeScreenModel
 import eu.kanade.tachiyomi.ui.library.LibraryScreenModel
+import eu.kanade.tachiyomi.ui.manga.MangaScreenModel
 import eu.kanade.tachiyomi.ui.reader.ReaderViewModel
 import eu.kanade.tachiyomi.ui.updates.UpdatesScreenModel
 import exh.source.MERGED_SOURCE_ID
@@ -41,7 +41,7 @@ class SetReadStatus(
      *
      * Called from:
      *  - [LibraryScreenModel]: Manually select animes & mark as seen
-     *  - [AnimeScreenModel.markEpisodesSeen]: Manually select chapters & mark as seen or swipe chapter as seen
+     *  - [MangaScreenModel.markEpisodesSeen]: Manually select chapters & mark as seen or swipe chapter as seen
      *  - [UpdatesScreenModel.markUpdatesSeen]: Manually select chapters & mark as seen
      *  - [LibraryUpdateJob.updateEpisodeList]: when a manga is updated and has new chapter but already seen,
      *  it will mark that new **duplicated** chapter as seen & delete downloading/downloaded -> should be treat as
