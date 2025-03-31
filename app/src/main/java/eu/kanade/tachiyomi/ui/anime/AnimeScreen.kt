@@ -232,7 +232,7 @@ class AnimeScreen(
                         assistUrl = getMangaUrl(screenModel.manga, screenModel.source)
                     }
                 } catch (e: Exception) {
-                    logcat(LogPriority.ERROR, e) { "Failed to get manga URL" }
+                    logcat(LogPriority.ERROR, e) { "Failed to get anime URL" }
                 }
             }
         }

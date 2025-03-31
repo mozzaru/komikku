@@ -40,8 +40,8 @@ class SyncEpisodesWithSource(
      * Method to synchronize db chapters with source ones
      *
      * @param rawSourceEpisodes the chapters from the source.
-     * @param manga the anime the chapters belong to.
-     * @param source the source the anime belongs to.
+     * @param manga the manga the chapters belong to.
+     * @param source the source the manga belongs to.
      * @return Newly added chapters
      */
     suspend fun await(
@@ -117,7 +117,7 @@ class SyncEpisodesWithSource(
                             dbEpisode.name,
                             dbEpisode.scanlator,
                             // SY -->
-                            // anime.title,
+                            // manga.title,
                             manga.ogTitle,
                             // SY <--
                             manga.source,
@@ -205,7 +205,7 @@ class SyncEpisodesWithSource(
         }
         updateAnime.awaitUpdateFetchInterval(manga, now, fetchWindow)
 
-        // Set this anime as updated since chapters were changed
+        // Set this manga as updated since chapters were changed
         // Note that last_update actually represents last time the chapter list changed at all
         updateAnime.awaitUpdateLastUpdate(manga.id)
 

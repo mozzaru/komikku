@@ -170,7 +170,7 @@ abstract class SyncService(
         val (favorites, nonFavorites) = mergedList.partition { it.favorite }
 
         logcat(LogPriority.DEBUG, logTag) {
-            "Merge completed. Total merged manga: ${mergedList.size}, Favorites: ${favorites.size}, " +
+            "Merge completed. Total merged anime: ${mergedList.size}, Favorites: ${favorites.size}, " +
                 "Non-Favorites: ${nonFavorites.size}"
         }
 

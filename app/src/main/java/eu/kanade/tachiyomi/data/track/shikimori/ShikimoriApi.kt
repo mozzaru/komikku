@@ -115,7 +115,7 @@ class ShikimoriApi(
                     .parseAs<List<SMUserListEntry>>()
                     .let { entries ->
                         if (entries.size > 1) {
-                            throw Exception("Too many manga in response")
+                            throw Exception("Too many anime in response")
                         }
                         entries
                             .map { it.toTrack(trackId, manga) }

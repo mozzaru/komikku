@@ -23,7 +23,7 @@ fun Manga.animeType(context: Context): String {
 }
 
 /**
- * The type of comic the anime is (ie. manga, manhwa, manhua)
+ * The type of comic the manga is (ie. manga, manhwa, manhua)
  */
 fun Manga.animeType(sourceName: String? = Injekt.get<SourceManager>().get(source)?.name): AnimeType {
     val currentTags = genre.orEmpty()

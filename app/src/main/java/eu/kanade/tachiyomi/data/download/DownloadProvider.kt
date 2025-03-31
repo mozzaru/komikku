@@ -17,7 +17,7 @@ import uy.kohesive.injekt.api.get
 
 /**
  * This class is used to provide the directories where the downloads should be saved.
- * It uses the following path scheme: /<root downloads dir>/<source name>/<anime>/<chapter>
+ * It uses the following path scheme: /<root downloads dir>/<source name>/<manga>/<chapter>
  *
  * @param context the application context.
  */
@@ -30,10 +30,10 @@ class DownloadProvider(
         get() = storageManager.getDownloadsDirectory()
 
     /**
-     * Returns the download directory for a anime. For internal use only.
+     * Returns the download directory for a manga. For internal use only.
      *
-     * @param animeTitle the title of the anime to query.
-     * @param source the source of the anime.
+     * @param animeTitle the title of the manga to query.
+     * @param source the source of the manga.
      */
     internal fun getAnimeDir(animeTitle: String, source: Source): UniFile {
         try {
@@ -62,10 +62,10 @@ class DownloadProvider(
     }
 
     /**
-     * Returns the download directory for a anime if it exists.
+     * Returns the download directory for a manga if it exists.
      *
-     * @param animeTitle the title of the anime to query.
-     * @param source the source of the anime.
+     * @param animeTitle the title of the manga to query.
+     * @param source the source of the manga.
      */
     fun findAnimeDir(animeTitle: String, source: Source): UniFile? {
         val sourceDir = findSourceDir(source)
@@ -77,7 +77,7 @@ class DownloadProvider(
      *
      * @param episodeName the name of the chapter to query.
      * @param episodeScanlator scanlator of the chapter to query
-     * @param animeTitle the title of the anime to query.
+     * @param animeTitle the title of the manga to query.
      * @param source the source of the chapter.
      */
     fun findEpisodeDir(episodeName: String, episodeScanlator: String?, animeTitle: String, source: Source): UniFile? {
@@ -91,7 +91,7 @@ class DownloadProvider(
      * Returns a list of downloaded directories for the chapters that exist.
      *
      * @param chapters the chapters to query.
-     * @param manga the anime of the chapter.
+     * @param manga the manga of the chapter.
      * @param source the source of the chapter.
      */
     fun findEpisodeDirs(chapters: List<Chapter>, manga: Manga, source: Source): Pair<UniFile?, List<UniFile>> {
@@ -105,10 +105,10 @@ class DownloadProvider(
 
     // SY -->
     /**
-     * Returns a list of all files in anime directory
+     * Returns a list of all files in manga directory
      *
      * @param chapters the chapters to query.
-     * @param manga the anime of the chapter.
+     * @param manga the manga of the chapter.
      * @param source the source of the chapter.
      */
     fun findUnmatchedEpisodeDirs(
@@ -138,9 +138,9 @@ class DownloadProvider(
     }
 
     /**
-     * Returns the download directory name for a anime.
+     * Returns the download directory name for a manga.
      *
-     * @param animeTitle the title of the anime to query.
+     * @param animeTitle the title of the manga to query.
      */
     fun getAnimeDirName(animeTitle: String): String {
         return DiskUtil.buildValidFilename(animeTitle)

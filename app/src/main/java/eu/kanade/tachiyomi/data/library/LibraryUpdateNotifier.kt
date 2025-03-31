@@ -88,13 +88,13 @@ class LibraryUpdateNotifier(
     }
 
     /**
-     * Shows the notification containing the currently updating manga and the progress.
+     * Shows the notification containing the currently updating mangas and the progress.
      *
-     * @param manga the manga that are being updated.
+     * @param mangas the mangas that are being updated.
      * @param current the current progress.
      * @param total the total progress.
      */
-    suspend fun showProgressNotification(manga: List<Manga>, current: Int, total: Int) {
+    suspend fun showProgressNotification(mangas: List<Manga>, current: Int, total: Int) {
         progressNotificationBuilder
             .setContentTitle(
                 context.stringResource(
@@ -108,7 +108,7 @@ class LibraryUpdateNotifier(
         // KMK <--
 
         if (!securityPreferences.hideNotificationContent().get()) {
-            val updatingText = manga.joinToString("\n") { it.title.chop(40) }
+            val updatingText = mangas.joinToString("\n") { it.title.chop(40) }
             progressNotificationBuilder.setStyle(NotificationCompat.BigTextStyle().bigText(updatingText))
         }
 

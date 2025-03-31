@@ -168,7 +168,7 @@ fun AnimeInfoBox(
                 .alpha(0.2f),
         )
 
-        // Anime & source info
+        // Manga & source info
         CompositionLocalProvider(LocalContentColor provides MaterialTheme.colorScheme.onSurface) {
             if (!isTabletUi) {
                 AnimeAndSourceTitlesSmall(

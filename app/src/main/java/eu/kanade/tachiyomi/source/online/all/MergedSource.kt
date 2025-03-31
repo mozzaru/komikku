@@ -60,7 +60,7 @@ class MergedSource : HttpSource() {
     override fun pageListParse(response: Response) = throw UnsupportedOperationException()
     override fun pageUrlParse(response: Response) = throw UnsupportedOperationException()
 
-    @Deprecated("Use the 1.x API instead", replaceWith = ReplaceWith("getEpisodeList(anime)"))
+    @Deprecated("Use the 1.x API instead", replaceWith = ReplaceWith("getEpisodeList(manga)"))
     override fun fetchChapterList(manga: SManga) = throw UnsupportedOperationException()
     override suspend fun getChapterList(manga: SManga) = throw UnsupportedOperationException()
     override suspend fun getImage(page: Page): Response = throw UnsupportedOperationException()
@@ -84,7 +84,7 @@ class MergedSource : HttpSource() {
     override suspend fun getMangaDetails(manga: SManga): SManga {
         return withIOContext {
             val mergedAnime = requireNotNull(getAnime.await(manga.url, id)) { "merged anime not in db" }
-            val animeReferences = getMergedReferencesById.await(mergedAnime.id)
+            val mangaReferences = getMergedReferencesById.await(mergedAnime.id)
                 .apply {
                     require(isNotEmpty()) { "Anime references are empty, info unavailable, merge is likely corrupted" }
                     require(!(size == 1 && first().mangaSourceId == MERGED_SOURCE_ID)) {
@@ -92,8 +92,8 @@ class MergedSource : HttpSource() {
                     }
                 }
 
-            val animeInfoReference = animeReferences.firstOrNull { it.isInfoManga }
-                ?: animeReferences.firstOrNull { it.mangaId != it.mergeId }
+            val animeInfoReference = mangaReferences.firstOrNull { it.isInfoManga }
+                ?: mangaReferences.firstOrNull { it.mangaId != it.mergeId }
             val dbAnime = animeInfoReference?.run {
                 getAnime.await(mangaUrl, mangaSourceId)?.toSAnime()
             }

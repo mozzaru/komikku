@@ -192,13 +192,13 @@ actual class LocalSource(
     }
     // SY <--
 
-    // Anime details related
+    // Manga details related
     override suspend fun getMangaDetails(manga: SManga): SManga = withIOContext {
         coverManager.find(manga.url)?.let {
             manga.thumbnail_url = it.uri.toString()
         }
 
-        // Augment anime details based on metadata files
+        // Augment manga details based on metadata files
         try {
             val animeDir = fileSystem.getMangaDirectory(manga.url) ?: error("${manga.url} is not a valid directory")
             val animeDirFiles = animeDir.listFiles().orEmpty()

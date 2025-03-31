@@ -168,7 +168,7 @@ class AnimeCoverFetcher(
             val response = executeNetworkRequest()
             val responseBody = checkNotNull(response.body) { "Null response source" }
             try {
-                // Read from cover cache after library anime cover updated
+                // Read from cover cache after library manga cover updated
                 val responseCoverCache = writeResponseToCoverCache(response, libraryCoverCacheFile)
                 if (responseCoverCache != null) {
                     return fileLoader(responseCoverCache)

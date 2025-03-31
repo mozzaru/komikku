@@ -545,7 +545,7 @@ class LibraryUpdateJob(private val context: Context, workerParams: WorkerParamet
                                         try {
                                             updateAnime.await(updatedManga.toMangaUpdate())
                                         } catch (e: Exception) {
-                                            logcat(LogPriority.ERROR) { "Manga doesn't exist anymore" }
+                                            logcat(LogPriority.ERROR) { "Anime doesn't exist anymore" }
                                         }
                                     } catch (e: Throwable) {
                                         // Ignore errors and continue

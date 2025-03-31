@@ -272,7 +272,7 @@ class Downloader(
     /**
      * Creates a download object for every chapter and adds them to the downloads queue.
      *
-     * @param manga the anime of the chapters to download.
+     * @param manga the manga of the chapters to download.
      * @param chapters the list of chapters to download.
      * @param autoStart whether to start the downloader after enqueing the chapters.
      */

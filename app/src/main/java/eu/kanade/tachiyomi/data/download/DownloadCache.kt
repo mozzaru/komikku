@@ -137,7 +137,7 @@ class DownloadCache(
      *
      * @param episodeName the name of the chapter to query.
      * @param episodeScanlator scanlator of the chapter to query
-     * @param animeTitle the title of the anime to query.
+     * @param animeTitle the title of the manga to query.
      * @param sourceId the id of the source of the chapter.
      * @param skipCache whether to skip the directory cache and check in the filesystem.
      */
@@ -182,11 +182,11 @@ class DownloadCache(
     }
 
     /**
-     * Returns the amount of downloaded chapters for a anime.
+     * Returns the amount of downloaded chapters for a manga.
      * This method is quick, but might count other junk files
      * It's still maybe useful while developing the clean-up features
      *
-     * @param manga the anime to check.
+     * @param manga the manga to check.
      */
     fun getDownloadCount(manga: Manga): Int {
         renewCache()
@@ -207,8 +207,8 @@ class DownloadCache(
      * Adds a chapter that has just been download to this cache.
      *
      * @param episodeDirName the downloaded chapter's directory name.
-     * @param animeUniFile the directory of the anime.
-     * @param manga the anime of the chapter.
+     * @param animeUniFile the directory of the manga.
+     * @param manga the manga of the chapter.
      */
     suspend fun addEpisode(episodeDirName: String, animeUniFile: UniFile, manga: Manga) {
         rootDownloadsDirMutex.withLock {
@@ -221,7 +221,7 @@ class DownloadCache(
                 rootDownloadsDir.sourceDirs += manga.source to sourceDir
             }
 
-            // Retrieve the cached anime directory or cache a new one
+            // Retrieve the cached manga directory or cache a new one
             val animeDirName = provider.getAnimeDirName(/* SY --> */ manga.ogTitle /* SY <-- */)
             var animeDir = sourceDir.animeDirs[animeDirName]
             if (animeDir == null) {
@@ -240,7 +240,7 @@ class DownloadCache(
      * Removes a chapter that has been deleted from this cache.
      *
      * @param chapter the chapter to remove.
-     * @param manga the anime of the chapter.
+     * @param manga the manga of the chapter.
      */
     suspend fun removeEpisode(chapter: Chapter, manga: Manga) {
         rootDownloadsDirMutex.withLock {
@@ -279,7 +279,7 @@ class DownloadCache(
      * Removes a list of chapters that have been deleted from this cache.
      *
      * @param chapters the list of chapter to remove.
-     * @param manga the anime of the chapter.
+     * @param manga the manga of the chapter.
      */
     suspend fun removeEpisodes(chapters: List<Chapter>, manga: Manga) {
         rootDownloadsDirMutex.withLock {
@@ -302,9 +302,9 @@ class DownloadCache(
     }
 
     /**
-     * Removes a anime that has been deleted from this cache.
+     * Removes a manga that has been deleted from this cache.
      *
-     * @param manga the anime to remove.
+     * @param manga the manga to remove.
      */
     suspend fun removeAnime(manga: Manga) {
         rootDownloadsDirMutex.withLock {
@@ -494,7 +494,7 @@ private class SourceDirectory(
 )
 
 /**
- * Class to store the files under a anime directory.
+ * Class to store the files under a manga directory.
  */
 @Serializable
 private class AnimeDirectory(

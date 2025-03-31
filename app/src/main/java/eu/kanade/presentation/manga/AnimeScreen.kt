@@ -1160,7 +1160,7 @@ private fun LazyListScope.sharedEpisodeItems(
         key = { item ->
             when (item) {
                 // KMK: using hashcode to prevent edge-cases where the missing count might duplicate,
-                // especially on merged anime
+                // especially on merged manga
                 is EpisodeList.MissingCount -> "missing-count-${item.hashCode()}"
                 is EpisodeList.Item -> "episode-${item.id}"
             }

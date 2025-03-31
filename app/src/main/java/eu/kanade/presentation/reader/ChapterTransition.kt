@@ -294,7 +294,7 @@ private val FakeGapChapter = previewChapter(
     chapterNumber = 44.0,
 )
 private val FakeChapterLongTitle = previewChapter(
-    name = "Vol.1, Ch.0 - The Mundane Musings of a Metafictional Manga: A Episode About a Episode, Featuring" +
+    name = "Vol.1, Ch.0 - The Mundane Musings of a Metafictional Anime: A Episode About a Episode, Featuring" +
         " an Absurdly Long Title and a Surprisingly Normal Day in the Lives of Our Heroes, as They Grapple with the " +
         "Daily Challenges of Existence, from Paying Rent to Finding Love, All While Navigating the Strange World of " +
         "Fictional Realities and Reality-Bending Fiction, Where the Fourth Wall is Always in Danger of Being Broken " +

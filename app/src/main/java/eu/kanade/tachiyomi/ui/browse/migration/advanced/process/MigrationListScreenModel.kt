@@ -295,7 +295,7 @@ class MigrationListScreenModel(
                         // Ignore cancellations
                         throw e
                     } catch (e: Exception) {
-                        Timber.tag("MigrationListScreenModel").e(e, "Error updating manga from source")
+                        Timber.tag("MigrationListScreenModel").e(e, "Error updating anime from source")
                     }
                 }
 
@@ -465,7 +465,7 @@ class MigrationListScreenModel(
                     // Ignore cancellations
                     throw e
                 } catch (e: Exception) {
-                    Timber.tag("MigrationListScreenModel").e(e, "Error updating manga from source")
+                    Timber.tag("MigrationListScreenModel").e(e, "Error updating anime from source")
                 }
 
                 migratingManga.searchResult.value = SearchResult.Result(result.id)
