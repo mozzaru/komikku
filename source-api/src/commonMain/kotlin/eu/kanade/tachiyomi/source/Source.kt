@@ -33,39 +33,39 @@ interface Source {
         get() = ""
 
     /**
-     * Get the updated details for a anime.
+     * Get the updated details for a manga.
      *
      * @since extensions-lib 1.4
-     * @param anime the anime to update.
-     * @return the updated anime.
+     * @param manga the manga to update.
+     * @return the updated manga.
      */
     suspend fun getMangaDetails(manga: SManga): SManga = throw UnsupportedOperationException()
 
     /**
-     * Get all the available episodes for a anime.
+     * Get all the available episodes for a manga.
      *
      * @since extensions-lib 1.4
-     * @param anime the anime to update.
-     * @return the episodes for the anime.
+     * @param manga the manga to update.
+     * @return the episodes for the manga.
      */
     suspend fun getChapterList(manga: SManga): List<SChapter> = throw UnsupportedOperationException()
 
     /**
-     * Get the list of pages a episode has. Pages should be returned
+     * Get the list of pages a chapter has. Pages should be returned
      * in the expected order; the index is ignored.
      *
      * @since komikku/extensions-lib 1.7
-     * @param episode the episode.
-     * @return the pages for the episode.
+     * @param chapter the chapter.
+     * @return the pages for the chapter.
      */
     suspend fun getPageList(chapter: SChapter): List<Page> = throw UnsupportedOperationException()
 
     // KMK -->
     /**
-     * Get all the available related animes for a anime.
+     * Get all the available related animes for a manga.
      *
      * @since komikku/extensions-lib 1.6
-     * @param anime the current anime to get related animes.
+     * @param manga the current manga to get related animes.
      * @return a list of <keyword, related animes>
      */
     suspend fun getRelatedMangaList(

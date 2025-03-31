@@ -1,10 +1,10 @@
-package eu.kanade.domain.episode.interactor
+package eu.kanade.domain.chapter.interactor
 
-import eu.kanade.domain.anime.interactor.GetExcludedScanlators
-import eu.kanade.domain.anime.interactor.UpdateAnime
-import eu.kanade.domain.anime.model.toSAnime
-import eu.kanade.domain.episode.model.copyFromSEpisode
-import eu.kanade.domain.episode.model.toSEpisode
+import eu.kanade.domain.chapter.model.copyFromSEpisode
+import eu.kanade.domain.chapter.model.toSEpisode
+import eu.kanade.domain.manga.interactor.GetExcludedScanlators
+import eu.kanade.domain.manga.interactor.UpdateAnime
+import eu.kanade.domain.manga.model.toSAnime
 import eu.kanade.tachiyomi.data.download.DownloadManager
 import eu.kanade.tachiyomi.data.download.DownloadProvider
 import eu.kanade.tachiyomi.source.Source

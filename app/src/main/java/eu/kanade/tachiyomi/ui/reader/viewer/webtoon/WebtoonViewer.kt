@@ -233,7 +233,7 @@ class WebtoonViewer(
             val nextItem = adapter.items.getOrNull(adapter.items.size - 1)
             val transitionChapter = (nextItem as? ChapterTransition.Next)?.to ?: (nextItem as?ReaderPage)?.chapter
             if (transitionChapter != null) {
-                logcat { "Requesting to preload chapter ${transitionChapter.episode.chapter_number}" }
+                logcat { "Requesting to preload chapter ${transitionChapter.chapter.chapter_number}" }
                 activity.requestPreloadChapter(transitionChapter)
             }
         }
@@ -247,7 +247,7 @@ class WebtoonViewer(
         logcat { "onTransitionSelected: $transition" }
         val toChapter = transition.to
         if (toChapter != null) {
-            logcat { "Request preload destination episode because we're on the transition" }
+            logcat { "Request preload destination chapter because we're on the transition" }
             activity.requestPreloadChapter(toChapter)
         }
     }

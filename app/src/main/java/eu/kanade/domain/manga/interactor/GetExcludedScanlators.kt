@@ -1,4 +1,4 @@
-package eu.kanade.domain.anime.interactor
+package eu.kanade.domain.manga.interactor
 
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map

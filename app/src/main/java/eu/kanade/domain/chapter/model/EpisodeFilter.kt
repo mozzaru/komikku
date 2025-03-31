@@ -1,6 +1,6 @@
-package eu.kanade.domain.episode.model
+package eu.kanade.domain.chapter.model
 
-import eu.kanade.domain.anime.model.downloadedFilter
+import eu.kanade.domain.manga.model.downloadedFilter
 import eu.kanade.tachiyomi.data.download.DownloadManager
 import eu.kanade.tachiyomi.ui.anime.EpisodeList
 import tachiyomi.domain.chapter.model.Chapter

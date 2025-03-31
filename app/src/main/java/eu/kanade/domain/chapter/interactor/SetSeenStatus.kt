@@ -1,4 +1,4 @@
-package eu.kanade.domain.episode.interactor
+package eu.kanade.domain.chapter.interactor
 
 import eu.kanade.domain.download.interactor.DeleteDownload
 import eu.kanade.tachiyomi.data.library.LibraryUpdateJob

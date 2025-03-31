@@ -1,8 +1,8 @@
 package eu.kanade.tachiyomi.ui.reader.loader
 
 import eu.kanade.domain.source.service.SourcePreferences
-import eu.kanade.tachiyomi.data.cache.EpisodeCache
-import eu.kanade.tachiyomi.data.database.models.toDomainEpisode
+import eu.kanade.tachiyomi.data.cache.ChapterCache
+import eu.kanade.tachiyomi.data.database.models.toDomainChapter
 import eu.kanade.tachiyomi.source.model.Page
 import eu.kanade.tachiyomi.source.online.HttpSource
 import eu.kanade.tachiyomi.ui.reader.model.ReaderChapter
@@ -35,7 +35,7 @@ import kotlin.math.min
 internal class HttpPageLoader(
     private val chapter: ReaderChapter,
     private val source: HttpSource,
-    private val episodeCache: EpisodeCache = Injekt.get(),
+    private val chapterCache: ChapterCache = Injekt.get(),
     // SY -->
     private val readerPreferences: ReaderPreferences = Injekt.get(),
     private val sourcePreferences: SourcePreferences = Injekt.get(),
@@ -81,12 +81,12 @@ internal class HttpPageLoader(
      */
     override suspend fun getPages(): List<ReaderPage> {
         val pages = try {
-            episodeCache.getPageListFromCache(chapter.episode.toDomainEpisode()!!)
+            chapterCache.getPageListFromCache(chapter.chapter.toDomainChapter()!!)
         } catch (e: Throwable) {
             if (e is CancellationException) {
                 throw e
             }
-            source.getPageList(chapter.episode)
+            source.getPageList(chapter.chapter)
         }
         // SY -->
         val rp = pages.mapIndexed { index, page ->
@@ -111,7 +111,7 @@ internal class HttpPageLoader(
         val imageUrl = page.pageUrl
 
         // Check if the image has been deleted
-        if (page.status == Page.State.READY && imageUrl != null && !episodeCache.isImageInCache(imageUrl)) {
+        if (page.status == Page.State.READY && imageUrl != null && !chapterCache.isImageInCache(imageUrl)) {
             page.status = Page.State.QUEUE
         }
 
@@ -165,7 +165,7 @@ internal class HttpPageLoader(
                 try {
                     // Convert to pages without reader information
                     val pagesToSave = pages.map { Page(it.index, it.url, it.pageUrl) }
-                    episodeCache.putPageListToCache(chapter.episode.toDomainEpisode()!!, pagesToSave)
+                    chapterCache.putPageListToCache(chapter.chapter.toDomainChapter()!!, pagesToSave)
                 } catch (e: Throwable) {
                     if (e is CancellationException) {
                         throw e
@@ -210,13 +210,13 @@ internal class HttpPageLoader(
             }
             val imageUrl = page.pageUrl!!
 
-            if (!episodeCache.isImageInCache(imageUrl)) {
+            if (!chapterCache.isImageInCache(imageUrl)) {
                 page.status = Page.State.DOWNLOAD_IMAGE
                 val imageResponse = source.getImage(page, dataSaver)
-                episodeCache.putImageToCache(imageUrl, imageResponse)
+                chapterCache.putImageToCache(imageUrl, imageResponse)
             }
 
-            page.stream = { episodeCache.getImageFile(imageUrl).inputStream() }
+            page.stream = { chapterCache.getImageFile(imageUrl).inputStream() }
             page.status = Page.State.READY
         } catch (e: Throwable) {
             page.status = Page.State.ERROR

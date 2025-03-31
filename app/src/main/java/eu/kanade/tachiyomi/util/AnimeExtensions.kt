@@ -1,8 +1,8 @@
 package eu.kanade.tachiyomi.util
 
-import eu.kanade.domain.anime.interactor.UpdateAnime
-import eu.kanade.domain.anime.model.hasCustomCover
-import eu.kanade.domain.anime.model.toSAnime
+import eu.kanade.domain.manga.interactor.UpdateAnime
+import eu.kanade.domain.manga.model.hasCustomCover
+import eu.kanade.domain.manga.model.toSAnime
 import eu.kanade.tachiyomi.data.cache.CoverCache
 import eu.kanade.tachiyomi.source.model.SManga
 import tachiyomi.domain.manga.model.Manga

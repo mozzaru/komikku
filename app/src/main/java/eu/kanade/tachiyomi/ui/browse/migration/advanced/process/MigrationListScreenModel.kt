@@ -4,10 +4,10 @@ import android.content.Context
 import android.widget.Toast
 import cafe.adriel.voyager.core.model.ScreenModel
 import cafe.adriel.voyager.core.model.screenModelScope
-import eu.kanade.domain.anime.interactor.UpdateAnime
-import eu.kanade.domain.anime.model.hasCustomCover
-import eu.kanade.domain.anime.model.toSAnime
-import eu.kanade.domain.episode.interactor.SyncEpisodesWithSource
+import eu.kanade.domain.chapter.interactor.SyncEpisodesWithSource
+import eu.kanade.domain.manga.interactor.UpdateAnime
+import eu.kanade.domain.manga.model.hasCustomCover
+import eu.kanade.domain.manga.model.toSAnime
 import eu.kanade.tachiyomi.data.cache.CoverCache
 import eu.kanade.tachiyomi.data.download.DownloadManager
 import eu.kanade.tachiyomi.source.CatalogueSource
@@ -295,7 +295,7 @@ class MigrationListScreenModel(
                         // Ignore cancellations
                         throw e
                     } catch (e: Exception) {
-                        Timber.tag("MigrationListScreenModel").e(e, "Error updating anime from source")
+                        Timber.tag("MigrationListScreenModel").e(e, "Error updating manga from source")
                     }
                 }
 
@@ -465,7 +465,7 @@ class MigrationListScreenModel(
                     // Ignore cancellations
                     throw e
                 } catch (e: Exception) {
-                    Timber.tag("MigrationListScreenModel").e(e, "Error updating anime from source")
+                    Timber.tag("MigrationListScreenModel").e(e, "Error updating manga from source")
                 }
 
                 migratingManga.searchResult.value = SearchResult.Result(result.id)

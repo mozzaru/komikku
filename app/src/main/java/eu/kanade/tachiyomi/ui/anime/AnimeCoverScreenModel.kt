@@ -9,7 +9,7 @@ import coil3.asDrawable
 import coil3.imageLoader
 import coil3.request.ImageRequest
 import coil3.size.Size
-import eu.kanade.domain.anime.interactor.UpdateAnime
+import eu.kanade.domain.manga.interactor.UpdateAnime
 import eu.kanade.tachiyomi.data.cache.CoverCache
 import eu.kanade.tachiyomi.data.saver.Image
 import eu.kanade.tachiyomi.data.saver.ImageSaver

@@ -49,7 +49,7 @@ class MyAnimeList : API("https://api.jikan.moe/v4/") {
     override suspend fun getRecsById(id: String): List<SManga> {
         val apiUrl = endpoint.toHttpUrl()
             .newBuilder()
-            .addPathSegment("anime")
+            .addPathSegment("manga")
             .addPathSegment(id)
             .addPathSegment("recommendations")
             .build()
@@ -86,7 +86,7 @@ class MyAnimeList : API("https://api.jikan.moe/v4/") {
     override suspend fun getRecsBySearch(search: String): List<SManga> {
         val url = endpoint.toHttpUrl()
             .newBuilder()
-            .addPathSegment("anime")
+            .addPathSegment("manga")
             .addQueryParameter("q", search)
             .build()
 

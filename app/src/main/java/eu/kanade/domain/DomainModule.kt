@@ -1,17 +1,17 @@
 package eu.kanade.domain
 
-import eu.kanade.domain.anime.interactor.GetExcludedScanlators
-import eu.kanade.domain.anime.interactor.SetAnimeViewerFlags
-import eu.kanade.domain.anime.interactor.SetExcludedScanlators
-import eu.kanade.domain.anime.interactor.UpdateAnime
+import eu.kanade.domain.chapter.interactor.GetAvailableScanlators
+import eu.kanade.domain.chapter.interactor.SetSeenStatus
+import eu.kanade.domain.chapter.interactor.SyncEpisodesWithSource
 import eu.kanade.domain.download.interactor.DeleteDownload
-import eu.kanade.domain.episode.interactor.GetAvailableScanlators
-import eu.kanade.domain.episode.interactor.SetSeenStatus
-import eu.kanade.domain.episode.interactor.SyncEpisodesWithSource
 import eu.kanade.domain.extension.interactor.GetExtensionLanguages
 import eu.kanade.domain.extension.interactor.GetExtensionSources
 import eu.kanade.domain.extension.interactor.GetExtensionsByType
 import eu.kanade.domain.extension.interactor.TrustExtension
+import eu.kanade.domain.manga.interactor.GetExcludedScanlators
+import eu.kanade.domain.manga.interactor.SetAnimeViewerFlags
+import eu.kanade.domain.manga.interactor.SetExcludedScanlators
+import eu.kanade.domain.manga.interactor.UpdateAnime
 import eu.kanade.domain.source.interactor.GetEnabledSources
 import eu.kanade.domain.source.interactor.GetLanguagesWithSources
 import eu.kanade.domain.source.interactor.GetSourcesWithFavoriteCount

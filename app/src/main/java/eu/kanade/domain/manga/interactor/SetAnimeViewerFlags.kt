@@ -1,4 +1,4 @@
-package eu.kanade.domain.anime.interactor
+package eu.kanade.domain.manga.interactor
 
 import eu.kanade.tachiyomi.ui.reader.setting.ReaderOrientation
 import eu.kanade.tachiyomi.ui.reader.setting.ReadingMode

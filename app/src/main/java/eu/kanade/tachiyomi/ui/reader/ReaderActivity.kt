@@ -64,8 +64,8 @@ import com.materialkolor.Contrast
 import com.materialkolor.dynamicColorScheme
 import dev.chrisbanes.insetter.applyInsetter
 import eu.kanade.core.util.ifSourcesLoaded
-import eu.kanade.domain.anime.model.readingMode
 import eu.kanade.domain.base.BasePreferences
+import eu.kanade.domain.manga.model.readingMode
 import eu.kanade.domain.ui.UiPreferences
 import eu.kanade.presentation.reader.ChapterListDialog
 import eu.kanade.presentation.reader.DisplayRefreshHost
@@ -509,7 +509,7 @@ class ReaderActivity : BaseActivity() {
                 fullscreen = isFullscreen,
 
                 mangaTitle = state.manga?.title,
-                chapterTitle = state.currentChapter?.episode?.name,
+                chapterTitle = state.currentChapter?.chapter?.name,
                 navigateUp = onBackPressedDispatcher::onBackPressed,
                 onClickTopAppBar = ::openMangaScreen,
                 // bookmarked = state.bookmarked,
@@ -1066,7 +1066,7 @@ class ReaderActivity : BaseActivity() {
         val state = viewModel.state.value
         if (state.indexChapterToShift != null && state.indexPageToShift != null) {
             viewerChapters.currChapter.pages?.find {
-                it.index == state.indexPageToShift && it.chapter.episode.id == state.indexChapterToShift
+                it.index == state.indexPageToShift && it.chapter.chapter.id == state.indexChapterToShift
             }?.let {
                 (viewModel.state.value.viewer as? PagerViewer)?.updateShifting(it)
             }
@@ -1223,7 +1223,7 @@ class ReaderActivity : BaseActivity() {
      */
     fun onShareImageResult(uri: Uri, page: ReaderPage /* SY --> */, secondPage: ReaderPage? = null /* SY <-- */) {
         val manga = viewModel.manga ?: return
-        val chapter = page.chapter.episode
+        val chapter = page.chapter.chapter
 
         // SY -->
         val text = if (secondPage != null) {

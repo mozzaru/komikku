@@ -1,4 +1,4 @@
-package eu.kanade.domain.anime.interactor
+package eu.kanade.domain.manga.interactor
 
 import tachiyomi.data.DatabaseHandler
 

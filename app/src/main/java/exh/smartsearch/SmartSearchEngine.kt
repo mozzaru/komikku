@@ -1,6 +1,6 @@
 package exh.smartsearch
 
-import eu.kanade.domain.anime.model.toDomainAnime
+import eu.kanade.domain.manga.model.toDomainAnime
 import eu.kanade.tachiyomi.source.CatalogueSource
 import eu.kanade.tachiyomi.source.model.FilterList
 import eu.kanade.tachiyomi.source.model.SManga

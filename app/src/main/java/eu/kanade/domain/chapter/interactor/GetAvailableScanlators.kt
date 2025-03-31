@@ -1,4 +1,4 @@
-package eu.kanade.domain.episode.interactor
+package eu.kanade.domain.chapter.interactor
 
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map

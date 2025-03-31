@@ -253,7 +253,7 @@ actual class LocalSource(
                         }
                 }
 
-                // Copy ComicInfo.xml from episode archive to top level if found
+                // Copy ComicInfo.xml from chapter archive to top level if found
                 noXmlFile == null -> {
                     val episodeArchives = animeDirFiles.filter(Archive::isSupported)
 
@@ -355,7 +355,7 @@ actual class LocalSource(
                 if (c == 0) c2.name.compareToCaseInsensitiveNaturalOrder(c1.name) else c
             }
 
-        // Copy the cover from the first episode found if not available
+        // Copy the cover from the first chapter found if not available
         if (manga.thumbnail_url.isNullOrBlank()) {
             episodes.lastOrNull()?.let { episode ->
                 updateCover(episode, manga)

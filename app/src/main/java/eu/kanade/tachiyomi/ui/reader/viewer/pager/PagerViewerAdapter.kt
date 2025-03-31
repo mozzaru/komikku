@@ -211,7 +211,7 @@ class PagerViewerAdapter(
         val currentIndex = joinedItems.indexOfFirst { it.first == currentPage }
 
         // Put aside preprocessed pages for next chapter so they don't get removed when changing chapter
-        if (currentPage.chapter.episode.id != currentChapter?.episode?.id) {
+        if (currentPage.chapter.chapter.id != currentChapter?.chapter?.id) {
             preprocessed[newPage.index] = newPage
             return
         }
@@ -272,7 +272,7 @@ class PagerViewerAdapter(
                 when (readerItem) {
                     is ReaderPage -> {
                         if (pagedItems.last().isNotEmpty() &&
-                            pagedItems.last().last()?.chapter?.episode?.id != readerItem.chapter.episode.id
+                            pagedItems.last().last()?.chapter?.chapter?.id != readerItem.chapter.chapter.id
                         ) {
                             pagedItems.add(mutableListOf())
                         }

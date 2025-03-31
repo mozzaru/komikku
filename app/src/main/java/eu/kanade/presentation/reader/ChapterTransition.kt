@@ -34,7 +34,7 @@ import androidx.compose.ui.tooling.preview.PreviewLightDark
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import eu.kanade.presentation.theme.TachiyomiPreviewTheme
-import eu.kanade.tachiyomi.data.database.models.toDomainEpisode
+import eu.kanade.tachiyomi.data.database.models.toDomainChapter
 import eu.kanade.tachiyomi.ui.reader.model.ChapterTransition
 import eu.kanade.tachiyomi.ui.reader.model.ReaderChapter
 import kotlinx.collections.immutable.persistentMapOf
@@ -51,8 +51,8 @@ fun ChapterTransition(
     currChapterDownloaded: Boolean,
     goingToChapterDownloaded: Boolean,
 ) {
-    val currChapter = transition.from.episode.toDomainEpisode()
-    val goingToChapter = transition.to?.episode?.toDomainEpisode()
+    val currChapter = transition.from.chapter.toDomainChapter()
+    val goingToChapter = transition.to?.chapter?.toDomainChapter()
 
     ProvideTextStyle(MaterialTheme.typography.bodyMedium) {
         when (transition) {
@@ -284,17 +284,17 @@ private fun previewChapter(name: String, scanlator: String, chapterNumber: Doubl
     episodeNumber = chapterNumber,
 )
 private val FakeChapter = previewChapter(
-    name = "Vol.1, Ch.1 - Fake Episode Title",
+    name = "Vol.1, Ch.1 - Fake Chapter Title",
     scanlator = "Scanlator Name",
     chapterNumber = 1.0,
 )
 private val FakeGapChapter = previewChapter(
-    name = "Vol.5, Ch.44 - Fake Gap Episode Title",
+    name = "Vol.5, Ch.44 - Fake Gap Chapter Title",
     scanlator = "Scanlator Name",
     chapterNumber = 44.0,
 )
 private val FakeChapterLongTitle = previewChapter(
-    name = "Vol.1, Ch.0 - The Mundane Musings of a Metafictional Anime: A Episode About a Episode, Featuring" +
+    name = "Vol.1, Ch.0 - The Mundane Musings of a Metafictional Anime: A Chapter About a Chapter, Featuring" +
         " an Absurdly Long Title and a Surprisingly Normal Day in the Lives of Our Heroes, as They Grapple with the " +
         "Daily Challenges of Existence, from Paying Rent to Finding Love, All While Navigating the Strange World of " +
         "Fictional Realities and Reality-Bending Fiction, Where the Fourth Wall is Always in Danger of Being Broken " +

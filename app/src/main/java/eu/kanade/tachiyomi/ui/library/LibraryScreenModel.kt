@@ -17,10 +17,10 @@ import eu.kanade.core.preference.PreferenceMutableState
 import eu.kanade.core.preference.asState
 import eu.kanade.core.util.fastFilterNot
 import eu.kanade.core.util.fastPartition
-import eu.kanade.domain.anime.interactor.SmartSearchMerge
-import eu.kanade.domain.anime.interactor.UpdateAnime
 import eu.kanade.domain.base.BasePreferences
-import eu.kanade.domain.episode.interactor.SetSeenStatus
+import eu.kanade.domain.chapter.interactor.SetSeenStatus
+import eu.kanade.domain.manga.interactor.SmartSearchMerge
+import eu.kanade.domain.manga.interactor.UpdateAnime
 import eu.kanade.domain.sync.SyncPreferences
 import eu.kanade.presentation.components.SEARCH_DEBOUNCE_MILLIS
 import eu.kanade.presentation.library.components.LibraryToolbarTitle

@@ -37,7 +37,7 @@ interface CatalogueSource : Source {
     val supportsLatest: Boolean
 
     /**
-     * Get a page with a list of anime.
+     * Get a page with a list of manga.
      *
      * @since extensions-lib 1.5
      * @param page the page number to retrieve.
@@ -45,7 +45,7 @@ interface CatalogueSource : Source {
     suspend fun getPopularManga(page: Int): MangasPage = throw UnsupportedOperationException()
 
     /**
-     * Get a page with a list of anime.
+     * Get a page with a list of manga.
      *
      * @since extensions-lib 1.5
      * @param page the page number to retrieve.
@@ -55,7 +55,7 @@ interface CatalogueSource : Source {
     suspend fun getSearchManga(page: Int, query: String, filters: FilterList): MangasPage = throw UnsupportedOperationException()
 
     /**
-     * Get a page with a list of latest anime updates.
+     * Get a page with a list of latest manga updates.
      *
      * @since extensions-lib 1.5
      * @param page the page number to retrieve.
@@ -69,7 +69,7 @@ interface CatalogueSource : Source {
 
     // KMK -->
     /**
-     * Whether parsing related animes in anime page or extension provide custom related animes request.
+     * Whether parsing related animes in manga page or extension provide custom related animes request.
      * @default false
      * @since komikku/extensions-lib 1.6
      */
@@ -90,11 +90,11 @@ interface CatalogueSource : Source {
     val disableRelatedMangas: Boolean get() = false
 
     /**
-     * Get all the available related animes for a anime.
+     * Get all the available related animes for a manga.
      * Normally it's not needed to override this method.
      *
      * @since komikku/extensions-lib 1.6
-     * @param anime the current anime to get related animes.
+     * @param manga the current manga to get related animes.
      * @return a list of <keyword, related animes>
      * @throws UnsupportedOperationException if a source doesn't support related animes.
      */
@@ -138,17 +138,17 @@ interface CatalogueSource : Source {
     }
 
     /**
-     * Fetch related animes for a anime from source/site.
+     * Fetch related animes for a manga from source/site.
      *
      * @since komikku/extensions-lib 1.6
-     * @param anime the current anime to get related animes.
-     * @return the related animes for the current anime.
+     * @param manga the current manga to get related animes.
+     * @return the related animes for the current manga.
      * @throws UnsupportedOperationException if a source doesn't support related animes.
      */
     suspend fun fetchRelatedMangaList(manga: SManga): List<SManga> = throw UnsupportedOperationException("Unsupported!")
 
     /**
-     * Slit & strip anime's title into separate searchable keywords.
+     * Slit & strip manga's title into separate searchable keywords.
      * Used for searching related animes.
      *
      * @since komikku/extensions-lib 1.6
@@ -172,7 +172,7 @@ interface CatalogueSource : Source {
     }
 
     /**
-     * Get related animes by searching for each keywords from anime's title.
+     * Get related animes by searching for each keywords from manga's title.
      *
      * @return a list of <keyword, related animes>
      * @since komikku/extensions-lib 1.6

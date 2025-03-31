@@ -81,7 +81,7 @@ class Bangumi(id: Long) : BaseTracker(id, "Bangumi") {
     }
 
     override suspend fun refresh(track: Track): Track {
-        val remoteStatusTrack = api.statusLibManga(track) ?: throw Exception("Could not find anime")
+        val remoteStatusTrack = api.statusLibManga(track) ?: throw Exception("Could not find manga")
         track.copyPersonalFrom(remoteStatusTrack)
         api.findLibManga(track)?.let { remoteTrack ->
             track.total_episodes = remoteTrack.total_episodes

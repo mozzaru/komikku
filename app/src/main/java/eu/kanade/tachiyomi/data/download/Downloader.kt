@@ -2,10 +2,10 @@ package eu.kanade.tachiyomi.data.download
 
 import android.content.Context
 import com.hippo.unifile.UniFile
-import eu.kanade.domain.anime.model.getComicInfo
-import eu.kanade.domain.episode.model.toSEpisode
+import eu.kanade.domain.chapter.model.toSEpisode
+import eu.kanade.domain.manga.model.getComicInfo
 import eu.kanade.domain.source.service.SourcePreferences
-import eu.kanade.tachiyomi.data.cache.EpisodeCache
+import eu.kanade.tachiyomi.data.cache.ChapterCache
 import eu.kanade.tachiyomi.data.download.model.Download
 import eu.kanade.tachiyomi.data.library.LibraryUpdateNotifier
 import eu.kanade.tachiyomi.data.notification.NotificationHandler
@@ -78,7 +78,7 @@ class Downloader(
     private val provider: DownloadProvider,
     private val cache: DownloadCache,
     private val sourceManager: SourceManager = Injekt.get(),
-    private val episodeCache: EpisodeCache = Injekt.get(),
+    private val chapterCache: ChapterCache = Injekt.get(),
     private val downloadPreferences: DownloadPreferences = Injekt.get(),
     private val xml: XML = Injekt.get(),
     private val getCategories: GetCategories = Injekt.get(),
@@ -466,8 +466,8 @@ class Downloader(
             // If the image is already downloaded, do nothing. Otherwise download from network
             val file = when {
                 imageFile != null -> imageFile
-                episodeCache.isImageInCache(page.pageUrl!!) ->
-                    copyImageFromCache(episodeCache.getImageFile(page.pageUrl!!), tmpDir, filename)
+                chapterCache.isImageInCache(page.pageUrl!!) ->
+                    copyImageFromCache(chapterCache.getImageFile(page.pageUrl!!), tmpDir, filename)
                 else -> downloadImage(page, download.source, tmpDir, filename, dataSaver)
             }
 

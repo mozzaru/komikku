@@ -9,7 +9,7 @@ import cafe.adriel.voyager.core.model.screenModelScope
 import eu.kanade.core.preference.asState
 import eu.kanade.core.util.addOrRemove
 import eu.kanade.core.util.insertSeparators
-import eu.kanade.domain.episode.interactor.SetSeenStatus
+import eu.kanade.domain.chapter.interactor.SetSeenStatus
 import eu.kanade.presentation.manga.components.EpisodeDownloadAction
 import eu.kanade.presentation.updates.UpdatesUiModel
 import eu.kanade.tachiyomi.data.download.DownloadCache

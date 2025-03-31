@@ -1,8 +1,8 @@
 package eu.kanade.tachiyomi.source.online.all
 
-import eu.kanade.domain.anime.interactor.UpdateAnime
-import eu.kanade.domain.anime.model.toSAnime
-import eu.kanade.domain.episode.interactor.SyncEpisodesWithSource
+import eu.kanade.domain.chapter.interactor.SyncEpisodesWithSource
+import eu.kanade.domain.manga.interactor.UpdateAnime
+import eu.kanade.domain.manga.model.toSAnime
 import eu.kanade.tachiyomi.data.download.DownloadManager
 import eu.kanade.tachiyomi.source.Source
 import eu.kanade.tachiyomi.source.model.FilterList
@@ -83,7 +83,7 @@ class MergedSource : HttpSource() {
 
     override suspend fun getMangaDetails(manga: SManga): SManga {
         return withIOContext {
-            val mergedAnime = requireNotNull(getManga.await(manga.url, id)) { "merged anime not in db" }
+            val mergedAnime = requireNotNull(getManga.await(manga.url, id)) { "merged manga not in db" }
             val mangaReferences = getMergedReferencesById.await(mergedAnime.id)
                 .apply {
                     require(isNotEmpty()) { "Anime references are empty, info unavailable, merge is likely corrupted" }

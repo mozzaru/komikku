@@ -36,12 +36,12 @@ abstract class ParsedHttpSource : HttpSource() {
     }
 
     /**
-     * Returns the Jsoup selector that returns a list of [Element] corresponding to each anime.
+     * Returns the Jsoup selector that returns a list of [Element] corresponding to each manga.
      */
     protected abstract fun popularMangaSelector(): String
 
     /**
-     * Returns a anime from the given [element]. Most sites only show the title and the url, it's
+     * Returns a manga from the given [element]. Most sites only show the title and the url, it's
      * totally fine to fill only those two values.
      *
      * @param element an element obtained from [popularMangaSelector].
@@ -75,12 +75,12 @@ abstract class ParsedHttpSource : HttpSource() {
     }
 
     /**
-     * Returns the Jsoup selector that returns a list of [Element] corresponding to each anime.
+     * Returns the Jsoup selector that returns a list of [Element] corresponding to each manga.
      */
     protected abstract fun searchMangaSelector(): String
 
     /**
-     * Returns a anime from the given [element]. Most sites only show the title and the url, it's
+     * Returns a manga from the given [element]. Most sites only show the title and the url, it's
      * totally fine to fill only those two values.
      *
      * @param element an element obtained from [searchMangaSelector].
@@ -114,12 +114,12 @@ abstract class ParsedHttpSource : HttpSource() {
     }
 
     /**
-     * Returns the Jsoup selector that returns a list of [Element] corresponding to each anime.
+     * Returns the Jsoup selector that returns a list of [Element] corresponding to each manga.
      */
     protected abstract fun latestUpdatesSelector(): String
 
     /**
-     * Returns a anime from the given [element]. Most sites only show the title and the url, it's
+     * Returns a manga from the given [element]. Most sites only show the title and the url, it's
      * totally fine to fill only those two values.
      *
      * @param element an element obtained from [latestUpdatesSelector].
@@ -133,7 +133,7 @@ abstract class ParsedHttpSource : HttpSource() {
     protected abstract fun latestUpdatesNextPageSelector(): String?
 
     /**
-     * Parses the response from the site and returns the details of a anime.
+     * Parses the response from the site and returns the details of a manga.
      * Normally it's not needed to override this method.
      *
      * @param response the response from the site.
@@ -143,7 +143,7 @@ abstract class ParsedHttpSource : HttpSource() {
     }
 
     /**
-     * Returns the details of the anime from the given [document].
+     * Returns the details of the manga from the given [document].
      *
      * @param document the parsed document.
      */
@@ -170,7 +170,7 @@ abstract class ParsedHttpSource : HttpSource() {
     protected open fun relatedMangaListSelector(): String = this.popularMangaSelector()
 
     /**
-     * Returns a anime from the given element.
+     * Returns a manga from the given element.
      *
      * @since komikku/extensions-lib 1.6
      * @param element an element obtained from [relatedMangaListSelector].
@@ -190,12 +190,12 @@ abstract class ParsedHttpSource : HttpSource() {
     }
 
     /**
-     * Returns the Jsoup selector that returns a list of [Element] corresponding to each episode.
+     * Returns the Jsoup selector that returns a list of [Element] corresponding to each chapter.
      */
     protected abstract fun chapterListSelector(): String
 
     /**
-     * Returns a episode from the given element.
+     * Returns a chapter from the given element.
      *
      * @param element an element obtained from [chapterListSelector].
      */

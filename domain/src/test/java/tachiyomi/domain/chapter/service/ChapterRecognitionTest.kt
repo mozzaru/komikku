@@ -161,8 +161,8 @@ class ChapterRecognitionTest {
     }
 
     /**
-     * Case where the episode title contains the episode
-     * But wait it's not actual the episode number.
+     * Case where the chapter title contains the chapter
+     * But wait it's not actual the chapter number.
      */
     @Test
     fun `Number after anime title with episode in episode title case`() {
@@ -172,8 +172,8 @@ class ChapterRecognitionTest {
     }
 
     /**
-     * Case where the episode title contains the unwanted tag
-     * But follow by episode number.
+     * Case where the chapter title contains the unwanted tag
+     * But follow by chapter number.
      */
     @Test
     fun `Number after unwanted tag`() {

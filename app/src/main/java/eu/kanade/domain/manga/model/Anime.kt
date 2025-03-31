@@ -1,4 +1,4 @@
-package eu.kanade.domain.anime.model
+package eu.kanade.domain.manga.model
 
 import eu.kanade.domain.base.BasePreferences
 import eu.kanade.tachiyomi.data.cache.CoverCache

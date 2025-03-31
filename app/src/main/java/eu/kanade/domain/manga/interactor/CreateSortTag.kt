@@ -1,4 +1,4 @@
-package eu.kanade.domain.anime.interactor
+package eu.kanade.domain.manga.interactor
 
 import tachiyomi.core.common.preference.plusAssign
 import tachiyomi.domain.library.service.LibraryPreferences

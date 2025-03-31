@@ -1,6 +1,6 @@
-package eu.kanade.domain.anime.interactor
+package eu.kanade.domain.manga.interactor
 
-import eu.kanade.domain.anime.model.hasCustomCover
+import eu.kanade.domain.manga.model.hasCustomCover
 import eu.kanade.tachiyomi.data.cache.CoverCache
 import eu.kanade.tachiyomi.data.download.DownloadManager
 import eu.kanade.tachiyomi.source.model.SManga

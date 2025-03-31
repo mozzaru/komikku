@@ -1,8 +1,8 @@
-package eu.kanade.domain.anime.interactor
+package eu.kanade.domain.manga.interactor
 
 import android.app.Application
-import eu.kanade.domain.anime.model.copyFrom
-import eu.kanade.domain.anime.model.toSAnime
+import eu.kanade.domain.manga.model.copyFrom
+import eu.kanade.domain.manga.model.toSAnime
 import exh.source.MERGED_SOURCE_ID
 import tachiyomi.core.common.i18n.stringResource
 import tachiyomi.core.common.util.lang.withNonCancellableContext

@@ -4,9 +4,9 @@ package eu.kanade.tachiyomi.data.database.models
 
 import eu.kanade.tachiyomi.source.model.SChapter
 import java.io.Serializable
-import tachiyomi.domain.chapter.model.Chapter as DomainEpisode
+import tachiyomi.domain.chapter.model.Chapter as DomainChapter
 
-interface Episode : SChapter, Serializable {
+interface Chapter : SChapter, Serializable {
 
     var id: Long?
 
@@ -33,9 +33,9 @@ interface Episode : SChapter, Serializable {
     var version: Long
 }
 
-fun Episode.toDomainEpisode(): DomainEpisode? {
+fun Chapter.toDomainChapter(): DomainChapter? {
     if (id == null || anime_id == null) return null
-    return DomainEpisode(
+    return DomainChapter(
         id = id!!,
         animeId = anime_id!!,
         seen = seen,

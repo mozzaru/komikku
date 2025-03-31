@@ -169,7 +169,7 @@ class DownloadProvider(
      */
     private fun sanitizeEpisodeName(episodeName: String): String {
         return episodeName.ifBlank {
-            "Episode"
+            "Chapter"
         }
     }
 

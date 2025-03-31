@@ -41,8 +41,8 @@ import dev.chrisbanes.haze.HazeState
 import dev.chrisbanes.haze.HazeStyle
 import dev.chrisbanes.haze.hazeChild
 import eu.kanade.core.util.ifSourcesLoaded
-import eu.kanade.domain.anime.model.hasCustomCover
-import eu.kanade.domain.anime.model.toSAnime
+import eu.kanade.domain.manga.model.hasCustomCover
+import eu.kanade.domain.manga.model.toSAnime
 import eu.kanade.presentation.category.components.ChangeCategoryDialog
 import eu.kanade.presentation.components.NavigatorAdaptiveSheet
 import eu.kanade.presentation.manga.AnimeScreen
@@ -232,7 +232,7 @@ class AnimeScreen(
                         assistUrl = getMangaUrl(screenModel.manga, screenModel.source)
                     }
                 } catch (e: Exception) {
-                    logcat(LogPriority.ERROR, e) { "Failed to get anime URL" }
+                    logcat(LogPriority.ERROR, e) { "Failed to get manga URL" }
                 }
             }
         }
