@@ -9,10 +9,10 @@ import tachiyomi.core.common.util.system.logcat
 import tachiyomi.domain.manga.interactor.GetMergedReferencesById
 import tachiyomi.domain.manga.model.MergedMangaReference
 import tachiyomi.domain.chapter.model.Episode
-import tachiyomi.domain.chapter.repository.EpisodeRepository
+import tachiyomi.domain.chapter.repository.ChapterRepository
 
 class GetMergedChaptersByMangaId(
-    private val episodeRepository: EpisodeRepository,
+    private val chapterRepository: ChapterRepository,
     private val getMergedReferencesById: GetMergedReferencesById,
 ) {
 
@@ -34,7 +34,7 @@ class GetMergedChaptersByMangaId(
         applyScanlatorFilter: Boolean = false,
     ): Flow<List<Episode>> {
         return try {
-            episodeRepository.getMergedEpisodeByAnimeIdAsFlow(mangaId, applyScanlatorFilter)
+            chapterRepository.getMergedEpisodeByAnimeIdAsFlow(mangaId, applyScanlatorFilter)
                 .combine(getMergedReferencesById.subscribe(mangaId)) { chapters, references ->
                     transformMergedChapters(references, chapters, dedupe)
                 }
@@ -49,7 +49,7 @@ class GetMergedChaptersByMangaId(
         applyScanlatorFilter: Boolean = false,
     ): List<Episode> {
         return try {
-            episodeRepository.getMergedEpisodeByAnimeId(mangaId, applyScanlatorFilter)
+            chapterRepository.getMergedEpisodeByAnimeId(mangaId, applyScanlatorFilter)
         } catch (e: Exception) {
             logcat(LogPriority.ERROR, e)
             emptyList()

@@ -2,8 +2,8 @@ package tachiyomi.data.episode
 
 import tachiyomi.domain.chapter.model.Episode
 
-object EpisodeMapper {
-    fun mapEpisode(
+object ChapterMapper {
+    fun mapChapter(
         id: Long,
         animeId: Long,
         url: String,

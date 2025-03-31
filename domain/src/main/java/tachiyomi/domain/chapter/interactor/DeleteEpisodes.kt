@@ -1,12 +1,12 @@
 package tachiyomi.domain.chapter.interactor
 
-import tachiyomi.domain.chapter.repository.EpisodeRepository
+import tachiyomi.domain.chapter.repository.ChapterRepository
 
 class DeleteEpisodes(
-    private val episodeRepository: EpisodeRepository,
+    private val chapterRepository: ChapterRepository,
 ) {
 
     suspend fun await(chapters: List<Long>) {
-        episodeRepository.removeEpisodesWithIds(chapters)
+        chapterRepository.removeEpisodesWithIds(chapters)
     }
 }

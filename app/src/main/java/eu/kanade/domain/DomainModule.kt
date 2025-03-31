@@ -24,7 +24,7 @@ import eu.kanade.domain.track.interactor.RefreshTracks
 import eu.kanade.domain.track.interactor.SyncEpisodeProgressWithTrack
 import eu.kanade.domain.track.interactor.TrackEpisode
 import mihon.data.repository.ExtensionRepoRepositoryImpl
-import mihon.domain.episode.interactor.FilterChaptersForDownload
+import mihon.domain.chapter.interactor.FilterChaptersForDownload
 import mihon.domain.extensionrepo.interactor.CreateExtensionRepo
 import mihon.domain.extensionrepo.interactor.DeleteExtensionRepo
 import mihon.domain.extensionrepo.interactor.GetExtensionRepo
@@ -36,7 +36,7 @@ import mihon.domain.extensionrepo.service.ExtensionRepoService
 import mihon.domain.upcoming.interactor.GetUpcomingManga
 import tachiyomi.data.anime.MangaRepositoryImpl
 import tachiyomi.data.category.CategoryRepositoryImpl
-import tachiyomi.data.episode.EpisodeRepositoryImpl
+import tachiyomi.data.episode.ChapterRepositoryImpl
 import tachiyomi.data.history.HistoryRepositoryImpl
 import tachiyomi.data.release.ReleaseServiceImpl
 import tachiyomi.data.source.SourceRepositoryImpl
@@ -72,7 +72,7 @@ import tachiyomi.domain.chapter.interactor.GetChaptersByMangaId
 import tachiyomi.domain.chapter.interactor.SetAnimeDefaultEpisodeFlags
 import tachiyomi.domain.chapter.interactor.ShouldUpdateDbEpisode
 import tachiyomi.domain.chapter.interactor.UpdateEpisode
-import tachiyomi.domain.chapter.repository.EpisodeRepository
+import tachiyomi.domain.chapter.repository.ChapterRepository
 import tachiyomi.domain.history.interactor.GetHistory
 import tachiyomi.domain.history.interactor.GetNextEpisodes
 import tachiyomi.domain.history.interactor.GetTotalWatchDuration
@@ -148,7 +148,7 @@ class DomainModule : InjektModule {
         addFactory { InsertTrack(get()) }
         addFactory { SyncEpisodeProgressWithTrack(get(), get(), get()) }
 
-        addSingletonFactory<EpisodeRepository> { EpisodeRepositoryImpl(get()) }
+        addSingletonFactory<ChapterRepository> { ChapterRepositoryImpl(get()) }
         addFactory { GetEpisode(get()) }
         addFactory { GetChaptersByMangaId(get()) }
         addFactory { GetEpisodeByUrlAndAnimeId(get()) }

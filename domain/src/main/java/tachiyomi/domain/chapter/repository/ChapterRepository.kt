@@ -4,7 +4,7 @@ import kotlinx.coroutines.flow.Flow
 import tachiyomi.domain.chapter.model.Episode
 import tachiyomi.domain.chapter.model.EpisodeUpdate
 
-interface EpisodeRepository {
+interface ChapterRepository {
 
     suspend fun addAll(episodes: List<Episode>): List<Episode>
 

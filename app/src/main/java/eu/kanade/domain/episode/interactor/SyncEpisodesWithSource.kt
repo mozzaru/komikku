@@ -10,7 +10,7 @@ import eu.kanade.tachiyomi.data.download.DownloadProvider
 import eu.kanade.tachiyomi.source.Source
 import eu.kanade.tachiyomi.source.model.SChapter
 import eu.kanade.tachiyomi.source.online.HttpSource
-import tachiyomi.data.episode.EpisodeSanitizer
+import tachiyomi.data.episode.ChapterSanitizer
 import tachiyomi.data.source.NoResultsException
 import tachiyomi.domain.manga.model.Manga
 import tachiyomi.domain.chapter.interactor.GetChaptersByMangaId
@@ -18,7 +18,7 @@ import tachiyomi.domain.chapter.interactor.ShouldUpdateDbEpisode
 import tachiyomi.domain.chapter.interactor.UpdateEpisode
 import tachiyomi.domain.chapter.model.Episode
 import tachiyomi.domain.chapter.model.toEpisodeUpdate
-import tachiyomi.domain.chapter.repository.EpisodeRepository
+import tachiyomi.domain.chapter.repository.ChapterRepository
 import tachiyomi.domain.chapter.service.EpisodeRecognition
 import tachiyomi.source.local.isLocal
 import java.lang.Long.max
@@ -28,7 +28,7 @@ import java.util.TreeSet
 class SyncEpisodesWithSource(
     private val downloadManager: DownloadManager,
     private val downloadProvider: DownloadProvider,
-    private val episodeRepository: EpisodeRepository,
+    private val chapterRepository: ChapterRepository,
     private val shouldUpdateDbEpisode: ShouldUpdateDbEpisode,
     private val updateAnime: UpdateAnime,
     private val updateEpisode: UpdateEpisode,
@@ -63,7 +63,7 @@ class SyncEpisodesWithSource(
             .mapIndexed { i, sEpisode ->
                 Episode.create()
                     .copyFromSEpisode(sEpisode)
-                    .copy(name = with(EpisodeSanitizer) { sEpisode.name.sanitize(manga.title) })
+                    .copy(name = with(ChapterSanitizer) { sEpisode.name.sanitize(manga.title) })
                     .copy(animeId = manga.id, sourceOrder = i.toLong())
             }
 
@@ -192,11 +192,11 @@ class SyncEpisodesWithSource(
 
         if (removedEpisodes.isNotEmpty()) {
             val toDeleteIds = removedEpisodes.map { it.id }
-            episodeRepository.removeEpisodesWithIds(toDeleteIds)
+            chapterRepository.removeEpisodesWithIds(toDeleteIds)
         }
 
         if (updatedToAdd.isNotEmpty()) {
-            updatedToAdd = episodeRepository.addAll(updatedToAdd)
+            updatedToAdd = chapterRepository.addAll(updatedToAdd)
         }
 
         if (updatedEpisodes.isNotEmpty()) {

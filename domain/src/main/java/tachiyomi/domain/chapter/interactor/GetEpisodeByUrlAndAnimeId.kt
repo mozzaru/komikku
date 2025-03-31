@@ -1,15 +1,15 @@
 package tachiyomi.domain.chapter.interactor
 
 import tachiyomi.domain.chapter.model.Episode
-import tachiyomi.domain.chapter.repository.EpisodeRepository
+import tachiyomi.domain.chapter.repository.ChapterRepository
 
 class GetEpisodeByUrlAndAnimeId(
-    private val episodeRepository: EpisodeRepository,
+    private val chapterRepository: ChapterRepository,
 ) {
 
     suspend fun await(url: String, sourceId: Long): Episode? {
         return try {
-            episodeRepository.getEpisodeByUrlAndAnimeId(url, sourceId)
+            chapterRepository.getEpisodeByUrlAndAnimeId(url, sourceId)
         } catch (e: Exception) {
             null
         }

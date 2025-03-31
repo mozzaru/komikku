@@ -50,7 +50,7 @@ import kotlinx.coroutines.runBlocking
 import kotlinx.coroutines.sync.Semaphore
 import kotlinx.coroutines.sync.withPermit
 import logcat.LogPriority
-import mihon.domain.episode.interactor.FilterChaptersForDownload
+import mihon.domain.chapter.interactor.FilterChaptersForDownload
 import tachiyomi.core.common.i18n.stringResource
 import tachiyomi.core.common.preference.getAndSet
 import tachiyomi.core.common.util.lang.withIOContext

@@ -18,7 +18,7 @@ import kotlinx.coroutines.awaitAll
 import kotlinx.coroutines.supervisorScope
 import kotlinx.coroutines.sync.Semaphore
 import kotlinx.coroutines.sync.withPermit
-import mihon.domain.episode.interactor.FilterChaptersForDownload
+import mihon.domain.chapter.interactor.FilterChaptersForDownload
 import okhttp3.Response
 import tachiyomi.core.common.util.lang.withIOContext
 import tachiyomi.domain.manga.interactor.GetAnime

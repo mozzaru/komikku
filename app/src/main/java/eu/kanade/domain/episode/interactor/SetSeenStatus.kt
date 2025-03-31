@@ -16,13 +16,13 @@ import tachiyomi.domain.download.service.DownloadPreferences
 import tachiyomi.domain.chapter.interactor.GetMergedChaptersByMangaId
 import tachiyomi.domain.chapter.model.Episode
 import tachiyomi.domain.chapter.model.EpisodeUpdate
-import tachiyomi.domain.chapter.repository.EpisodeRepository
+import tachiyomi.domain.chapter.repository.ChapterRepository
 
 class SetSeenStatus(
     private val downloadPreferences: DownloadPreferences,
     private val deleteDownload: DeleteDownload,
     private val mangaRepository: MangaRepository,
-    private val episodeRepository: EpisodeRepository,
+    private val chapterRepository: ChapterRepository,
     // SY -->
     private val getMergedChaptersByMangaId: GetMergedChaptersByMangaId,
     // SY <--
@@ -67,7 +67,7 @@ class SetSeenStatus(
         }
 
         try {
-            episodeRepository.updateAll(
+            chapterRepository.updateAll(
                 episodesToUpdate.map { mapper(it, seen) },
             )
         } catch (e: Exception) {
@@ -101,7 +101,7 @@ class SetSeenStatus(
     suspend fun await(animeId: Long, seen: Boolean): Result = withNonCancellableContext {
         await(
             seen = seen,
-            episodes = episodeRepository
+            episodes = chapterRepository
                 .getEpisodeByAnimeId(animeId)
                 .toTypedArray(),
         )

@@ -7,11 +7,11 @@ import tachiyomi.core.common.util.system.logcat
 import tachiyomi.data.DatabaseHandler
 import tachiyomi.domain.chapter.model.Episode
 import tachiyomi.domain.chapter.model.EpisodeUpdate
-import tachiyomi.domain.chapter.repository.EpisodeRepository
+import tachiyomi.domain.chapter.repository.ChapterRepository
 
-class EpisodeRepositoryImpl(
+class ChapterRepositoryImpl(
     private val handler: DatabaseHandler,
-) : EpisodeRepository {
+) : ChapterRepository {
 
     override suspend fun addAll(episodes: List<Episode>): List<Episode> {
         return try {
@@ -90,7 +90,7 @@ class EpisodeRepositoryImpl(
 
     override suspend fun getEpisodeByAnimeId(animeId: Long, applyScanlatorFilter: Boolean): List<Episode> {
         return handler.awaitList {
-            episodesQueries.getEpisodesByAnimeId(animeId, applyScanlatorFilter.toLong(), EpisodeMapper::mapEpisode)
+            episodesQueries.getEpisodesByAnimeId(animeId, applyScanlatorFilter.toLong(), ChapterMapper::mapChapter)
         }
     }
 
@@ -110,24 +110,24 @@ class EpisodeRepositoryImpl(
         return handler.awaitList {
             episodesQueries.getBookmarkedEpisodesByAnimeId(
                 animeId,
-                EpisodeMapper::mapEpisode,
+                ChapterMapper::mapChapter,
             )
         }
     }
 
     // AM (FILLERMARK) -->
     override suspend fun getFillermarkedEpisodesByAnimeId(animeId: Long): List<Episode> {
-        return handler.awaitList { episodesQueries.getFillermarkedEpisodesByAnimeId(animeId, EpisodeMapper::mapEpisode) }
+        return handler.awaitList { episodesQueries.getFillermarkedEpisodesByAnimeId(animeId, ChapterMapper::mapChapter) }
     }
     // <-- AM (FILLERMARK)
 
     override suspend fun getEpisodeById(id: Long): Episode? {
-        return handler.awaitOneOrNull { episodesQueries.getEpisodeById(id, EpisodeMapper::mapEpisode) }
+        return handler.awaitOneOrNull { episodesQueries.getEpisodeById(id, ChapterMapper::mapChapter) }
     }
 
     override suspend fun getEpisodeByAnimeIdAsFlow(animeId: Long, applyScanlatorFilter: Boolean): Flow<List<Episode>> {
         return handler.subscribeToList {
-            episodesQueries.getEpisodesByAnimeId(animeId, applyScanlatorFilter.toLong(), EpisodeMapper::mapEpisode)
+            episodesQueries.getEpisodesByAnimeId(animeId, applyScanlatorFilter.toLong(), ChapterMapper::mapChapter)
         }
     }
 
@@ -136,14 +136,14 @@ class EpisodeRepositoryImpl(
             episodesQueries.getEpisodeByUrlAndAnimeId(
                 url,
                 animeId,
-                EpisodeMapper::mapEpisode,
+                ChapterMapper::mapChapter,
             )
         }
     }
 
     // SY -->
     override suspend fun getEpisodeByUrl(url: String): List<Episode> {
-        return handler.awaitList { episodesQueries.getEpisodeByUrl(url, EpisodeMapper::mapEpisode) }
+        return handler.awaitList { episodesQueries.getEpisodeByUrl(url, ChapterMapper::mapChapter) }
     }
 
     override suspend fun getMergedEpisodeByAnimeId(animeId: Long, applyScanlatorFilter: Boolean): List<Episode> {
@@ -151,7 +151,7 @@ class EpisodeRepositoryImpl(
             episodesQueries.getMergedEpisodesByAnimeId(
                 animeId,
                 applyScanlatorFilter.toLong(),
-                EpisodeMapper::mapEpisode,
+                ChapterMapper::mapChapter,
             )
         }
     }
@@ -164,7 +164,7 @@ class EpisodeRepositoryImpl(
             episodesQueries.getMergedEpisodesByAnimeId(
                 animeId,
                 applyScanlatorFilter.toLong(),
-                EpisodeMapper::mapEpisode,
+                ChapterMapper::mapChapter,
             )
         }
     }
