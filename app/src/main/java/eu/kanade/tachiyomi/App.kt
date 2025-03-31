@@ -41,11 +41,11 @@ import eu.kanade.domain.ui.model.setAppCompatDelegateThemeMode
 import eu.kanade.tachiyomi.core.security.PrivacyPreferences
 import eu.kanade.tachiyomi.crash.CrashActivity
 import eu.kanade.tachiyomi.crash.GlobalExceptionHandler
-import eu.kanade.tachiyomi.data.coil.AnimeCoverFetcher
-import eu.kanade.tachiyomi.data.coil.AnimeCoverKeyer
-import eu.kanade.tachiyomi.data.coil.AnimeCoverMetadata
-import eu.kanade.tachiyomi.data.coil.AnimeKeyer
 import eu.kanade.tachiyomi.data.coil.BufferedSourceFetcher
+import eu.kanade.tachiyomi.data.coil.MangaCoverFetcher
+import eu.kanade.tachiyomi.data.coil.MangaCoverKeyer
+import eu.kanade.tachiyomi.data.coil.MangaCoverMetadata
+import eu.kanade.tachiyomi.data.coil.MangaKeyer
 import eu.kanade.tachiyomi.data.coil.TachiyomiImageDecoder
 import eu.kanade.tachiyomi.data.notification.Notifications
 import eu.kanade.tachiyomi.data.sync.SyncDataJob
@@ -192,7 +192,7 @@ class App : Application(), DefaultLifecycleObserver, SingletonImageLoader.Factor
         setAppCompatDelegateThemeMode(Injekt.get<UiPreferences>().themeMode().get())
 
         // KMK -->
-        AnimeCoverMetadata.load()
+        MangaCoverMetadata.load()
         // KMK <--
 
         // Updates widget update
@@ -241,11 +241,11 @@ class App : Application(), DefaultLifecycleObserver, SingletonImageLoader.Factor
                 add(TachiyomiImageDecoder.Factory())
                 // Fetcher.Factory
                 add(BufferedSourceFetcher.Factory())
-                add(AnimeCoverFetcher.AnimeCoverFactory(callFactoryLazy))
-                add(AnimeCoverFetcher.AnimeFactory(callFactoryLazy))
+                add(MangaCoverFetcher.MangaCoverFactory(callFactoryLazy))
+                add(MangaCoverFetcher.MangaFactory(callFactoryLazy))
                 // Keyer
-                add(AnimeCoverKeyer())
-                add(AnimeKeyer())
+                add(MangaCoverKeyer())
+                add(MangaKeyer())
             }
 
             crossfade((300 * this@App.animatorDurationScale).toInt())

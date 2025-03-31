@@ -219,17 +219,17 @@ class LibraryPreferences(
 
     fun swipeToStartAction() = preferenceStore.getEnum(
         "pref_chapter_swipe_end_action",
-        EpisodeSwipeAction.ToggleBookmark,
+        ChapterSwipeAction.ToggleBookmark,
     )
 
     fun swipeToEndAction() = preferenceStore.getEnum(
         "pref_chapter_swipe_start_action",
-        EpisodeSwipeAction.ToggleSeen,
+        ChapterSwipeAction.ToggleSeen,
     )
 
     // endregion
 
-    enum class EpisodeSwipeAction {
+    enum class ChapterSwipeAction {
         ToggleSeen,
         ToggleBookmark,
         Download,

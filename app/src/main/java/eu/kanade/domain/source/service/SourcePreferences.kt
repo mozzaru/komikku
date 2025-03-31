@@ -104,6 +104,6 @@ class SourcePreferences(
     // SY <--
 
     // KMK -->
-    fun relatedAnimes() = preferenceStore.getBoolean("related_mangas", true)
+    fun relatedMangas() = preferenceStore.getBoolean("related_mangas", true)
     // KMK <--
 }

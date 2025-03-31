@@ -66,14 +66,14 @@ import dev.chrisbanes.haze.HazeState
 import dev.chrisbanes.haze.haze
 import eu.kanade.domain.source.service.SourcePreferences
 import eu.kanade.domain.ui.UiPreferences
-import eu.kanade.presentation.browse.RelatedAnimeTitle
+import eu.kanade.presentation.browse.RelatedMangaTitle
 import eu.kanade.presentation.components.relativeDateText
 import eu.kanade.presentation.manga.components.ChapterDownloadAction
 import eu.kanade.presentation.manga.components.ChapterHeader
 import eu.kanade.presentation.manga.components.ExpandableMangaDescription
 import eu.kanade.presentation.manga.components.MangaActionRow
 import eu.kanade.presentation.manga.components.MangaBottomActionMenu
-import eu.kanade.presentation.manga.components.MangaEpisodeListItem
+import eu.kanade.presentation.manga.components.MangaChapterListItem
 import eu.kanade.presentation.manga.components.MangaInfoBox
 import eu.kanade.presentation.manga.components.MangaInfoButtons
 import eu.kanade.presentation.manga.components.MangaToolbar
@@ -82,7 +82,7 @@ import eu.kanade.presentation.manga.components.OutlinedButtonWithArrow
 import eu.kanade.presentation.manga.components.RelatedMangasRow
 import eu.kanade.presentation.util.formatChapterNumber
 import eu.kanade.tachiyomi.data.download.model.Download
-import eu.kanade.tachiyomi.source.getNameForAnimeInfo
+import eu.kanade.tachiyomi.source.getNameForMangaInfo
 import eu.kanade.tachiyomi.ui.manga.ChapterList
 import eu.kanade.tachiyomi.ui.manga.MangaScreenModel
 import eu.kanade.tachiyomi.ui.manga.MergedMangaData
@@ -117,8 +117,8 @@ fun MangaScreen(
     snackbarHostState: SnackbarHostState,
     nextUpdate: Instant?,
     isTabletUi: Boolean,
-    episodeSwipeStartAction: LibraryPreferences.EpisodeSwipeAction,
-    episodeSwipeEndAction: LibraryPreferences.EpisodeSwipeAction,
+    episodeSwipeStartAction: LibraryPreferences.ChapterSwipeAction,
+    episodeSwipeEndAction: LibraryPreferences.ChapterSwipeAction,
     onBackClicked: () -> Unit,
     onEpisodeClicked: (Chapter) -> Unit,
     onDownloadEpisode: ((List<ChapterList.Item>, ChapterDownloadAction) -> Unit)?,
@@ -159,7 +159,7 @@ fun MangaScreen(
     onMultiDeleteClicked: (List<Chapter>) -> Unit,
 
     // For chapter swipe
-    onEpisodeSwipe: (ChapterList.Item, LibraryPreferences.EpisodeSwipeAction) -> Unit,
+    onEpisodeSwipe: (ChapterList.Item, LibraryPreferences.ChapterSwipeAction) -> Unit,
 
     // Chapter selection
     onEpisodeSelected: (ChapterList.Item, Boolean, Boolean, Boolean) -> Unit,
@@ -299,8 +299,8 @@ private fun MangaScreenSmallImpl(
     state: MangaScreenModel.State.Success,
     snackbarHostState: SnackbarHostState,
     nextUpdate: Instant?,
-    episodeSwipeStartAction: LibraryPreferences.EpisodeSwipeAction,
-    episodeSwipeEndAction: LibraryPreferences.EpisodeSwipeAction,
+    episodeSwipeStartAction: LibraryPreferences.ChapterSwipeAction,
+    episodeSwipeEndAction: LibraryPreferences.ChapterSwipeAction,
     onBackClicked: () -> Unit,
     onEpisodeClicked: (Chapter) -> Unit,
     onDownloadEpisode: ((List<ChapterList.Item>, ChapterDownloadAction) -> Unit)?,
@@ -342,7 +342,7 @@ private fun MangaScreenSmallImpl(
     onMultiDeleteClicked: (List<Chapter>) -> Unit,
 
     // For chapter swipe
-    onEpisodeSwipe: (ChapterList.Item, LibraryPreferences.EpisodeSwipeAction) -> Unit,
+    onEpisodeSwipe: (ChapterList.Item, LibraryPreferences.ChapterSwipeAction) -> Unit,
 
     // Chapter selection
     onEpisodeSelected: (ChapterList.Item, Boolean, Boolean, Boolean) -> Unit,
@@ -372,9 +372,9 @@ private fun MangaScreenSmallImpl(
     }
     // KMK -->
     val uiPreferences = Injekt.get<UiPreferences>()
-    val relatedAnimesEnabled by Injekt.get<SourcePreferences>().relatedAnimes().collectAsState()
-    val expandRelatedAnimes by uiPreferences.expandRelatedAnimes().collectAsState()
-    val showRelatedAnimesInOverflow by uiPreferences.relatedAnimesInOverflow().collectAsState()
+    val relatedAnimesEnabled by Injekt.get<SourcePreferences>().relatedMangas().collectAsState()
+    val expandRelatedAnimes by uiPreferences.expandRelatedMangas().collectAsState()
+    val showRelatedAnimesInOverflow by uiPreferences.relatedMangasInOverflow().collectAsState()
 
     var layoutSize by remember { mutableStateOf(IntSize.Zero) }
     var fabSize by remember { mutableStateOf(IntSize.Zero) }
@@ -553,7 +553,7 @@ private fun MangaScreenSmallImpl(
                             isTabletUi = false,
                             appBarPadding = topPadding,
                             manga = state.manga,
-                            sourceName = remember { state.source.getNameForAnimeInfo(state.mergedData?.sources) },
+                            sourceName = remember { state.source.getNameForMangaInfo(state.mergedData?.sources) },
                             isStubSource = remember { state.source is StubSource },
                             onCoverClick = onCoverClicked,
                             doSearch = onSearch,
@@ -620,7 +620,7 @@ private fun MangaScreenSmallImpl(
                                     contentType = MangaScreenItem.RELATED_ANIMES,
                                 ) {
                                     Column {
-                                        RelatedAnimeTitle(
+                                        RelatedMangaTitle(
                                             title = stringResource(KMR.strings.pref_source_related_mangas),
                                             subtitle = null,
                                             onClick = onRelatedAnimesScreenClick,
@@ -707,8 +707,8 @@ private fun MangaScreenLargeImpl(
     state: MangaScreenModel.State.Success,
     snackbarHostState: SnackbarHostState,
     nextUpdate: Instant?,
-    episodeSwipeStartAction: LibraryPreferences.EpisodeSwipeAction,
-    episodeSwipeEndAction: LibraryPreferences.EpisodeSwipeAction,
+    episodeSwipeStartAction: LibraryPreferences.ChapterSwipeAction,
+    episodeSwipeEndAction: LibraryPreferences.ChapterSwipeAction,
     onBackClicked: () -> Unit,
     onEpisodeClicked: (Chapter) -> Unit,
     onDownloadEpisode: ((List<ChapterList.Item>, ChapterDownloadAction) -> Unit)?,
@@ -750,7 +750,7 @@ private fun MangaScreenLargeImpl(
     onMultiDeleteClicked: (List<Chapter>) -> Unit,
 
     // For swipe actions
-    onEpisodeSwipe: (ChapterList.Item, LibraryPreferences.EpisodeSwipeAction) -> Unit,
+    onEpisodeSwipe: (ChapterList.Item, LibraryPreferences.ChapterSwipeAction) -> Unit,
 
     // Chapter selection
     onEpisodeSelected: (ChapterList.Item, Boolean, Boolean, Boolean) -> Unit,
@@ -782,9 +782,9 @@ private fun MangaScreenLargeImpl(
 
     // KMK -->
     val uiPreferences = Injekt.get<UiPreferences>()
-    val relatedAnimesEnabled by Injekt.get<SourcePreferences>().relatedAnimes().collectAsState()
-    val expandRelatedAnimes by uiPreferences.expandRelatedAnimes().collectAsState()
-    val showRelatedAnimesInOverflow by uiPreferences.relatedAnimesInOverflow().collectAsState()
+    val relatedAnimesEnabled by Injekt.get<SourcePreferences>().relatedMangas().collectAsState()
+    val expandRelatedAnimes by uiPreferences.expandRelatedMangas().collectAsState()
+    val showRelatedAnimesInOverflow by uiPreferences.relatedMangasInOverflow().collectAsState()
 
     var layoutSize by remember { mutableStateOf(IntSize.Zero) }
     var fabSize by remember { mutableStateOf(IntSize.Zero) }
@@ -956,7 +956,7 @@ private fun MangaScreenLargeImpl(
                             isTabletUi = true,
                             appBarPadding = contentPadding.calculateTopPadding(),
                             manga = state.manga,
-                            sourceName = remember { state.source.getNameForAnimeInfo(state.mergedData?.sources) },
+                            sourceName = remember { state.source.getNameForMangaInfo(state.mergedData?.sources) },
                             isStubSource = remember { state.source is StubSource },
                             onCoverClick = onCoverClicked,
                             doSearch = onSearch,
@@ -1033,7 +1033,7 @@ private fun MangaScreenLargeImpl(
                                             contentType = MangaScreenItem.RELATED_ANIMES,
                                         ) {
                                             Column {
-                                                RelatedAnimeTitle(
+                                                RelatedMangaTitle(
                                                     title = stringResource(KMR.strings.pref_source_related_mangas)
                                                         .uppercase(),
                                                     subtitle = null,
@@ -1148,12 +1148,12 @@ private fun LazyListScope.sharedChapterItems(
     mergedData: MergedMangaData?,
     episodes: List<ChapterList>,
     isAnyEpisodeSelected: Boolean,
-    episodeSwipeStartAction: LibraryPreferences.EpisodeSwipeAction,
-    episodeSwipeEndAction: LibraryPreferences.EpisodeSwipeAction,
+    episodeSwipeStartAction: LibraryPreferences.ChapterSwipeAction,
+    episodeSwipeEndAction: LibraryPreferences.ChapterSwipeAction,
     onEpisodeClicked: (Chapter) -> Unit,
     onDownloadEpisode: ((List<ChapterList.Item>, ChapterDownloadAction) -> Unit)?,
     onEpisodeSelected: (ChapterList.Item, Boolean, Boolean, Boolean) -> Unit,
-    onEpisodeSwipe: (ChapterList.Item, LibraryPreferences.EpisodeSwipeAction) -> Unit,
+    onEpisodeSwipe: (ChapterList.Item, LibraryPreferences.ChapterSwipeAction) -> Unit,
 ) {
     items(
         items = episodes,
@@ -1174,7 +1174,7 @@ private fun LazyListScope.sharedChapterItems(
                 MissingChapterCountListItem(count = item.count)
             }
             is ChapterList.Item -> {
-                MangaEpisodeListItem(
+                MangaChapterListItem(
                     title = if (manga.displayMode == Manga.EPISODE_DISPLAY_NUMBER) {
                         stringResource(
                             MR.strings.display_mode_chapter,

@@ -110,8 +110,8 @@ import eu.kanade.tachiyomi.util.system.openInBrowser
 import eu.kanade.tachiyomi.util.system.toShareIntent
 import eu.kanade.tachiyomi.util.system.toast
 import eu.kanade.tachiyomi.util.view.setComposeContent
-import exh.util.animeType
 import exh.util.defaultReaderType
+import exh.util.mangaType
 import kotlinx.collections.immutable.persistentSetOf
 import kotlinx.collections.immutable.toImmutableList
 import kotlinx.collections.immutable.toImmutableSet
@@ -985,7 +985,7 @@ class ReaderActivity : BaseActivity() {
 
         val manga = viewModel.state.value.manga
         val defaultReaderType = manga?.defaultReaderType(
-            manga.animeType(sourceName = sourceManager.get(manga.source)?.name),
+            manga.mangaType(sourceName = sourceManager.get(manga.source)?.name),
         )
         if (
             readerPreferences.useAutoWebtoon().get() &&

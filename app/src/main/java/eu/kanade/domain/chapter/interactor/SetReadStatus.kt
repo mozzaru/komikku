@@ -41,7 +41,7 @@ class SetReadStatus(
      *
      * Called from:
      *  - [LibraryScreenModel]: Manually select animes & mark as seen
-     *  - [MangaScreenModel.markEpisodesSeen]: Manually select chapters & mark as seen or swipe chapter as seen
+     *  - [MangaScreenModel.markChaptersRead]: Manually select chapters & mark as seen or swipe chapter as seen
      *  - [UpdatesScreenModel.markUpdatesSeen]: Manually select chapters & mark as seen
      *  - [LibraryUpdateJob.updateEpisodeList]: when a manga is updated and has new chapter but already seen,
      *  it will mark that new **duplicated** chapter as seen & delete downloading/downloaded -> should be treat as

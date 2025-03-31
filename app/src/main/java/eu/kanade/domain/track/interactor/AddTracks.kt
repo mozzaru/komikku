@@ -42,7 +42,7 @@ class AddTracks(
 
             insertTrack.await(track)
 
-            // TODO: merge into [SyncEpisodeProgressWithTrack]?
+            // TODO: merge into [SyncChapterProgressWithTrack]?
             // Update chapter progress if newer chapters marked seen locally
             if (hasSeenEpisodes) {
                 val latestLocalSeenEpisodeNumber = allEpisodes
@@ -55,7 +55,7 @@ class AddTracks(
                     track = track.copy(
                         lastEpisodeSeen = latestLocalSeenEpisodeNumber,
                     )
-                    tracker.setRemoteLastEpisodeSeen(track.toDbTrack(), latestLocalSeenEpisodeNumber.toInt())
+                    tracker.setRemoteLastChapterRead(track.toDbTrack(), latestLocalSeenEpisodeNumber.toInt())
                 }
 
                 if (track.startDate <= 0) {

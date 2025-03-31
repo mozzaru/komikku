@@ -32,7 +32,7 @@ import tachiyomi.core.metadata.comicinfo.ComicInfo
 import tachiyomi.core.metadata.comicinfo.ComicInfoPublishingStatus
 import tachiyomi.core.metadata.comicinfo.copyFromComicInfo
 import tachiyomi.core.metadata.comicinfo.getComicInfo
-import tachiyomi.core.metadata.tachiyomi.AnimeDetails
+import tachiyomi.core.metadata.tachiyomi.MangaDetails
 import tachiyomi.domain.chapter.service.ChapterRecognition
 import tachiyomi.domain.manga.model.Manga
 import tachiyomi.i18n.MR
@@ -233,7 +233,7 @@ actual class LocalSource(
                 // Old custom JSON format
                 // TODO: remove support for this entirely after a while
                 legacyJsonDetailsFile != null -> {
-                    json.decodeFromStream<AnimeDetails>(legacyJsonDetailsFile.openInputStream()).run {
+                    json.decodeFromStream<MangaDetails>(legacyJsonDetailsFile.openInputStream()).run {
                         title?.let { manga.title = it }
                         author?.let { manga.author = it }
                         artist?.let { manga.artist = it }

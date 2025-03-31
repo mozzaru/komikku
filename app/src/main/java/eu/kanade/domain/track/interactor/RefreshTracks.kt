@@ -21,7 +21,7 @@ class RefreshTracks(
     private val getTracks: GetTracks,
     private val trackerManager: TrackerManager,
     private val insertTrack: InsertTrack,
-    private val syncEpisodeProgressWithTrack: SyncEpisodeProgressWithTrack,
+    private val syncChapterProgressWithTrack: SyncChapterProgressWithTrack,
 ) {
 
     /**
@@ -39,7 +39,7 @@ class RefreshTracks(
                         return@async try {
                             val updatedTrack = service!!.refresh(track.toDbTrack()).toDomainTrack()!!
                             insertTrack.await(updatedTrack)
-                            syncEpisodeProgressWithTrack.await(animeId, updatedTrack, service)
+                            syncChapterProgressWithTrack.await(animeId, updatedTrack, service)
                                 // KMK -->
                                 ?.let {
                                     val context = Injekt.get<Application>()

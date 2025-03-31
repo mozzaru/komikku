@@ -38,7 +38,7 @@ import eu.kanade.domain.manga.model.toSManga
 import eu.kanade.domain.source.service.SourcePreferences
 import eu.kanade.domain.track.interactor.AddTracks
 import eu.kanade.domain.track.interactor.RefreshTracks
-import eu.kanade.domain.track.interactor.TrackEpisode
+import eu.kanade.domain.track.interactor.TrackChapter
 import eu.kanade.domain.track.model.AutoTrackState
 import eu.kanade.domain.track.service.TrackPreferences
 import eu.kanade.domain.ui.UiPreferences
@@ -53,7 +53,7 @@ import eu.kanade.tachiyomi.data.track.EnhancedTracker
 import eu.kanade.tachiyomi.data.track.TrackerManager
 import eu.kanade.tachiyomi.network.HttpException
 import eu.kanade.tachiyomi.source.Source
-import eu.kanade.tachiyomi.source.getNameForAnimeInfo
+import eu.kanade.tachiyomi.source.getNameForMangaInfo
 import eu.kanade.tachiyomi.source.model.SManga
 import eu.kanade.tachiyomi.source.online.all.MergedSource
 import eu.kanade.tachiyomi.ui.manga.RelatedManga.Companion.isLoading
@@ -155,7 +155,7 @@ class MangaScreenModel(
     private val sourcePreferences: SourcePreferences = Injekt.get(),
     // KMK <--
     private val trackerManager: TrackerManager = Injekt.get(),
-    private val trackEpisode: TrackEpisode = Injekt.get(),
+    private val trackChapter: TrackChapter = Injekt.get(),
     private val downloadManager: DownloadManager = Injekt.get(),
     private val downloadCache: DownloadCache = Injekt.get(),
     private val getMangaWithChapters: GetMangaWithChapters = Injekt.get(),
@@ -957,7 +957,7 @@ class MangaScreenModel(
                 downloadProgress = activeDownload?.progress ?: 0,
                 selected = chapter.id in selectedChapterIds,
                 // SY -->
-                sourceName = source?.getNameForAnimeInfo(),
+                sourceName = source?.getNameForMangaInfo(),
                 // SY <--
             )
         }
@@ -1022,7 +1022,7 @@ class MangaScreenModel(
      * Requests an list of related mangas from the source.
      */
     internal suspend fun fetchRelatedMangasFromSource(onDemand: Boolean = false, onFinish: (() -> Unit)? = null) {
-        val expandRelatedMangas = uiPreferences.expandRelatedAnimes().get()
+        val expandRelatedMangas = uiPreferences.expandRelatedMangas().get()
         if (!onDemand && !expandRelatedMangas || manga?.source == MERGED_SOURCE_ID) return
 
         // start fetching related mangas
@@ -1037,7 +1037,7 @@ class MangaScreenModel(
             }
         }
         val state = successState ?: return
-        val relatedMangasEnabled = sourcePreferences.relatedAnimes().get()
+        val relatedMangasEnabled = sourcePreferences.relatedMangas().get()
 
         try {
             if (state.source !is StubSource && relatedMangasEnabled) {
@@ -1074,30 +1074,30 @@ class MangaScreenModel(
     // KMK <--
 
     /**
-     * @throws IllegalStateException if the swipe action is [LibraryPreferences.EpisodeSwipeAction.Disabled]
+     * @throws IllegalStateException if the swipe action is [LibraryPreferences.ChapterSwipeAction.Disabled]
      */
-    fun chapterSwipe(chapterItem: ChapterList.Item, swipeAction: LibraryPreferences.EpisodeSwipeAction) {
+    fun chapterSwipe(chapterItem: ChapterList.Item, swipeAction: LibraryPreferences.ChapterSwipeAction) {
         screenModelScope.launch {
             executeChapterSwipeAction(chapterItem, swipeAction)
         }
     }
 
     /**
-     * @throws IllegalStateException if the swipe action is [LibraryPreferences.EpisodeSwipeAction.Disabled]
+     * @throws IllegalStateException if the swipe action is [LibraryPreferences.ChapterSwipeAction.Disabled]
      */
     private fun executeChapterSwipeAction(
         chapterItem: ChapterList.Item,
-        swipeAction: LibraryPreferences.EpisodeSwipeAction,
+        swipeAction: LibraryPreferences.ChapterSwipeAction,
     ) {
         val chapter = chapterItem.chapter
         when (swipeAction) {
-            LibraryPreferences.EpisodeSwipeAction.ToggleSeen -> {
-                markEpisodesSeen(listOf(chapter), !chapter.seen)
+            LibraryPreferences.ChapterSwipeAction.ToggleSeen -> {
+                markChaptersRead(listOf(chapter), !chapter.seen)
             }
-            LibraryPreferences.EpisodeSwipeAction.ToggleBookmark -> {
+            LibraryPreferences.ChapterSwipeAction.ToggleBookmark -> {
                 bookmarkChapters(listOf(chapter), !chapter.bookmark)
             }
-            LibraryPreferences.EpisodeSwipeAction.Download -> {
+            LibraryPreferences.ChapterSwipeAction.Download -> {
                 val downloadAction: ChapterDownloadAction = when (chapterItem.downloadState) {
                     Download.State.ERROR,
                     Download.State.NOT_DOWNLOADED,
@@ -1112,7 +1112,7 @@ class MangaScreenModel(
                     action = downloadAction,
                 )
             }
-            LibraryPreferences.EpisodeSwipeAction.Disabled -> throw IllegalStateException()
+            LibraryPreferences.ChapterSwipeAction.Disabled -> throw IllegalStateException()
         }
     }
 
@@ -1216,7 +1216,7 @@ class MangaScreenModel(
         val chapters = filteredChapters.orEmpty().map { it.chapter }
         val prevChapters = if (manga.sortDescending()) chapters.asReversed() else chapters
         val pointerPos = prevChapters.indexOf(pointer)
-        if (pointerPos != -1) markEpisodesSeen(prevChapters.take(pointerPos), true)
+        if (pointerPos != -1) markChaptersRead(prevChapters.take(pointerPos), true)
     }
 
     /**
@@ -1224,7 +1224,7 @@ class MangaScreenModel(
      * @param chapters the list of selected chapters.
      * @param seen whether to mark chapters as seen or unseen.
      */
-    fun markEpisodesSeen(chapters: List<Chapter>, seen: Boolean) {
+    fun markChaptersRead(chapters: List<Chapter>, seen: Boolean) {
         toggleAllSelection(false)
         if (chapters.isEmpty()) return
         screenModelScope.launchIO {
@@ -1243,7 +1243,7 @@ class MangaScreenModel(
 
             if (!shouldPromptTrackingUpdate) return@launchIO
             if (autoTrackState == AutoTrackState.ALWAYS) {
-                trackEpisode.await(context, mangaId, maxChapterNumber)
+                trackChapter.await(context, mangaId, maxChapterNumber)
                 withUIContext {
                     context.toast(context.stringResource(MR.strings.trackers_updated_summary, maxChapterNumber.toInt()))
                 }
@@ -1258,7 +1258,7 @@ class MangaScreenModel(
             )
 
             if (result == SnackbarResult.ActionPerformed) {
-                trackEpisode.await(context, mangaId, maxChapterNumber)
+                trackChapter.await(context, mangaId, maxChapterNumber)
             }
         }
     }

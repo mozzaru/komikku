@@ -37,7 +37,7 @@ class Tester {
         val newBytes = ProtoBuf.encodeToByteArray(
             Backup.serializer(),
             backup.copy(
-                backupAnime = backup.backupAnime.filter { it.favorite },
+                backupManga = backup.backupManga.filter { it.favorite },
             ),
         )
         File("D:\\Downloads\\pacthiyomi_2023-05-08_13-30 (2).proto.gz").outputStream().sink().gzip().buffer().use {

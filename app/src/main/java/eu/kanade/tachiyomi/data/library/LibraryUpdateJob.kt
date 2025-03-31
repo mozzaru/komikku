@@ -174,7 +174,7 @@ class LibraryUpdateJob(private val context: Context, workerParams: WorkerParamet
         return withIOContext {
             try {
                 when (target) {
-                    Target.CHAPTERS -> updateEpisodeList()
+                    Target.CHAPTERS -> updateChapterList()
                     Target.COVERS -> updateCovers()
                 }
                 Result.success()
@@ -348,7 +348,7 @@ class LibraryUpdateJob(private val context: Context, workerParams: WorkerParamet
      *
      * @return an observable delivering the progress of each update.
      */
-    private suspend fun updateEpisodeList() {
+    private suspend fun updateChapterList() {
         val semaphore = Semaphore(5)
         val progressCount = AtomicInteger(0)
         val currentlyUpdatingManga = CopyOnWriteArrayList<Manga>()

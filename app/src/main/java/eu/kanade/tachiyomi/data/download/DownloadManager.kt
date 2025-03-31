@@ -276,7 +276,7 @@ class DownloadManager(
                 downloader.removeFromQueue(manga)
             }
             provider.findAnimeDir(/* SY --> */ manga.ogTitle /* SY <-- */, source)?.delete()
-            cache.removeAnime(manga)
+            cache.removeManga(manga)
 
             // Delete source directory if empty
             val sourceDir = provider.findSourceDir(source)
@@ -332,7 +332,7 @@ class DownloadManager(
             val mangaFolder = provider.getAnimeDir(/* SY --> */ manga.ogTitle /* SY <-- */, source)
             cleaned += 1 + mangaFolder.listFiles().orEmpty().size
             mangaFolder.delete()
-            cache.removeAnime(manga)
+            cache.removeManga(manga)
             return cleaned
         }
 
@@ -353,7 +353,7 @@ class DownloadManager(
             val mangaFolder = provider.getAnimeDir(/* SY --> */ manga.ogTitle /* SY <-- */, source)
             if (!mangaFolder.listFiles().isNullOrEmpty()) {
                 mangaFolder.delete()
-                cache.removeAnime(manga)
+                cache.removeManga(manga)
             } else {
                 xLogE("Cache and download folder doesn't match for " + /* SY --> */ manga.ogTitle /* SY <-- */)
             }

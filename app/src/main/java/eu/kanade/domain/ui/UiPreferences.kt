@@ -57,11 +57,11 @@ class UiPreferences(
     fun feedTabInFront() = preferenceStore.getBoolean("latest_tab_position", false)
 
     // KMK -->
-    fun expandRelatedAnimes() = preferenceStore.getBoolean("expand_related_mangas", true)
+    fun expandRelatedMangas() = preferenceStore.getBoolean("expand_related_mangas", true)
 
-    fun relatedAnimesInOverflow() = preferenceStore.getBoolean("related_mangas_in_overflow", false)
+    fun relatedMangasInOverflow() = preferenceStore.getBoolean("related_mangas_in_overflow", false)
 
-    fun showHomeOnRelatedAnimes() = preferenceStore.getBoolean("show_home_on_related_mangas", true)
+    fun showHomeOnRelatedMangas() = preferenceStore.getBoolean("show_home_on_related_mangas", true)
 
     fun watchButtonPosition() = preferenceStore.getString("reading_button_position", FabPosition.End.toString())
 
@@ -69,7 +69,7 @@ class UiPreferences(
 
     fun usePanoramaCoverAlways() = preferenceStore.getBoolean("use_panorama_cover_grid", true)
 
-    fun usePanoramaCoverAnimeInfo() = preferenceStore.getBoolean("use_panorama_cover_manga_info", false)
+    fun usePanoramaCoverMangaInfo() = preferenceStore.getBoolean("use_panorama_cover_manga_info", false)
     // KMK <--
 
     fun recommendsInOverflow() = preferenceStore.getBoolean("recommends_in_overflow", false)

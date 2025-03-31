@@ -41,8 +41,8 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import eu.kanade.presentation.manga.components.AnimeCoverHide
 import eu.kanade.presentation.manga.components.MangaCover
+import eu.kanade.presentation.manga.components.MangaCoverHide
 import eu.kanade.presentation.manga.components.RatioSwitchToPanorama
 import exh.debug.DebugToggles
 import tachiyomi.i18n.MR
@@ -51,7 +51,7 @@ import tachiyomi.presentation.core.i18n.stringResource
 import tachiyomi.presentation.core.util.selectedBackground
 import tachiyomi.domain.manga.model.MangaCover as MangaCoverModel
 
-object CommonAnimeItemDefaults {
+object CommonMangaItemDefaults {
     val GridHorizontalSpacer = 4.dp
     val GridVerticalSpacer = 4.dp
 
@@ -75,7 +75,7 @@ internal const val GRID_SELECTED_COVER_ALPHA = 0.76f
  * Accepts null [title] for a cover-only view.
  */
 @Composable
-fun AnimeCompactGridItem(
+fun MangaCompactGridItem(
     coverData: MangaCoverModel,
     onClick: () -> Unit,
     onLongClick: () -> Unit,
@@ -98,11 +98,11 @@ fun AnimeCompactGridItem(
         onClick = onClick,
         onLongClick = onLongClick,
     ) {
-        AnimeGridCover(
+        MangaGridCover(
             cover = {
                 // KMK -->
                 if (DebugToggles.HIDE_COVER_IMAGE_ONLY_SHOW_COLOR.enabled) {
-                    AnimeCoverHide.Book(
+                    MangaCoverHide.Book(
                         modifier = Modifier
                             .fillMaxWidth(),
                         bgColor = bgColor ?: (MaterialTheme.colorScheme.surface.takeIf { isSelected }),
@@ -149,7 +149,7 @@ fun AnimeCompactGridItem(
 }
 
 /**
- * Title overlay for [AnimeCompactGridItem]
+ * Title overlay for [MangaCompactGridItem]
  */
 @Composable
 private fun BoxScope.CoverTextOverlay(
@@ -205,7 +205,7 @@ private fun BoxScope.CoverTextOverlay(
  * Layout of grid list item with title below the cover.
  */
 @Composable
-fun AnimeComfortableGridItem(
+fun MangaComfortableGridItem(
     coverData: MangaCoverModel,
     title: String,
     onClick: () -> Unit,
@@ -234,11 +234,11 @@ fun AnimeComfortableGridItem(
         onLongClick = onLongClick,
     ) {
         Column {
-            AnimeGridCover(
+            MangaGridCover(
                 cover = {
                     // KMK -->
                     if (DebugToggles.HIDE_COVER_IMAGE_ONLY_SHOW_COLOR.enabled) {
-                        AnimeCoverHide.Book(
+                        MangaCoverHide.Book(
                             modifier = Modifier
                                 .fillMaxWidth(),
                             bgColor = bgColor ?: (MaterialTheme.colorScheme.surface.takeIf { isSelected }),
@@ -327,7 +327,7 @@ fun AnimeComfortableGridItem(
  * Common cover layout to add contents to be drawn on top of the cover.
  */
 @Composable
-private fun AnimeGridCover(
+private fun MangaGridCover(
     modifier: Modifier = Modifier,
     cover: @Composable BoxScope.() -> Unit = {},
     // KMK -->
@@ -428,7 +428,7 @@ private fun Modifier.selectedOutline(
  * Layout of list item.
  */
 @Composable
-fun AnimeListItem(
+fun MangaListItem(
     coverData: MangaCoverModel,
     title: String,
     onClick: () -> Unit,
@@ -458,7 +458,7 @@ fun AnimeListItem(
     ) {
         // KMK -->
         if (DebugToggles.HIDE_COVER_IMAGE_ONLY_SHOW_COLOR.enabled) {
-            AnimeCoverHide.Square(
+            MangaCoverHide.Square(
                 modifier = Modifier
                     .fillMaxHeight(),
                 bgColor = bgColor ?: (MaterialTheme.colorScheme.surface.takeIf { isSelected }),

@@ -90,7 +90,7 @@ abstract class BaseTracker(
         updateRemote(track)
     }
 
-    override suspend fun setRemoteLastEpisodeSeen(track: Track, chapterNumber: Int) {
+    override suspend fun setRemoteLastChapterRead(track: Track, chapterNumber: Int) {
         if (
             track.last_episode_seen == 0.0 &&
             track.last_episode_seen < chapterNumber &&

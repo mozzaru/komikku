@@ -11,10 +11,10 @@ import eu.kanade.domain.manga.model.toSManga
 import eu.kanade.tachiyomi.data.cache.CoverCache
 import eu.kanade.tachiyomi.data.download.DownloadManager
 import eu.kanade.tachiyomi.source.CatalogueSource
-import eu.kanade.tachiyomi.source.getNameForAnimeInfo
+import eu.kanade.tachiyomi.source.getNameForMangaInfo
 import eu.kanade.tachiyomi.ui.browse.migration.MigrationFlags
 import eu.kanade.tachiyomi.ui.browse.migration.advanced.design.MigrationType
-import eu.kanade.tachiyomi.ui.browse.migration.advanced.process.MigratingAnime.SearchResult
+import eu.kanade.tachiyomi.ui.browse.migration.advanced.process.MigratingManga.SearchResult
 import eu.kanade.tachiyomi.util.system.toast
 import exh.smartsearch.SmartSearchEngine
 import exh.source.MERGED_SOURCE_ID
@@ -85,7 +85,7 @@ class MigrationListScreenModel(
 
     private val smartSearchEngine = SmartSearchEngine(config.extraSearchParams)
 
-    val migratingItems = MutableStateFlow<ImmutableList<MigratingAnime>?>(null)
+    val migratingItems = MutableStateFlow<ImmutableList<MigratingManga>?>(null)
     val migrationDone = MutableStateFlow(false)
     val finishedCount = MutableStateFlow(0)
 
@@ -117,10 +117,10 @@ class MigrationListScreenModel(
                     .map {
                         async {
                             val manga = getAnime.await(it) ?: return@async null
-                            MigratingAnime(
+                            MigratingManga(
                                 manga = manga,
-                                episodeInfo = getChapterInfo(it),
-                                sourcesString = sourceManager.getOrStub(manga.source).getNameForAnimeInfo(
+                                chapterInfo = getChapterInfo(it),
+                                sourcesString = sourceManager.getOrStub(manga.source).getNameForMangaInfo(
                                     if (manga.source == MERGED_SOURCE_ID) {
                                         getMergedReferencesById.await(manga.id)
                                             .map { sourceManager.getOrStub(it.mangaSourceId) }
@@ -145,19 +145,19 @@ class MigrationListScreenModel(
     suspend fun getManga(id: Long) = getAnime.await(id)
     suspend fun getChapterInfo(result: SearchResult.Result) = getChapterInfo(result.id)
     private suspend fun getChapterInfo(id: Long) = getChaptersByMangaId.await(id).let { chapters ->
-        MigratingAnime.EpisodeInfo(
+        MigratingManga.ChapterInfo(
             latestChapter = chapters.maxOfOrNull { it.episodeNumber },
             chapterCount = chapters.size,
         )
     }
-    fun getSourceName(manga: Manga) = sourceManager.getOrStub(manga.source).getNameForAnimeInfo()
+    fun getSourceName(manga: Manga) = sourceManager.getOrStub(manga.source).getNameForMangaInfo()
 
     fun getMigrationSources() = preferences.migrationSources().get().split("/").mapNotNull {
         val value = it.toLongOrNull() ?: return@mapNotNull null
         sourceManager.get(value) as? CatalogueSource
     }
 
-    private suspend fun runMigrations(mangas: List<MigratingAnime>) {
+    private suspend fun runMigrations(mangas: List<MigratingManga>) {
         // KMK: finishedCount.value = mangas.size
 
         val sources = getMigrationSources()
@@ -309,7 +309,7 @@ class MigrationListScreenModel(
                 }
                 if (result != null &&
                     showOnlyUpdates &&
-                    (getChapterInfo(result.id).latestChapter ?: 0.0) <= (manga.episodeInfo.latestChapter ?: 0.0)
+                    (getChapterInfo(result.id).latestChapter ?: 0.0) <= (manga.chapterInfo.latestChapter ?: 0.0)
                 ) {
                     removeManga(manga)
                 }
@@ -579,7 +579,7 @@ class MigrationListScreenModel(
         }
     }
 
-    private fun removeManga(item: MigratingAnime) {
+    private fun removeManga(item: MigratingManga) {
         when (val migration = config.migration) {
             is MigrationType.MangaList -> {
                 val ids = migration.mangaIds.toMutableList()
@@ -605,7 +605,7 @@ class MigrationListScreenModel(
     fun openMigrateDialog(
         copy: Boolean,
     ) {
-        dialog.value = Dialog.MigrateAnimeDialog(
+        dialog.value = Dialog.MigrateMangaDialog(
             copy,
             migratingItems.value.orEmpty().size,
             mangasSkipped(),
@@ -626,7 +626,7 @@ class MigrationListScreenModel(
     // KMK <--
 
     sealed class Dialog {
-        data class MigrateAnimeDialog(val copy: Boolean, val mangaSet: Int, val mangaSkipped: Int) : Dialog()
+        data class MigrateMangaDialog(val copy: Boolean, val mangaSet: Int, val mangaSkipped: Int) : Dialog()
         data object MigrationExitDialog : Dialog()
 
         // KMK -->

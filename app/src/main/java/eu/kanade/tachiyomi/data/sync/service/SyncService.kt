@@ -3,9 +3,9 @@ package eu.kanade.tachiyomi.data.sync.service
 import android.content.Context
 import eu.kanade.domain.sync.SyncPreferences
 import eu.kanade.tachiyomi.data.backup.models.Backup
-import eu.kanade.tachiyomi.data.backup.models.BackupAnime
 import eu.kanade.tachiyomi.data.backup.models.BackupCategory
-import eu.kanade.tachiyomi.data.backup.models.BackupEpisode
+import eu.kanade.tachiyomi.data.backup.models.BackupChapter
+import eu.kanade.tachiyomi.data.backup.models.BackupManga
 import eu.kanade.tachiyomi.data.backup.models.BackupPreference
 import eu.kanade.tachiyomi.data.backup.models.BackupSavedSearch
 import eu.kanade.tachiyomi.data.backup.models.BackupSource
@@ -40,8 +40,8 @@ abstract class SyncService(
             mergeCategoriesLists(localSyncData.backup?.backupCategories, remoteSyncData.backup?.backupCategories)
 
         val mergedMangaList = mergeMangaLists(
-            localSyncData.backup?.backupAnime,
-            remoteSyncData.backup?.backupAnime,
+            localSyncData.backup?.backupManga,
+            remoteSyncData.backup?.backupManga,
             localSyncData.backup?.backupCategories ?: emptyList(),
             remoteSyncData.backup?.backupCategories ?: emptyList(),
             mergedCategoriesList,
@@ -65,7 +65,7 @@ abstract class SyncService(
 
         // Create the merged Backup object
         val mergedBackup = Backup(
-            backupAnime = mergedMangaList,
+            backupManga = mergedMangaList,
             backupCategories = mergedCategoriesList,
             backupSources = mergedSourcesList,
             backupPreferences = mergedPreferencesList,
@@ -84,21 +84,21 @@ abstract class SyncService(
     }
 
     /**
-     * Merges two lists of BackupAnime objects, selecting the most recent manga based on the lastModifiedAt value.
+     * Merges two lists of BackupManga objects, selecting the most recent manga based on the lastModifiedAt value.
      * If lastModifiedAt is null for a manga, it treats that manga as the oldest possible for comparison purposes.
      * This function is designed to reconcile local and remote manga lists, ensuring the most up-to-date manga is retained.
      *
-     * @param localMangaList The list of local BackupAnime objects or null.
-     * @param remoteMangaList The list of remote BackupAnime objects or null.
-     * @return A list of BackupAnime objects, each representing the most recent version of the manga from either local or remote sources.
+     * @param localMangaList The list of local BackupManga objects or null.
+     * @param remoteMangaList The list of remote BackupManga objects or null.
+     * @return A list of BackupManga objects, each representing the most recent version of the manga from either local or remote sources.
      */
     private fun mergeMangaLists(
-        localMangaList: List<BackupAnime>?,
-        remoteMangaList: List<BackupAnime>?,
+        localMangaList: List<BackupManga>?,
+        remoteMangaList: List<BackupManga>?,
         localCategories: List<BackupCategory>,
         remoteCategories: List<BackupCategory>,
         mergedCategories: List<BackupCategory>,
-    ): List<BackupAnime> {
+    ): List<BackupManga> {
         val logTag = "MergeMangaLists"
 
         val localMangaListSafe = localMangaList.orEmpty()
@@ -108,7 +108,7 @@ abstract class SyncService(
             "Starting merge. Local list size: ${localMangaListSafe.size}, Remote list size: ${remoteMangaListSafe.size}"
         }
 
-        fun mangaCompositeKey(manga: BackupAnime): String {
+        fun mangaCompositeKey(manga: BackupManga): String {
             return "${manga.source}|${manga.url}|${manga.title.lowercase().trim()}|${manga.author?.lowercase()?.trim()}"
         }
 
@@ -120,7 +120,7 @@ abstract class SyncService(
         val remoteCategoriesMapByOrder = remoteCategories.associateBy { it.order }
         val mergedCategoriesMapByName = mergedCategories.associateBy { it.name }
 
-        fun updateCategories(theManga: BackupAnime, theMap: Map<Long, BackupCategory>): BackupAnime {
+        fun updateCategories(theManga: BackupManga, theMap: Map<Long, BackupCategory>): BackupManga {
             return theManga.copy(
                 categories = theManga.categories.mapNotNull {
                     theMap[it]?.let { category ->
@@ -178,13 +178,13 @@ abstract class SyncService(
     }
 
 /**
-     * Merges two lists of BackupEpisode objects, selecting the most recent chapter based on the lastModifiedAt value.
+     * Merges two lists of BackupChapter objects, selecting the most recent chapter based on the lastModifiedAt value.
      * If lastModifiedAt is null for a chapter, it treats that chapter as the oldest possible for comparison purposes.
      * This function is designed to reconcile local and remote chapter lists, ensuring the most up-to-date chapter is retained.
      *
-     * @param localChapters The list of local BackupEpisode objects.
-     * @param remoteChapters The list of remote BackupEpisode objects.
-     * @return A list of BackupEpisode objects, each representing the most recent version of the chapter from either local or remote sources.
+     * @param localChapters The list of local BackupChapter objects.
+     * @param remoteChapters The list of remote BackupChapter objects.
+     * @return A list of BackupChapter objects, each representing the most recent version of the chapter from either local or remote sources.
      *
      * - This function is used in scenarios where local and remote chapter lists need to be synchronized.
      * - It iterates over the union of the URLs from both local and remote chapters.
@@ -195,12 +195,12 @@ abstract class SyncService(
      * - The resulting list contains the most recent chapters from the combined set of local and remote chapters.
      */
     private fun mergeChapters(
-        localChapters: List<BackupEpisode>,
-        remoteChapters: List<BackupEpisode>,
-    ): List<BackupEpisode> {
+        localChapters: List<BackupChapter>,
+        remoteChapters: List<BackupChapter>,
+    ): List<BackupChapter> {
         val logTag = "MergeChapters"
 
-        fun chapterCompositeKey(chapter: BackupEpisode): String {
+        fun chapterCompositeKey(chapter: BackupChapter): String {
             return "${chapter.url}|${chapter.name}|${chapter.episodeNumber}"
         }
 

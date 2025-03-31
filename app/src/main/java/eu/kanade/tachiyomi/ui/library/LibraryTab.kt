@@ -30,7 +30,7 @@ import cafe.adriel.voyager.navigator.currentOrThrow
 import cafe.adriel.voyager.navigator.tab.LocalTabNavigator
 import cafe.adriel.voyager.navigator.tab.TabOptions
 import eu.kanade.presentation.category.components.ChangeCategoryDialog
-import eu.kanade.presentation.library.DeleteLibraryAnimeDialog
+import eu.kanade.presentation.library.DeleteLibraryMangaDialog
 import eu.kanade.presentation.library.LibrarySettingsDialog
 import eu.kanade.presentation.library.components.LibraryContent
 import eu.kanade.presentation.library.components.LibraryToolbar
@@ -340,7 +340,7 @@ data object LibraryTab : Tab {
                 )
             }
             is LibraryScreenModel.Dialog.DeleteManga -> {
-                DeleteLibraryAnimeDialog(
+                DeleteLibraryMangaDialog(
                     containsLocalAnime = dialog.mangas.any(Manga::isLocal),
                     onDismissRequest = onDismissRequest,
                     onConfirm = { deleteManga, deleteChapter ->

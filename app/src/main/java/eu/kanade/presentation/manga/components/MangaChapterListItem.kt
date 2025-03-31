@@ -46,7 +46,7 @@ import tachiyomi.presentation.core.i18n.stringResource
 import tachiyomi.presentation.core.util.selectedBackground
 
 @Composable
-fun MangaEpisodeListItem(
+fun MangaChapterListItem(
     title: String,
     date: String?,
     watchProgress: String?,
@@ -60,12 +60,12 @@ fun MangaEpisodeListItem(
     downloadIndicatorEnabled: Boolean,
     downloadStateProvider: () -> Download.State,
     downloadProgressProvider: () -> Int,
-    episodeSwipeStartAction: LibraryPreferences.EpisodeSwipeAction,
-    episodeSwipeEndAction: LibraryPreferences.EpisodeSwipeAction,
+    episodeSwipeStartAction: LibraryPreferences.ChapterSwipeAction,
+    episodeSwipeEndAction: LibraryPreferences.ChapterSwipeAction,
     onLongClick: () -> Unit,
     onClick: () -> Unit,
     onDownloadClick: ((ChapterDownloadAction) -> Unit)?,
-    onEpisodeSwipe: (LibraryPreferences.EpisodeSwipeAction) -> Unit,
+    onEpisodeSwipe: (LibraryPreferences.ChapterSwipeAction) -> Unit,
     modifier: Modifier = Modifier,
 ) {
     val start = getSwipeAction(
@@ -201,7 +201,7 @@ fun MangaEpisodeListItem(
 }
 
 private fun getSwipeAction(
-    action: LibraryPreferences.EpisodeSwipeAction,
+    action: LibraryPreferences.ChapterSwipeAction,
     seen: Boolean,
     bookmark: Boolean,
     downloadState: Download.State,
@@ -209,19 +209,19 @@ private fun getSwipeAction(
     onSwipe: () -> Unit,
 ): me.saket.swipe.SwipeAction? {
     return when (action) {
-        LibraryPreferences.EpisodeSwipeAction.ToggleSeen -> swipeAction(
+        LibraryPreferences.ChapterSwipeAction.ToggleSeen -> swipeAction(
             icon = if (!seen) Icons.Outlined.Done else Icons.Outlined.RemoveDone,
             background = background,
             isUndo = seen,
             onSwipe = onSwipe,
         )
-        LibraryPreferences.EpisodeSwipeAction.ToggleBookmark -> swipeAction(
+        LibraryPreferences.ChapterSwipeAction.ToggleBookmark -> swipeAction(
             icon = if (!bookmark) Icons.Outlined.BookmarkAdd else Icons.Outlined.BookmarkRemove,
             background = background,
             isUndo = bookmark,
             onSwipe = onSwipe,
         )
-        LibraryPreferences.EpisodeSwipeAction.Download -> swipeAction(
+        LibraryPreferences.ChapterSwipeAction.Download -> swipeAction(
             icon = when (downloadState) {
                 Download.State.NOT_DOWNLOADED, Download.State.ERROR -> Icons.Outlined.Download
                 Download.State.QUEUE, Download.State.DOWNLOADING -> Icons.Outlined.FileDownloadOff
@@ -230,7 +230,7 @@ private fun getSwipeAction(
             background = background,
             onSwipe = onSwipe,
         )
-        LibraryPreferences.EpisodeSwipeAction.Disabled -> null
+        LibraryPreferences.ChapterSwipeAction.Disabled -> null
     }
 }
 

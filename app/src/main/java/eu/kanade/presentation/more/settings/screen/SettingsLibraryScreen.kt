@@ -259,13 +259,13 @@ object SettingsLibraryScreen : SearchableSettings {
                     pref = libraryPreferences.swipeToStartAction(),
                     title = stringResource(MR.strings.pref_chapter_swipe_start),
                     entries = persistentMapOf(
-                        LibraryPreferences.EpisodeSwipeAction.Disabled to
+                        LibraryPreferences.ChapterSwipeAction.Disabled to
                             stringResource(MR.strings.disabled),
-                        LibraryPreferences.EpisodeSwipeAction.ToggleBookmark to
+                        LibraryPreferences.ChapterSwipeAction.ToggleBookmark to
                             stringResource(MR.strings.action_bookmark),
-                        LibraryPreferences.EpisodeSwipeAction.ToggleSeen to
+                        LibraryPreferences.ChapterSwipeAction.ToggleSeen to
                             stringResource(MR.strings.action_mark_as_read),
-                        LibraryPreferences.EpisodeSwipeAction.Download to
+                        LibraryPreferences.ChapterSwipeAction.Download to
                             stringResource(MR.strings.action_download),
                     ),
                 ),
@@ -273,13 +273,13 @@ object SettingsLibraryScreen : SearchableSettings {
                     pref = libraryPreferences.swipeToEndAction(),
                     title = stringResource(MR.strings.pref_chapter_swipe_end),
                     entries = persistentMapOf(
-                        LibraryPreferences.EpisodeSwipeAction.Disabled to
+                        LibraryPreferences.ChapterSwipeAction.Disabled to
                             stringResource(MR.strings.disabled),
-                        LibraryPreferences.EpisodeSwipeAction.ToggleBookmark to
+                        LibraryPreferences.ChapterSwipeAction.ToggleBookmark to
                             stringResource(MR.strings.action_bookmark),
-                        LibraryPreferences.EpisodeSwipeAction.ToggleSeen to
+                        LibraryPreferences.ChapterSwipeAction.ToggleSeen to
                             stringResource(MR.strings.action_mark_as_read),
-                        LibraryPreferences.EpisodeSwipeAction.Download to
+                        LibraryPreferences.ChapterSwipeAction.Download to
                             stringResource(MR.strings.action_download),
                     ),
                 ),

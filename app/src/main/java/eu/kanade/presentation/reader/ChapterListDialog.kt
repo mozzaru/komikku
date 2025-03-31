@@ -13,7 +13,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
 import eu.kanade.presentation.components.AdaptiveSheet
-import eu.kanade.presentation.manga.components.MangaEpisodeListItem
+import eu.kanade.presentation.manga.components.MangaChapterListItem
 import eu.kanade.tachiyomi.data.download.DownloadManager
 import eu.kanade.tachiyomi.data.download.model.Download
 import eu.kanade.tachiyomi.ui.reader.chapter.ReaderChapterItem
@@ -77,7 +77,7 @@ fun ChapterListDialog(
                     downloaded -> Download.State.DOWNLOADED
                     else -> Download.State.NOT_DOWNLOADED
                 }
-                MangaEpisodeListItem(
+                MangaChapterListItem(
                     title = chapterItem.chapter.name,
                     date = chapterItem.chapter.dateUpload
                         .takeIf { it > 0L }
@@ -96,8 +96,8 @@ fun ChapterListDialog(
                     downloadIndicatorEnabled = false,
                     downloadStateProvider = { downloadState },
                     downloadProgressProvider = { progress },
-                    episodeSwipeStartAction = LibraryPreferences.EpisodeSwipeAction.ToggleBookmark,
-                    episodeSwipeEndAction = LibraryPreferences.EpisodeSwipeAction.ToggleBookmark,
+                    episodeSwipeStartAction = LibraryPreferences.ChapterSwipeAction.ToggleBookmark,
+                    episodeSwipeEndAction = LibraryPreferences.ChapterSwipeAction.ToggleBookmark,
                     onLongClick = { /*TODO*/ },
                     onClick = { onClickChapter(chapterItem.chapter) },
                     onDownloadClick = null,

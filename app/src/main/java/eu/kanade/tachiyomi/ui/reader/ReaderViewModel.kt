@@ -15,7 +15,7 @@ import eu.kanade.domain.manga.interactor.SetMangaViewerFlags
 import eu.kanade.domain.manga.model.readerOrientation
 import eu.kanade.domain.manga.model.readingMode
 import eu.kanade.domain.sync.SyncPreferences
-import eu.kanade.domain.track.interactor.TrackEpisode
+import eu.kanade.domain.track.interactor.TrackChapter
 import eu.kanade.domain.track.service.TrackPreferences
 import eu.kanade.domain.ui.UiPreferences
 import eu.kanade.tachiyomi.data.database.models.toDomainChapter
@@ -51,8 +51,8 @@ import eu.kanade.tachiyomi.util.storage.DiskUtil
 import eu.kanade.tachiyomi.util.storage.DiskUtil.MAX_FILE_NAME_BYTES
 import eu.kanade.tachiyomi.util.storage.cacheImageDir
 import exh.source.MERGED_SOURCE_ID
-import exh.util.animeType
 import exh.util.defaultReaderType
+import exh.util.mangaType
 import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.channels.Channel
@@ -115,7 +115,7 @@ class ReaderViewModel @JvmOverloads constructor(
     private val basePreferences: BasePreferences = Injekt.get(),
     private val downloadPreferences: DownloadPreferences = Injekt.get(),
     private val trackPreferences: TrackPreferences = Injekt.get(),
-    private val trackEpisode: TrackEpisode = Injekt.get(),
+    private val trackChapter: TrackChapter = Injekt.get(),
     private val getManga: GetManga = Injekt.get(),
     private val getChaptersByMangaId: GetChaptersByMangaId = Injekt.get(),
     private val getNextChapters: GetNextChapters = Injekt.get(),
@@ -844,7 +844,7 @@ class ReaderViewModel @JvmOverloads constructor(
         // SY -->
         return when {
             resolveDefault && readingMode == ReadingMode.DEFAULT && readerPreferences.useAutoWebtoon().get() -> {
-                manga.defaultReaderType(manga.animeType(sourceName = sourceManager.get(manga.source)?.name))
+                manga.defaultReaderType(manga.mangaType(sourceName = sourceManager.get(manga.source)?.name))
                     ?: default
             }
             resolveDefault && readingMode == ReadingMode.DEFAULT -> default
@@ -1265,7 +1265,7 @@ class ReaderViewModel @JvmOverloads constructor(
         val context = Injekt.get<Application>()
 
         viewModelScope.launchNonCancellable {
-            trackEpisode.await(context, manga.id, readerChapter.chapter.chapter_number.toDouble())
+            trackChapter.await(context, manga.id, readerChapter.chapter.chapter_number.toDouble())
         }
     }
 

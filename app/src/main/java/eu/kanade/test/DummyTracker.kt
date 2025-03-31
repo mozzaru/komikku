@@ -100,7 +100,7 @@ data class DummyTracker(
         status: Long,
     ) = Unit
 
-    override suspend fun setRemoteLastEpisodeSeen(
+    override suspend fun setRemoteLastChapterRead(
         track: eu.kanade.tachiyomi.data.database.models.Track,
         chapterNumber: Int,
     ) = Unit

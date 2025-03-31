@@ -1,10 +1,10 @@
 package eu.kanade.tachiyomi.data.backup.restore.restorers
 
 import eu.kanade.domain.manga.interactor.UpdateManga
-import eu.kanade.tachiyomi.data.backup.models.BackupAnime
 import eu.kanade.tachiyomi.data.backup.models.BackupCategory
-import eu.kanade.tachiyomi.data.backup.models.BackupEpisode
+import eu.kanade.tachiyomi.data.backup.models.BackupChapter
 import eu.kanade.tachiyomi.data.backup.models.BackupHistory
+import eu.kanade.tachiyomi.data.backup.models.BackupManga
 import eu.kanade.tachiyomi.data.backup.models.BackupMergedMangaReference
 import eu.kanade.tachiyomi.data.backup.models.BackupTracking
 import tachiyomi.data.DatabaseHandler
@@ -28,7 +28,7 @@ import java.time.ZonedDateTime
 import java.util.Date
 import kotlin.math.max
 
-class AnimeRestorer(
+class MangaRestorer(
     private var isSync: Boolean = false,
 
     private val handler: DatabaseHandler = Injekt.get(),
@@ -51,13 +51,13 @@ class AnimeRestorer(
         currentFetchWindow = fetchInterval.getWindow(now)
     }
 
-    suspend fun sortByNew(backupAnimes: List<BackupAnime>): List<BackupAnime> {
+    suspend fun sortByNew(backupMangas: List<BackupManga>): List<BackupManga> {
         val urlsBySource = handler.awaitList { animesQueries.getAllAnimeSourceAndUrl() }
             .groupBy({ it.source }, { it.url })
 
-        return backupAnimes
+        return backupMangas
             .sortedWith(
-                compareBy<BackupAnime> { it.url in urlsBySource[it.source].orEmpty() }
+                compareBy<BackupManga> { it.url in urlsBySource[it.source].orEmpty() }
                     .then(compareByDescending { it.lastModifiedAt }),
             )
     }
@@ -66,12 +66,12 @@ class AnimeRestorer(
      * Restore a single manga
      */
     suspend fun restore(
-        backupAnime: BackupAnime,
+        backupManga: BackupManga,
         backupCategories: List<BackupCategory>,
     ) {
         handler.await(inTransaction = true) {
-            val dbManga = findExistingManga(backupAnime)
-            val manga = backupAnime.getMangaImpl()
+            val dbManga = findExistingManga(backupManga)
+            val manga = backupManga.getMangaImpl()
             val restoredManga = if (dbManga == null) {
                 restoreNewManga(manga)
             } else {
@@ -80,15 +80,15 @@ class AnimeRestorer(
 
             restoreMangaDetails(
                 manga = restoredManga,
-                chapters = backupAnime.episodes,
-                categories = backupAnime.categories,
+                chapters = backupManga.episodes,
+                categories = backupManga.categories,
                 backupCategories = backupCategories,
-                history = backupAnime.history,
-                tracks = backupAnime.tracking,
-                excludedScanlators = backupAnime.excludedScanlators,
+                history = backupManga.history,
+                tracks = backupManga.tracking,
+                excludedScanlators = backupManga.excludedScanlators,
                 // SY -->
-                mergedMangaReferences = backupAnime.mergedMangaReferences,
-                customManga = backupAnime.getCustomMangaInfo(),
+                mergedMangaReferences = backupManga.mergedMangaReferences,
+                customManga = backupManga.getCustomMangaInfo(),
                 // SY <--
             )
 
@@ -99,15 +99,15 @@ class AnimeRestorer(
         }
     }
 
-    private suspend fun findExistingManga(backupAnime: BackupAnime): Manga? {
-        return getMangaByUrlAndSourceId.await(backupAnime.url, backupAnime.source)
+    private suspend fun findExistingManga(backupManga: BackupManga): Manga? {
+        return getMangaByUrlAndSourceId.await(backupManga.url, backupManga.source)
     }
 
     private suspend fun restoreExistingManga(manga: Manga, dbManga: Manga): Manga {
         return if (manga.version > dbManga.version) {
-            updateAnime(dbManga.copyFrom(manga).copy(id = dbManga.id))
+            updateManga(dbManga.copyFrom(manga).copy(id = dbManga.id))
         } else {
-            updateAnime(manga.copyFrom(dbManga).copy(id = dbManga.id))
+            updateManga(manga.copyFrom(dbManga).copy(id = dbManga.id))
         }
     }
 
@@ -127,7 +127,7 @@ class AnimeRestorer(
         )
     }
 
-    suspend fun updateAnime(manga: Manga): Manga {
+    suspend fun updateManga(manga: Manga): Manga {
         handler.await(true) {
             animesQueries.update(
                 source = manga.source,
@@ -167,13 +167,13 @@ class AnimeRestorer(
         )
     }
 
-    private suspend fun restoreChapters(manga: Manga, backupEpisodes: List<BackupEpisode>) {
+    private suspend fun restoreChapters(manga: Manga, backupChapters: List<BackupChapter>) {
         val dbChaptersByUrl = getChaptersByMangaId.await(manga.id)
             .associateBy { it.url }
 
-        val (existingChapters, newChapters) = backupEpisodes
+        val (existingChapters, newChapters) = backupChapters
             .mapNotNull { backupChapter ->
-                val chapter = backupChapter.toEpisodeImpl().copy(animeId = manga.id)
+                val chapter = backupChapter.toChapterImpl().copy(animeId = manga.id)
                 val dbChapter = dbChaptersByUrl[chapter.url]
 
                 when {
@@ -184,7 +184,7 @@ class AnimeRestorer(
             }
             .partition { it.id > 0 }
 
-        insertNewEpisodes(newChapters)
+        insertNewChapters(newChapters)
         updateExistingChapters(existingChapters)
     }
 
@@ -226,7 +226,7 @@ class AnimeRestorer(
             version = 0L,
         )
 
-    private suspend fun insertNewEpisodes(chapters: List<Chapter>) {
+    private suspend fun insertNewChapters(chapters: List<Chapter>) {
         handler.await(true) {
             chapters.forEach { episode ->
                 episodesQueries.insert(
@@ -315,7 +315,7 @@ class AnimeRestorer(
 
     private suspend fun restoreMangaDetails(
         manga: Manga,
-        chapters: List<BackupEpisode>,
+        chapters: List<BackupChapter>,
         categories: List<Long>,
         backupCategories: List<BackupCategory>,
         history: List<BackupHistory>,
@@ -527,7 +527,7 @@ class AnimeRestorer(
         setCustomMangaInfo.set(mangaJson)
     }
 
-    private fun BackupAnime.getCustomMangaInfo(): CustomMangaInfo? {
+    private fun BackupManga.getCustomMangaInfo(): CustomMangaInfo? {
         if (customTitle != null ||
             customArtist != null ||
             customAuthor != null ||

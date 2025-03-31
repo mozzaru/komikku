@@ -42,7 +42,7 @@ class DeepLinkScreenModel(
             }
 
             val chapter = if (source?.getUriType(query) == UriType.Chapter && manga != null) {
-                source.getChapter(query)?.let { getEpisodeFromSEpisode(it, manga, source) }
+                source.getChapter(query)?.let { getChapterFromSChapter(it, manga, source) }
             } else {
                 null
             }
@@ -61,7 +61,7 @@ class DeepLinkScreenModel(
         }
     }
 
-    private suspend fun getEpisodeFromSEpisode(sChapter: SChapter, manga: Manga, source: Source): Chapter? {
+    private suspend fun getChapterFromSChapter(sChapter: SChapter, manga: Manga, source: Source): Chapter? {
         val localChapter = getChapterByUrlAndMangaId.await(sChapter.url, manga.id)
 
         return if (localChapter == null) {

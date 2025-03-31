@@ -70,7 +70,7 @@ import eu.kanade.tachiyomi.data.BackupRestoreStatus
 import eu.kanade.tachiyomi.data.LibraryUpdateStatus
 import eu.kanade.tachiyomi.data.SyncStatus
 import eu.kanade.tachiyomi.data.cache.ChapterCache
-import eu.kanade.tachiyomi.data.coil.AnimeCoverMetadata
+import eu.kanade.tachiyomi.data.coil.MangaCoverMetadata
 import eu.kanade.tachiyomi.data.download.DownloadCache
 import eu.kanade.tachiyomi.data.notification.NotificationReceiver
 import eu.kanade.tachiyomi.data.updater.AppUpdateChecker
@@ -374,7 +374,7 @@ class MainActivity : BaseActivity() {
     // KMK -->
     override fun onPause() {
         super.onPause()
-        AnimeCoverMetadata.savePrefs()
+        MangaCoverMetadata.savePrefs()
     }
     // KMK <--
 

@@ -225,7 +225,7 @@ class DownloadCache(
             val animeDirName = provider.getAnimeDirName(/* SY --> */ manga.ogTitle /* SY <-- */)
             var animeDir = sourceDir.animeDirs[animeDirName]
             if (animeDir == null) {
-                animeDir = AnimeDirectory(animeUniFile)
+                animeDir = MangaDirectory(animeUniFile)
                 sourceDir.animeDirs += animeDirName to animeDir
             }
 
@@ -306,7 +306,7 @@ class DownloadCache(
      *
      * @param manga the manga to remove.
      */
-    suspend fun removeAnime(manga: Manga) {
+    suspend fun removeManga(manga: Manga) {
         rootDownloadsDirMutex.withLock {
             val sourceDir = rootDownloadsDir.sourceDirs[manga.source] ?: return
             val animeDirName = provider.getAnimeDirName(/* SY --> */ manga.ogTitle /* SY <-- */)
@@ -397,7 +397,7 @@ class DownloadCache(
                     async {
                         sourceDir.animeDirs = sourceDir.dir?.listFiles().orEmpty()
                             .filter { it.isDirectory && !it.name.isNullOrBlank() }
-                            .associate { it.name!! to AnimeDirectory(it) }
+                            .associate { it.name!! to MangaDirectory(it) }
 
                         sourceDir.animeDirs.values.forEach { animeDir ->
                             val episodeDirs = animeDir.dir?.listFiles().orEmpty()
@@ -490,14 +490,14 @@ private class RootDirectory(
 private class SourceDirectory(
     @Serializable(with = UniFileAsStringSerializer::class)
     val dir: UniFile?,
-    var animeDirs: Map<String, AnimeDirectory> = mapOf(),
+    var animeDirs: Map<String, MangaDirectory> = mapOf(),
 )
 
 /**
  * Class to store the files under a manga directory.
  */
 @Serializable
-private class AnimeDirectory(
+private class MangaDirectory(
     @Serializable(with = UniFileAsStringSerializer::class)
     val dir: UniFile?,
     var episodeDirs: MutableSet<String> = mutableSetOf(),

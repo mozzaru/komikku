@@ -9,8 +9,8 @@ import eu.kanade.tachiyomi.network.parseAs
 import eu.kanade.tachiyomi.source.CatalogueSource
 import eu.kanade.tachiyomi.source.model.MangasPage
 import eu.kanade.tachiyomi.source.model.SManga
-import exh.util.AnimeType
-import exh.util.animeType
+import exh.util.MangaType
+import exh.util.mangaType
 import kotlinx.serialization.json.Json
 import kotlinx.serialization.json.JsonArray
 import kotlinx.serialization.json.JsonElement
@@ -272,7 +272,7 @@ open class RecommendsPagingSource(
     val getTracks: GetTracks by injectLazy()
 
     override suspend fun requestNextPage(currentPage: Int): MangasPage {
-        if (smart) preferredApi = if (manga.animeType() != AnimeType.TYPE_MANGA) API.ANILIST else preferredApi
+        if (smart) preferredApi = if (manga.mangaType() != MangaType.TYPE_MANGA) API.ANILIST else preferredApi
 
         val apiList = API_MAP.toList().sortedByDescending { it.first == preferredApi }
 
