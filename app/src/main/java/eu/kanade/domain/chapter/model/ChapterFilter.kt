@@ -18,7 +18,7 @@ fun List<Chapter>.applyFilters(
     downloadManager: DownloadManager, /* SY --> */
     mergedManga: Map<Long, Manga>, /* SY <-- */
 ): List<Chapter> {
-    val isLocalAnime = manga.isLocal()
+    val isLocalManga = manga.isLocal()
     val unseenFilter = manga.unseenFilter
     val downloadedFilter = manga.downloadedFilter
     val bookmarkedFilter = manga.bookmarkedFilter
@@ -37,7 +37,7 @@ fun List<Chapter>.applyFilters(
                     /* SY --> */ anime.ogTitle /* SY <-- */,
                     anime.source,
                 )
-                downloaded || isLocalAnime
+                downloaded || isLocalManga
             }
         }
         .sortedWith(getChapterSort(manga))

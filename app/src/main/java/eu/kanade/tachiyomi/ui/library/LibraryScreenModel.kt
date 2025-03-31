@@ -18,9 +18,9 @@ import eu.kanade.core.preference.asState
 import eu.kanade.core.util.fastFilterNot
 import eu.kanade.core.util.fastPartition
 import eu.kanade.domain.base.BasePreferences
-import eu.kanade.domain.chapter.interactor.SetSeenStatus
+import eu.kanade.domain.chapter.interactor.SetReadStatus
 import eu.kanade.domain.manga.interactor.SmartSearchMerge
-import eu.kanade.domain.manga.interactor.UpdateAnime
+import eu.kanade.domain.manga.interactor.UpdateManga
 import eu.kanade.domain.sync.SyncPreferences
 import eu.kanade.presentation.components.SEARCH_DEBOUNCE_MILLIS
 import eu.kanade.presentation.library.components.LibraryToolbarTitle
@@ -116,8 +116,8 @@ class LibraryScreenModel(
     private val getTracksPerManga: GetTracksPerManga = Injekt.get(),
     private val getNextChapters: GetNextChapters = Injekt.get(),
     private val getChaptersByMangaId: GetChaptersByMangaId = Injekt.get(),
-    private val setSeenStatus: SetSeenStatus = Injekt.get(),
-    private val updateAnime: UpdateAnime = Injekt.get(),
+    private val setReadStatus: SetReadStatus = Injekt.get(),
+    private val updateManga: UpdateManga = Injekt.get(),
     private val setAnimeCategories: SetMangaCategories = Injekt.get(),
     private val preferences: BasePreferences = Injekt.get(),
     private val libraryPreferences: LibraryPreferences = Injekt.get(),
@@ -768,7 +768,7 @@ class LibraryScreenModel(
         val mangas = state.value.selection.toList()
         screenModelScope.launchNonCancellable {
             mangas.forEach { manga ->
-                setSeenStatus.await(
+                setReadStatus.await(
                     manga = manga.manga,
                     seen = read,
                 )
@@ -796,7 +796,7 @@ class LibraryScreenModel(
                         id = it.id,
                     )
                 }
-                updateAnime.awaitAll(toDelete)
+                updateManga.awaitAll(toDelete)
             }
 
             if (deleteChapters) {

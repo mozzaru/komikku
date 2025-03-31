@@ -9,7 +9,7 @@ import cafe.adriel.voyager.core.model.screenModelScope
 import eu.kanade.core.preference.asState
 import eu.kanade.core.util.addOrRemove
 import eu.kanade.core.util.insertSeparators
-import eu.kanade.domain.chapter.interactor.SetSeenStatus
+import eu.kanade.domain.chapter.interactor.SetReadStatus
 import eu.kanade.presentation.manga.components.EpisodeDownloadAction
 import eu.kanade.presentation.updates.UpdatesUiModel
 import eu.kanade.tachiyomi.data.download.DownloadCache
@@ -54,7 +54,7 @@ class UpdatesScreenModel(
     private val downloadManager: DownloadManager = Injekt.get(),
     private val downloadCache: DownloadCache = Injekt.get(),
     private val updateChapter: UpdateChapter = Injekt.get(),
-    private val setSeenStatus: SetSeenStatus = Injekt.get(),
+    private val setReadStatus: SetReadStatus = Injekt.get(),
     private val getUpdates: GetUpdates = Injekt.get(),
     private val getManga: GetManga = Injekt.get(),
     private val getChapter: GetChapter = Injekt.get(),
@@ -204,7 +204,7 @@ class UpdatesScreenModel(
      */
     fun markUpdatesSeen(updates: List<UpdatesItem>, seen: Boolean) {
         screenModelScope.launchIO {
-            setSeenStatus.await(
+            setReadStatus.await(
                 seen = seen,
                 chapters = updates
                     .mapNotNull { getChapter.await(it.update.episodeId) }

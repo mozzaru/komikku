@@ -42,7 +42,7 @@ import dev.chrisbanes.haze.HazeStyle
 import dev.chrisbanes.haze.hazeChild
 import eu.kanade.core.util.ifSourcesLoaded
 import eu.kanade.domain.manga.model.hasCustomCover
-import eu.kanade.domain.manga.model.toSAnime
+import eu.kanade.domain.manga.model.toSManga
 import eu.kanade.presentation.category.components.ChangeCategoryDialog
 import eu.kanade.presentation.components.NavigatorAdaptiveSheet
 import eu.kanade.presentation.manga.AnimeScreen
@@ -562,7 +562,7 @@ class AnimeScreen(
         val source = source_ as? HttpSource ?: return null
 
         return try {
-            source.getMangaUrl(manga.toSAnime())
+            source.getMangaUrl(manga.toSManga())
         } catch (e: Exception) {
             null
         }
@@ -695,7 +695,7 @@ class AnimeScreen(
     private fun copyMangaUrl(context: Context, manga_: Manga?, source_: Source?) {
         val manga = manga_ ?: return
         val source = source_ as? HttpSource ?: return
-        val url = source.getMangaUrl(manga.toSAnime())
+        val url = source.getMangaUrl(manga.toSManga())
         context.copyToClipboard(url, url)
     }
 

@@ -17,7 +17,7 @@ import cafe.adriel.voyager.core.model.StateScreenModel
 import cafe.adriel.voyager.core.model.screenModelScope
 import cafe.adriel.voyager.navigator.LocalNavigator
 import cafe.adriel.voyager.navigator.currentOrThrow
-import eu.kanade.domain.manga.interactor.UpdateAnime
+import eu.kanade.domain.manga.interactor.UpdateManga
 import eu.kanade.domain.track.interactor.AddTracks
 import eu.kanade.presentation.browse.components.RemoveAnimeDialog
 import eu.kanade.presentation.category.components.ChangeCategoryDialog
@@ -66,7 +66,7 @@ class BulkFavoriteScreenModel(
     private val getDuplicateLibraryAnime: GetDuplicateLibraryManga = Injekt.get(),
     private val getCategories: GetCategories = Injekt.get(),
     private val setMangaCategories: SetMangaCategories = Injekt.get(),
-    private val updateAnime: UpdateAnime = Injekt.get(),
+    private val updateManga: UpdateManga = Injekt.get(),
     private val coverCache: CoverCache = Injekt.get(),
     private val setMangaDefaultChapterFlags: SetMangaDefaultChapterFlags = Injekt.get(),
     private val addTracks: AddTracks = Injekt.get(),
@@ -248,7 +248,7 @@ class BulkFavoriteScreenModel(
         if (manga.favorite) return
 
         screenModelScope.launchIO {
-            updateAnime.awaitUpdateFavorite(manga.id, true)
+            updateManga.awaitUpdateFavorite(manga.id, true)
         }
     }
 
@@ -335,7 +335,7 @@ class BulkFavoriteScreenModel(
                 addTracks.bindEnhancedTrackers(manga, source)
             }
 
-            updateAnime.await(new.toMangaUpdate())
+            updateManga.await(new.toMangaUpdate())
         }
     }
 

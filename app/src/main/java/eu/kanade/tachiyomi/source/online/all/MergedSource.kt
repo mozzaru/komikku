@@ -1,8 +1,8 @@
 package eu.kanade.tachiyomi.source.online.all
 
-import eu.kanade.domain.chapter.interactor.SyncEpisodesWithSource
-import eu.kanade.domain.manga.interactor.UpdateAnime
-import eu.kanade.domain.manga.model.toSAnime
+import eu.kanade.domain.chapter.interactor.SyncChaptersWithSource
+import eu.kanade.domain.manga.interactor.UpdateManga
+import eu.kanade.domain.manga.model.toSManga
 import eu.kanade.tachiyomi.data.download.DownloadManager
 import eu.kanade.tachiyomi.source.Source
 import eu.kanade.tachiyomi.source.model.FilterList
@@ -33,9 +33,9 @@ import uy.kohesive.injekt.injectLazy
 class MergedSource : HttpSource() {
     private val getManga: GetManga by injectLazy()
     private val getMergedReferencesById: GetMergedReferencesById by injectLazy()
-    private val syncEpisodesWithSource: SyncEpisodesWithSource by injectLazy()
+    private val syncChaptersWithSource: SyncChaptersWithSource by injectLazy()
     private val networkToLocalManga: NetworkToLocalManga by injectLazy()
-    private val updateAnime: UpdateAnime by injectLazy()
+    private val updateManga: UpdateManga by injectLazy()
     private val sourceManager: SourceManager by injectLazy()
     private val downloadManager: DownloadManager by injectLazy()
     private val filterChaptersForDownload: FilterChaptersForDownload by injectLazy()
@@ -95,9 +95,9 @@ class MergedSource : HttpSource() {
             val animeInfoReference = mangaReferences.firstOrNull { it.isInfoManga }
                 ?: mangaReferences.firstOrNull { it.mangaId != it.mergeId }
             val dbAnime = animeInfoReference?.run {
-                getManga.await(mangaUrl, mangaSourceId)?.toSAnime()
+                getManga.await(mangaUrl, mangaSourceId)?.toSManga()
             }
-            (dbAnime ?: mergedAnime.toSAnime()).copy(
+            (dbAnime ?: mergedAnime.toSManga()).copy(
                 url = manga.url,
             )
         }
@@ -129,9 +129,9 @@ class MergedSource : HttpSource() {
                                 try {
                                     val (source, loadedAnime, reference) = it.load()
                                     if (loadedAnime != null && reference.getChapterUpdates) {
-                                        val episodeList = source.getChapterList(loadedAnime.toSAnime())
+                                        val episodeList = source.getChapterList(loadedAnime.toSManga())
                                         val results =
-                                            syncEpisodesWithSource.await(episodeList, loadedAnime, source)
+                                            syncChaptersWithSource.await(episodeList, loadedAnime, source)
 
                                         if (downloadEpisodes && reference.downloadChapters) {
                                             val episodesToDownload = filterChaptersForDownload.await(manga, results)
@@ -172,7 +172,7 @@ class MergedSource : HttpSource() {
                     url = mangaUrl,
                 ),
             )
-            updateAnime.awaitUpdateFromSource(newManga, source.getMangaDetails(newManga.toSAnime()), false)
+            updateManga.awaitUpdateFromSource(newManga, source.getMangaDetails(newManga.toSManga()), false)
             anime = getManga.await(newManga.id)!!
         }
         return LoadedAnimeSource(source, anime, this)

@@ -25,16 +25,16 @@ import eu.kanade.core.preference.asState
 import eu.kanade.core.util.addOrRemove
 import eu.kanade.core.util.insertSeparators
 import eu.kanade.domain.chapter.interactor.GetAvailableScanlators
-import eu.kanade.domain.chapter.interactor.SetSeenStatus
-import eu.kanade.domain.chapter.interactor.SyncEpisodesWithSource
+import eu.kanade.domain.chapter.interactor.SetReadStatus
+import eu.kanade.domain.chapter.interactor.SyncChaptersWithSource
 import eu.kanade.domain.manga.interactor.GetExcludedScanlators
 import eu.kanade.domain.manga.interactor.SetExcludedScanlators
 import eu.kanade.domain.manga.interactor.SmartSearchMerge
-import eu.kanade.domain.manga.interactor.UpdateAnime
+import eu.kanade.domain.manga.interactor.UpdateManga
 import eu.kanade.domain.manga.model.chaptersFiltered
 import eu.kanade.domain.manga.model.downloadedFilter
-import eu.kanade.domain.manga.model.toDomainAnime
-import eu.kanade.domain.manga.model.toSAnime
+import eu.kanade.domain.manga.model.toDomainManga
+import eu.kanade.domain.manga.model.toSManga
 import eu.kanade.domain.source.service.SourcePreferences
 import eu.kanade.domain.track.interactor.AddTracks
 import eu.kanade.domain.track.interactor.RefreshTracks
@@ -179,10 +179,10 @@ class AnimeScreenModel(
     private val setExcludedScanlators: SetExcludedScanlators = Injekt.get(),
     private val setMangaChapterFlags: SetMangaChapterFlags = Injekt.get(),
     private val setMangaDefaultChapterFlags: SetMangaDefaultChapterFlags = Injekt.get(),
-    private val setSeenStatus: SetSeenStatus = Injekt.get(),
+    private val setReadStatus: SetReadStatus = Injekt.get(),
     private val updateChapter: UpdateChapter = Injekt.get(),
-    private val updateAnime: UpdateAnime = Injekt.get(),
-    private val syncEpisodesWithSource: SyncEpisodesWithSource = Injekt.get(),
+    private val updateManga: UpdateManga = Injekt.get(),
+    private val syncChaptersWithSource: SyncChaptersWithSource = Injekt.get(),
     private val getCategories: GetCategories = Injekt.get(),
     private val getTracks: GetTracks = Injekt.get(),
     private val addTracks: AddTracks = Injekt.get(),
@@ -529,8 +529,8 @@ class AnimeScreenModel(
         val state = successState ?: return
         try {
             withIOContext {
-                val networkManga = state.source.getMangaDetails(state.manga.toSAnime())
-                updateAnime.awaitUpdateFromSource(state.manga, networkManga, manualFetch)
+                val networkManga = state.source.getMangaDetails(state.manga.toSManga())
+                updateManga.awaitUpdateFromSource(state.manga, networkManga, manualFetch)
             }
         } catch (e: Throwable) {
             // Ignore early hints "errors" that aren't handled by OkHttp
@@ -571,9 +571,9 @@ class AnimeScreenModel(
                 ogStatus = status ?: 0,
                 lastUpdate = manga.lastUpdate + 1,
             )
-            (sourceManager.get(LocalSource.ID) as LocalSource).updateMangaInfo(manga.toSAnime())
+            (sourceManager.get(LocalSource.ID) as LocalSource).updateMangaInfo(manga.toSManga())
             screenModelScope.launchNonCancellable {
-                updateAnime.await(
+                updateManga.await(
                     MangaUpdate(
                         manga.id,
                         title = newTitle,
@@ -689,10 +689,10 @@ class AnimeScreenModel(
 
             if (isFavorited) {
                 // Remove from library
-                if (updateAnime.awaitUpdateFavorite(manga.id, false)) {
+                if (updateManga.awaitUpdateFavorite(manga.id, false)) {
                     // Remove covers and update last modified in db
                     if (manga.removeCovers() != manga) {
-                        updateAnime.awaitUpdateCoverLastModified(manga.id)
+                        updateManga.awaitUpdateCoverLastModified(manga.id)
                     }
                     withUIContext { onRemoved() }
                 }
@@ -715,14 +715,14 @@ class AnimeScreenModel(
                 when {
                     // Default category set
                     defaultCategory != null -> {
-                        val result = updateAnime.awaitUpdateFavorite(manga.id, true)
+                        val result = updateManga.awaitUpdateFavorite(manga.id, true)
                         if (!result) return@launchIO
                         moveMangaToCategory(defaultCategory)
                     }
 
                     // Automatic 'Default' or no categories
                     defaultCategoryId == 0L || categories.isEmpty() -> {
-                        val result = updateAnime.awaitUpdateFavorite(manga.id, true)
+                        val result = updateManga.awaitUpdateFavorite(manga.id, true)
                         if (!result) return@launchIO
                         moveMangaToCategory(null)
                     }
@@ -763,7 +763,7 @@ class AnimeScreenModel(
     fun setFetchInterval(manga: Manga, interval: Int) {
         screenModelScope.launchIO {
             if (
-                updateAnime.awaitUpdateFetchInterval(
+                updateManga.awaitUpdateFetchInterval(
                     // Custom intervals are negative
                     manga.copy(fetchInterval = -interval),
                 )
@@ -823,7 +823,7 @@ class AnimeScreenModel(
         if (manga.favorite) return
 
         screenModelScope.launchIO {
-            updateAnime.awaitUpdateFavorite(manga.id, true)
+            updateManga.awaitUpdateFavorite(manga.id, true)
         }
     }
 
@@ -973,9 +973,9 @@ class AnimeScreenModel(
                 // SY -->
                 if (state.source !is MergedSource) {
                     // SY <--
-                    val chapters = state.source.getChapterList(state.manga.toSAnime())
+                    val chapters = state.source.getChapterList(state.manga.toSManga())
 
-                    val newChapters = syncEpisodesWithSource.await(
+                    val newChapters = syncChaptersWithSource.await(
                         chapters,
                         state.manga,
                         state.source,
@@ -1041,12 +1041,12 @@ class AnimeScreenModel(
 
         try {
             if (state.source !is StubSource && relatedMangasEnabled) {
-                state.source.getRelatedMangaList(state.manga.toSAnime(), { e -> exceptionHandler(e) }) { pair, _ ->
+                state.source.getRelatedMangaList(state.manga.toSManga(), { e -> exceptionHandler(e) }) { pair, _ ->
                     /* Push found related mangas into collection */
                     val relatedAnime = RelatedAnime.Success.fromPair(pair) { mangaList ->
                         mangaList.map {
                             // KMK -->
-                            it.toDomainAnime(state.source.id)
+                            it.toDomainManga(state.source.id)
                             // KMK <--
                         }
                     }
@@ -1228,7 +1228,7 @@ class AnimeScreenModel(
         toggleAllSelection(false)
         if (chapters.isEmpty()) return
         screenModelScope.launchIO {
-            setSeenStatus.await(
+            setReadStatus.await(
                 seen = seen,
                 chapters = chapters.toTypedArray(),
             )

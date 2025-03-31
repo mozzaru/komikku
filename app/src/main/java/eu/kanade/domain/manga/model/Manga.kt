@@ -42,7 +42,7 @@ fun Manga.forceDownloaded(): Boolean {
     return favorite && Injekt.get<BasePreferences>().downloadedOnly().get()
 }
 
-fun Manga.toSAnime(): SManga = SManga.create().also {
+fun Manga.toSManga(): SManga = SManga.create().also {
     it.url = url
     it.title = title
     it.artist = artist
@@ -82,7 +82,7 @@ fun Manga.copyFrom(other: SManga): Manga {
     )
 }
 
-fun SManga.toDomainAnime(sourceId: Long): Manga {
+fun SManga.toDomainManga(sourceId: Long): Manga {
     return Manga.create().copy(
         url = url,
         // SY -->

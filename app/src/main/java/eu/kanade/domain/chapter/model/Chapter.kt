@@ -6,7 +6,7 @@ import tachiyomi.domain.chapter.model.Chapter
 import eu.kanade.tachiyomi.data.database.models.Chapter as DbEpisode
 
 // TODO: Remove when all deps are migrated
-fun Chapter.toSEpisode(): SChapter {
+fun Chapter.toSChapter(): SChapter {
     return SChapter.create().also {
         it.url = url
         it.name = name
@@ -16,7 +16,7 @@ fun Chapter.toSEpisode(): SChapter {
     }
 }
 
-fun Chapter.copyFromSEpisode(sChapter: SChapter): Chapter {
+fun Chapter.copyFromSChapter(sChapter: SChapter): Chapter {
     return this.copy(
         name = sChapter.name,
         url = sChapter.url,
@@ -26,7 +26,7 @@ fun Chapter.copyFromSEpisode(sChapter: SChapter): Chapter {
     )
 }
 
-fun Chapter.toDbEpisode(): DbEpisode = ChapterImpl().also {
+fun Chapter.toDbChapter(): DbEpisode = ChapterImpl().also {
     it.id = id
     it.anime_id = animeId
     it.url = url

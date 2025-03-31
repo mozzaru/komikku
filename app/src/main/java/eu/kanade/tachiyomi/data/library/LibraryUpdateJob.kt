@@ -18,11 +18,11 @@ import androidx.work.WorkInfo
 import androidx.work.WorkQuery
 import androidx.work.WorkerParameters
 import androidx.work.workDataOf
-import eu.kanade.domain.chapter.interactor.SetSeenStatus
-import eu.kanade.domain.chapter.interactor.SyncEpisodesWithSource
-import eu.kanade.domain.manga.interactor.UpdateAnime
+import eu.kanade.domain.chapter.interactor.SetReadStatus
+import eu.kanade.domain.chapter.interactor.SyncChaptersWithSource
+import eu.kanade.domain.manga.interactor.UpdateManga
 import eu.kanade.domain.manga.model.copyFrom
-import eu.kanade.domain.manga.model.toSAnime
+import eu.kanade.domain.manga.model.toSManga
 import eu.kanade.domain.sync.SyncPreferences
 import eu.kanade.tachiyomi.data.LibraryUpdateStatus
 import eu.kanade.tachiyomi.data.cache.CoverCache
@@ -106,8 +106,8 @@ class LibraryUpdateJob(private val context: Context, workerParams: WorkerParamet
     private val coverCache: CoverCache = Injekt.get()
     private val getLibraryManga: GetLibraryManga = Injekt.get()
     private val getManga: GetManga = Injekt.get()
-    private val updateAnime: UpdateAnime = Injekt.get()
-    private val syncEpisodesWithSource: SyncEpisodesWithSource = Injekt.get()
+    private val updateManga: UpdateManga = Injekt.get()
+    private val syncChaptersWithSource: SyncChaptersWithSource = Injekt.get()
     private val fetchInterval: FetchInterval = Injekt.get()
     private val filterChaptersForDownload: FilterChaptersForDownload = Injekt.get()
 
@@ -119,7 +119,7 @@ class LibraryUpdateJob(private val context: Context, workerParams: WorkerParamet
     private val insertTrack: InsertTrack = Injekt.get()
     private val trackerManager: TrackerManager = Injekt.get()
     private val getChaptersByMangaId: GetChaptersByMangaId = Injekt.get()
-    private val setSeenStatus: SetSeenStatus = Injekt.get()
+    private val setReadStatus: SetReadStatus = Injekt.get()
     // SY <--
 
     private val notifier = LibraryUpdateNotifier(context)
@@ -343,7 +343,7 @@ class LibraryUpdateJob(private val context: Context, workerParams: WorkerParamet
     /**
      * Method that updates manga in [mangaToUpdate]. It's called in a background thread, so it's safe
      * to do heavy operations or network calls here.
-     * For each manga it calls [updateAnime] and updates the notification showing the current
+     * For each manga it calls [updateManga] and updates the notification showing the current
      * progress.
      *
      * @return an observable delivering the progress of each update.
@@ -394,7 +394,7 @@ class LibraryUpdateJob(private val context: Context, workerParams: WorkerParamet
                                                     }
 
                                                     if (newReadChapters.isNotEmpty()) {
-                                                        setSeenStatus.await(
+                                                        setReadStatus.await(
                                                             true,
                                                             *newReadChapters.toTypedArray(),
                                                             // KMK -->
@@ -496,21 +496,21 @@ class LibraryUpdateJob(private val context: Context, workerParams: WorkerParamet
 
         // Update manga metadata if needed
         if (libraryPreferences.autoUpdateMetadata().get()) {
-            val networkManga = source.getMangaDetails(manga.toSAnime())
-            updateAnime.awaitUpdateFromSource(manga, networkManga, manualFetch = false, coverCache)
+            val networkManga = source.getMangaDetails(manga.toSManga())
+            updateManga.awaitUpdateFromSource(manga, networkManga, manualFetch = false, coverCache)
         }
 
         if (source is MergedSource) {
             return source.fetchEpisodesAndSync(manga, false)
         }
 
-        val chapters = source.getChapterList(manga.toSAnime())
+        val chapters = source.getChapterList(manga.toSManga())
 
         // Get manga from database to account for if it was removed during the update and
         // to get latest data so it doesn't get overwritten later on
         val dbManga = getManga.await(manga.id)?.takeIf { it.favorite } ?: return emptyList()
 
-        return syncEpisodesWithSource.await(chapters, dbManga, source, false, fetchWindow)
+        return syncChaptersWithSource.await(chapters, dbManga, source, false, fetchWindow)
     }
 
     private suspend fun updateCovers() {
@@ -535,7 +535,7 @@ class LibraryUpdateJob(private val context: Context, workerParams: WorkerParamet
                                 ) {
                                     val source = sourceManager.get(manga.source) ?: return@withUpdateNotification
                                     try {
-                                        val networkManga = source.getMangaDetails(manga.toSAnime())
+                                        val networkManga = source.getMangaDetails(manga.toSManga())
                                         val updatedManga = manga.prepUpdateCover(
                                             coverCache,
                                             networkManga,
@@ -543,7 +543,7 @@ class LibraryUpdateJob(private val context: Context, workerParams: WorkerParamet
                                         )
                                             .copyFrom(networkManga)
                                         try {
-                                            updateAnime.await(updatedManga.toMangaUpdate())
+                                            updateManga.await(updatedManga.toMangaUpdate())
                                         } catch (e: Exception) {
                                             logcat(LogPriority.ERROR) { "Anime doesn't exist anymore" }
                                         }

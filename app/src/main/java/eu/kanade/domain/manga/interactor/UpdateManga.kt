@@ -14,7 +14,7 @@ import uy.kohesive.injekt.api.get
 import java.time.Instant
 import java.time.ZonedDateTime
 
-class UpdateAnime(
+class UpdateManga(
     private val mangaRepository: MangaRepository,
     private val fetchInterval: FetchInterval,
 ) {

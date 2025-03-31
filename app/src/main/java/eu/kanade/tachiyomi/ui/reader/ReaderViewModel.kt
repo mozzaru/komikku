@@ -9,9 +9,9 @@ import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import eu.kanade.domain.base.BasePreferences
-import eu.kanade.domain.chapter.interactor.SetSeenStatus
-import eu.kanade.domain.chapter.model.toDbEpisode
-import eu.kanade.domain.manga.interactor.SetAnimeViewerFlags
+import eu.kanade.domain.chapter.interactor.SetReadStatus
+import eu.kanade.domain.chapter.model.toDbChapter
+import eu.kanade.domain.manga.interactor.SetMangaViewerFlags
 import eu.kanade.domain.manga.model.readerOrientation
 import eu.kanade.domain.manga.model.readingMode
 import eu.kanade.domain.sync.SyncPreferences
@@ -121,14 +121,14 @@ class ReaderViewModel @JvmOverloads constructor(
     private val getNextChapters: GetNextChapters = Injekt.get(),
     private val upsertHistory: UpsertHistory = Injekt.get(),
     private val updateChapter: UpdateChapter = Injekt.get(),
-    private val setAnimeViewerFlags: SetAnimeViewerFlags = Injekt.get(),
+    private val setMangaViewerFlags: SetMangaViewerFlags = Injekt.get(),
     private val syncPreferences: SyncPreferences = Injekt.get(),
     // SY -->
     private val uiPreferences: UiPreferences = Injekt.get(),
     private val getMergedMangaById: GetMergedMangaById = Injekt.get(),
     private val getMergedReferencesById: GetMergedReferencesById = Injekt.get(),
     private val getMergedChaptersByMangaId: GetMergedChaptersByMangaId = Injekt.get(),
-    private val setSeenStatus: SetSeenStatus = Injekt.get(),
+    private val setReadStatus: SetReadStatus = Injekt.get(),
     // SY <--
 ) : ViewModel() {
 
@@ -254,7 +254,7 @@ class ReaderViewModel @JvmOverloads constructor(
                     this
                 }
             }
-            .map { it.toDbEpisode() }
+            .map { it.toDbChapter() }
             .map(::ReaderChapter)
     }
 
@@ -695,7 +695,7 @@ class ReaderViewModel @JvmOverloads constructor(
                         }
                         .ifEmpty { null }
                         ?.also {
-                            setSeenStatus.await(
+                            setReadStatus.await(
                                 true,
                                 *it.toTypedArray(),
                                 // KMK -->
@@ -859,7 +859,7 @@ class ReaderViewModel @JvmOverloads constructor(
     fun setMangaReadingMode(readingMode: ReadingMode) {
         val manga = manga ?: return
         runBlocking(Dispatchers.IO) {
-            setAnimeViewerFlags.awaitSetReadingMode(manga.id, readingMode.flagValue.toLong())
+            setMangaViewerFlags.awaitSetReadingMode(manga.id, readingMode.flagValue.toLong())
             val currChapters = state.value.viewerChapters
             if (currChapters != null) {
                 // Save current page
@@ -895,7 +895,7 @@ class ReaderViewModel @JvmOverloads constructor(
     fun setMangaOrientationType(orientation: ReaderOrientation) {
         val manga = manga ?: return
         viewModelScope.launchIO {
-            setAnimeViewerFlags.awaitSetOrientation(manga.id, orientation.flagValue.toLong())
+            setMangaViewerFlags.awaitSetOrientation(manga.id, orientation.flagValue.toLong())
             val currChapters = state.value.viewerChapters
             if (currChapters != null) {
                 // Save current page

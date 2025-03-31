@@ -5,7 +5,7 @@ import eu.kanade.tachiyomi.ui.reader.setting.ReadingMode
 import tachiyomi.domain.manga.model.MangaUpdate
 import tachiyomi.domain.manga.repository.MangaRepository
 
-class SetAnimeViewerFlags(
+class SetMangaViewerFlags(
     private val mangaRepository: MangaRepository,
 ) {
 

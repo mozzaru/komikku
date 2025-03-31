@@ -9,7 +9,7 @@ import coil3.asDrawable
 import coil3.imageLoader
 import coil3.request.ImageRequest
 import coil3.size.Size
-import eu.kanade.domain.manga.interactor.UpdateAnime
+import eu.kanade.domain.manga.interactor.UpdateManga
 import eu.kanade.tachiyomi.data.cache.CoverCache
 import eu.kanade.tachiyomi.data.saver.Image
 import eu.kanade.tachiyomi.data.saver.ImageSaver
@@ -36,7 +36,7 @@ class AnimeCoverScreenModel(
     private val getManga: GetManga = Injekt.get(),
     private val imageSaver: ImageSaver = Injekt.get(),
     private val coverCache: CoverCache = Injekt.get(),
-    private val updateAnime: UpdateAnime = Injekt.get(),
+    private val updateManga: UpdateManga = Injekt.get(),
 
     val snackbarHostState: SnackbarHostState = SnackbarHostState(),
 ) : StateScreenModel<Manga?>(null) {
@@ -122,7 +122,7 @@ class AnimeCoverScreenModel(
         screenModelScope.launchIO {
             context.contentResolver.openInputStream(data)?.use {
                 try {
-                    manga.editCover(Injekt.get(), it, updateAnime, coverCache)
+                    manga.editCover(Injekt.get(), it, updateManga, coverCache)
                     notifyCoverUpdated(context)
                 } catch (e: Exception) {
                     notifyFailedCoverUpdate(context, e)
@@ -136,7 +136,7 @@ class AnimeCoverScreenModel(
         screenModelScope.launchIO {
             try {
                 coverCache.deleteCustomCover(mangaId)
-                updateAnime.awaitUpdateCoverLastModified(mangaId)
+                updateManga.awaitUpdateCoverLastModified(mangaId)
                 notifyCoverUpdated(context)
             } catch (e: Exception) {
                 notifyFailedCoverUpdate(context, e)

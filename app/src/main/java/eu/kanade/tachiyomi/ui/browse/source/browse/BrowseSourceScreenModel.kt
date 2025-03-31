@@ -16,8 +16,8 @@ import cafe.adriel.voyager.core.model.screenModelScope
 import dev.icerock.moko.resources.StringResource
 import eu.kanade.core.preference.asState
 import eu.kanade.domain.base.BasePreferences
-import eu.kanade.domain.manga.interactor.UpdateAnime
-import eu.kanade.domain.manga.model.toDomainAnime
+import eu.kanade.domain.manga.interactor.UpdateManga
+import eu.kanade.domain.manga.model.toDomainManga
 import eu.kanade.domain.source.interactor.GetExhSavedSearch
 import eu.kanade.domain.source.service.SourcePreferences
 import eu.kanade.domain.track.interactor.AddTracks
@@ -94,7 +94,7 @@ open class BrowseSourceScreenModel(
     private val setMangaDefaultChapterFlags: SetMangaDefaultChapterFlags = Injekt.get(),
     private val getManga: GetManga = Injekt.get(),
     val networkToLocalManga: NetworkToLocalManga = Injekt.get(),
-    private val updateAnime: UpdateAnime = Injekt.get(),
+    private val updateManga: UpdateManga = Injekt.get(),
     private val addTracks: AddTracks = Injekt.get(),
 
     // SY -->
@@ -198,7 +198,7 @@ open class BrowseSourceScreenModel(
             }.flow.map { pagingData ->
                 pagingData.map {
                     // KMK -->
-                    it.toDomainAnime(sourceId)
+                    it.toDomainManga(sourceId)
                         .let { manga ->
                             getManga.subscribe(manga.url, manga.source)
                                 .map { it ?: manga }
@@ -356,7 +356,7 @@ open class BrowseSourceScreenModel(
                 addTracks.bindEnhancedTrackers(manga, source)
             }
 
-            updateAnime.await(new.toMangaUpdate())
+            updateManga.await(new.toMangaUpdate())
         }
     }
 

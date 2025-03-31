@@ -3,9 +3,9 @@ package eu.kanade.tachiyomi.ui.deeplink
 import androidx.compose.runtime.Immutable
 import cafe.adriel.voyager.core.model.StateScreenModel
 import cafe.adriel.voyager.core.model.screenModelScope
-import eu.kanade.domain.chapter.interactor.SyncEpisodesWithSource
-import eu.kanade.domain.manga.model.toDomainAnime
-import eu.kanade.domain.manga.model.toSAnime
+import eu.kanade.domain.chapter.interactor.SyncChaptersWithSource
+import eu.kanade.domain.manga.model.toDomainManga
+import eu.kanade.domain.manga.model.toSManga
 import eu.kanade.tachiyomi.source.Source
 import eu.kanade.tachiyomi.source.model.SChapter
 import eu.kanade.tachiyomi.source.model.SManga
@@ -28,7 +28,7 @@ class DeepLinkScreenModel(
     private val networkToLocalManga: NetworkToLocalManga = Injekt.get(),
     private val getChapterByUrlAndMangaId: GetChapterByUrlAndMangaId = Injekt.get(),
     private val getMangaByUrlAndSourceId: GetMangaByUrlAndSourceId = Injekt.get(),
-    private val syncEpisodesWithSource: SyncEpisodesWithSource = Injekt.get(),
+    private val syncChaptersWithSource: SyncChaptersWithSource = Injekt.get(),
 ) : StateScreenModel<DeepLinkScreenModel.State>(State.Loading) {
 
     init {
@@ -65,8 +65,8 @@ class DeepLinkScreenModel(
         val localChapter = getChapterByUrlAndMangaId.await(sChapter.url, manga.id)
 
         return if (localChapter == null) {
-            val sourceChapters = source.getChapterList(manga.toSAnime())
-            val newChapters = syncEpisodesWithSource.await(sourceChapters, manga, source, false)
+            val sourceChapters = source.getChapterList(manga.toSManga())
+            val newChapters = syncChaptersWithSource.await(sourceChapters, manga, source, false)
             newChapters.find { it.url == sChapter.url }
         } else {
             localChapter
@@ -75,7 +75,7 @@ class DeepLinkScreenModel(
 
     private suspend fun getMangaFromSManga(sManga: SManga, sourceId: Long): Manga {
         return getMangaByUrlAndSourceId.await(sManga.url, sourceId)
-            ?: networkToLocalManga.await(sManga.toDomainAnime(sourceId))
+            ?: networkToLocalManga.await(sManga.toDomainManga(sourceId))
     }
 
     sealed interface State {

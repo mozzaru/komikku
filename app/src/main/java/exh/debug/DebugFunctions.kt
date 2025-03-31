@@ -1,7 +1,7 @@
 package exh.debug
 
 import android.app.Application
-import eu.kanade.domain.manga.interactor.UpdateAnime
+import eu.kanade.domain.manga.interactor.UpdateManga
 import eu.kanade.tachiyomi.BuildConfig
 import eu.kanade.tachiyomi.data.backup.models.Backup
 import eu.kanade.tachiyomi.data.library.LibraryUpdateJob
@@ -29,7 +29,7 @@ object DebugFunctions {
     private val app: Application by injectLazy()
     private val handler: DatabaseHandler by injectLazy()
     private val sourceManager: SourceManager by injectLazy()
-    private val updateAnime: UpdateAnime by injectLazy()
+    private val updateManga: UpdateManga by injectLazy()
     private val getFavorites: GetFavorites by injectLazy()
     private val getAllManga: GetAllManga by injectLazy()
 
