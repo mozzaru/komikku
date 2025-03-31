@@ -6,10 +6,10 @@ import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.flowOf
 import logcat.LogPriority
 import tachiyomi.core.common.util.system.logcat
-import tachiyomi.domain.manga.interactor.GetMergedReferencesById
-import tachiyomi.domain.manga.model.MergedMangaReference
 import tachiyomi.domain.chapter.model.Chapter
 import tachiyomi.domain.chapter.repository.ChapterRepository
+import tachiyomi.domain.manga.interactor.GetMergedReferencesById
+import tachiyomi.domain.manga.model.MergedMangaReference
 
 class GetMergedChaptersByMangaId(
     private val chapterRepository: ChapterRepository,
@@ -34,7 +34,7 @@ class GetMergedChaptersByMangaId(
         applyScanlatorFilter: Boolean = false,
     ): Flow<List<Chapter>> {
         return try {
-            chapterRepository.getMergedEpisodeByAnimeIdAsFlow(mangaId, applyScanlatorFilter)
+            chapterRepository.getMergedChapterByMangaIdAsFlow(mangaId, applyScanlatorFilter)
                 .combine(getMergedReferencesById.subscribe(mangaId)) { chapters, references ->
                     transformMergedChapters(references, chapters, dedupe)
                 }
@@ -49,7 +49,7 @@ class GetMergedChaptersByMangaId(
         applyScanlatorFilter: Boolean = false,
     ): List<Chapter> {
         return try {
-            chapterRepository.getMergedEpisodeByAnimeId(mangaId, applyScanlatorFilter)
+            chapterRepository.getMergedChapterByMangaId(mangaId, applyScanlatorFilter)
         } catch (e: Exception) {
             logcat(LogPriority.ERROR, e)
             emptyList()

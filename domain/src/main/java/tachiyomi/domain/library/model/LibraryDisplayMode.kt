@@ -7,8 +7,8 @@ sealed interface LibraryDisplayMode {
 
     // KMK -->
     data object ComfortableGridPanorama : LibraryDisplayMode
-
     // KMK <--
+
     data object List : LibraryDisplayMode
     data object CoverOnlyGrid : LibraryDisplayMode
 

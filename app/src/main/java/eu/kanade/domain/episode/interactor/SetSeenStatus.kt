@@ -10,13 +10,13 @@ import exh.source.MERGED_SOURCE_ID
 import logcat.LogPriority
 import tachiyomi.core.common.util.lang.withNonCancellableContext
 import tachiyomi.core.common.util.system.logcat
-import tachiyomi.domain.manga.model.Manga
-import tachiyomi.domain.manga.repository.MangaRepository
-import tachiyomi.domain.download.service.DownloadPreferences
 import tachiyomi.domain.chapter.interactor.GetMergedChaptersByMangaId
 import tachiyomi.domain.chapter.model.Chapter
 import tachiyomi.domain.chapter.model.ChapterUpdate
 import tachiyomi.domain.chapter.repository.ChapterRepository
+import tachiyomi.domain.download.service.DownloadPreferences
+import tachiyomi.domain.manga.model.Manga
+import tachiyomi.domain.manga.repository.MangaRepository
 
 class SetSeenStatus(
     private val downloadPreferences: DownloadPreferences,
@@ -102,7 +102,7 @@ class SetSeenStatus(
         await(
             seen = seen,
             chapters = chapterRepository
-                .getEpisodeByAnimeId(animeId)
+                .getChapterByMangaId(animeId)
                 .toTypedArray(),
         )
     }

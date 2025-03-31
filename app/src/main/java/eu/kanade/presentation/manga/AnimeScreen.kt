@@ -66,6 +66,8 @@ import dev.chrisbanes.haze.HazeState
 import dev.chrisbanes.haze.haze
 import eu.kanade.domain.source.service.SourcePreferences
 import eu.kanade.domain.ui.UiPreferences
+import eu.kanade.presentation.browse.RelatedAnimeTitle
+import eu.kanade.presentation.components.relativeDateText
 import eu.kanade.presentation.manga.components.AnimeActionRow
 import eu.kanade.presentation.manga.components.AnimeBottomActionMenu
 import eu.kanade.presentation.manga.components.AnimeEpisodeListItem
@@ -78,8 +80,6 @@ import eu.kanade.presentation.manga.components.ExpandableAnimeDescription
 import eu.kanade.presentation.manga.components.MissingEpisodeCountListItem
 import eu.kanade.presentation.manga.components.OutlinedButtonWithArrow
 import eu.kanade.presentation.manga.components.RelatedAnimesRow
-import eu.kanade.presentation.browse.RelatedAnimeTitle
-import eu.kanade.presentation.components.relativeDateText
 import eu.kanade.presentation.util.formatEpisodeNumber
 import eu.kanade.tachiyomi.data.download.model.Download
 import eu.kanade.tachiyomi.source.getNameForAnimeInfo
@@ -88,11 +88,11 @@ import eu.kanade.tachiyomi.ui.anime.EpisodeList
 import eu.kanade.tachiyomi.ui.anime.MergedAnimeData
 import eu.kanade.tachiyomi.util.system.copyToClipboard
 import exh.source.MERGED_SOURCE_ID
-import tachiyomi.domain.manga.model.Manga
-import tachiyomi.domain.manga.model.MangaCover
 import tachiyomi.domain.chapter.model.Chapter
 import tachiyomi.domain.chapter.service.missingChaptersCount
 import tachiyomi.domain.library.service.LibraryPreferences
+import tachiyomi.domain.manga.model.Manga
+import tachiyomi.domain.manga.model.MangaCover
 import tachiyomi.domain.source.model.StubSource
 import tachiyomi.i18n.MR
 import tachiyomi.i18n.kmk.KMR

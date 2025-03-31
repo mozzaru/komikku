@@ -6,10 +6,10 @@ import tachiyomi.core.common.util.system.logcat
 import tachiyomi.data.DatabaseHandler
 import tachiyomi.data.StringListColumnAdapter
 import tachiyomi.data.UpdateStrategyColumnAdapter
+import tachiyomi.domain.library.model.LibraryManga
 import tachiyomi.domain.manga.model.Manga
 import tachiyomi.domain.manga.model.MangaUpdate
 import tachiyomi.domain.manga.repository.MangaRepository
-import tachiyomi.domain.library.model.LibraryManga
 import java.time.LocalDate
 import java.time.ZoneId
 
@@ -21,11 +21,11 @@ class MangaRepositoryImpl(
         return handler.awaitOne { animesQueries.getAnimeById(id, MangaMapper::mapManga) }
     }
 
-    override suspend fun getAnimeByIdAsFlow(id: Long): Flow<Manga> {
+    override suspend fun getMangaByIdAsFlow(id: Long): Flow<Manga> {
         return handler.subscribeToOne { animesQueries.getAnimeById(id, MangaMapper::mapManga) }
     }
 
-    override suspend fun getAnimeByUrlAndSourceId(url: String, sourceId: Long): Manga? {
+    override suspend fun getMangaByUrlAndSourceId(url: String, sourceId: Long): Manga? {
         return handler.awaitOneOrNull {
             animesQueries.getAnimeByUrlAndSource(
                 url,
@@ -35,7 +35,7 @@ class MangaRepositoryImpl(
         }
     }
 
-    override fun getAnimeByUrlAndSourceIdAsFlow(url: String, sourceId: Long): Flow<Manga?> {
+    override fun getMangaByUrlAndSourceIdAsFlow(url: String, sourceId: Long): Flow<Manga?> {
         return handler.subscribeToOneOrNull {
             animesQueries.getAnimeByUrlAndSource(
                 url,
@@ -49,7 +49,7 @@ class MangaRepositoryImpl(
         return handler.awaitList { animesQueries.getFavorites(MangaMapper::mapManga) }
     }
 
-    override suspend fun getSeenAnimeNotInLibrary(): List<Manga> {
+    override suspend fun getReadMangaNotInLibrary(): List<Manga> {
         return handler.awaitList { animesQueries.getSeenAnimeNotInLibrary(MangaMapper::mapManga) }
     }
 
@@ -65,7 +65,7 @@ class MangaRepositoryImpl(
         return handler.subscribeToList { animesQueries.getFavoriteBySourceId(sourceId, MangaMapper::mapManga) }
     }
 
-    override suspend fun getDuplicateLibraryAnime(id: Long, title: String): List<Manga> {
+    override suspend fun getDuplicateLibraryManga(id: Long, title: String): List<Manga> {
         return handler.awaitList {
             animesQueries.getDuplicateLibraryAnime(title, id, MangaMapper::mapManga)
         }

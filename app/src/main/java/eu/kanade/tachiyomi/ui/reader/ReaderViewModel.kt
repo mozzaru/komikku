@@ -79,20 +79,20 @@ import tachiyomi.core.common.util.lang.withUIContext
 import tachiyomi.core.common.util.system.ImageUtil
 import tachiyomi.core.common.util.system.logcat
 import tachiyomi.decoder.ImageDecoder
-import tachiyomi.domain.manga.interactor.GetManga
-import tachiyomi.domain.manga.interactor.GetMergedMangaById
-import tachiyomi.domain.manga.interactor.GetMergedReferencesById
-import tachiyomi.domain.manga.model.Manga
-import tachiyomi.domain.download.service.DownloadPreferences
 import tachiyomi.domain.chapter.interactor.GetChaptersByMangaId
 import tachiyomi.domain.chapter.interactor.GetMergedChaptersByMangaId
 import tachiyomi.domain.chapter.interactor.UpdateChapter
 import tachiyomi.domain.chapter.model.Chapter
 import tachiyomi.domain.chapter.model.ChapterUpdate
 import tachiyomi.domain.chapter.service.getChapterSort
-import tachiyomi.domain.history.interactor.GetNextEpisodes
+import tachiyomi.domain.download.service.DownloadPreferences
+import tachiyomi.domain.history.interactor.GetNextChapters
 import tachiyomi.domain.history.interactor.UpsertHistory
 import tachiyomi.domain.history.model.HistoryUpdate
+import tachiyomi.domain.manga.interactor.GetManga
+import tachiyomi.domain.manga.interactor.GetMergedMangaById
+import tachiyomi.domain.manga.interactor.GetMergedReferencesById
+import tachiyomi.domain.manga.model.Manga
 import tachiyomi.domain.source.service.SourceManager
 import tachiyomi.source.local.isLocal
 import uy.kohesive.injekt.Injekt
@@ -118,7 +118,7 @@ class ReaderViewModel @JvmOverloads constructor(
     private val trackEpisode: TrackEpisode = Injekt.get(),
     private val getManga: GetManga = Injekt.get(),
     private val getChaptersByMangaId: GetChaptersByMangaId = Injekt.get(),
-    private val getNextEpisodes: GetNextEpisodes = Injekt.get(),
+    private val getNextChapters: GetNextChapters = Injekt.get(),
     private val upsertHistory: UpsertHistory = Injekt.get(),
     private val updateChapter: UpdateChapter = Injekt.get(),
     private val setAnimeViewerFlags: SetAnimeViewerFlags = Injekt.get(),
@@ -610,7 +610,7 @@ class ReaderViewModel @JvmOverloads constructor(
             )
             if (!isNextChapterDownloaded) return@launchIO
 
-            val chaptersToDownload = getNextEpisodes.await(manga.id, nextChapter.id!!).run {
+            val chaptersToDownload = getNextChapters.await(manga.id, nextChapter.id!!).run {
                 if (readerPreferences.skipDupe().get()) {
                     removeDuplicates(nextChapter.toDomainEpisode()!!)
                 } else {

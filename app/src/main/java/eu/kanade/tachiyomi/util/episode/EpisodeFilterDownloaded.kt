@@ -1,8 +1,8 @@
 package eu.kanade.tachiyomi.util.episode
 
 import eu.kanade.tachiyomi.data.download.DownloadCache
-import tachiyomi.domain.manga.model.Manga
 import tachiyomi.domain.chapter.model.Chapter
+import tachiyomi.domain.manga.model.Manga
 import tachiyomi.source.local.isLocal
 import uy.kohesive.injekt.Injekt
 import uy.kohesive.injekt.api.get

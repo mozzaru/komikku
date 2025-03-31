@@ -37,20 +37,20 @@ import tachiyomi.core.common.util.lang.launchIO
 import tachiyomi.core.common.util.lang.withUIContext
 import tachiyomi.core.common.util.system.logcat
 import tachiyomi.domain.UnsortedPreferences
-import tachiyomi.domain.manga.interactor.GetManga
-import tachiyomi.domain.manga.interactor.GetMergedReferencesById
-import tachiyomi.domain.manga.interactor.NetworkToLocalManga
-import tachiyomi.domain.manga.model.Manga
-import tachiyomi.domain.manga.model.MangaUpdate
 import tachiyomi.domain.category.interactor.GetCategories
 import tachiyomi.domain.category.interactor.SetMangaCategories
 import tachiyomi.domain.chapter.interactor.GetChaptersByMangaId
 import tachiyomi.domain.chapter.interactor.UpdateChapter
 import tachiyomi.domain.chapter.model.Chapter
 import tachiyomi.domain.chapter.model.ChapterUpdate
-import tachiyomi.domain.history.interactor.GetHistoryByAnimeId
+import tachiyomi.domain.history.interactor.GetHistoryByMangaId
 import tachiyomi.domain.history.interactor.UpsertHistory
 import tachiyomi.domain.history.model.HistoryUpdate
+import tachiyomi.domain.manga.interactor.GetManga
+import tachiyomi.domain.manga.interactor.GetMergedReferencesById
+import tachiyomi.domain.manga.interactor.NetworkToLocalManga
+import tachiyomi.domain.manga.model.Manga
+import tachiyomi.domain.manga.model.MangaUpdate
 import tachiyomi.domain.source.service.SourceManager
 import tachiyomi.domain.track.interactor.DeleteTrack
 import tachiyomi.domain.track.interactor.GetTracks
@@ -74,7 +74,7 @@ class MigrationListScreenModel(
     private val updateChapter: UpdateChapter = Injekt.get(),
     private val getChaptersByMangaId: GetChaptersByMangaId = Injekt.get(),
     private val getMergedReferencesById: GetMergedReferencesById = Injekt.get(),
-    private val getHistoryByAnimeId: GetHistoryByAnimeId = Injekt.get(),
+    private val getHistoryByMangaId: GetHistoryByMangaId = Injekt.get(),
     private val upsertHistory: UpsertHistory = Injekt.get(),
     private val getCategories: GetCategories = Injekt.get(),
     private val setMangaCategories: SetMangaCategories = Injekt.get(),
@@ -350,7 +350,7 @@ class MigrationListScreenModel(
             val maxChapterRead = prevMangaChapters.filter(Chapter::seen)
                 .maxOfOrNull(Chapter::episodeNumber)
             val dbChapters = getChaptersByMangaId.await(manga.id)
-            val prevHistoryList = getHistoryByAnimeId.await(prevManga.id)
+            val prevHistoryList = getHistoryByMangaId.await(prevManga.id)
 
             val chapterUpdates = mutableListOf<ChapterUpdate>()
             val historyUpdates = mutableListOf<HistoryUpdate>()

@@ -2,8 +2,8 @@ package tachiyomi.data.source
 
 import androidx.paging.PagingState
 import eu.kanade.tachiyomi.source.CatalogueSource
-import eu.kanade.tachiyomi.source.model.MangasPage
 import eu.kanade.tachiyomi.source.model.FilterList
+import eu.kanade.tachiyomi.source.model.MangasPage
 import eu.kanade.tachiyomi.source.model.SManga
 import tachiyomi.core.common.util.lang.withIOContext
 import tachiyomi.domain.source.repository.SourcePagingSourceType

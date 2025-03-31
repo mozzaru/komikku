@@ -43,6 +43,8 @@ import dev.chrisbanes.haze.hazeChild
 import eu.kanade.core.util.ifSourcesLoaded
 import eu.kanade.domain.anime.model.hasCustomCover
 import eu.kanade.domain.anime.model.toSAnime
+import eu.kanade.presentation.category.components.ChangeCategoryDialog
+import eu.kanade.presentation.components.NavigatorAdaptiveSheet
 import eu.kanade.presentation.manga.AnimeScreen
 import eu.kanade.presentation.manga.DuplicateAnimeDialog
 import eu.kanade.presentation.manga.EditCoverAction
@@ -51,8 +53,6 @@ import eu.kanade.presentation.manga.components.AnimeCoverDialog
 import eu.kanade.presentation.manga.components.DeleteEpisodesDialog
 import eu.kanade.presentation.manga.components.ScanlatorFilterDialog
 import eu.kanade.presentation.manga.components.SetIntervalDialog
-import eu.kanade.presentation.category.components.ChangeCategoryDialog
-import eu.kanade.presentation.components.NavigatorAdaptiveSheet
 import eu.kanade.presentation.theme.TachiyomiTheme
 import eu.kanade.presentation.util.AssistContentScreen
 import eu.kanade.presentation.util.Screen
@@ -98,9 +98,9 @@ import tachiyomi.core.common.util.lang.withIOContext
 import tachiyomi.core.common.util.lang.withNonCancellableContext
 import tachiyomi.core.common.util.system.logcat
 import tachiyomi.domain.UnsortedPreferences
-import tachiyomi.domain.manga.model.Manga
 import tachiyomi.domain.chapter.model.Chapter
-import tachiyomi.domain.source.interactor.GetRemoteAnime
+import tachiyomi.domain.manga.model.Manga
+import tachiyomi.domain.source.interactor.GetRemoteManga
 import tachiyomi.domain.source.model.StubSource
 import tachiyomi.domain.source.service.SourceManager
 import tachiyomi.i18n.MR
@@ -352,7 +352,7 @@ class AnimeScreen(
                         // source of an recommending entry (to search again)
                         smartSearchConfig != null -> SmartSearchScreen(successState.source.id, smartSearchConfig)
                         screenModel.useNewSourceNavigation -> SourceFeedScreen(successState.source.id)
-                        else -> BrowseSourceScreen(successState.source.id, GetRemoteAnime.QUERY_POPULAR)
+                        else -> BrowseSourceScreen(successState.source.id, GetRemoteManga.QUERY_POPULAR)
                     }
                     when (screen) {
                         // When doing a migrate/recommend => replace previous screen to perform search again.

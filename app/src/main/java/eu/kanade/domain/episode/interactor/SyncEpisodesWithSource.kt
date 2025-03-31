@@ -12,7 +12,6 @@ import eu.kanade.tachiyomi.source.model.SChapter
 import eu.kanade.tachiyomi.source.online.HttpSource
 import tachiyomi.data.chapter.ChapterSanitizer
 import tachiyomi.data.source.NoResultsException
-import tachiyomi.domain.manga.model.Manga
 import tachiyomi.domain.chapter.interactor.GetChaptersByMangaId
 import tachiyomi.domain.chapter.interactor.ShouldUpdateDbChapter
 import tachiyomi.domain.chapter.interactor.UpdateChapter
@@ -20,6 +19,7 @@ import tachiyomi.domain.chapter.model.Chapter
 import tachiyomi.domain.chapter.model.toChapterUpdate
 import tachiyomi.domain.chapter.repository.ChapterRepository
 import tachiyomi.domain.chapter.service.ChapterRecognition
+import tachiyomi.domain.manga.model.Manga
 import tachiyomi.source.local.isLocal
 import java.lang.Long.max
 import java.time.ZonedDateTime
@@ -92,7 +92,7 @@ class SyncEpisodesWithSource(
             }
 
             // Recognize chapter number for the chapter.
-            val episodeNumber = ChapterRecognition.parseEpisodeNumber(
+            val episodeNumber = ChapterRecognition.parseChapterNumber(
                 manga.title,
                 episode.name,
                 episode.episodeNumber,
@@ -192,7 +192,7 @@ class SyncEpisodesWithSource(
 
         if (removedEpisodes.isNotEmpty()) {
             val toDeleteIds = removedEpisodes.map { it.id }
-            chapterRepository.removeEpisodesWithIds(toDeleteIds)
+            chapterRepository.removeChaptersWithIds(toDeleteIds)
         }
 
         if (updatedToAdd.isNotEmpty()) {

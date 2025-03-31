@@ -34,26 +34,15 @@ import mihon.domain.extensionrepo.interactor.UpdateExtensionRepo
 import mihon.domain.extensionrepo.repository.ExtensionRepoRepository
 import mihon.domain.extensionrepo.service.ExtensionRepoService
 import mihon.domain.upcoming.interactor.GetUpcomingManga
-import tachiyomi.data.manga.MangaRepositoryImpl
 import tachiyomi.data.category.CategoryRepositoryImpl
 import tachiyomi.data.chapter.ChapterRepositoryImpl
 import tachiyomi.data.history.HistoryRepositoryImpl
+import tachiyomi.data.manga.MangaRepositoryImpl
 import tachiyomi.data.release.ReleaseServiceImpl
 import tachiyomi.data.source.SourceRepositoryImpl
 import tachiyomi.data.source.StubSourceRepositoryImpl
 import tachiyomi.data.track.TrackRepositoryImpl
 import tachiyomi.data.updates.UpdatesRepositoryImpl
-import tachiyomi.domain.manga.interactor.FetchInterval
-import tachiyomi.domain.manga.interactor.GetManga
-import tachiyomi.domain.manga.interactor.GetMangaByUrlAndSourceId
-import tachiyomi.domain.manga.interactor.GetMangaWithChapters
-import tachiyomi.domain.manga.interactor.GetDuplicateLibraryManga
-import tachiyomi.domain.manga.interactor.GetFavorites
-import tachiyomi.domain.manga.interactor.GetLibraryManga
-import tachiyomi.domain.manga.interactor.NetworkToLocalManga
-import tachiyomi.domain.manga.interactor.ResetViewerFlags
-import tachiyomi.domain.manga.interactor.SetMangaChapterFlags
-import tachiyomi.domain.manga.repository.MangaRepository
 import tachiyomi.domain.category.interactor.CreateCategoryWithName
 import tachiyomi.domain.category.interactor.DeleteCategory
 import tachiyomi.domain.category.interactor.GetCategories
@@ -61,8 +50,8 @@ import tachiyomi.domain.category.interactor.HideCategory
 import tachiyomi.domain.category.interactor.RenameCategory
 import tachiyomi.domain.category.interactor.ReorderCategory
 import tachiyomi.domain.category.interactor.ResetCategoryFlags
-import tachiyomi.domain.category.interactor.SetMangaCategories
 import tachiyomi.domain.category.interactor.SetDisplayMode
+import tachiyomi.domain.category.interactor.SetMangaCategories
 import tachiyomi.domain.category.interactor.SetSortModeForCategory
 import tachiyomi.domain.category.interactor.UpdateCategory
 import tachiyomi.domain.category.repository.CategoryRepository
@@ -74,20 +63,31 @@ import tachiyomi.domain.chapter.interactor.ShouldUpdateDbChapter
 import tachiyomi.domain.chapter.interactor.UpdateChapter
 import tachiyomi.domain.chapter.repository.ChapterRepository
 import tachiyomi.domain.history.interactor.GetHistory
-import tachiyomi.domain.history.interactor.GetNextEpisodes
+import tachiyomi.domain.history.interactor.GetNextChapters
 import tachiyomi.domain.history.interactor.GetTotalWatchDuration
 import tachiyomi.domain.history.interactor.RemoveHistory
 import tachiyomi.domain.history.interactor.UpsertHistory
 import tachiyomi.domain.history.repository.HistoryRepository
+import tachiyomi.domain.manga.interactor.FetchInterval
+import tachiyomi.domain.manga.interactor.GetDuplicateLibraryManga
+import tachiyomi.domain.manga.interactor.GetFavorites
+import tachiyomi.domain.manga.interactor.GetLibraryManga
+import tachiyomi.domain.manga.interactor.GetManga
+import tachiyomi.domain.manga.interactor.GetMangaByUrlAndSourceId
+import tachiyomi.domain.manga.interactor.GetMangaWithChapters
+import tachiyomi.domain.manga.interactor.NetworkToLocalManga
+import tachiyomi.domain.manga.interactor.ResetViewerFlags
+import tachiyomi.domain.manga.interactor.SetMangaChapterFlags
+import tachiyomi.domain.manga.repository.MangaRepository
 import tachiyomi.domain.release.interactor.GetApplicationRelease
 import tachiyomi.domain.release.service.ReleaseService
-import tachiyomi.domain.source.interactor.GetRemoteAnime
-import tachiyomi.domain.source.interactor.GetSourcesWithNonLibraryAnime
+import tachiyomi.domain.source.interactor.GetRemoteManga
+import tachiyomi.domain.source.interactor.GetSourcesWithNonLibraryManga
 import tachiyomi.domain.source.repository.SourceRepository
 import tachiyomi.domain.source.repository.StubSourceRepository
 import tachiyomi.domain.track.interactor.DeleteTrack
 import tachiyomi.domain.track.interactor.GetTracks
-import tachiyomi.domain.track.interactor.GetTracksPerAnime
+import tachiyomi.domain.track.interactor.GetTracksPerManga
 import tachiyomi.domain.track.interactor.InsertTrack
 import tachiyomi.domain.track.repository.TrackRepository
 import tachiyomi.domain.updates.interactor.GetUpdates
@@ -122,7 +122,7 @@ class DomainModule : InjektModule {
         addFactory { GetMangaWithChapters(get(), get()) }
         addFactory { GetMangaByUrlAndSourceId(get()) }
         addFactory { GetManga(get()) }
-        addFactory { GetNextEpisodes(get(), get(), get(), get()) }
+        addFactory { GetNextChapters(get(), get(), get(), get()) }
         addFactory { GetUpcomingManga(get()) }
         addFactory { ResetViewerFlags(get()) }
         addFactory { SetMangaChapterFlags(get()) }
@@ -143,7 +143,7 @@ class DomainModule : InjektModule {
         addFactory { AddTracks(get(), get(), get(), get()) }
         addFactory { RefreshTracks(get(), get(), get(), get()) }
         addFactory { DeleteTrack(get()) }
-        addFactory { GetTracksPerAnime(get(), get()) }
+        addFactory { GetTracksPerManga(get(), get()) }
         addFactory { GetTracks(get()) }
         addFactory { InsertTrack(get()) }
         addFactory { SyncEpisodeProgressWithTrack(get(), get(), get()) }
@@ -178,9 +178,9 @@ class DomainModule : InjektModule {
         addSingletonFactory<StubSourceRepository> { StubSourceRepositoryImpl(get()) }
         addFactory { GetEnabledSources(get(), get()) }
         addFactory { GetLanguagesWithSources(get(), get()) }
-        addFactory { GetRemoteAnime(get()) }
+        addFactory { GetRemoteManga(get()) }
         addFactory { GetSourcesWithFavoriteCount(get(), get()) }
-        addFactory { GetSourcesWithNonLibraryAnime(get()) }
+        addFactory { GetSourcesWithNonLibraryManga(get()) }
         addFactory { SetMigrateSorting(get()) }
         addFactory { ToggleLanguage(get()) }
         addFactory { ToggleSource(get()) }

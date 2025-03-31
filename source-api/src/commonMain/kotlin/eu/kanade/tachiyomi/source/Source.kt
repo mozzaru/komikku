@@ -1,8 +1,8 @@
 package eu.kanade.tachiyomi.source
 
 import eu.kanade.tachiyomi.source.model.Page
-import eu.kanade.tachiyomi.source.model.SManga
 import eu.kanade.tachiyomi.source.model.SChapter
+import eu.kanade.tachiyomi.source.model.SManga
 
 /**
  * A basic interface for creating a source. It could be an online source, a local source, stub source, etc.

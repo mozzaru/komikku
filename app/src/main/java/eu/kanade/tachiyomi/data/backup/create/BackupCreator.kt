@@ -28,11 +28,11 @@ import okio.gzip
 import okio.sink
 import tachiyomi.core.common.i18n.stringResource
 import tachiyomi.core.common.util.system.logcat
+import tachiyomi.domain.backup.service.BackupPreferences
 import tachiyomi.domain.manga.interactor.GetFavorites
 import tachiyomi.domain.manga.interactor.GetMergedManga
 import tachiyomi.domain.manga.model.Manga
 import tachiyomi.domain.manga.repository.MangaRepository
-import tachiyomi.domain.backup.service.BackupPreferences
 import tachiyomi.i18n.MR
 import uy.kohesive.injekt.Injekt
 import uy.kohesive.injekt.api.get
@@ -89,7 +89,7 @@ class BackupCreator(
                 throw IllegalStateException(context.stringResource(MR.strings.create_backup_file_error))
             }
 
-            val nonFavoriteManga = if (options.seenEntries) mangaRepository.getSeenAnimeNotInLibrary() else emptyList()
+            val nonFavoriteManga = if (options.seenEntries) mangaRepository.getReadMangaNotInLibrary() else emptyList()
             // SY -->
             val mergedManga = getMergedManga.await()
             // SY <--

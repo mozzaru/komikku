@@ -1,9 +1,9 @@
 package tachiyomi.domain.manga.interactor
 
-import tachiyomi.domain.manga.model.Manga
-import tachiyomi.domain.manga.model.MangaUpdate
 import tachiyomi.domain.chapter.interactor.GetChaptersByMangaId
 import tachiyomi.domain.chapter.model.Chapter
+import tachiyomi.domain.manga.model.Manga
+import tachiyomi.domain.manga.model.MangaUpdate
 import java.time.Instant
 import java.time.ZoneId
 import java.time.ZonedDateTime
@@ -14,7 +14,7 @@ class FetchInterval(
     private val getChaptersByMangaId: GetChaptersByMangaId,
 ) {
 
-    suspend fun toAnimeUpdate(
+    suspend fun toMangaUpdate(
         manga: Manga,
         dateTime: ZonedDateTime,
         window: Pair<Long, Long>,

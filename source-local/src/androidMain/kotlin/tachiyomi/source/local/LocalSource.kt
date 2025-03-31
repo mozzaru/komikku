@@ -339,7 +339,7 @@ actual class LocalSource(
                     }.orEmpty()
                     date_upload = episodeFile.lastModified()
                     chapter_number = ChapterRecognition
-                        .parseEpisodeNumber(manga.title, this.name, this.chapter_number.toDouble())
+                        .parseChapterNumber(manga.title, this.name, this.chapter_number.toDouble())
                         .toFloat()
 
                     val format = Format.valueOf(episodeFile)

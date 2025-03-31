@@ -14,12 +14,12 @@ import okio.source
 import org.junit.jupiter.api.BeforeAll
 import org.junit.jupiter.api.Disabled
 import org.junit.jupiter.api.Test
-import tachiyomi.domain.manga.interactor.GetCustomMangaInfo
-import tachiyomi.domain.manga.model.Manga
-import tachiyomi.domain.manga.model.CustomMangaInfo
-import tachiyomi.domain.manga.repository.CustomMangaRepository
 import tachiyomi.domain.category.interactor.GetCategories
 import tachiyomi.domain.category.model.Category
+import tachiyomi.domain.manga.interactor.GetCustomMangaInfo
+import tachiyomi.domain.manga.model.CustomMangaInfo
+import tachiyomi.domain.manga.model.Manga
+import tachiyomi.domain.manga.repository.CustomMangaRepository
 import uy.kohesive.injekt.Injekt
 import uy.kohesive.injekt.api.addSingletonFactory
 import java.io.File

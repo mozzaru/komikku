@@ -15,16 +15,20 @@ import eu.kanade.domain.source.interactor.RenameSourceCategory
 import eu.kanade.domain.source.interactor.SetSourceCategories
 import eu.kanade.domain.source.interactor.ToggleExcludeFromDataSaver
 import exh.search.SearchEngine
-import tachiyomi.data.manga.MangaMergeRepositoryImpl
 import tachiyomi.data.manga.CustomMangaRepositoryImpl
+import tachiyomi.data.manga.MangaMergeRepositoryImpl
 import tachiyomi.data.source.FeedSavedSearchRepositoryImpl
 import tachiyomi.data.source.SavedSearchRepositoryImpl
-import tachiyomi.domain.manga.interactor.DeleteMangaById
+import tachiyomi.domain.chapter.interactor.DeleteChapters
+import tachiyomi.domain.chapter.interactor.GetChapterByUrl
+import tachiyomi.domain.chapter.interactor.GetMergedChaptersByMangaId
+import tachiyomi.domain.history.interactor.GetHistoryByMangaId
 import tachiyomi.domain.manga.interactor.DeleteByMergeId
+import tachiyomi.domain.manga.interactor.DeleteMangaById
 import tachiyomi.domain.manga.interactor.DeleteMergeById
 import tachiyomi.domain.manga.interactor.GetAllManga
-import tachiyomi.domain.manga.interactor.GetMangaBySource
 import tachiyomi.domain.manga.interactor.GetCustomMangaInfo
+import tachiyomi.domain.manga.interactor.GetMangaBySource
 import tachiyomi.domain.manga.interactor.GetMergedManga
 import tachiyomi.domain.manga.interactor.GetMergedMangaById
 import tachiyomi.domain.manga.interactor.GetMergedMangaForDownloading
@@ -33,12 +37,8 @@ import tachiyomi.domain.manga.interactor.GetReadMangaNotInLibraryView
 import tachiyomi.domain.manga.interactor.InsertMergedReference
 import tachiyomi.domain.manga.interactor.SetCustomMangaInfo
 import tachiyomi.domain.manga.interactor.UpdateMergedSettings
-import tachiyomi.domain.manga.repository.MangaMergeRepository
 import tachiyomi.domain.manga.repository.CustomMangaRepository
-import tachiyomi.domain.chapter.interactor.DeleteChapters
-import tachiyomi.domain.chapter.interactor.GetChapterByUrl
-import tachiyomi.domain.chapter.interactor.GetMergedChaptersByMangaId
-import tachiyomi.domain.history.interactor.GetHistoryByAnimeId
+import tachiyomi.domain.manga.repository.MangaMergeRepository
 import tachiyomi.domain.source.interactor.CountFeedSavedSearchBySourceId
 import tachiyomi.domain.source.interactor.CountFeedSavedSearchGlobal
 import tachiyomi.domain.source.interactor.DeleteFeedSavedSearchById
@@ -73,7 +73,7 @@ class SYDomainModule : InjektModule {
         addFactory { DeleteChapters(get()) }
         addFactory { DeleteMangaById(get()) }
         addFactory { FilterSerializer() }
-        addFactory { GetHistoryByAnimeId(get()) }
+        addFactory { GetHistoryByMangaId(get()) }
         addFactory { GetChapterByUrl(get()) }
         addFactory { GetSourceCategories(get()) }
         addFactory { CreateSourceCategory(get()) }

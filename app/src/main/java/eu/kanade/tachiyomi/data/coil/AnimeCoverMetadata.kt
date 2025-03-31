@@ -5,8 +5,8 @@ import androidx.palette.graphics.Palette
 import eu.kanade.tachiyomi.data.cache.CoverCache
 import eu.kanade.tachiyomi.ui.anime.AnimeScreenModel
 import okio.BufferedSource
-import tachiyomi.domain.manga.model.MangaCover
 import tachiyomi.domain.library.service.LibraryPreferences
+import tachiyomi.domain.manga.model.MangaCover
 import uy.kohesive.injekt.injectLazy
 import java.io.File
 import java.util.concurrent.ConcurrentHashMap
