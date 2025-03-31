@@ -5,11 +5,11 @@ import com.hippo.unifile.UniFile
 import eu.kanade.tachiyomi.source.CatalogueSource
 import eu.kanade.tachiyomi.source.Source
 import eu.kanade.tachiyomi.source.UnmeteredSource
-import eu.kanade.tachiyomi.source.model.MangasPage
 import eu.kanade.tachiyomi.source.model.FilterList
-import eu.kanade.tachiyomi.source.model.SManga
+import eu.kanade.tachiyomi.source.model.MangasPage
+import eu.kanade.tachiyomi.source.model.Page
 import eu.kanade.tachiyomi.source.model.SChapter
-import eu.kanade.tachiyomi.source.model.Video
+import eu.kanade.tachiyomi.source.model.SManga
 import eu.kanade.tachiyomi.util.lang.compareToCaseInsensitiveNaturalOrder
 import kotlinx.coroutines.async
 import kotlinx.coroutines.awaitAll
@@ -33,8 +33,8 @@ import tachiyomi.core.metadata.comicinfo.ComicInfoPublishingStatus
 import tachiyomi.core.metadata.comicinfo.copyFromComicInfo
 import tachiyomi.core.metadata.comicinfo.getComicInfo
 import tachiyomi.core.metadata.tachiyomi.AnimeDetails
-import tachiyomi.domain.manga.model.Manga
 import tachiyomi.domain.chapter.service.EpisodeRecognition
+import tachiyomi.domain.manga.model.Manga
 import tachiyomi.i18n.MR
 import tachiyomi.source.local.filter.OrderBy
 import tachiyomi.source.local.image.LocalCoverManager
@@ -369,7 +369,7 @@ actual class LocalSource(
     override fun getFilterList() = FilterList(OrderBy.Popular(context))
 
     // Unused stuff
-    override suspend fun getPageList(chapter: SChapter): List<Video> = throw UnsupportedOperationException("Unused")
+    override suspend fun getPageList(chapter: SChapter): List<Page> = throw UnsupportedOperationException("Unused")
 
     fun getFormat(chapter: SChapter): Format {
         try {

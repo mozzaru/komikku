@@ -178,21 +178,21 @@ abstract class SyncService(
     }
 
 /**
-     * Merges two lists of BackupEpisode objects, selecting the most recent episode based on the lastModifiedAt value.
-     * If lastModifiedAt is null for a episode, it treats that episode as the oldest possible for comparison purposes.
-     * This function is designed to reconcile local and remote episode lists, ensuring the most up-to-date episode is retained.
+     * Merges two lists of BackupEpisode objects, selecting the most recent chapter based on the lastModifiedAt value.
+     * If lastModifiedAt is null for a chapter, it treats that chapter as the oldest possible for comparison purposes.
+     * This function is designed to reconcile local and remote chapter lists, ensuring the most up-to-date chapter is retained.
      *
      * @param localChapters The list of local BackupEpisode objects.
      * @param remoteChapters The list of remote BackupEpisode objects.
-     * @return A list of BackupEpisode objects, each representing the most recent version of the episode from either local or remote sources.
+     * @return A list of BackupEpisode objects, each representing the most recent version of the chapter from either local or remote sources.
      *
-     * - This function is used in scenarios where local and remote episode lists need to be synchronized.
-     * - It iterates over the union of the URLs from both local and remote episodes.
-     * - For each URL, it compares the corresponding local and remote episodes based on the lastModifiedAt value.
-     * - If only one source (local or remote) has the episode for a URL, that episode is used.
-     * - If both sources have the episode, the one with the more recent lastModifiedAt value is chosen.
-     * - If lastModifiedAt is null or missing, the episode is considered the oldest for safety, ensuring that any episode with a valid timestamp is preferred.
-     * - The resulting list contains the most recent episodes from the combined set of local and remote episodes.
+     * - This function is used in scenarios where local and remote chapter lists need to be synchronized.
+     * - It iterates over the union of the URLs from both local and remote chapters.
+     * - For each URL, it compares the corresponding local and remote chapters based on the lastModifiedAt value.
+     * - If only one source (local or remote) has the chapter for a URL, that chapter is used.
+     * - If both sources have the chapter, the one with the more recent lastModifiedAt value is chosen.
+     * - If lastModifiedAt is null or missing, the chapter is considered the oldest for safety, ensuring that any chapter with a valid timestamp is preferred.
+     * - The resulting list contains the most recent chapters from the combined set of local and remote chapters.
      */
     private fun mergeChapters(
         localChapters: List<BackupEpisode>,
@@ -211,7 +211,7 @@ abstract class SyncService(
             "Starting episode merge. Local episodes: ${localChapters.size}, Remote episodes: ${remoteChapters.size}"
         }
 
-        // Merge both episode maps based on version numbers
+        // Merge both chapter maps based on version numbers
         val mergedChapters = (localChapterMap.keys + remoteChapterMap.keys).distinct().mapNotNull { compositeKey ->
             val localChapter = localChapterMap[compositeKey]
             val remoteChapter = remoteChapterMap[compositeKey]
@@ -231,9 +231,9 @@ abstract class SyncService(
                     remoteChapter
                 }
                 localChapter != null && remoteChapter != null -> {
-                    // Use version number to decide which episode to keep
+                    // Use version number to decide which chapter to keep
                     val chosenChapter = if (localChapter.version >= remoteChapter.version) {
-                        // If there mare more episode on remote, local sourceOrder will need to be updated to maintain correct source order.
+                        // If there mare more chapter on remote, local sourceOrder will need to be updated to maintain correct source order.
                         if (localChapters.size < remoteChapters.size) {
                             localChapter.copy(sourceOrder = remoteChapter.sourceOrder)
                         } else {

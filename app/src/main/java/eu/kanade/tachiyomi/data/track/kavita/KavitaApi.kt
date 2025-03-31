@@ -89,9 +89,9 @@ class KavitaApi(private val client: OkHttpClient, interceptor: KavitaInterceptor
     }
 
     /*
-     * Returns total episodes in the series.
+     * Returns total chapters in the series.
      * Ignores volumes.
-     * Volumes consisting of 1 file treated as episode
+     * Volumes consisting of 1 file treated as chapter
      */
     private fun getTotalChapters(url: String): Long {
         val requestUrl = getApiVolumesUrl(url)
@@ -136,7 +136,7 @@ class KavitaApi(private val client: OkHttpClient, interceptor: KavitaInterceptor
             logcat(
                 LogPriority.WARN,
                 e,
-            ) { "Exception getting latest episode read. Could not get itemRequest: $requestUrl" }
+            ) { "Exception getting latest chapter read. Could not get itemRequest: $requestUrl" }
             throw e
         }
         return 0.0

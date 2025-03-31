@@ -24,7 +24,7 @@ data class ReaderChapter(val episode: Episode) {
 
     private var references = 0
 
-    constructor(episode: tachiyomi.domain.chapter.model.Episode) : this(episode.toDbEpisode())
+    constructor(chapter: tachiyomi.domain.chapter.model.Chapter) : this(chapter.toDbEpisode())
 
     fun ref() {
         references++
@@ -34,7 +34,7 @@ data class ReaderChapter(val episode: Episode) {
         references--
         if (references == 0) {
             if (pageLoader != null) {
-                logcat { "Recycling episode ${episode.name}" }
+                logcat { "Recycling chapter ${episode.name}" }
             }
             pageLoader?.recycle()
             pageLoader = null

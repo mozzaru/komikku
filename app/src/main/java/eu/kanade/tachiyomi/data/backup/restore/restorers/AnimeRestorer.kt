@@ -18,7 +18,7 @@ import tachiyomi.domain.manga.model.Manga
 import tachiyomi.domain.manga.model.CustomMangaInfo
 import tachiyomi.domain.category.interactor.GetCategories
 import tachiyomi.domain.chapter.interactor.GetChaptersByMangaId
-import tachiyomi.domain.chapter.model.Episode
+import tachiyomi.domain.chapter.model.Chapter
 import tachiyomi.domain.track.interactor.GetTracks
 import tachiyomi.domain.track.interactor.InsertTrack
 import tachiyomi.domain.track.model.Track
@@ -177,9 +177,9 @@ class AnimeRestorer(
                 val dbChapter = dbChaptersByUrl[chapter.url]
 
                 when {
-                    dbChapter == null -> chapter // New episode
+                    dbChapter == null -> chapter // New chapter
                     chapter.forComparison() == dbChapter.forComparison() -> null // Same state; skip
-                    else -> updateChapterBasedOnSyncState(chapter, dbChapter) // Update existed episode
+                    else -> updateChapterBasedOnSyncState(chapter, dbChapter) // Update existed chapter
                 }
             }
             .partition { it.id > 0 }
@@ -188,32 +188,32 @@ class AnimeRestorer(
         updateExistingChapters(existingChapters)
     }
 
-    private fun updateChapterBasedOnSyncState(episode: Episode, dbEpisode: Episode): Episode {
+    private fun updateChapterBasedOnSyncState(chapter: Chapter, dbChapter: Chapter): Chapter {
         return if (isSync) {
-            episode.copy(
-                id = dbEpisode.id,
-                bookmark = episode.bookmark || dbEpisode.bookmark,
-                seen = episode.seen,
-                lastSecondSeen = episode.lastSecondSeen,
-                sourceOrder = episode.sourceOrder,
+            chapter.copy(
+                id = dbChapter.id,
+                bookmark = chapter.bookmark || dbChapter.bookmark,
+                seen = chapter.seen,
+                lastSecondSeen = chapter.lastSecondSeen,
+                sourceOrder = chapter.sourceOrder,
             )
         } else {
-            episode.copyFrom(dbEpisode).let {
+            chapter.copyFrom(dbChapter).let {
                 when {
-                    dbEpisode.seen && !it.seen -> it.copy(seen = true, lastSecondSeen = dbEpisode.lastSecondSeen)
-                    it.lastSecondSeen == 0L && dbEpisode.lastSecondSeen != 0L -> it.copy(
-                        lastSecondSeen = dbEpisode.lastSecondSeen,
+                    dbChapter.seen && !it.seen -> it.copy(seen = true, lastSecondSeen = dbChapter.lastSecondSeen)
+                    it.lastSecondSeen == 0L && dbChapter.lastSecondSeen != 0L -> it.copy(
+                        lastSecondSeen = dbChapter.lastSecondSeen,
                     )
                     else -> it
                 }
             }
                 // KMK -->
-                .copy(id = dbEpisode.id)
+                .copy(id = dbChapter.id)
             // KMK <--
         }
     }
 
-    private fun Episode.forComparison() =
+    private fun Chapter.forComparison() =
         this.copy(
             id = 0L,
             animeId = 0L,
@@ -226,9 +226,9 @@ class AnimeRestorer(
             version = 0L,
         )
 
-    private suspend fun insertNewEpisodes(episodes: List<Episode>) {
+    private suspend fun insertNewEpisodes(chapters: List<Chapter>) {
         handler.await(true) {
-            episodes.forEach { episode ->
+            chapters.forEach { episode ->
                 episodesQueries.insert(
                     episode.animeId,
                     episode.url,
@@ -251,9 +251,9 @@ class AnimeRestorer(
         }
     }
 
-    private suspend fun updateExistingChapters(episodes: List<Episode>) {
+    private suspend fun updateExistingChapters(chapters: List<Chapter>) {
         handler.await(true) {
-            episodes.forEach { episode ->
+            chapters.forEach { episode ->
                 episodesQueries.update(
                     animeId = null,
                     url = null,
@@ -383,7 +383,7 @@ class AnimeRestorer(
                 val chapter = handler.awaitList { episodesQueries.getEpisodeByUrl(history.url) }
                     .find { it.anime_id == manga.id }
                 return@mapNotNull if (chapter == null) {
-                    // Episode doesn't exist; skip
+                    // Chapter doesn't exist; skip
                     null
                 } else {
                     // New history entry

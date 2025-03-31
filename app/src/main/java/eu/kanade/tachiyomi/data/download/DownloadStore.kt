@@ -84,7 +84,7 @@ class DownloadStore(
      * @param download the download.
      */
     private fun getKey(download: Download): String {
-        return download.episode.id.toString()
+        return download.chapter.id.toString()
     }
 
     /**
@@ -120,7 +120,7 @@ class DownloadStore(
      * @param download the download to serialize.
      */
     private fun serialize(download: Download): String {
-        val obj = DownloadObject(download.manga.id, download.episode.id, counter++)
+        val obj = DownloadObject(download.manga.id, download.chapter.id, counter++)
         return json.encodeToString(obj)
     }
 
@@ -142,7 +142,7 @@ class DownloadStore(
  * Class used for download serialization
  *
  * @param mangaId the id of the manga.
- * @param chapterId the id of the episode.
+ * @param chapterId the id of the chapter.
  * @param order the order of the download in the queue.
  */
 @Serializable

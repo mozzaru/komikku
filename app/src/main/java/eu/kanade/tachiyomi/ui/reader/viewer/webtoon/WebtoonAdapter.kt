@@ -39,31 +39,31 @@ class WebtoonAdapter(
 
     /**
      * Updates this adapter with the given [chapters]. It handles setting a few pages of the
-     * next/previous episode to allow seamless transitions.
+     * next/previous chapter to allow seamless transitions.
      */
     fun setChapters(chapters: ViewerChapters, forceTransition: Boolean) {
         val newItems = mutableListOf<Any>()
 
-        // Forces episode transition if there is missing episodes
+        // Forces chapter transition if there is missing chapters
         val prevHasMissingChapters = calculateChapterGap(chapters.currChapter, chapters.prevChapter) > 0
         val nextHasMissingChapters = calculateChapterGap(chapters.nextChapter, chapters.currChapter) > 0
 
-        // Add previous episode pages and transition.
+        // Add previous chapter pages and transition.
         if (chapters.prevChapter != null) {
-            // We only need to add the last few pages of the previous episode, because it'll be
-            // selected as the current episode when one of those pages is selected.
+            // We only need to add the last few pages of the previous chapter, because it'll be
+            // selected as the current chapter when one of those pages is selected.
             val prevPages = chapters.prevChapter.pages
             if (prevPages != null) {
                 newItems.addAll(prevPages.takeLast(2))
             }
         }
 
-        // Skip transition page if the episode is loaded & current page is not a transition page
+        // Skip transition page if the chapter is loaded & current page is not a transition page
         if (prevHasMissingChapters || forceTransition || chapters.prevChapter?.state !is ReaderChapter.State.Loaded) {
             newItems.add(ChapterTransition.Prev(chapters.currChapter, chapters.prevChapter))
         }
 
-        // Add current episode.
+        // Add current chapter.
         val currPages = chapters.currChapter.pages
         if (currPages != null) {
             newItems.addAll(currPages)
@@ -71,13 +71,13 @@ class WebtoonAdapter(
 
         currentChapter = chapters.currChapter
 
-        // Add next episode transition and pages.
+        // Add next chapter transition and pages.
         if (nextHasMissingChapters || forceTransition || chapters.nextChapter?.state !is ReaderChapter.State.Loaded) {
             newItems.add(ChapterTransition.Next(chapters.currChapter, chapters.nextChapter))
         }
 
         if (chapters.nextChapter != null) {
-            // Add at most two pages, because this episode will be selected before the user can
+            // Add at most two pages, because this chapter will be selected before the user can
             // swap more pages.
             val nextPages = chapters.nextChapter.pages
             if (nextPages != null) {
@@ -208,11 +208,11 @@ class WebtoonAdapter(
 }
 
 /**
- * View holder type of a episode page view.
+ * View holder type of a chapter page view.
  */
 private const val PAGE_VIEW = 0
 
 /**
- * View holder type of a episode transition view.
+ * View holder type of a chapter transition view.
  */
 private const val TRANSITION_VIEW = 1

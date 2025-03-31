@@ -8,12 +8,11 @@ import eu.kanade.tachiyomi.network.asObservableSuccess
 import eu.kanade.tachiyomi.network.awaitSuccess
 import eu.kanade.tachiyomi.network.newCachelessCallWithProgress
 import eu.kanade.tachiyomi.source.CatalogueSource
-import eu.kanade.tachiyomi.source.model.MangasPage
 import eu.kanade.tachiyomi.source.model.FilterList
+import eu.kanade.tachiyomi.source.model.MangasPage
 import eu.kanade.tachiyomi.source.model.Page
-import eu.kanade.tachiyomi.source.model.SManga
 import eu.kanade.tachiyomi.source.model.SChapter
-import eu.kanade.tachiyomi.source.model.Video
+import eu.kanade.tachiyomi.source.model.SManga
 import exh.log.maybeInjectEHLogger
 import kotlinx.coroutines.async
 import kotlinx.coroutines.coroutineScope
@@ -434,12 +433,12 @@ abstract class HttpSource : CatalogueSource {
     protected open fun chapterPageParse(response: Response): SChapter = throw UnsupportedOperationException("Not used!")
 
     /**
-     * Get the list of videos a episode has. Videos should be returned
+     * Get the list of pages a episode has. Pages should be returned
      * in the expected order; the index is ignored.
      * Normally it's not needed to override this method.
      *
      * @param episode the episode.
-     * @return the videos for the episode.
+     * @return the pages for the episode.
      */
     override suspend fun getPageList(chapter: SChapter): List<Page> {
         @Suppress("DEPRECATION")
@@ -447,12 +446,12 @@ abstract class HttpSource : CatalogueSource {
     }
 
     /**
-     * Returns an observable with the video list for a episode.
+     * Returns an observable with the page list for a episode.
      * Normally it's not needed to override this method.
      *
-     * @param episode the episode whose video list has to be fetched.
+     * @param episode the episode whose page list has to be fetched.
      */
-    @Deprecated("Use the non-RxJava API instead", replaceWith = ReplaceWith("getVideoList(episode)"))
+    @Deprecated("Use the non-RxJava API instead", replaceWith = ReplaceWith("getPageList(episode)"))
     open fun fetchPageList(chapter: SChapter): Observable<List<Page>> {
         return client.newCall(this.pageListRequest(chapter))
             .asObservableSuccess()
@@ -462,18 +461,18 @@ abstract class HttpSource : CatalogueSource {
     }
 
     /**
-     * Returns the request for getting the video list. Override only if it's needed to override the
+     * Returns the request for getting the page list. Override only if it's needed to override the
      * url, send different headers or request method like POST.
      * Normally it's not needed to override this method.
      *
-     * @param episode the episode whose video list has to be fetched.
+     * @param episode the episode whose page list has to be fetched.
      */
     protected open fun pageListRequest(chapter: SChapter): Request {
         return GET(baseUrl + chapter.url, headers)
     }
 
     /**
-     * Parses the response from the site and returns a list of videos.
+     * Parses the response from the site and returns a list of pages.
      *
      * @param response the response from the site.
      */
@@ -484,36 +483,34 @@ abstract class HttpSource : CatalogueSource {
      * Normally it's not needed to override this method.
      *
      * @since extensions-lib 1.5
-     * @param video the video whose source image has to be fetched.
+     * @param page the page whose source image has to be fetched.
      */
     @Suppress("DEPRECATION")
     open suspend fun getImageUrl(page: Page): String {
-        return fetchVideoUrl(page).awaitSingle()
+        return fetchImageUrl(page).awaitSingle()
     }
 
     /**
-     * Returns an observable with the video containing the source url of the image. If there's any
+     * Returns an observable with the page containing the source url of the image. If there's any
      * error, it will return null instead of throwing an exception.
      * Normally it's not needed to override this method.
      *
-     * @param video the video whose source URL has to be fetched.
+     * @param page the page whose source URL has to be fetched.
      */
-    @Deprecated("Use the non-RxJava API instead", replaceWith = ReplaceWith("getVideoUrl(video)"))
-    open fun fetchVideoUrl(video: Video): Observable<String> = fetchImageUrl(video)
+    @Deprecated("Use the non-RxJava API instead", replaceWith = ReplaceWith("getPageUrl(page)"))
     open fun fetchImageUrl(page: Page): Observable<String> {
-        return client.newCall(videoUrlRequest(page))
+        return client.newCall(pageUrlRequest(page))
             .asObservableSuccess()
-            .map { videoUrlParse(it) }
+            .map { pageUrlParse(it) }
     }
 
     /**
-     * Returns the request for getting the url to the source video. Override only if it's needed to
+     * Returns the request for getting the url to the source page. Override only if it's needed to
      * override the url, send different headers or request method like POST.
      * Normally it's not needed to override this method.
      *
-     * @param video the video whose source URL has to be fetched
+     * @param page the page whose source URL has to be fetched
      */
-    protected open fun videoUrlRequest(video: Video): Request = pageUrlRequest(video)
     protected open fun pageUrlRequest(page: Page): Request {
         return GET(page.url, headers)
     }
@@ -523,31 +520,30 @@ abstract class HttpSource : CatalogueSource {
      *
      * @param response the response from the site.
      */
-    protected open fun videoUrlParse(response: Response): String = imageUrlParse(response)
+    protected open fun pageUrlParse(response: Response): String = imageUrlParse(response)
     protected open fun imageUrlParse(response: Response): String = throw UnsupportedOperationException()
 
     /**
-     * Returns the response of the source video.
+     * Returns the response of the source page.
      * Normally it's not needed to override this method.
      *
      * @since extensions-lib 1.5
-     * @param video the video whose source URL has to be downloaded.
+     * @param page the page whose source URL has to be downloaded.
      */
-    open suspend fun getVideo(video: Video): Response = getImage(video)
     open suspend fun getImage(page: Page): Response {
         return client.newCachelessCallWithProgress(this.imageRequest(page), page)
             .awaitSuccess()
     }
 
     /**
-     * Returns the request for getting the source video. Override only if it's needed to override
+     * Returns the request for getting the source page. Override only if it's needed to override
      * the url, send different headers or request method like POST.
      * Normally it's not needed to override this method.
      *
-     * @param video the video whose URL has to be fetched
+     * @param page the page whose URL has to be fetched
      */
     protected open fun imageRequest(page: Page): Request {
-        return GET(page.videoUrl!!, headers)
+        return GET(page.pageUrl!!, headers)
     }
 
     /**

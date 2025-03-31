@@ -281,6 +281,6 @@ class DownloadQueueScreenModel(
      * @return the holder of the download or null if it's not bound.
      */
     private fun getHolder(download: Download): DownloadHolder? {
-        return controllerBinding.root.findViewHolderForItemId(download.episode.id) as? DownloadHolder
+        return controllerBinding.root.findViewHolderForItemId(download.chapter.id) as? DownloadHolder
     }
 }

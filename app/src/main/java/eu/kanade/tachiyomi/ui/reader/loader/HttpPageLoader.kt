@@ -29,7 +29,7 @@ import java.util.concurrent.atomic.AtomicInteger
 import kotlin.math.min
 
 /**
- * Loader used to load episodes from an online source.
+ * Loader used to load chapters from an online source.
  */
 @OptIn(DelicateCoroutinesApi::class)
 internal class HttpPageLoader(
@@ -76,7 +76,7 @@ internal class HttpPageLoader(
     override var isLocal: Boolean = false
 
     /**
-     * Returns the page list for a episode. It tries to return the page list from the local cache,
+     * Returns the page list for a chapter. It tries to return the page list from the local cache,
      * otherwise fallbacks to network.
      */
     override suspend fun getPages(): List<ReaderPage> {
@@ -91,7 +91,7 @@ internal class HttpPageLoader(
         // SY -->
         val rp = pages.mapIndexed { index, page ->
             // Don't trust sources and use our own indexing
-            ReaderPage(index, page.url, page.videoUrl)
+            ReaderPage(index, page.url, page.pageUrl)
         }
         if (readerPreferences.aggressivePageLoading().get()) {
             rp.forEach {
@@ -108,7 +108,7 @@ internal class HttpPageLoader(
      * Loads a page through the queue. Handles re-enqueueing pages if they were evicted from the cache.
      */
     override suspend fun loadPage(page: ReaderPage) = withIOContext {
-        val imageUrl = page.videoUrl
+        val imageUrl = page.pageUrl
 
         // Check if the image has been deleted
         if (page.status == Page.State.READY && imageUrl != null && !episodeCache.isImageInCache(imageUrl)) {
@@ -159,12 +159,12 @@ internal class HttpPageLoader(
         scope.cancel()
         queue.clear()
 
-        // Cache current page list progress for online episodes to allow a faster reopen
+        // Cache current page list progress for online chapters to allow a faster reopen
         chapter.pages?.let { pages ->
             launchIO {
                 try {
                     // Convert to pages without reader information
-                    val pagesToSave = pages.map { Page(it.index, it.url, it.videoUrl) }
+                    val pagesToSave = pages.map { Page(it.index, it.url, it.pageUrl) }
                     episodeCache.putPageListToCache(chapter.episode.toDomainEpisode()!!, pagesToSave)
                 } catch (e: Throwable) {
                     if (e is CancellationException) {
@@ -198,17 +198,17 @@ internal class HttpPageLoader(
 
     /**
      * Loads the page, retrieving the image URL and downloading the image if necessary.
-     * Downloaded images are stored in the episode cache.
+     * Downloaded images are stored in the chapter cache.
      *
      * @param page the page whose source image has to be downloaded.
      */
     private suspend fun internalLoadPage(page: ReaderPage) {
         try {
-            if (page.videoUrl.isNullOrEmpty()) {
+            if (page.pageUrl.isNullOrEmpty()) {
                 page.status = Page.State.LOAD_PAGE
-                page.videoUrl = source.getImageUrl(page)
+                page.pageUrl = source.getImageUrl(page)
             }
-            val imageUrl = page.videoUrl!!
+            val imageUrl = page.pageUrl!!
 
             if (!episodeCache.isImageInCache(imageUrl)) {
                 page.status = Page.State.DOWNLOAD_IMAGE

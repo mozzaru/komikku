@@ -58,7 +58,7 @@ class BangumiApi(
             authClient.newCall(POST("$API_URL/collection/${track.remote_id}/update", body = sbody))
                 .awaitSuccess()
 
-            // episode update
+            // chapter update
             val body = FormBody.Builder()
                 .add("watched_eps", track.last_episode_seen.toInt().toString())
                 .build()
@@ -114,7 +114,7 @@ class BangumiApi(
                 .get()
                 .build()
 
-            // TODO: get user readed episode here
+            // TODO: get user readed chapter here
             with(json) {
                 authClient.newCall(requestUserRead)
                     .awaitSuccess()

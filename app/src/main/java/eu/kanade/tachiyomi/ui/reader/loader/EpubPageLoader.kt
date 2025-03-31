@@ -5,7 +5,7 @@ import eu.kanade.tachiyomi.ui.reader.model.ReaderPage
 import mihon.core.archive.EpubReader
 
 /**
- * Loader used to load a episode from a .epub file.
+ * Loader used to load a chapter from a .epub file.
  */
 internal class EpubPageLoader(private val reader: EpubReader) : PageLoader() {
 

@@ -51,12 +51,12 @@ interface Source {
     suspend fun getChapterList(manga: SManga): List<SChapter> = throw UnsupportedOperationException()
 
     /**
-     * Get the list of videos a episode has. Videos should be returned
+     * Get the list of pages a episode has. Pages should be returned
      * in the expected order; the index is ignored.
      *
      * @since komikku/extensions-lib 1.7
      * @param episode the episode.
-     * @return the videos for the episode.
+     * @return the pages for the episode.
      */
     suspend fun getPageList(chapter: SChapter): List<Page> = throw UnsupportedOperationException()
 

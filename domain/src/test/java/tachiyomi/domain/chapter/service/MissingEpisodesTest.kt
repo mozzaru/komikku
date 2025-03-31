@@ -4,7 +4,7 @@ import io.kotest.matchers.shouldBe
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.parallel.Execution
 import org.junit.jupiter.api.parallel.ExecutionMode
-import tachiyomi.domain.chapter.model.Episode
+import tachiyomi.domain.chapter.model.Chapter
 
 @Execution(ExecutionMode.CONCURRENT)
 class MissingEpisodesTest {
@@ -51,7 +51,7 @@ class MissingEpisodesTest {
         calculateEpisodeGap(99.0, -1.0) shouldBe 0
     }
 
-    private fun episode(number: Double) = Episode.create().copy(
+    private fun episode(number: Double) = Chapter.create().copy(
         episodeNumber = number,
     )
 }

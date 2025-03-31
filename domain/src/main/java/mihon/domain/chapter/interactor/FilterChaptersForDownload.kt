@@ -4,7 +4,7 @@ import exh.source.MERGED_SOURCE_ID
 import tachiyomi.domain.category.interactor.GetCategories
 import tachiyomi.domain.chapter.interactor.GetChaptersByMangaId
 import tachiyomi.domain.chapter.interactor.GetMergedChaptersByMangaId
-import tachiyomi.domain.chapter.model.Episode
+import tachiyomi.domain.chapter.model.Chapter
 import tachiyomi.domain.download.service.DownloadPreferences
 import tachiyomi.domain.manga.model.Manga
 
@@ -27,19 +27,19 @@ class FilterChaptersForDownload(
      * This should check if user preferences & manga's categories allowed to download
      *
      * @param manga The manga for which chapters may be downloaded.
-     * @param newEpisodes The list of new chapters available for the manga.
+     * @param newChapters The list of new chapters available for the manga.
      * @return A list of chapters that should be downloaded
      */
-    suspend fun await(manga: Manga, newEpisodes: List<Episode>): List<Episode> {
+    suspend fun await(manga: Manga, newChapters: List<Chapter>): List<Chapter> {
         if (
-            newEpisodes.isEmpty() ||
+            newChapters.isEmpty() ||
             !downloadPreferences.downloadNewChapters().get() ||
             !manga.shouldDownloadNewChapters()
         ) {
             return emptyList()
         }
 
-        if (!downloadPreferences.downloadNewUnreadChaptersOnly().get()) return newEpisodes
+        if (!downloadPreferences.downloadNewUnreadChaptersOnly().get()) return newChapters
 
         // SY -->
         val existingChapters = if (manga.source == MERGED_SOURCE_ID) {
@@ -55,7 +55,7 @@ class FilterChaptersForDownload(
             .map { it.episodeNumber }
             .toSet()
 
-        return newEpisodes.filterNot { it.episodeNumber in readChapterNumbers }
+        return newChapters.filterNot { it.episodeNumber in readChapterNumbers }
     }
 
     /**

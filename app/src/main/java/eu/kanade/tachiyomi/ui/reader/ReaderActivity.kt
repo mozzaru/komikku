@@ -155,7 +155,7 @@ class ReaderActivity : BaseActivity() {
         fun newIntent(context: Context, mangaId: Long?, chapterId: Long?/* SY --> */, page: Int? = null/* SY <-- */): Intent {
             return Intent(context, ReaderActivity::class.java).apply {
                 putExtra("manga", mangaId)
-                putExtra("episode", chapterId)
+                putExtra("chapter", chapterId)
                 // SY -->
                 putExtra("page", page)
                 // SY <--
@@ -224,7 +224,7 @@ class ReaderActivity : BaseActivity() {
 
         if (viewModel.needsInit()) {
             val manga = intent.extras?.getLong("manga", -1) ?: -1L
-            val chapter = intent.extras?.getLong("episode", -1) ?: -1L
+            val chapter = intent.extras?.getLong("chapter", -1) ?: -1L
             // SY -->
             val page = intent.extras?.getInt("page", -1).takeUnless { it == -1 }
             // SY <--
@@ -679,8 +679,8 @@ class ReaderActivity : BaseActivity() {
                         onBookmark = { chapter ->
                             viewModel.toggleBookmark(chapter.id, !chapter.bookmark)
                             chapters = chapters.map {
-                                if (it.episode.id == chapter.id) {
-                                    it.copy(episode = chapter.copy(bookmark = !chapter.bookmark))
+                                if (it.chapter.id == chapter.id) {
+                                    it.copy(chapter = chapter.copy(bookmark = !chapter.bookmark))
                                 } else {
                                     it
                                 }
@@ -1057,7 +1057,7 @@ class ReaderActivity : BaseActivity() {
     /**
      * Called from the presenter whenever a new [viewerChapters] have been set. It delegates the
      * method to the current viewer, but also set the subtitle on the toolbar, and
-     * hides or disables the reader prev/next buttons if there's a prev or next episode
+     * hides or disables the reader prev/next buttons if there's a prev or next chapter
      */
     @SuppressLint("RestrictedApi")
     private fun setChapters(viewerChapters: ViewerChapters) {
@@ -1094,7 +1094,7 @@ class ReaderActivity : BaseActivity() {
     }
 
     /**
-     * Called from the presenter if the initial load couldn't load the pages of the episode. In
+     * Called from the presenter if the initial load couldn't load the pages of the chapter. In
      * this case the activity is closed and a toast is shown to the user.
      */
     private fun setInitialChapterError(error: Throwable) {
@@ -1104,10 +1104,10 @@ class ReaderActivity : BaseActivity() {
     }
 
     /**
-     * Called from the presenter whenever it's loading the next or previous episode. It shows or
+     * Called from the presenter whenever it's loading the next or previous chapter. It shows or
      * dismisses a non-cancellable dialog to prevent user interaction according to the value of
      * [show]. This is only used when the next/previous buttons on the toolbar are clicked; the
-     * other cases are handled with episode transitions on the viewers and episode preloading.
+     * other cases are handled with chapter transitions on the viewers and chapter preloading.
      */
     private fun setProgressDialog(show: Boolean) {
         if (show) {
@@ -1129,7 +1129,7 @@ class ReaderActivity : BaseActivity() {
     }
 
     /**
-     * Tells the presenter to load the next episode and mark it as active. The progress dialog
+     * Tells the presenter to load the next chapter and mark it as active. The progress dialog
      * should be automatically shown.
      */
     private fun loadNextChapter() {
@@ -1140,7 +1140,7 @@ class ReaderActivity : BaseActivity() {
     }
 
     /**
-     * Tells the presenter to load the previous episode and mark it as active. The progress dialog
+     * Tells the presenter to load the previous chapter and mark it as active. The progress dialog
      * should be automatically shown.
      */
     private fun loadPreviousChapter() {
@@ -1185,7 +1185,7 @@ class ReaderActivity : BaseActivity() {
 
     /**
      * Called from the viewer when the given [chapter] should be preloaded. It should be called when
-     * the viewer is reaching the beginning or end of a episode or the transition page is active.
+     * the viewer is reaching the beginning or end of a chapter or the transition page is active.
      */
     fun requestPreloadChapter(chapter: ReaderChapter) {
         lifecycleScope.launchIO { viewModel.preload(chapter) }

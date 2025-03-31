@@ -83,7 +83,7 @@ import tachiyomi.domain.category.interactor.SetMangaCategories
 import tachiyomi.domain.category.model.Category
 import tachiyomi.domain.chapter.interactor.GetChaptersByMangaId
 import tachiyomi.domain.chapter.interactor.GetMergedChaptersByMangaId
-import tachiyomi.domain.chapter.model.Episode
+import tachiyomi.domain.chapter.model.Chapter
 import tachiyomi.domain.history.interactor.GetNextEpisodes
 import tachiyomi.domain.library.model.LibraryManga
 import tachiyomi.domain.library.model.LibraryDisplayMode
@@ -650,7 +650,7 @@ class LibraryScreenModel(
             .reduce { set1, set2 -> set1.intersect(set2) }
     }
 
-    suspend fun getNextUnreadChapter(manga: Manga): Episode? {
+    suspend fun getNextUnreadChapter(manga: Manga): Chapter? {
         // SY -->
         val mergedManga = getMergedAnimeById.await(manga.id).associateBy { it.id }
         return if (manga.id == MERGED_SOURCE_ID) {
@@ -687,7 +687,7 @@ class LibraryScreenModel(
     }
 
     /**
-     * Queues the amount specified of unread episodes from the list of mangas given.
+     * Queues the amount specified of unread chapters from the list of mangas given.
      *
      * @param mangas the list of manga.
      * @param amount the amount to queue or null to queue all
@@ -705,7 +705,7 @@ class LibraryScreenModel(
                         .forEach ab@{ (mangaId, chapters) ->
                             val mergedManga = mergedMangas[mangaId] ?: return@ab
                             val downloadChapters = chapters.fastFilterNot { chapter ->
-                                downloadManager.queueState.value.fastAny { chapter.id == it.episode.id } ||
+                                downloadManager.queueState.value.fastAny { chapter.id == it.chapter.id } ||
                                     downloadManager.isEpisodeDownloaded(
                                         chapter.name,
                                         chapter.scanlator,
@@ -762,7 +762,7 @@ class LibraryScreenModel(
     // SY <--
 
     /**
-     * Marks mangas' episodes read status.
+     * Marks mangas' chapters read status.
      */
     fun markReadSelection(read: Boolean) {
         val mangas = state.value.selection.toList()
@@ -782,7 +782,7 @@ class LibraryScreenModel(
      *
      * @param mangaList the list of manga to delete.
      * @param deleteFromLibrary whether to delete manga from library.
-     * @param deleteChapters whether to delete downloaded episodes.
+     * @param deleteChapters whether to delete downloaded chapters.
      */
     fun removeMangas(mangaList: List<Manga>, deleteFromLibrary: Boolean, deleteChapters: Boolean) {
         screenModelScope.launchNonCancellable {
@@ -1135,8 +1135,8 @@ class LibraryScreenModel(
     }
 
     // SY -->
-    /** Returns first unread episode of a manga */
-    suspend fun getFirstUnread(manga: Manga): Episode? {
+    /** Returns first unread chapter of a manga */
+    suspend fun getFirstUnread(manga: Manga): Chapter? {
         return getNextEpisodes.await(manga.id).firstOrNull()
     }
 

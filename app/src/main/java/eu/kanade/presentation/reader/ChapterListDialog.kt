@@ -21,7 +21,7 @@ import eu.kanade.tachiyomi.util.lang.toRelativeString
 import kotlinx.collections.immutable.ImmutableList
 import kotlinx.coroutines.flow.filter
 import kotlinx.coroutines.flow.map
-import tachiyomi.domain.chapter.model.Episode
+import tachiyomi.domain.chapter.model.Chapter
 import tachiyomi.domain.library.service.LibraryPreferences
 import tachiyomi.source.local.isLocal
 import uy.kohesive.injekt.Injekt
@@ -34,8 +34,8 @@ import java.time.ZoneId
 fun ChapterListDialog(
     onDismissRequest: () -> Unit,
     chapters: ImmutableList<ReaderChapterItem>,
-    onClickChapter: (Episode) -> Unit,
-    onBookmark: (Episode) -> Unit,
+    onClickChapter: (Chapter) -> Unit,
+    onBookmark: (Chapter) -> Unit,
     dateRelativeTime: Boolean,
 ) {
     val context = LocalContext.current
@@ -53,12 +53,12 @@ fun ChapterListDialog(
         ) {
             items(
                 items = chapters,
-                key = { "episode-list-${it.episode.id}" },
+                key = { "episode-list-${it.chapter.id}" },
             ) { chapterItem ->
-                val activeDownload = downloadQueueState.find { it.episode.id == chapterItem.episode.id }
+                val activeDownload = downloadQueueState.find { it.chapter.id == chapterItem.chapter.id }
                 val progress = activeDownload?.let {
                     downloadManager.progressFlow()
-                        .filter { it.episode.id == chapterItem.episode.id }
+                        .filter { it.chapter.id == chapterItem.chapter.id }
                         .map { it.progress }
                         .collectAsState(0).value
                 } ?: 0
@@ -66,8 +66,8 @@ fun ChapterListDialog(
                     true
                 } else {
                     downloadManager.isEpisodeDownloaded(
-                        chapterItem.episode.name,
-                        chapterItem.episode.scanlator,
+                        chapterItem.chapter.name,
+                        chapterItem.chapter.scanlator,
                         chapterItem.manga.ogTitle,
                         chapterItem.manga.source,
                     )
@@ -78,8 +78,8 @@ fun ChapterListDialog(
                     else -> Download.State.NOT_DOWNLOADED
                 }
                 AnimeEpisodeListItem(
-                    title = chapterItem.episode.name,
-                    date = chapterItem.episode.dateUpload
+                    title = chapterItem.chapter.name,
+                    date = chapterItem.chapter.dateUpload
                         .takeIf { it > 0L }
                         ?.let {
                             LocalDate.ofInstant(
@@ -88,10 +88,10 @@ fun ChapterListDialog(
                             ).toRelativeString(context, dateRelativeTime, chapterItem.dateFormat)
                         },
                     watchProgress = null,
-                    scanlator = chapterItem.episode.scanlator,
+                    scanlator = chapterItem.chapter.scanlator,
                     sourceName = null,
-                    seen = chapterItem.episode.seen,
-                    bookmark = chapterItem.episode.bookmark,
+                    seen = chapterItem.chapter.seen,
+                    bookmark = chapterItem.chapter.bookmark,
                     selected = false,
                     downloadIndicatorEnabled = false,
                     downloadStateProvider = { downloadState },
@@ -99,10 +99,10 @@ fun ChapterListDialog(
                     episodeSwipeStartAction = LibraryPreferences.EpisodeSwipeAction.ToggleBookmark,
                     episodeSwipeEndAction = LibraryPreferences.EpisodeSwipeAction.ToggleBookmark,
                     onLongClick = { /*TODO*/ },
-                    onClick = { onClickChapter(chapterItem.episode) },
+                    onClick = { onClickChapter(chapterItem.chapter) },
                     onDownloadClick = null,
                     onEpisodeSwipe = {
-                        onBookmark(chapterItem.episode)
+                        onBookmark(chapterItem.chapter)
                     },
                 )
             }

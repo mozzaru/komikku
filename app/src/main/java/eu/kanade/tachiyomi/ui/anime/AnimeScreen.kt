@@ -99,7 +99,7 @@ import tachiyomi.core.common.util.lang.withNonCancellableContext
 import tachiyomi.core.common.util.system.logcat
 import tachiyomi.domain.UnsortedPreferences
 import tachiyomi.domain.manga.model.Manga
-import tachiyomi.domain.chapter.model.Episode
+import tachiyomi.domain.chapter.model.Chapter
 import tachiyomi.domain.source.interactor.GetRemoteAnime
 import tachiyomi.domain.source.model.StubSource
 import tachiyomi.domain.source.service.SourceManager
@@ -402,7 +402,7 @@ class AnimeScreen(
                     onDismissRequest = onDismissRequest,
                     onConfirm = {
                         screenModel.toggleAllSelection(false)
-                        screenModel.deleteChapters(dialog.episodes)
+                        screenModel.deleteChapters(dialog.chapters)
                     },
                 )
             }
@@ -548,12 +548,12 @@ class AnimeScreen(
         }
     }
 
-    private fun continueReading(context: Context, unreadEpisode: Episode?) {
-        if (unreadEpisode != null) openChapter(context, unreadEpisode)
+    private fun continueReading(context: Context, unreadChapter: Chapter?) {
+        if (unreadChapter != null) openChapter(context, unreadChapter)
     }
 
-    private fun openChapter(context: Context, episode: Episode) {
-        context.startActivity(ReaderActivity.newIntent(context, episode.animeId, episode.id))
+    private fun openChapter(context: Context, chapter: Chapter) {
+        context.startActivity(ReaderActivity.newIntent(context, chapter.animeId, chapter.id))
     }
 
     @Suppress("LocalVariableName")

@@ -279,7 +279,7 @@ class SyncManager(
         for ((url, localEpisode) in localEpisodeMap) {
             val remoteEpisode = remoteEpisodeMap[url]
 
-            // If a matching remote episode doesn't exist, or the version numbers are different, consider them different
+            // If a matching remote chapter doesn't exist, or the version numbers are different, consider them different
             if (remoteEpisode == null || localEpisode.version != remoteEpisode.version) {
                 return true
             }

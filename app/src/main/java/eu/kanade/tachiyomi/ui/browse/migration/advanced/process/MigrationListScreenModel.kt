@@ -46,7 +46,7 @@ import tachiyomi.domain.category.interactor.GetCategories
 import tachiyomi.domain.category.interactor.SetMangaCategories
 import tachiyomi.domain.chapter.interactor.GetChaptersByMangaId
 import tachiyomi.domain.chapter.interactor.UpdateEpisode
-import tachiyomi.domain.chapter.model.Episode
+import tachiyomi.domain.chapter.model.Chapter
 import tachiyomi.domain.chapter.model.EpisodeUpdate
 import tachiyomi.domain.history.interactor.GetHistoryByAnimeId
 import tachiyomi.domain.history.interactor.UpsertHistory
@@ -344,11 +344,11 @@ class MigrationListScreenModel(
         if (prevManga.id == manga.id) return // Nothing to migrate
 
         val flags = preferences.migrateFlags().get()
-        // Update episodes read
+        // Update chapters read
         if (MigrationFlags.hasChapters(flags)) {
             val prevMangaChapters = getChaptersByMangaId.await(prevManga.id)
-            val maxEpisodeRead = prevMangaChapters.filter(Episode::seen)
-                .maxOfOrNull(Episode::episodeNumber)
+            val maxChapterRead = prevMangaChapters.filter(Chapter::seen)
+                .maxOfOrNull(Chapter::episodeNumber)
             val dbChapters = getChaptersByMangaId.await(manga.id)
             val prevHistoryList = getHistoryByAnimeId.await(prevManga.id)
 
@@ -375,7 +375,7 @@ class MigrationListScreenModel(
                                 prevHistory.watchDuration,
                             )
                         }
-                    } else if (maxEpisodeRead != null && chapter.episodeNumber <= maxEpisodeRead) {
+                    } else if (maxChapterRead != null && chapter.episodeNumber <= maxChapterRead) {
                         episodeUpdates += EpisodeUpdate(
                             id = chapter.id,
                             seen = true,

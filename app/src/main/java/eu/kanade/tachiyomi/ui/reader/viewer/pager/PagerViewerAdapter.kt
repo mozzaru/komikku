@@ -38,7 +38,7 @@ class PagerViewerAdapter(
     private var subItems: MutableList<ReaderItem> = mutableListOf()
 
     /**
-     * Holds preprocessed items so they don't get removed when changing episode
+     * Holds preprocessed items so they don't get removed when changing chapter
      */
     private var preprocessed: MutableMap<Int, InsertPage> = mutableMapOf()
 
@@ -64,34 +64,34 @@ class PagerViewerAdapter(
 
     /**
      * Updates this adapter with the given [chapters]. It handles setting a few pages of the
-     * next/previous episode to allow seamless transitions and inverting the pages if the viewer
+     * next/previous chapter to allow seamless transitions and inverting the pages if the viewer
      * has R2L direction.
      */
     fun setChapters(chapters: ViewerChapters, forceTransition: Boolean) {
         val newItems = mutableListOf<ReaderItem>()
 
-        // Forces episode transition if there is missing episodes
+        // Forces chapter transition if there is missing chapters
         val prevHasMissingChapters = calculateChapterGap(chapters.currChapter, chapters.prevChapter) > 0
         val nextHasMissingChapters = calculateChapterGap(chapters.nextChapter, chapters.currChapter) > 0
 
-        // Add previous episode pages and transition.
+        // Add previous chapter pages and transition.
         if (chapters.prevChapter != null) {
-            // We only need to add the last few pages of the previous episode, because it'll be
-            // selected as the current episode when one of those pages is selected.
+            // We only need to add the last few pages of the previous chapter, because it'll be
+            // selected as the current chapter when one of those pages is selected.
             val prevPages = chapters.prevChapter.pages
             if (prevPages != null) {
                 newItems.addAll(prevPages.takeLast(2))
             }
         }
 
-        // Skip transition page if the episode is loaded & current page is not a transition page
+        // Skip transition page if the chapter is loaded & current page is not a transition page
         if (prevHasMissingChapters || forceTransition || chapters.prevChapter?.state !is ReaderChapter.State.Loaded) {
             newItems.add(ChapterTransition.Prev(chapters.currChapter, chapters.prevChapter))
         }
 
         var insertPageLastPage: InsertPage? = null
 
-        // Add current episode.
+        // Add current chapter.
         val currPages = chapters.currChapter.pages
         if (currPages != null) {
             val pages = currPages.toMutableList()
@@ -112,7 +112,7 @@ class PagerViewerAdapter(
 
         currentChapter = chapters.currChapter
 
-        // Add next episode transition and pages.
+        // Add next chapter transition and pages.
         nextTransition = ChapterTransition.Next(chapters.currChapter, chapters.nextChapter)
             .also {
                 if (
@@ -125,7 +125,7 @@ class PagerViewerAdapter(
             }
 
         if (chapters.nextChapter != null) {
-            // Add at most two pages, because this episode will be selected before the user can
+            // Add at most two pages, because this chapter will be selected before the user can
             // swap more pages.
             val nextPages = chapters.nextChapter.pages
             if (nextPages != null) {
@@ -210,7 +210,7 @@ class PagerViewerAdapter(
 
         val currentIndex = joinedItems.indexOfFirst { it.first == currentPage }
 
-        // Put aside preprocessed pages for next episode so they don't get removed when changing episode
+        // Put aside preprocessed pages for next chapter so they don't get removed when changing chapter
         if (currentPage.chapter.episode.id != currentChapter?.episode?.id) {
             preprocessed[newPage.index] = newPage
             return
@@ -363,8 +363,8 @@ class PagerViewerAdapter(
         // Step 6: Move back to our previous page or transition page
         // The listener is likely off around now, but either way when shifting or doubling,
         // we need to set the page back correctly
-        // We will however shift to the first page of the new episode if the last page we were are
-        // on is not in the new episode that has loaded
+        // We will however shift to the first page of the new chapter if the last page we were are
+        // on is not in the new chapter that has loaded
         val newPage = when {
             oldCurrent?.first is ReaderPage &&
                 (oldCurrent.first as ReaderPage).chapter != currentChapter &&
@@ -402,7 +402,7 @@ class PagerViewerAdapter(
         setJoinedItems(oldSecondPage == current || (current.index + 1) < (oldPage?.index ?: 0))
 
         // The listener may be removed when we split a page, so the ui may not have updated properly
-        // This case usually happens when we load a new episode and the first 2 pages need to split og
+        // This case usually happens when we load a new chapter and the first 2 pages need to split og
         viewer.scope.launchUI {
             delay(100)
             viewer.onPageChange(viewer.pager.currentItem)

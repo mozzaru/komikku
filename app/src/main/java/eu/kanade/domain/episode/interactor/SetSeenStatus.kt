@@ -14,7 +14,7 @@ import tachiyomi.domain.manga.model.Manga
 import tachiyomi.domain.manga.repository.MangaRepository
 import tachiyomi.domain.download.service.DownloadPreferences
 import tachiyomi.domain.chapter.interactor.GetMergedChaptersByMangaId
-import tachiyomi.domain.chapter.model.Episode
+import tachiyomi.domain.chapter.model.Chapter
 import tachiyomi.domain.chapter.model.EpisodeUpdate
 import tachiyomi.domain.chapter.repository.ChapterRepository
 
@@ -28,35 +28,35 @@ class SetSeenStatus(
     // SY <--
 ) {
 
-    private val mapper = { episode: Episode, seen: Boolean ->
+    private val mapper = { chapter: Chapter, seen: Boolean ->
         EpisodeUpdate(
             seen = seen,
             lastSecondSeen = if (!seen) 0 else null,
-            id = episode.id,
+            id = chapter.id,
         )
     }
 
     /**
-     * Mark episodes as seen/unseen, also delete downloaded episodes if 'After manually marked as seen' is set.
+     * Mark chapters as seen/unseen, also delete downloaded chapters if 'After manually marked as seen' is set.
      *
      * Called from:
      *  - [LibraryScreenModel]: Manually select animes & mark as seen
-     *  - [AnimeScreenModel.markEpisodesSeen]: Manually select episodes & mark as seen or swipe episode as seen
-     *  - [UpdatesScreenModel.markUpdatesSeen]: Manually select episodes & mark as seen
-     *  - [LibraryUpdateJob.updateEpisodeList]: when a anime is updated and has new episode but already seen,
-     *  it will mark that new **duplicated** episode as seen & delete downloading/downloaded -> should be treat as
+     *  - [AnimeScreenModel.markEpisodesSeen]: Manually select chapters & mark as seen or swipe chapter as seen
+     *  - [UpdatesScreenModel.markUpdatesSeen]: Manually select chapters & mark as seen
+     *  - [LibraryUpdateJob.updateEpisodeList]: when a anime is updated and has new chapter but already seen,
+     *  it will mark that new **duplicated** chapter as seen & delete downloading/downloaded -> should be treat as
      *  automatically ~ no auto delete
-     *  - [ReaderViewModel.updateChapterProgress]: mark **duplicated** episode as seen after finish watching -> should be
-     *  treated as not manually mark as seen so not auto-delete (there are cases where episode number is mistaken by volume number)
+     *  - [ReaderViewModel.updateChapterProgress]: mark **duplicated** chapter as seen after finish watching -> should be
+     *  treated as not manually mark as seen so not auto-delete (there are cases where chapter number is mistaken by volume number)
      */
     suspend fun await(
         seen: Boolean,
-        vararg episodes: Episode,
+        vararg chapters: Chapter,
         // KMK -->
         manually: Boolean = true,
         // KMK <--
     ): Result = withNonCancellableContext {
-        val episodesToUpdate = episodes.filter {
+        val episodesToUpdate = chapters.filter {
             when (seen) {
                 true -> !it.seen
                 false -> it.seen || it.lastSecondSeen > 0
@@ -90,7 +90,7 @@ class SetSeenStatus(
                 .forEach { (animeId, episodes) ->
                     deleteDownload.awaitAll(
                         manga = mangaRepository.getMangaById(animeId),
-                        episodes = episodes.toTypedArray(),
+                        chapters = episodes.toTypedArray(),
                     )
                 }
         }
@@ -101,7 +101,7 @@ class SetSeenStatus(
     suspend fun await(animeId: Long, seen: Boolean): Result = withNonCancellableContext {
         await(
             seen = seen,
-            episodes = chapterRepository
+            chapters = chapterRepository
                 .getEpisodeByAnimeId(animeId)
                 .toTypedArray(),
         )
@@ -111,7 +111,7 @@ class SetSeenStatus(
     private suspend fun awaitMerged(animeId: Long, seen: Boolean) = withNonCancellableContext f@{
         return@f await(
             seen = seen,
-            episodes = getMergedChaptersByMangaId
+            chapters = getMergedChaptersByMangaId
                 .await(animeId, dedupe = false)
                 .toTypedArray(),
         )

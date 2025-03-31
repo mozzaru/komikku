@@ -167,7 +167,7 @@ class LibraryPreferences(
 
     // endregion
 
-    // region Episode
+    // region Chapter
 
     fun filterChapterByRead() = preferenceStore.getLong(
         "default_chapter_filter_by_read",

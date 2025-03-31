@@ -25,7 +25,7 @@ import tachiyomi.core.common.i18n.stringResource
 import tachiyomi.i18n.MR
 
 /**
- * View of the ViewPager that contains a episode transition.
+ * View of the ViewPager that contains a chapter transition.
  */
 @SuppressLint("ViewConstructor")
 class PagerTransitionHolder(
@@ -85,7 +85,7 @@ class PagerTransitionHolder(
     }
 
     /**
-     * Observes the status of the page list of the next/previous episode. Whenever there's a new
+     * Observes the status of the page list of the next/previous chapter. Whenever there's a new
      * state, the pages container is cleaned up before setting the new state.
      */
     private fun observeStatus(chapter: ReaderChapter) {

@@ -32,7 +32,7 @@ import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.flow.receiveAsFlow
 import tachiyomi.core.common.i18n.stringResource
-import tachiyomi.domain.chapter.model.Episode
+import tachiyomi.domain.chapter.model.Chapter
 import tachiyomi.i18n.MR
 import tachiyomi.presentation.core.i18n.stringResource
 import uy.kohesive.injekt.Injekt
@@ -123,7 +123,7 @@ data object HistoryTab : Tab {
                         snackbarHostState.showSnackbar(context.stringResource(MR.strings.internal_error))
                     HistoryScreenModel.Event.HistoryCleared ->
                         snackbarHostState.showSnackbar(context.stringResource(MR.strings.clear_history_completed))
-                    is HistoryScreenModel.Event.OpenChapter -> openChapter(context, e.episode)
+                    is HistoryScreenModel.Event.OpenChapter -> openChapter(context, e.chapter)
                 }
             }
         }
@@ -135,9 +135,9 @@ data object HistoryTab : Tab {
         }
     }
 
-    private suspend fun openChapter(context: Context, episode: Episode?) {
-        if (episode != null) {
-            val intent = ReaderActivity.newIntent(context, episode.animeId, episode.id)
+    private suspend fun openChapter(context: Context, chapter: Chapter?) {
+        if (chapter != null) {
+            val intent = ReaderActivity.newIntent(context, chapter.animeId, chapter.id)
             context.startActivity(intent)
         } else {
             snackbarHostState.showSnackbar(context.stringResource(MR.strings.no_next_chapter))

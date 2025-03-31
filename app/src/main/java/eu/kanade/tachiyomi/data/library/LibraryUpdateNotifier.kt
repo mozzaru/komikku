@@ -34,7 +34,7 @@ import tachiyomi.core.common.i18n.pluralStringResource
 import tachiyomi.core.common.i18n.stringResource
 import tachiyomi.core.common.util.lang.launchUI
 import tachiyomi.domain.manga.model.Manga
-import tachiyomi.domain.chapter.model.Episode
+import tachiyomi.domain.chapter.model.Chapter
 import tachiyomi.domain.library.model.LibraryManga
 import tachiyomi.domain.source.service.SourceManager
 import tachiyomi.i18n.MR
@@ -174,7 +174,7 @@ class LibraryUpdateNotifier(
      *
      * @param updates a list of manga with new updates.
      */
-    fun showUpdateNotifications(updates: List<Pair<Manga, Array<Episode>>>) {
+    fun showUpdateNotifications(updates: List<Pair<Manga, Array<Chapter>>>) {
         // Parent group notification
         context.notify(
             Notifications.ID_NEW_CHAPTERS,
@@ -230,12 +230,12 @@ class LibraryUpdateNotifier(
         }
     }
 
-    private suspend fun createNewChaptersNotification(manga: Manga, episodes: Array<Episode>): Notification {
+    private suspend fun createNewChaptersNotification(manga: Manga, chapters: Array<Chapter>): Notification {
         val icon = getMangaIcon(manga)
         return context.notificationBuilder(Notifications.CHANNEL_NEW_CHAPTERS) {
             setContentTitle(manga.title)
 
-            val description = getNewChaptersDescription(episodes)
+            val description = getNewChaptersDescription(chapters)
             setContentText(description)
             setStyle(NotificationCompat.BigTextStyle().bigText(description))
 
@@ -249,22 +249,22 @@ class LibraryUpdateNotifier(
             setGroupAlertBehavior(NotificationCompat.GROUP_ALERT_SUMMARY)
             priority = NotificationCompat.PRIORITY_HIGH
 
-            // Open first episode on tap
-            setContentIntent(NotificationReceiver.openChapterPendingActivity(context, manga, episodes.first()))
+            // Open first chapter on tap
+            setContentIntent(NotificationReceiver.openChapterPendingActivity(context, manga, chapters.first()))
             setAutoCancel(true)
 
-            // Mark episodes as read action
+            // Mark chapters as read action
             addAction(
                 R.drawable.ic_done_24dp,
                 context.stringResource(MR.strings.action_mark_as_read),
                 NotificationReceiver.markAsReadPendingBroadcast(
                     context,
                     manga,
-                    episodes,
+                    chapters,
                     Notifications.ID_NEW_CHAPTERS,
                 ),
             )
-            // View episodes action
+            // View chapters action
             addAction(
                 R.drawable.ic_book_24dp,
                 context.stringResource(MR.strings.action_view_chapters),
@@ -274,16 +274,16 @@ class LibraryUpdateNotifier(
                     Notifications.ID_NEW_CHAPTERS,
                 ),
             )
-            // Download episodes action
-            // Only add the action when episodes is within threshold
-            if (episodes.size <= Downloader.EPISODES_PER_SOURCE_QUEUE_WARNING_THRESHOLD) {
+            // Download chapters action
+            // Only add the action when chapters is within threshold
+            if (chapters.size <= Downloader.EPISODES_PER_SOURCE_QUEUE_WARNING_THRESHOLD) {
                 addAction(
                     android.R.drawable.stat_sys_download_done,
                     context.stringResource(MR.strings.action_download),
                     NotificationReceiver.downloadChaptersPendingBroadcast(
                         context,
                         manga,
-                        episodes,
+                        chapters,
                         Notifications.ID_NEW_CHAPTERS,
                     ),
                 )
@@ -308,34 +308,34 @@ class LibraryUpdateNotifier(
         return drawable?.getBitmapOrNull()
     }
 
-    private fun getNewChaptersDescription(episodes: Array<Episode>): String {
-        val displayableChapterNumbers = episodes
+    private fun getNewChaptersDescription(chapters: Array<Chapter>): String {
+        val displayableChapterNumbers = chapters
             .filter { it.isRecognizedNumber }
             .sortedBy { it.episodeNumber }
             .map { formatEpisodeNumber(it.episodeNumber) }
             .toSet()
 
         return when (displayableChapterNumbers.size) {
-            // No sensible episode numbers to show (i.e. no episodes have parsed episode number)
+            // No sensible chapter numbers to show (i.e. no chapters have parsed chapter number)
             0 -> {
-                // "1 new episode" or "5 new episodes"
+                // "1 new chapter" or "5 new chapters"
                 context.pluralStringResource(
                     MR.plurals.notification_chapters_generic,
-                    episodes.size,
-                    episodes.size,
+                    chapters.size,
+                    chapters.size,
                 )
             }
-            // Only 1 episode has a parsed episode number
+            // Only 1 chapter has a parsed chapter number
             1 -> {
-                val remaining = episodes.size - displayableChapterNumbers.size
+                val remaining = chapters.size - displayableChapterNumbers.size
                 if (remaining == 0) {
-                    // "Episode 2.5"
+                    // "Chapter 2.5"
                     context.stringResource(
                         MR.strings.notification_chapters_single,
                         displayableChapterNumbers.first(),
                     )
                 } else {
-                    // "Episode 2.5 and 10 more"
+                    // "Chapter 2.5 and 10 more"
                     context.stringResource(
                         MR.strings.notification_chapters_single_and_more,
                         displayableChapterNumbers.first(),
@@ -343,7 +343,7 @@ class LibraryUpdateNotifier(
                     )
                 }
             }
-            // Everything else (i.e. multiple parsed episode numbers)
+            // Everything else (i.e. multiple parsed chapter numbers)
             else -> {
                 val shouldTruncate = displayableChapterNumbers.size > NOTIF_MAX_CHAPTERS
                 if (shouldTruncate) {

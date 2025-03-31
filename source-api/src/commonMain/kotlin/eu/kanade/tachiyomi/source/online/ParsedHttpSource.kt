@@ -202,7 +202,7 @@ abstract class ParsedHttpSource : HttpSource() {
     protected abstract fun chapterFromElement(element: Element): SChapter
 
     /**
-     * Parses the response from the site and returns the video list.
+     * Parses the response from the site and returns the page list.
      * Normally it's not needed to override this method.
      *
      * @param response the response from the site.
@@ -212,28 +212,28 @@ abstract class ParsedHttpSource : HttpSource() {
     }
 
     /**
-     * Returns a video list from the given document.
+     * Returns a page list from the given document.
      *
      * @param document the parsed document.
      */
     protected abstract fun pageListParse(document: Document): List<Page>
 
     /**
-     * Parse the response from the site and returns the absolute url to the source video.
+     * Parse the response from the site and returns the absolute url to the source page.
      * Normally it's not needed to override this method.
      *
      * @param response the response from the site.
      */
-    override fun videoUrlParse(response: Response): String = imageUrlParse(response)
+    override fun pageUrlParse(response: Response): String = imageUrlParse(response)
     override fun imageUrlParse(response: Response): String {
-        return videoUrlParse(response.asJsoup())
+        return pageUrlParse(response.asJsoup())
     }
 
     /**
-     * Returns the absolute url to the source video from the document.
+     * Returns the absolute url to the source page from the document.
      *
      * @param document the parsed document.
      */
-    protected open fun videoUrlParse(document: Document): String = imageUrlParse(document)
+    protected open fun pageUrlParse(document: Document): String = imageUrlParse(document)
     protected abstract fun imageUrlParse(document: Document): String
 }

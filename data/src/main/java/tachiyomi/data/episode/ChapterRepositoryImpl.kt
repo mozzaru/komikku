@@ -5,7 +5,7 @@ import logcat.LogPriority
 import tachiyomi.core.common.util.lang.toLong
 import tachiyomi.core.common.util.system.logcat
 import tachiyomi.data.DatabaseHandler
-import tachiyomi.domain.chapter.model.Episode
+import tachiyomi.domain.chapter.model.Chapter
 import tachiyomi.domain.chapter.model.EpisodeUpdate
 import tachiyomi.domain.chapter.repository.ChapterRepository
 
@@ -13,10 +13,10 @@ class ChapterRepositoryImpl(
     private val handler: DatabaseHandler,
 ) : ChapterRepository {
 
-    override suspend fun addAll(episodes: List<Episode>): List<Episode> {
+    override suspend fun addAll(chapters: List<Chapter>): List<Chapter> {
         return try {
             handler.await(inTransaction = true) {
-                episodes.map { episode ->
+                chapters.map { episode ->
                     episodesQueries.insert(
                         episode.animeId,
                         episode.url,
@@ -88,7 +88,7 @@ class ChapterRepositoryImpl(
         }
     }
 
-    override suspend fun getEpisodeByAnimeId(animeId: Long, applyScanlatorFilter: Boolean): List<Episode> {
+    override suspend fun getEpisodeByAnimeId(animeId: Long, applyScanlatorFilter: Boolean): List<Chapter> {
         return handler.awaitList {
             episodesQueries.getEpisodesByAnimeId(animeId, applyScanlatorFilter.toLong(), ChapterMapper::mapChapter)
         }
@@ -106,7 +106,7 @@ class ChapterRepositoryImpl(
         }
     }
 
-    override suspend fun getBookmarkedEpisodesByAnimeId(animeId: Long): List<Episode> {
+    override suspend fun getBookmarkedEpisodesByAnimeId(animeId: Long): List<Chapter> {
         return handler.awaitList {
             episodesQueries.getBookmarkedEpisodesByAnimeId(
                 animeId,
@@ -116,22 +116,22 @@ class ChapterRepositoryImpl(
     }
 
     // AM (FILLERMARK) -->
-    override suspend fun getFillermarkedEpisodesByAnimeId(animeId: Long): List<Episode> {
+    override suspend fun getFillermarkedEpisodesByAnimeId(animeId: Long): List<Chapter> {
         return handler.awaitList { episodesQueries.getFillermarkedEpisodesByAnimeId(animeId, ChapterMapper::mapChapter) }
     }
     // <-- AM (FILLERMARK)
 
-    override suspend fun getEpisodeById(id: Long): Episode? {
+    override suspend fun getEpisodeById(id: Long): Chapter? {
         return handler.awaitOneOrNull { episodesQueries.getEpisodeById(id, ChapterMapper::mapChapter) }
     }
 
-    override suspend fun getEpisodeByAnimeIdAsFlow(animeId: Long, applyScanlatorFilter: Boolean): Flow<List<Episode>> {
+    override suspend fun getEpisodeByAnimeIdAsFlow(animeId: Long, applyScanlatorFilter: Boolean): Flow<List<Chapter>> {
         return handler.subscribeToList {
             episodesQueries.getEpisodesByAnimeId(animeId, applyScanlatorFilter.toLong(), ChapterMapper::mapChapter)
         }
     }
 
-    override suspend fun getEpisodeByUrlAndAnimeId(url: String, animeId: Long): Episode? {
+    override suspend fun getEpisodeByUrlAndAnimeId(url: String, animeId: Long): Chapter? {
         return handler.awaitOneOrNull {
             episodesQueries.getEpisodeByUrlAndAnimeId(
                 url,
@@ -142,11 +142,11 @@ class ChapterRepositoryImpl(
     }
 
     // SY -->
-    override suspend fun getEpisodeByUrl(url: String): List<Episode> {
+    override suspend fun getEpisodeByUrl(url: String): List<Chapter> {
         return handler.awaitList { episodesQueries.getEpisodeByUrl(url, ChapterMapper::mapChapter) }
     }
 
-    override suspend fun getMergedEpisodeByAnimeId(animeId: Long, applyScanlatorFilter: Boolean): List<Episode> {
+    override suspend fun getMergedEpisodeByAnimeId(animeId: Long, applyScanlatorFilter: Boolean): List<Chapter> {
         return handler.awaitList {
             episodesQueries.getMergedEpisodesByAnimeId(
                 animeId,
@@ -159,7 +159,7 @@ class ChapterRepositoryImpl(
     override suspend fun getMergedEpisodeByAnimeIdAsFlow(
         animeId: Long,
         applyScanlatorFilter: Boolean,
-    ): Flow<List<Episode>> {
+    ): Flow<List<Chapter>> {
         return handler.subscribeToList {
             episodesQueries.getMergedEpisodesByAnimeId(
                 animeId,

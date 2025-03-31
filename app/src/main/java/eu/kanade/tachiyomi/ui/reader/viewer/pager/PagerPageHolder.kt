@@ -32,7 +32,7 @@ import tachiyomi.decoder.ImageDecoder
 import kotlin.math.max
 
 /**
- * View of the ViewPager that contains a page of a episode.
+ * View of the ViewPager that contains a page of a chapter.
  */
 @SuppressLint("ViewConstructor")
 class PagerPageHolder(
@@ -450,7 +450,7 @@ class PagerPageHolder(
             }
         }
 
-        val imageUrl = page.videoUrl
+        val imageUrl = page.pageUrl
         errorLayout?.actionOpenInWebView?.isVisible = imageUrl != null
         if (imageUrl != null) {
             if (imageUrl.startsWith("http", true)) {

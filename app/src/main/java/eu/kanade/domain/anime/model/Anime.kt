@@ -10,7 +10,7 @@ import tachiyomi.core.common.preference.TriState
 import tachiyomi.core.metadata.comicinfo.ComicInfo
 import tachiyomi.core.metadata.comicinfo.ComicInfoPublishingStatus
 import tachiyomi.domain.manga.model.Manga
-import tachiyomi.domain.chapter.model.Episode
+import tachiyomi.domain.chapter.model.Chapter
 import uy.kohesive.injekt.Injekt
 import uy.kohesive.injekt.api.get
 
@@ -105,18 +105,18 @@ fun Manga.hasCustomCover(coverCache: CoverCache = Injekt.get()): Boolean {
 }
 
 /**
- * Creates a ComicInfo instance based on the anime and episode metadata.
+ * Creates a ComicInfo instance based on the anime and chapter metadata.
  */
 fun getComicInfo(
     manga: Manga,
-    episode: Episode,
+    chapter: Chapter,
     urls: List<String>,
     categories: List<String>?,
     sourceName: String,
 ) = ComicInfo(
-    title = ComicInfo.Title(episode.name),
+    title = ComicInfo.Title(chapter.name),
     series = ComicInfo.Series(manga.title),
-    number = episode.episodeNumber.takeIf { it >= 0 }?.let {
+    number = chapter.episodeNumber.takeIf { it >= 0 }?.let {
         if ((it.rem(1) == 0.0)) {
             ComicInfo.Number(it.toInt().toString())
         } else {
@@ -127,7 +127,7 @@ fun getComicInfo(
     summary = manga.description?.let { ComicInfo.Summary(it) },
     writer = manga.author?.let { ComicInfo.Writer(it) },
     penciller = manga.artist?.let { ComicInfo.Penciller(it) },
-    translator = episode.scanlator?.let { ComicInfo.Translator(it) },
+    translator = chapter.scanlator?.let { ComicInfo.Translator(it) },
     genre = manga.genre?.let { ComicInfo.Genre(it.joinToString()) },
     publishingStatus = ComicInfo.PublishingStatusTachiyomi(
         ComicInfoPublishingStatus.toComicInfoValue(manga.status),

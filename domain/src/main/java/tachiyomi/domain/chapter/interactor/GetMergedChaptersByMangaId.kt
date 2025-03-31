@@ -8,7 +8,7 @@ import logcat.LogPriority
 import tachiyomi.core.common.util.system.logcat
 import tachiyomi.domain.manga.interactor.GetMergedReferencesById
 import tachiyomi.domain.manga.model.MergedMangaReference
-import tachiyomi.domain.chapter.model.Episode
+import tachiyomi.domain.chapter.model.Chapter
 import tachiyomi.domain.chapter.repository.ChapterRepository
 
 class GetMergedChaptersByMangaId(
@@ -20,7 +20,7 @@ class GetMergedChaptersByMangaId(
         mangaId: Long,
         dedupe: Boolean = true,
         applyScanlatorFilter: Boolean = false,
-    ): List<Episode> {
+    ): List<Chapter> {
         return transformMergedChapters(
             getMergedReferencesById.await(mangaId),
             getFromDatabase(mangaId, applyScanlatorFilter),
@@ -32,7 +32,7 @@ class GetMergedChaptersByMangaId(
         mangaId: Long,
         dedupe: Boolean = true,
         applyScanlatorFilter: Boolean = false,
-    ): Flow<List<Episode>> {
+    ): Flow<List<Chapter>> {
         return try {
             chapterRepository.getMergedEpisodeByAnimeIdAsFlow(mangaId, applyScanlatorFilter)
                 .combine(getMergedReferencesById.subscribe(mangaId)) { chapters, references ->
@@ -47,7 +47,7 @@ class GetMergedChaptersByMangaId(
     private suspend fun getFromDatabase(
         mangaId: Long,
         applyScanlatorFilter: Boolean = false,
-    ): List<Episode> {
+    ): List<Chapter> {
         return try {
             chapterRepository.getMergedEpisodeByAnimeId(mangaId, applyScanlatorFilter)
         } catch (e: Exception) {
@@ -58,49 +58,49 @@ class GetMergedChaptersByMangaId(
 
     private fun transformMergedChapters(
         mangaReferences: List<MergedMangaReference>,
-        episodeList: List<Episode>,
+        chapterList: List<Chapter>,
         dedupe: Boolean,
-    ): List<Episode> {
-        return if (dedupe) dedupeChapterList(mangaReferences, episodeList) else episodeList
+    ): List<Chapter> {
+        return if (dedupe) dedupeChapterList(mangaReferences, chapterList) else chapterList
     }
 
     private fun dedupeChapterList(
         mangaReferences: List<MergedMangaReference>,
-        episodeList: List<Episode>,
-    ): List<Episode> {
+        chapterList: List<Chapter>,
+    ): List<Chapter> {
         return when (mangaReferences.firstOrNull { it.mangaSourceId == MERGED_SOURCE_ID }?.chapterSortMode) {
-            MergedMangaReference.EPISODE_SORT_NO_DEDUPE, MergedMangaReference.EPISODE_SORT_NONE -> episodeList
-            MergedMangaReference.EPISODE_SORT_PRIORITY -> dedupeByPriority(mangaReferences, episodeList)
+            MergedMangaReference.EPISODE_SORT_NO_DEDUPE, MergedMangaReference.EPISODE_SORT_NONE -> chapterList
+            MergedMangaReference.EPISODE_SORT_PRIORITY -> dedupeByPriority(mangaReferences, chapterList)
             MergedMangaReference.EPISODE_SORT_MOST_EPISODES -> {
-                findSourceWithMostChapters(episodeList)?.let { mangaId ->
-                    episodeList.filter { it.animeId == mangaId }
-                } ?: episodeList
+                findSourceWithMostChapters(chapterList)?.let { mangaId ->
+                    chapterList.filter { it.animeId == mangaId }
+                } ?: chapterList
             }
             MergedMangaReference.EPISODE_SORT_HIGHEST_EPISODE_NUMBER -> {
-                findSourceWithHighestChapterNumber(episodeList)?.let { mangaId ->
-                    episodeList.filter { it.animeId == mangaId }
-                } ?: episodeList
+                findSourceWithHighestChapterNumber(chapterList)?.let { mangaId ->
+                    chapterList.filter { it.animeId == mangaId }
+                } ?: chapterList
             }
-            else -> episodeList
+            else -> chapterList
         }
     }
 
-    private fun findSourceWithMostChapters(episodeList: List<Episode>): Long? {
-        return episodeList.groupBy { it.animeId }.maxByOrNull { it.value.size }?.key
+    private fun findSourceWithMostChapters(chapterList: List<Chapter>): Long? {
+        return chapterList.groupBy { it.animeId }.maxByOrNull { it.value.size }?.key
     }
 
-    private fun findSourceWithHighestChapterNumber(episodeList: List<Episode>): Long? {
-        return episodeList.maxByOrNull { it.episodeNumber }?.animeId
+    private fun findSourceWithHighestChapterNumber(chapterList: List<Chapter>): Long? {
+        return chapterList.maxByOrNull { it.episodeNumber }?.animeId
     }
 
     private fun dedupeByPriority(
         mangaReferences: List<MergedMangaReference>,
-        episodeList: List<Episode>,
-    ): List<Episode> {
-        val sortedEpisodeList = mutableListOf<Episode>()
+        chapterList: List<Chapter>,
+    ): List<Chapter> {
+        val sortedChapterList = mutableListOf<Chapter>()
 
         var existingChapterIndex: Int
-        episodeList.groupBy { it.animeId }
+        chapterList.groupBy { it.animeId }
             .entries
             .sortedBy { (mangaId) ->
                 mangaReferences.find { it.mangaId == mangaId }?.chapterPriority ?: Int.MAX_VALUE
@@ -110,7 +110,7 @@ class GetMergedChaptersByMangaId(
                 chapters.forEach { chapter ->
                     val oldChapterIndex = existingChapterIndex
                     if (chapter.isRecognizedNumber) {
-                        existingChapterIndex = sortedEpisodeList.indexOfFirst {
+                        existingChapterIndex = sortedChapterList.indexOfFirst {
                             // check if the chapter is not already there
                             it.isRecognizedNumber &&
                                 it.episodeNumber == chapter.episodeNumber &&
@@ -118,17 +118,17 @@ class GetMergedChaptersByMangaId(
                                 it.animeId != chapter.animeId
                         }
                         if (existingChapterIndex == -1) {
-                            sortedEpisodeList.add(oldChapterIndex + 1, chapter)
+                            sortedChapterList.add(oldChapterIndex + 1, chapter)
                             existingChapterIndex = oldChapterIndex + 1
                         }
                     } else {
-                        sortedEpisodeList.add(oldChapterIndex + 1, chapter)
+                        sortedChapterList.add(oldChapterIndex + 1, chapter)
                         existingChapterIndex = oldChapterIndex + 1
                     }
                 }
             }
 
-        return sortedEpisodeList.mapIndexed { index, chapter ->
+        return sortedChapterList.mapIndexed { index, chapter ->
             chapter.copy(sourceOrder = index.toLong())
         }
     }

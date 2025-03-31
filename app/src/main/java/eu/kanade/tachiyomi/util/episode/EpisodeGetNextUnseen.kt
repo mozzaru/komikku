@@ -4,16 +4,16 @@ import eu.kanade.domain.episode.model.applyFilters
 import eu.kanade.tachiyomi.data.download.DownloadManager
 import eu.kanade.tachiyomi.ui.anime.EpisodeList
 import tachiyomi.domain.manga.model.Manga
-import tachiyomi.domain.chapter.model.Episode
+import tachiyomi.domain.chapter.model.Chapter
 
 /**
- * Gets next unseen episode with filters and sorting applied
+ * Gets next unseen chapter with filters and sorting applied
  */
-fun List<Episode>.getNextUnseen(
+fun List<Chapter>.getNextUnseen(
     manga: Manga,
     downloadManager: DownloadManager /* SY --> */,
     mergedManga: Map<Long, Manga>, /* SY <-- */
-): Episode? {
+): Chapter? {
     return applyFilters(manga, downloadManager/* SY --> */, mergedManga/* SY <-- */).let { chapters ->
         if (manga.sortDescending()) {
             chapters.findLast { !it.seen }
@@ -24,14 +24,14 @@ fun List<Episode>.getNextUnseen(
 }
 
 /**
- * Gets next unseen episode with filters and sorting applied
+ * Gets next unseen chapter with filters and sorting applied
  */
-fun List<EpisodeList.Item>.getNextUnseen(manga: Manga): Episode? {
+fun List<EpisodeList.Item>.getNextUnseen(manga: Manga): Chapter? {
     return applyFilters(manga).let { chapters ->
         if (manga.sortDescending()) {
-            chapters.findLast { !it.episode.seen }
+            chapters.findLast { !it.chapter.seen }
         } else {
-            chapters.find { !it.episode.seen }
+            chapters.find { !it.chapter.seen }
         }
-    }?.episode
+    }?.chapter
 }

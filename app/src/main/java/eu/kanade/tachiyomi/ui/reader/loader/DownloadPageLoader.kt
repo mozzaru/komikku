@@ -15,7 +15,7 @@ import tachiyomi.domain.manga.model.Manga
 import uy.kohesive.injekt.injectLazy
 
 /**
- * Loader used to load a episode from the downloaded episodes.
+ * Loader used to load a chapter from the downloaded chapters.
  */
 internal class DownloadPageLoader(
     private val chapter: ReaderChapter,
@@ -54,7 +54,7 @@ internal class DownloadPageLoader(
     private fun getPagesFromDirectory(): List<ReaderPage> {
         val pages = downloadManager.buildPageList(source, manga, chapter.episode.toDomainEpisode()!!)
         return pages.map { page ->
-            ReaderPage(page.index, page.url, page.videoUrl) {
+            ReaderPage(page.index, page.url, page.pageUrl) {
                 context.contentResolver.openInputStream(page.uri ?: Uri.EMPTY)!!
             }.apply {
                 status = Page.State.READY

@@ -13,7 +13,7 @@ import kotlinx.coroutines.flow.flow
 import tachiyomi.domain.manga.interactor.GetAnime
 import tachiyomi.domain.manga.model.Manga
 import tachiyomi.domain.chapter.interactor.GetEpisode
-import tachiyomi.domain.chapter.model.Episode
+import tachiyomi.domain.chapter.model.Chapter
 import tachiyomi.domain.source.service.SourceManager
 import uy.kohesive.injekt.Injekt
 import uy.kohesive.injekt.api.get
@@ -21,7 +21,7 @@ import uy.kohesive.injekt.api.get
 data class Download(
     val source: HttpSource,
     val manga: Manga,
-    val episode: Episode,
+    val chapter: Chapter,
 ) {
     var pages: List<Page>? = null
 

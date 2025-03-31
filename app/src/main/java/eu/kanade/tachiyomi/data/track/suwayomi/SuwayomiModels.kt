@@ -68,10 +68,10 @@ data class ChapterDataClass(
     val scanlator: String?,
     val mangaId: Int,
 
-    /** episode is read */
+    /** chapter is read */
     val read: Boolean,
 
-    /** episode is bookmarked */
+    /** chapter is bookmarked */
     val bookmarked: Boolean,
 
     /** last read page, zero means not read/no data */
@@ -80,19 +80,19 @@ data class ChapterDataClass(
     /** last read page, zero means not read/no data */
     val lastReadAt: Long,
 
-    /** this episode's index, starts with 1 */
+    /** this chapter's index, starts with 1 */
     val index: Int,
 
-    /** the date we fist saw this episode*/
+    /** the date we fist saw this chapter*/
     val fetchedAt: Long,
 
-    /** is episode downloaded */
+    /** is chapter downloaded */
     val downloaded: Boolean,
 
     /** used to construct pages in the front-end */
     val pageCount: Int,
 
-    /** total episode count, used to calculate if there's a next and prev episode */
+    /** total chapter count, used to calculate if there's a next and prev chapter */
     val chapterCount: Int?,
 
     /** used to store client specific values */

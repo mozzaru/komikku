@@ -90,7 +90,7 @@ import eu.kanade.tachiyomi.util.system.copyToClipboard
 import exh.source.MERGED_SOURCE_ID
 import tachiyomi.domain.manga.model.Manga
 import tachiyomi.domain.manga.model.MangaCover
-import tachiyomi.domain.chapter.model.Episode
+import tachiyomi.domain.chapter.model.Chapter
 import tachiyomi.domain.chapter.service.missingEpisodesCount
 import tachiyomi.domain.library.service.LibraryPreferences
 import tachiyomi.domain.source.model.StubSource
@@ -120,7 +120,7 @@ fun AnimeScreen(
     episodeSwipeStartAction: LibraryPreferences.EpisodeSwipeAction,
     episodeSwipeEndAction: LibraryPreferences.EpisodeSwipeAction,
     onBackClicked: () -> Unit,
-    onEpisodeClicked: (Episode) -> Unit,
+    onEpisodeClicked: (Chapter) -> Unit,
     onDownloadEpisode: ((List<EpisodeList.Item>, EpisodeDownloadAction) -> Unit)?,
     onAddToLibraryClicked: () -> Unit,
     onWebViewClicked: (() -> Unit)?,
@@ -153,15 +153,15 @@ fun AnimeScreen(
     // SY <--
 
     // For bottom action menu
-    onMultiBookmarkClicked: (List<Episode>, bookmarked: Boolean) -> Unit,
-    onMultiMarkAsSeenClicked: (List<Episode>, markAsSeen: Boolean) -> Unit,
-    onMarkPreviousAsSeenClicked: (Episode) -> Unit,
-    onMultiDeleteClicked: (List<Episode>) -> Unit,
+    onMultiBookmarkClicked: (List<Chapter>, bookmarked: Boolean) -> Unit,
+    onMultiMarkAsSeenClicked: (List<Chapter>, markAsSeen: Boolean) -> Unit,
+    onMarkPreviousAsSeenClicked: (Chapter) -> Unit,
+    onMultiDeleteClicked: (List<Chapter>) -> Unit,
 
-    // For episode swipe
+    // For chapter swipe
     onEpisodeSwipe: (EpisodeList.Item, LibraryPreferences.EpisodeSwipeAction) -> Unit,
 
-    // Episode selection
+    // Chapter selection
     onEpisodeSelected: (EpisodeList.Item, Boolean, Boolean, Boolean) -> Unit,
     onAllEpisodeSelected: (Boolean) -> Unit,
     onInvertSelection: () -> Unit,
@@ -302,7 +302,7 @@ private fun AnimeScreenSmallImpl(
     episodeSwipeStartAction: LibraryPreferences.EpisodeSwipeAction,
     episodeSwipeEndAction: LibraryPreferences.EpisodeSwipeAction,
     onBackClicked: () -> Unit,
-    onEpisodeClicked: (Episode) -> Unit,
+    onEpisodeClicked: (Chapter) -> Unit,
     onDownloadEpisode: ((List<EpisodeList.Item>, EpisodeDownloadAction) -> Unit)?,
     onAddToLibraryClicked: () -> Unit,
     onWebViewClicked: (() -> Unit)?,
@@ -336,15 +336,15 @@ private fun AnimeScreenSmallImpl(
     // SY <--
 
     // For bottom action menu
-    onMultiBookmarkClicked: (List<Episode>, bookmarked: Boolean) -> Unit,
-    onMultiMarkAsSeenClicked: (List<Episode>, markAsSeen: Boolean) -> Unit,
-    onMarkPreviousAsSeenClicked: (Episode) -> Unit,
-    onMultiDeleteClicked: (List<Episode>) -> Unit,
+    onMultiBookmarkClicked: (List<Chapter>, bookmarked: Boolean) -> Unit,
+    onMultiMarkAsSeenClicked: (List<Chapter>, markAsSeen: Boolean) -> Unit,
+    onMarkPreviousAsSeenClicked: (Chapter) -> Unit,
+    onMultiDeleteClicked: (List<Chapter>) -> Unit,
 
-    // For episode swipe
+    // For chapter swipe
     onEpisodeSwipe: (EpisodeList.Item, LibraryPreferences.EpisodeSwipeAction) -> Unit,
 
-    // Episode selection
+    // Chapter selection
     onEpisodeSelected: (EpisodeList.Item, Boolean, Boolean, Boolean) -> Unit,
     onAllEpisodeSelected: (Boolean) -> Unit,
     onInvertSelection: () -> Unit,
@@ -459,7 +459,7 @@ private fun AnimeScreenSmallImpl(
         snackbarHost = { SnackbarHost(hostState = snackbarHostState) },
         floatingActionButton = {
             val isFABVisible = remember(episodes) {
-                episodes.fastAny { !it.episode.seen } && !isAnySelected
+                episodes.fastAny { !it.chapter.seen } && !isAnySelected
             }
             AnimatedVisibility(
                 visible = isFABVisible,
@@ -492,7 +492,7 @@ private fun AnimeScreenSmallImpl(
                 ExtendedFloatingActionButton(
                     text = {
                         val isWatching = remember(state.episodes) {
-                            state.episodes.fastAny { it.episode.seen }
+                            state.episodes.fastAny { it.chapter.seen }
                         }
                         Text(
                             text = stringResource(if (isWatching) MR.strings.action_resume else MR.strings.action_start),
@@ -674,7 +674,7 @@ private fun AnimeScreenSmallImpl(
                         contentType = AnimeScreenItem.EPISODE_HEADER,
                     ) {
                         val missingEpisodeCount = remember(episodes) {
-                            episodes.map { it.episode.episodeNumber }.missingEpisodesCount()
+                            episodes.map { it.chapter.episodeNumber }.missingEpisodesCount()
                         }
                         EpisodeHeader(
                             enabled = !isAnySelected,
@@ -710,7 +710,7 @@ private fun AnimeScreenLargeImpl(
     episodeSwipeStartAction: LibraryPreferences.EpisodeSwipeAction,
     episodeSwipeEndAction: LibraryPreferences.EpisodeSwipeAction,
     onBackClicked: () -> Unit,
-    onEpisodeClicked: (Episode) -> Unit,
+    onEpisodeClicked: (Chapter) -> Unit,
     onDownloadEpisode: ((List<EpisodeList.Item>, EpisodeDownloadAction) -> Unit)?,
     onAddToLibraryClicked: () -> Unit,
     onWebViewClicked: (() -> Unit)?,
@@ -744,15 +744,15 @@ private fun AnimeScreenLargeImpl(
     // SY <--
 
     // For bottom action menu
-    onMultiBookmarkClicked: (List<Episode>, bookmarked: Boolean) -> Unit,
-    onMultiMarkAsSeenClicked: (List<Episode>, markAsSeen: Boolean) -> Unit,
-    onMarkPreviousAsSeenClicked: (Episode) -> Unit,
-    onMultiDeleteClicked: (List<Episode>) -> Unit,
+    onMultiBookmarkClicked: (List<Chapter>, bookmarked: Boolean) -> Unit,
+    onMultiMarkAsSeenClicked: (List<Chapter>, markAsSeen: Boolean) -> Unit,
+    onMarkPreviousAsSeenClicked: (Chapter) -> Unit,
+    onMultiDeleteClicked: (List<Chapter>) -> Unit,
 
     // For swipe actions
     onEpisodeSwipe: (EpisodeList.Item, LibraryPreferences.EpisodeSwipeAction) -> Unit,
 
-    // Episode selection
+    // Chapter selection
     onEpisodeSelected: (EpisodeList.Item, Boolean, Boolean, Boolean) -> Unit,
     onAllEpisodeSelected: (Boolean) -> Unit,
     onInvertSelection: () -> Unit,
@@ -866,7 +866,7 @@ private fun AnimeScreenLargeImpl(
         snackbarHost = { SnackbarHost(hostState = snackbarHostState) },
         floatingActionButton = {
             val isFABVisible = remember(episodes) {
-                episodes.fastAny { !it.episode.seen } && !isAnySelected
+                episodes.fastAny { !it.chapter.seen } && !isAnySelected
             }
             AnimatedVisibility(
                 visible = isFABVisible,
@@ -899,7 +899,7 @@ private fun AnimeScreenLargeImpl(
                 ExtendedFloatingActionButton(
                     text = {
                         val isWatching = remember(state.episodes) {
-                            state.episodes.fastAny { it.episode.seen }
+                            state.episodes.fastAny { it.chapter.seen }
                         }
                         Text(
                             text = stringResource(
@@ -1071,7 +1071,7 @@ private fun AnimeScreenLargeImpl(
                                 contentType = AnimeScreenItem.EPISODE_HEADER,
                             ) {
                                 val missingEpisodeCount = remember(episodes) {
-                                    episodes.map { it.episode.episodeNumber }.missingEpisodesCount()
+                                    episodes.map { it.chapter.episodeNumber }.missingEpisodesCount()
                                 }
                                 EpisodeHeader(
                                     enabled = !isAnySelected,
@@ -1104,11 +1104,11 @@ private fun AnimeScreenLargeImpl(
 @Composable
 private fun SharedAnimeBottomActionMenu(
     selected: List<EpisodeList.Item>,
-    onMultiBookmarkClicked: (List<Episode>, bookmarked: Boolean) -> Unit,
-    onMultiMarkAsSeenClicked: (List<Episode>, markAsSeen: Boolean) -> Unit,
-    onMarkPreviousAsSeenClicked: (Episode) -> Unit,
+    onMultiBookmarkClicked: (List<Chapter>, bookmarked: Boolean) -> Unit,
+    onMultiMarkAsSeenClicked: (List<Chapter>, markAsSeen: Boolean) -> Unit,
+    onMarkPreviousAsSeenClicked: (Chapter) -> Unit,
     onDownloadEpisode: ((List<EpisodeList.Item>, EpisodeDownloadAction) -> Unit)?,
-    onMultiDeleteClicked: (List<Episode>) -> Unit,
+    onMultiDeleteClicked: (List<Chapter>) -> Unit,
     fillFraction: Float,
     modifier: Modifier = Modifier,
 ) {
@@ -1116,19 +1116,19 @@ private fun SharedAnimeBottomActionMenu(
         visible = selected.isNotEmpty(),
         modifier = modifier.fillMaxWidth(fillFraction),
         onBookmarkClicked = {
-            onMultiBookmarkClicked.invoke(selected.fastMap { it.episode }, true)
-        }.takeIf { selected.fastAny { !it.episode.bookmark } },
+            onMultiBookmarkClicked.invoke(selected.fastMap { it.chapter }, true)
+        }.takeIf { selected.fastAny { !it.chapter.bookmark } },
         onRemoveBookmarkClicked = {
-            onMultiBookmarkClicked.invoke(selected.fastMap { it.episode }, false)
-        }.takeIf { selected.fastAll { it.episode.bookmark } },
+            onMultiBookmarkClicked.invoke(selected.fastMap { it.chapter }, false)
+        }.takeIf { selected.fastAll { it.chapter.bookmark } },
         onMarkAsSeenClicked = {
-            onMultiMarkAsSeenClicked(selected.fastMap { it.episode }, true)
-        }.takeIf { selected.fastAny { !it.episode.seen } },
+            onMultiMarkAsSeenClicked(selected.fastMap { it.chapter }, true)
+        }.takeIf { selected.fastAny { !it.chapter.seen } },
         onMarkAsUnseenClicked = {
-            onMultiMarkAsSeenClicked(selected.fastMap { it.episode }, false)
-        }.takeIf { selected.fastAny { it.episode.seen || it.episode.lastSecondSeen > 0L } },
+            onMultiMarkAsSeenClicked(selected.fastMap { it.chapter }, false)
+        }.takeIf { selected.fastAny { it.chapter.seen || it.chapter.lastSecondSeen > 0L } },
         onMarkPreviousAsSeenClicked = {
-            onMarkPreviousAsSeenClicked(selected[0].episode)
+            onMarkPreviousAsSeenClicked(selected[0].chapter)
         }.takeIf { selected.size == 1 },
         onDownloadClicked = {
             onDownloadEpisode!!(selected.toList(), EpisodeDownloadAction.START)
@@ -1136,7 +1136,7 @@ private fun SharedAnimeBottomActionMenu(
             onDownloadEpisode != null && selected.fastAny { it.downloadState != Download.State.DOWNLOADED }
         },
         onDeleteClicked = {
-            onMultiDeleteClicked(selected.fastMap { it.episode })
+            onMultiDeleteClicked(selected.fastMap { it.chapter })
         }.takeIf {
             selected.fastAny { it.downloadState == Download.State.DOWNLOADED }
         },
@@ -1150,7 +1150,7 @@ private fun LazyListScope.sharedEpisodeItems(
     isAnyEpisodeSelected: Boolean,
     episodeSwipeStartAction: LibraryPreferences.EpisodeSwipeAction,
     episodeSwipeEndAction: LibraryPreferences.EpisodeSwipeAction,
-    onEpisodeClicked: (Episode) -> Unit,
+    onEpisodeClicked: (Chapter) -> Unit,
     onDownloadEpisode: ((List<EpisodeList.Item>, EpisodeDownloadAction) -> Unit)?,
     onEpisodeSelected: (EpisodeList.Item, Boolean, Boolean, Boolean) -> Unit,
     onEpisodeSwipe: (EpisodeList.Item, LibraryPreferences.EpisodeSwipeAction) -> Unit,
@@ -1178,19 +1178,19 @@ private fun LazyListScope.sharedEpisodeItems(
                     title = if (manga.displayMode == Manga.EPISODE_DISPLAY_NUMBER) {
                         stringResource(
                             MR.strings.display_mode_chapter,
-                            formatEpisodeNumber(item.episode.episodeNumber),
+                            formatEpisodeNumber(item.chapter.episodeNumber),
                         )
                     } else {
-                        item.episode.name
+                        item.chapter.name
                     },
-                    date = item.episode.dateUpload
+                    date = item.chapter.dateUpload
                         .takeIf { it > 0L }
                         ?.let {
-                            relativeDateText(item.episode.dateUpload)
+                            relativeDateText(item.chapter.dateUpload)
                         },
-                    watchProgress = item.episode.lastSecondSeen
+                    watchProgress = item.chapter.lastSecondSeen
                         .takeIf {
-                            /* SY --> */(!item.episode.seen)/* SY <-- */ && it > 0L
+                            /* SY --> */(!item.chapter.seen)/* SY <-- */ && it > 0L
                         }
                         ?.let {
                             stringResource(
@@ -1198,17 +1198,17 @@ private fun LazyListScope.sharedEpisodeItems(
                                 it + 1,
                             )
                         },
-                    scanlator = item.episode.scanlator.takeIf {
+                    scanlator = item.chapter.scanlator.takeIf {
                         !it.isNullOrBlank()
                     },
                     // SY -->
                     sourceName = item.sourceName,
                     // SY <--
-                    seen = item.episode.seen,
-                    bookmark = item.episode.bookmark,
+                    seen = item.chapter.seen,
+                    bookmark = item.chapter.bookmark,
                     selected = item.selected,
                     downloadIndicatorEnabled =
-                    !isAnyEpisodeSelected && !(mergedData?.manga?.get(item.episode.animeId) ?: manga).isLocal(),
+                    !isAnyEpisodeSelected && !(mergedData?.manga?.get(item.chapter.animeId) ?: manga).isLocal(),
                     downloadStateProvider = { item.downloadState },
                     downloadProgressProvider = { item.downloadProgress },
                     episodeSwipeStartAction = episodeSwipeStartAction,
@@ -1243,11 +1243,11 @@ private fun onEpisodeItemClick(
     episodeItem: EpisodeList.Item,
     isAnyEpisodeSelected: Boolean,
     onToggleSelection: (Boolean) -> Unit,
-    onEpisodeClicked: (Episode) -> Unit,
+    onEpisodeClicked: (Chapter) -> Unit,
 ) {
     when {
         episodeItem.selected -> onToggleSelection(false)
         isAnyEpisodeSelected -> onToggleSelection(true)
-        else -> onEpisodeClicked(episodeItem.episode)
+        else -> onEpisodeClicked(episodeItem.chapter)
     }
 }

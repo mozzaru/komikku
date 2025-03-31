@@ -21,7 +21,7 @@ import tachiyomi.source.local.LocalSource
 import tachiyomi.source.local.io.Format
 
 /**
- * Loader used to retrieve the [PageLoader] for a given episode.
+ * Loader used to retrieve the [PageLoader] for a given chapter.
  */
 class ChapterLoader(
     private val context: Context,
@@ -37,7 +37,7 @@ class ChapterLoader(
 ) {
 
     /**
-     * Assigns the episode's page loader and loads the its pages. Returns immediately if the episode
+     * Assigns the chapter's page loader and loads the its pages. Returns immediately if the chapter
      * is already loaded.
      */
     suspend fun loadChapter(chapter: ReaderChapter /* SY --> */, page: Int? = null/* SY <-- */) {
@@ -59,7 +59,7 @@ class ChapterLoader(
                     throw Exception(context.stringResource(MR.strings.page_list_empty_error))
                 }
 
-                // If the episode is partially read, set the starting page to the last the user read
+                // If the chapter is partially read, set the starting page to the last the user read
                 // otherwise use the requested page.
                 if (!chapter.episode.seen /* --> EH */ ||
                     page != null // <-- EH

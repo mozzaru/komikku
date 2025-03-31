@@ -20,7 +20,7 @@ data class EpisodeUpdate(
     val version: Long? = null,
 )
 
-fun Episode.toEpisodeUpdate(): EpisodeUpdate {
+fun Chapter.toEpisodeUpdate(): EpisodeUpdate {
     return EpisodeUpdate(
         id,
         animeId,

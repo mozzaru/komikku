@@ -327,7 +327,7 @@ class BulkFavoriteScreenModel(
                     false -> Instant.now().toEpochMilli()
                 },
             )
-            // TODO: also allow deleting episodes when remove favorite (just like in [AnimeScreenModel])
+            // TODO: also allow deleting chapters when remove favorite (just like in [AnimeScreenModel])
             if (!new.favorite) {
                 new = new.removeCovers(coverCache)
             } else {

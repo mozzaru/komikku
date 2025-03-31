@@ -9,7 +9,7 @@ import tachiyomi.core.common.i18n.stringResource
 import tachiyomi.core.common.storage.displayablePath
 import tachiyomi.core.common.util.system.logcat
 import tachiyomi.domain.manga.model.Manga
-import tachiyomi.domain.chapter.model.Episode
+import tachiyomi.domain.chapter.model.Chapter
 import tachiyomi.domain.storage.service.StorageManager
 import tachiyomi.i18n.MR
 import uy.kohesive.injekt.Injekt
@@ -17,7 +17,7 @@ import uy.kohesive.injekt.api.get
 
 /**
  * This class is used to provide the directories where the downloads should be saved.
- * It uses the following path scheme: /<root downloads dir>/<source name>/<anime>/<episode>
+ * It uses the following path scheme: /<root downloads dir>/<source name>/<anime>/<chapter>
  *
  * @param context the application context.
  */
@@ -73,12 +73,12 @@ class DownloadProvider(
     }
 
     /**
-     * Returns the download directory for a episode if it exists.
+     * Returns the download directory for a chapter if it exists.
      *
-     * @param episodeName the name of the episode to query.
-     * @param episodeScanlator scanlator of the episode to query
+     * @param episodeName the name of the chapter to query.
+     * @param episodeScanlator scanlator of the chapter to query
      * @param animeTitle the title of the anime to query.
-     * @param source the source of the episode.
+     * @param source the source of the chapter.
      */
     fun findEpisodeDir(episodeName: String, episodeScanlator: String?, animeTitle: String, source: Source): UniFile? {
         val animeDir = findAnimeDir(animeTitle, source)
@@ -88,15 +88,15 @@ class DownloadProvider(
     }
 
     /**
-     * Returns a list of downloaded directories for the episodes that exist.
+     * Returns a list of downloaded directories for the chapters that exist.
      *
-     * @param episodes the episodes to query.
-     * @param manga the anime of the episode.
-     * @param source the source of the episode.
+     * @param chapters the chapters to query.
+     * @param manga the anime of the chapter.
+     * @param source the source of the chapter.
      */
-    fun findEpisodeDirs(episodes: List<Episode>, manga: Manga, source: Source): Pair<UniFile?, List<UniFile>> {
+    fun findEpisodeDirs(chapters: List<Chapter>, manga: Manga, source: Source): Pair<UniFile?, List<UniFile>> {
         val animeDir = findAnimeDir(/* SY --> */ manga.ogTitle /* SY <-- */, source) ?: return null to emptyList()
-        return animeDir to episodes.mapNotNull { episode ->
+        return animeDir to chapters.mapNotNull { episode ->
             getValidEpisodeDirNames(episode.name, episode.scanlator).asSequence()
                 .mapNotNull { animeDir.findFile(it) }
                 .firstOrNull()
@@ -107,18 +107,18 @@ class DownloadProvider(
     /**
      * Returns a list of all files in anime directory
      *
-     * @param episodes the episodes to query.
-     * @param manga the anime of the episode.
-     * @param source the source of the episode.
+     * @param chapters the chapters to query.
+     * @param manga the anime of the chapter.
+     * @param source the source of the chapter.
      */
     fun findUnmatchedEpisodeDirs(
-        episodes: List<Episode>,
+        chapters: List<Chapter>,
         manga: Manga,
         source: Source,
     ): List<UniFile> {
         val animeDir = findAnimeDir(/* SY --> */ manga.ogTitle /* SY <-- */, source) ?: return emptyList()
         return animeDir.listFiles().orEmpty().asList().filter {
-            episodes.find { chp ->
+            chapters.find { chp ->
                 getValidEpisodeDirNames(chp.name, chp.scanlator).any { dir ->
                     animeDir.findFile(dir) != null
                 }
@@ -147,10 +147,10 @@ class DownloadProvider(
     }
 
     /**
-     * Returns the episode directory name for a episode.
+     * Returns the chapter directory name for a chapter.
      *
-     * @param episodeName the name of the episode to query.
-     * @param episodeScanlator scanlator of the episode to query
+     * @param episodeName the name of the chapter to query.
+     * @param episodeScanlator scanlator of the chapter to query
      */
     fun getEpisodeDirName(episodeName: String, episodeScanlator: String?): String {
         val newEpisodeName = sanitizeEpisodeName(episodeName)
@@ -163,9 +163,9 @@ class DownloadProvider(
     }
 
     /**
-     * Return the new name for the episode (in case it's empty or blank)
+     * Return the new name for the chapter (in case it's empty or blank)
      *
-     * @param episodeName the name of the episode
+     * @param episodeName the name of the chapter
      */
     private fun sanitizeEpisodeName(episodeName: String): String {
         return episodeName.ifBlank {
@@ -173,16 +173,16 @@ class DownloadProvider(
         }
     }
 
-    fun isEpisodeDirNameChanged(oldEpisode: Episode, newEpisode: Episode): Boolean {
-        return oldEpisode.name != newEpisode.name ||
-            oldEpisode.scanlator?.takeIf { it.isNotBlank() } != newEpisode.scanlator?.takeIf { it.isNotBlank() }
+    fun isEpisodeDirNameChanged(oldChapter: Chapter, newChapter: Chapter): Boolean {
+        return oldChapter.name != newChapter.name ||
+            oldChapter.scanlator?.takeIf { it.isNotBlank() } != newChapter.scanlator?.takeIf { it.isNotBlank() }
     }
 
     /**
-     * Returns valid downloaded episode directory names.
+     * Returns valid downloaded chapter directory names.
      *
-     * @param episodeName the name of the episode to query.
-     * @param episodeScanlator scanlator of the episode to query
+     * @param episodeName the name of the chapter to query.
+     * @param episodeScanlator scanlator of the chapter to query
      */
     fun getValidEpisodeDirNames(episodeName: String, episodeScanlator: String?): List<String> {
         val episodeDirName = getEpisodeDirName(episodeName, episodeScanlator)
@@ -190,7 +190,7 @@ class DownloadProvider(
             // Folder of images
             add(episodeDirName)
 
-            // Archived episodes
+            // Archived chapters
             add("$episodeDirName.cbz")
         }
     }

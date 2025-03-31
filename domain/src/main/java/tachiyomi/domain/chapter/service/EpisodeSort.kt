@@ -2,14 +2,14 @@ package tachiyomi.domain.chapter.service
 
 import tachiyomi.core.common.util.lang.compareToWithCollator
 import tachiyomi.domain.manga.model.Manga
-import tachiyomi.domain.chapter.model.Episode
+import tachiyomi.domain.chapter.model.Chapter
 
 fun getEpisodeSort(
     manga: Manga,
     sortDescending: Boolean = manga.sortDescending(),
 ): (
-    Episode,
-    Episode,
+    Chapter,
+    Chapter,
 ) -> Int {
     return when (manga.sorting) {
         Manga.EPISODE_SORTING_SOURCE -> when (sortDescending) {

@@ -66,7 +66,7 @@ import tachiyomi.domain.manga.model.Manga
 import tachiyomi.domain.manga.model.toMangaUpdate
 import tachiyomi.domain.category.model.Category
 import tachiyomi.domain.chapter.interactor.GetChaptersByMangaId
-import tachiyomi.domain.chapter.model.Episode
+import tachiyomi.domain.chapter.model.Chapter
 import tachiyomi.domain.library.model.GroupLibraryMode
 import tachiyomi.domain.library.model.LibraryManga
 import tachiyomi.domain.library.model.LibraryGroup
@@ -159,7 +159,7 @@ class LibraryUpdateJob(private val context: Context, workerParams: WorkerParamet
 
         val target = inputData.getString(KEY_TARGET)?.let { Target.valueOf(it) } ?: Target.CHAPTERS
 
-        // If this is a episode update, set the last update time to now
+        // If this is a chapter update, set the last update time to now
         if (target == Target.CHAPTERS) {
             libraryPreferences.lastUpdatedTimestamp().set(Instant.now().toEpochMilli())
         }
@@ -352,7 +352,7 @@ class LibraryUpdateJob(private val context: Context, workerParams: WorkerParamet
         val semaphore = Semaphore(5)
         val progressCount = AtomicInteger(0)
         val currentlyUpdatingManga = CopyOnWriteArrayList<Manga>()
-        val newUpdates = CopyOnWriteArrayList<Pair<Manga, Array<Episode>>>()
+        val newUpdates = CopyOnWriteArrayList<Pair<Manga, Array<Chapter>>>()
         val failedUpdates = CopyOnWriteArrayList<Pair<Manga, String?>>()
         val hasDownloads = AtomicBoolean(false)
 
@@ -420,7 +420,7 @@ class LibraryUpdateJob(private val context: Context, workerParams: WorkerParamet
 
                                             libraryPreferences.newUpdatesCount().getAndSet { it + newChapters.size }
 
-                                            // Convert to the manga that contains new episodes
+                                            // Convert to the manga that contains new chapters
                                             newUpdates.add(manga to newChapters.toTypedArray())
                                         }
                                         clearErrorFromDB(mangaId = manga.id)
@@ -463,14 +463,14 @@ class LibraryUpdateJob(private val context: Context, workerParams: WorkerParamet
         }
     }
 
-    private fun downloadChapters(manga: Manga, episodes: List<Episode>) {
+    private fun downloadChapters(manga: Manga, chapters: List<Chapter>) {
         // We don't want to start downloading while the library is updating, because websites
         // may don't like it and they could ban the user.
         // SY -->
         if (manga.source == MERGED_SOURCE_ID) {
             val downloadingManga = runBlocking { getMergedAnimeForDownloading.await(manga.id) }
                 .associateBy { it.id }
-            episodes.groupBy { it.animeId }
+            chapters.groupBy { it.animeId }
                 .forEach {
                     downloadManager.downloadEpisodes(
                         downloadingManga[it.key] ?: return@forEach,
@@ -482,16 +482,16 @@ class LibraryUpdateJob(private val context: Context, workerParams: WorkerParamet
             return
         }
         // SY <--
-        downloadManager.downloadEpisodes(manga, episodes, false)
+        downloadManager.downloadEpisodes(manga, chapters, false)
     }
 
     /**
-     * Updates the episodes for the given manga and adds them to the database.
+     * Updates the chapters for the given manga and adds them to the database.
      *
      * @param manga the manga to update.
-     * @return a pair of the inserted and removed episodes.
+     * @return a pair of the inserted and removed chapters.
      */
-    private suspend fun updateManga(manga: Manga, fetchWindow: Pair<Long, Long>): List<Episode> {
+    private suspend fun updateManga(manga: Manga, fetchWindow: Pair<Long, Long>): List<Chapter> {
         val source = sourceManager.getOrStub(manga.source)
 
         // Update manga metadata if needed
@@ -628,7 +628,7 @@ class LibraryUpdateJob(private val context: Context, workerParams: WorkerParamet
      * Defines what should be updated within a service execution.
      */
     enum class Target {
-        CHAPTERS, // Manga episodes
+        CHAPTERS, // Manga chapters
         COVERS, // Manga covers
     }
 

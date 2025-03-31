@@ -20,14 +20,14 @@ import okhttp3.Response
 import okio.buffer
 import okio.sink
 import tachiyomi.core.common.util.system.logcat
-import tachiyomi.domain.chapter.model.Episode
+import tachiyomi.domain.chapter.model.Chapter
 import java.io.File
 import java.io.IOException
 
 /**
- * Class used to create episode cache
- * For each image in a episode a file is created
- * For each episode a Json list is created and converted to a file.
+ * Class used to create chapter cache
+ * For each image in a chapter a file is created
+ * For each chapter a Json list is created and converted to a file.
  * The files are in format *md5key*.0
  *
  * @param context the application context.
@@ -91,12 +91,12 @@ class EpisodeCache(
     /**
      * Get page list from cache.
      *
-     * @param episode the episode.
+     * @param chapter the chapter.
      * @return the list of pages.
      */
-    fun getPageListFromCache(episode: Episode): List<Page> {
-        // Get the key for the episode.
-        val key = DiskUtil.hashKeyForDisk(getKey(episode))
+    fun getPageListFromCache(chapter: Chapter): List<Page> {
+        // Get the key for the chapter.
+        val key = DiskUtil.hashKeyForDisk(getKey(chapter))
 
         // Convert JSON string to list of objects. Throws an exception if snapshot is null
         return diskCache.get(key).use {
@@ -107,10 +107,10 @@ class EpisodeCache(
     /**
      * Add page list to disk cache.
      *
-     * @param episode the episode.
+     * @param chapter the chapter.
      * @param pages list of pages.
      */
-    fun putPageListToCache(episode: Episode, pages: List<Page>) {
+    fun putPageListToCache(chapter: Chapter, pages: List<Page>) {
         // Convert list of pages to json string.
         val cachedValue = json.encodeToString(pages)
 
@@ -119,10 +119,10 @@ class EpisodeCache(
 
         try {
             // Get editor from md5 key.
-            val key = DiskUtil.hashKeyForDisk(getKey(episode))
+            val key = DiskUtil.hashKeyForDisk(getKey(chapter))
             editor = diskCache.edit(key) ?: return
 
-            // Write episode urls to cache.
+            // Write chapter urls to cache.
             editor.newOutputStream(0).sink().buffer().use {
                 it.write(cachedValue.toByteArray())
                 it.flush()
@@ -226,8 +226,8 @@ class EpisodeCache(
         }
     }
 
-    private fun getKey(episode: Episode): String {
-        return "${episode.animeId}${episode.url}"
+    private fun getKey(chapter: Chapter): String {
+        return "${chapter.animeId}${chapter.url}"
     }
 }
 

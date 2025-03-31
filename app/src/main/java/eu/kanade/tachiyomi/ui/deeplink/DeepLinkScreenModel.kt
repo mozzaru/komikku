@@ -17,7 +17,7 @@ import tachiyomi.domain.manga.interactor.GetAnimeByUrlAndSourceId
 import tachiyomi.domain.manga.interactor.NetworkToLocalAnime
 import tachiyomi.domain.manga.model.Manga
 import tachiyomi.domain.chapter.interactor.GetEpisodeByUrlAndAnimeId
-import tachiyomi.domain.chapter.model.Episode
+import tachiyomi.domain.chapter.model.Chapter
 import tachiyomi.domain.source.service.SourceManager
 import uy.kohesive.injekt.Injekt
 import uy.kohesive.injekt.api.get
@@ -61,7 +61,7 @@ class DeepLinkScreenModel(
         }
     }
 
-    private suspend fun getEpisodeFromSEpisode(sChapter: SChapter, manga: Manga, source: Source): Episode? {
+    private suspend fun getEpisodeFromSEpisode(sChapter: SChapter, manga: Manga, source: Source): Chapter? {
         val localChapter = getEpisodeByUrlAndAnimeId.await(sChapter.url, manga.id)
 
         return if (localChapter == null) {

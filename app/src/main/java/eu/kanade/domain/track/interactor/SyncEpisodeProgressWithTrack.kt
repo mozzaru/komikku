@@ -32,7 +32,7 @@ class SyncEpisodeProgressWithTrack(
         // }
         // <-- KKM
 
-        // Current episodes in database, sort by source's order because database's order is a mess
+        // Current chapters in database, sort by source's order because database's order is a mess
         val dbEpisodes = getChaptersByMangaId.await(animeId)
             // KMK -->
             .sortedByDescending { it.sourceOrder }
@@ -47,12 +47,12 @@ class SyncEpisodeProgressWithTrack(
         var checkingEpisode = 0.0
 
         /**
-         * Episodes to update to follow tracker: only continuous incremental episodes
-         * any abnormal episode number will stop it from updating seen status further.
-         * Some animes has name such as Volume 2 Episode 1 which will corrupt the order
+         * Episodes to update to follow tracker: only continuous incremental chapters
+         * any abnormal chapter number will stop it from updating seen status further.
+         * Some animes has name such as Volume 2 Chapter 1 which will corrupt the order
          * if we sort by episodeNumber.
          */
-        val episodeUpdates = dbEpisodes
+        val chapterUpdates = dbEpisodes
             .takeWhile { episode ->
                 lastCheckEpisode = checkingEpisode
                 checkingEpisode = episode.episodeNumber
@@ -64,7 +64,7 @@ class SyncEpisodeProgressWithTrack(
 
         // only take into account continuous watching
         val localLastSeen = sortedEpisodes.takeWhile { it.seen }.lastOrNull()?.episodeNumber ?: 0F
-        // Tracker will update to latest seen episode
+        // Tracker will update to latest seen chapter
         val lastSeen = max(remoteTrack.lastEpisodeSeen, localLastSeen.toDouble())
         val updatedTrack = remoteTrack.copy(lastEpisodeSeen = lastSeen)
 
@@ -76,12 +76,12 @@ class SyncEpisodeProgressWithTrack(
                 insertTrack.await(updatedTrack)
             }
             // KMK -->
-            // Always update local episodes following Tracker even past episodes
-            if (episodeUpdates.isNotEmpty() &&
+            // Always update local chapters following Tracker even past chapters
+            if (chapterUpdates.isNotEmpty() &&
                 trackPreferences.autoSyncProgressFromTrackers().get() &&
                 !tracker.hasNotStartedWatching(remoteTrack.status)
             ) {
-                updateEpisode.awaitAll(episodeUpdates)
+                updateEpisode.awaitAll(chapterUpdates)
                 return lastSeen.toInt()
             }
             // KMK <--

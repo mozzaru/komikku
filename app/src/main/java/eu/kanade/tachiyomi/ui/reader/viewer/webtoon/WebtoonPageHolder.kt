@@ -33,7 +33,7 @@ import tachiyomi.core.common.util.system.ImageUtil
 import tachiyomi.core.common.util.system.logcat
 
 /**
- * Holder of the webtoon reader for a single page of a episode.
+ * Holder of the webtoon reader for a single page of a chapter.
  *
  * @param frame the root view for this holder.
  * @param viewer the webtoon viewer.
@@ -70,7 +70,7 @@ class WebtoonPageHolder(
         get() = viewer.recycler.height
 
     /**
-     * Page of a episode.
+     * Page of a chapter.
      */
     private var page: ReaderPage? = null
 
@@ -293,7 +293,7 @@ class WebtoonPageHolder(
             }
         }
 
-        val imageUrl = page?.videoUrl
+        val imageUrl = page?.pageUrl
         errorLayout?.actionOpenInWebView?.isVisible = imageUrl != null
         if (imageUrl != null) {
             if (imageUrl.startsWith("http", true)) {

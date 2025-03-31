@@ -1,9 +1,9 @@
 package tachiyomi.domain.source.model
 
 import eu.kanade.tachiyomi.source.Source
-import eu.kanade.tachiyomi.source.model.SManga
+import eu.kanade.tachiyomi.source.model.Page
 import eu.kanade.tachiyomi.source.model.SChapter
-import eu.kanade.tachiyomi.source.model.Video
+import eu.kanade.tachiyomi.source.model.SManga
 
 class StubSource(
     override val id: Long,
@@ -19,7 +19,7 @@ class StubSource(
     override suspend fun getChapterList(anime: SManga): List<SChapter> =
         throw SourceNotInstalledException()
 
-    override suspend fun getPageList(episode: SChapter): List<Video> =
+    override suspend fun getPageList(episode: SChapter): List<Page> =
         throw SourceNotInstalledException()
 
     // KMK -->
