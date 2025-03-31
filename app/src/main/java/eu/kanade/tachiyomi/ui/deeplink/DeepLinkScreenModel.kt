@@ -13,10 +13,10 @@ import eu.kanade.tachiyomi.source.online.ResolvableSource
 import eu.kanade.tachiyomi.source.online.UriType
 import kotlinx.coroutines.flow.update
 import tachiyomi.core.common.util.lang.launchIO
-import tachiyomi.domain.manga.interactor.GetAnimeByUrlAndSourceId
-import tachiyomi.domain.manga.interactor.NetworkToLocalAnime
+import tachiyomi.domain.manga.interactor.GetMangaByUrlAndSourceId
+import tachiyomi.domain.manga.interactor.NetworkToLocalManga
 import tachiyomi.domain.manga.model.Manga
-import tachiyomi.domain.chapter.interactor.GetEpisodeByUrlAndAnimeId
+import tachiyomi.domain.chapter.interactor.GetChapterByUrlAndMangaId
 import tachiyomi.domain.chapter.model.Chapter
 import tachiyomi.domain.source.service.SourceManager
 import uy.kohesive.injekt.Injekt
@@ -25,9 +25,9 @@ import uy.kohesive.injekt.api.get
 class DeepLinkScreenModel(
     query: String = "",
     private val sourceManager: SourceManager = Injekt.get(),
-    private val networkToLocalAnime: NetworkToLocalAnime = Injekt.get(),
-    private val getEpisodeByUrlAndAnimeId: GetEpisodeByUrlAndAnimeId = Injekt.get(),
-    private val getAnimeByUrlAndSourceId: GetAnimeByUrlAndSourceId = Injekt.get(),
+    private val networkToLocalManga: NetworkToLocalManga = Injekt.get(),
+    private val getChapterByUrlAndMangaId: GetChapterByUrlAndMangaId = Injekt.get(),
+    private val getMangaByUrlAndSourceId: GetMangaByUrlAndSourceId = Injekt.get(),
     private val syncEpisodesWithSource: SyncEpisodesWithSource = Injekt.get(),
 ) : StateScreenModel<DeepLinkScreenModel.State>(State.Loading) {
 
@@ -62,7 +62,7 @@ class DeepLinkScreenModel(
     }
 
     private suspend fun getEpisodeFromSEpisode(sChapter: SChapter, manga: Manga, source: Source): Chapter? {
-        val localChapter = getEpisodeByUrlAndAnimeId.await(sChapter.url, manga.id)
+        val localChapter = getChapterByUrlAndMangaId.await(sChapter.url, manga.id)
 
         return if (localChapter == null) {
             val sourceChapters = source.getChapterList(manga.toSAnime())
@@ -74,8 +74,8 @@ class DeepLinkScreenModel(
     }
 
     private suspend fun getMangaFromSManga(sManga: SManga, sourceId: Long): Manga {
-        return getAnimeByUrlAndSourceId.await(sManga.url, sourceId)
-            ?: networkToLocalAnime.await(sManga.toDomainAnime(sourceId))
+        return getMangaByUrlAndSourceId.await(sManga.url, sourceId)
+            ?: networkToLocalManga.await(sManga.toDomainAnime(sourceId))
     }
 
     sealed interface State {

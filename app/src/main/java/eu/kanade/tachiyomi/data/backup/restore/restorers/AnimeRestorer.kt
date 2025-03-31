@@ -9,11 +9,11 @@ import eu.kanade.tachiyomi.data.backup.models.BackupMergedMangaReference
 import eu.kanade.tachiyomi.data.backup.models.BackupTracking
 import tachiyomi.data.DatabaseHandler
 import tachiyomi.data.UpdateStrategyColumnAdapter
-import tachiyomi.data.anime.MangaMapper
-import tachiyomi.data.anime.MergedMangaMapper
+import tachiyomi.data.manga.MangaMapper
+import tachiyomi.data.manga.MergedMangaMapper
 import tachiyomi.domain.manga.interactor.FetchInterval
-import tachiyomi.domain.manga.interactor.GetAnimeByUrlAndSourceId
-import tachiyomi.domain.manga.interactor.SetCustomAnimeInfo
+import tachiyomi.domain.manga.interactor.GetMangaByUrlAndSourceId
+import tachiyomi.domain.manga.interactor.SetCustomMangaInfo
 import tachiyomi.domain.manga.model.Manga
 import tachiyomi.domain.manga.model.CustomMangaInfo
 import tachiyomi.domain.category.interactor.GetCategories
@@ -33,14 +33,14 @@ class AnimeRestorer(
 
     private val handler: DatabaseHandler = Injekt.get(),
     private val getCategories: GetCategories = Injekt.get(),
-    private val getAnimeByUrlAndSourceId: GetAnimeByUrlAndSourceId = Injekt.get(),
+    private val getMangaByUrlAndSourceId: GetMangaByUrlAndSourceId = Injekt.get(),
     private val getChaptersByMangaId: GetChaptersByMangaId = Injekt.get(),
     private val updateAnime: UpdateAnime = Injekt.get(),
     private val getTracks: GetTracks = Injekt.get(),
     private val insertTrack: InsertTrack = Injekt.get(),
     fetchInterval: FetchInterval = Injekt.get(),
     // SY -->
-    private val setCustomAnimeInfo: SetCustomAnimeInfo = Injekt.get(),
+    private val setCustomMangaInfo: SetCustomMangaInfo = Injekt.get(),
     // SY <--
 ) {
     private var now = ZonedDateTime.now()
@@ -100,7 +100,7 @@ class AnimeRestorer(
     }
 
     private suspend fun findExistingManga(backupAnime: BackupAnime): Manga? {
-        return getAnimeByUrlAndSourceId.await(backupAnime.url, backupAnime.source)
+        return getMangaByUrlAndSourceId.await(backupAnime.url, backupAnime.source)
     }
 
     private suspend fun restoreExistingManga(manga: Manga, dbManga: Manga): Manga {
@@ -524,7 +524,7 @@ class AnimeRestorer(
 
     private fun restoreEditedInfo(mangaJson: CustomMangaInfo?) {
         mangaJson ?: return
-        setCustomAnimeInfo.set(mangaJson)
+        setCustomMangaInfo.set(mangaJson)
     }
 
     private fun BackupAnime.getCustomMangaInfo(): CustomMangaInfo? {

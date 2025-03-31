@@ -7,7 +7,7 @@ import eu.kanade.tachiyomi.ui.browse.source.SourcesScreen
 import exh.smartsearch.SmartSearchEngine
 import kotlinx.coroutines.CancellationException
 import tachiyomi.core.common.util.lang.launchIO
-import tachiyomi.domain.manga.interactor.NetworkToLocalAnime
+import tachiyomi.domain.manga.interactor.NetworkToLocalManga
 import tachiyomi.domain.manga.model.Manga
 import tachiyomi.domain.source.service.SourceManager
 import uy.kohesive.injekt.Injekt
@@ -16,7 +16,7 @@ import uy.kohesive.injekt.api.get
 class SmartSearchScreenModel(
     private val sourceId: Long,
     private val config: SourcesScreen.SmartSearchConfig,
-    private val networkToLocalAnime: NetworkToLocalAnime = Injekt.get(),
+    private val networkToLocalManga: NetworkToLocalManga = Injekt.get(),
     private val sourceManager: SourceManager = Injekt.get(),
 ) : StateScreenModel<SmartSearchScreenModel.SearchResults?>(null) {
     private val smartSearchEngine = SmartSearchEngine()
@@ -28,7 +28,7 @@ class SmartSearchScreenModel(
             val result = try {
                 val resultManga = smartSearchEngine.smartSearch(source, config.origTitle)
                 if (resultManga != null) {
-                    val localManga = networkToLocalAnime.await(resultManga)
+                    val localManga = networkToLocalManga.await(resultManga)
                     SearchResults.Found(localManga)
                 } else {
                     SearchResults.NotFound

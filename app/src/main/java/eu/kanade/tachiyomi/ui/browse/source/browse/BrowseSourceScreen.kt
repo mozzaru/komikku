@@ -326,7 +326,7 @@ data class BrowseSourceScreen(
                 onAnimeClick = {
                     // KMK -->
                     scope.launchIO {
-                        val manga = screenModel.networkToLocalAnime.getLocal(it)
+                        val manga = screenModel.networkToLocalManga.getLocal(it)
                         if (bulkFavoriteState.selectionMode) {
                             bulkFavoriteScreenModel.toggleSelection(manga)
                         } else {
@@ -348,7 +348,7 @@ data class BrowseSourceScreen(
                 onAnimeLongClick = {
                     // KMK -->
                     scope.launchIO {
-                        val manga = screenModel.networkToLocalAnime.getLocal(it)
+                        val manga = screenModel.networkToLocalManga.getLocal(it)
                         if (bulkFavoriteState.selectionMode) {
                             navigator.push(AnimeScreen(manga.id, true))
                         } else {

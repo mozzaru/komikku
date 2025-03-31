@@ -118,7 +118,7 @@ class RecommendsScreen(val mangaId: Long, val sourceId: Long) : Screen() {
                 onAnimeClick = {
                     // KMK -->
                     scope.launchIO {
-                        val manga = screenModel.networkToLocalAnime.getLocal(it)
+                        val manga = screenModel.networkToLocalManga.getLocal(it)
                         if (bulkFavoriteState.selectionMode) {
                             bulkFavoriteScreenModel.toggleSelection(manga)
                         } else {
@@ -130,7 +130,7 @@ class RecommendsScreen(val mangaId: Long, val sourceId: Long) : Screen() {
                 onAnimeLongClick = {
                     // KMK -->
                     scope.launchIO {
-                        val manga = screenModel.networkToLocalAnime.getLocal(it)
+                        val manga = screenModel.networkToLocalManga.getLocal(it)
                         if (!bulkFavoriteState.selectionMode) {
                             bulkFavoriteScreenModel.addRemoveManga(manga, haptic)
                         }

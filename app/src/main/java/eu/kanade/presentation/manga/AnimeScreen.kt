@@ -91,7 +91,7 @@ import exh.source.MERGED_SOURCE_ID
 import tachiyomi.domain.manga.model.Manga
 import tachiyomi.domain.manga.model.MangaCover
 import tachiyomi.domain.chapter.model.Chapter
-import tachiyomi.domain.chapter.service.missingEpisodesCount
+import tachiyomi.domain.chapter.service.missingChaptersCount
 import tachiyomi.domain.library.service.LibraryPreferences
 import tachiyomi.domain.source.model.StubSource
 import tachiyomi.i18n.MR
@@ -674,7 +674,7 @@ private fun AnimeScreenSmallImpl(
                         contentType = AnimeScreenItem.EPISODE_HEADER,
                     ) {
                         val missingEpisodeCount = remember(episodes) {
-                            episodes.map { it.chapter.episodeNumber }.missingEpisodesCount()
+                            episodes.map { it.chapter.episodeNumber }.missingChaptersCount()
                         }
                         EpisodeHeader(
                             enabled = !isAnySelected,
@@ -1071,7 +1071,7 @@ private fun AnimeScreenLargeImpl(
                                 contentType = AnimeScreenItem.EPISODE_HEADER,
                             ) {
                                 val missingEpisodeCount = remember(episodes) {
-                                    episodes.map { it.chapter.episodeNumber }.missingEpisodesCount()
+                                    episodes.map { it.chapter.episodeNumber }.missingChaptersCount()
                                 }
                                 EpisodeHeader(
                                     enabled = !isAnySelected,

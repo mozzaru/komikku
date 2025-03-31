@@ -79,17 +79,17 @@ import tachiyomi.core.common.util.lang.withUIContext
 import tachiyomi.core.common.util.system.ImageUtil
 import tachiyomi.core.common.util.system.logcat
 import tachiyomi.decoder.ImageDecoder
-import tachiyomi.domain.manga.interactor.GetAnime
-import tachiyomi.domain.manga.interactor.GetMergedAnimeById
+import tachiyomi.domain.manga.interactor.GetManga
+import tachiyomi.domain.manga.interactor.GetMergedMangaById
 import tachiyomi.domain.manga.interactor.GetMergedReferencesById
 import tachiyomi.domain.manga.model.Manga
 import tachiyomi.domain.download.service.DownloadPreferences
 import tachiyomi.domain.chapter.interactor.GetChaptersByMangaId
 import tachiyomi.domain.chapter.interactor.GetMergedChaptersByMangaId
-import tachiyomi.domain.chapter.interactor.UpdateEpisode
+import tachiyomi.domain.chapter.interactor.UpdateChapter
 import tachiyomi.domain.chapter.model.Chapter
-import tachiyomi.domain.chapter.model.EpisodeUpdate
-import tachiyomi.domain.chapter.service.getEpisodeSort
+import tachiyomi.domain.chapter.model.ChapterUpdate
+import tachiyomi.domain.chapter.service.getChapterSort
 import tachiyomi.domain.history.interactor.GetNextEpisodes
 import tachiyomi.domain.history.interactor.UpsertHistory
 import tachiyomi.domain.history.model.HistoryUpdate
@@ -116,16 +116,16 @@ class ReaderViewModel @JvmOverloads constructor(
     private val downloadPreferences: DownloadPreferences = Injekt.get(),
     private val trackPreferences: TrackPreferences = Injekt.get(),
     private val trackEpisode: TrackEpisode = Injekt.get(),
-    private val getAnime: GetAnime = Injekt.get(),
+    private val getManga: GetManga = Injekt.get(),
     private val getChaptersByMangaId: GetChaptersByMangaId = Injekt.get(),
     private val getNextEpisodes: GetNextEpisodes = Injekt.get(),
     private val upsertHistory: UpsertHistory = Injekt.get(),
-    private val updateEpisode: UpdateEpisode = Injekt.get(),
+    private val updateChapter: UpdateChapter = Injekt.get(),
     private val setAnimeViewerFlags: SetAnimeViewerFlags = Injekt.get(),
     private val syncPreferences: SyncPreferences = Injekt.get(),
     // SY -->
     private val uiPreferences: UiPreferences = Injekt.get(),
-    private val getMergedAnimeById: GetMergedAnimeById = Injekt.get(),
+    private val getMergedMangaById: GetMergedMangaById = Injekt.get(),
     private val getMergedReferencesById: GetMergedReferencesById = Injekt.get(),
     private val getMergedChaptersByMangaId: GetMergedChaptersByMangaId = Injekt.get(),
     private val setSeenStatus: SetSeenStatus = Injekt.get(),
@@ -184,7 +184,7 @@ class ReaderViewModel @JvmOverloads constructor(
         val (chapters, mangaMap) = runBlocking {
             if (manga.source == MERGED_SOURCE_ID) {
                 getMergedChaptersByMangaId.await(manga.id, applyScanlatorFilter = true) to
-                    getMergedAnimeById.await(manga.id)
+                    getMergedMangaById.await(manga.id)
                         .associateBy { it.id }
             } else {
                 getChaptersByMangaId.await(manga.id, applyScanlatorFilter = true) to null
@@ -239,7 +239,7 @@ class ReaderViewModel @JvmOverloads constructor(
         }
 
         chaptersForReader
-            .sortedWith(getEpisodeSort(manga, sortDescending = false))
+            .sortedWith(getChapterSort(manga, sortDescending = false))
             .run {
                 if (readerPreferences.skipDupe().get()) {
                     removeDuplicates(selectedChapter)
@@ -332,7 +332,7 @@ class ReaderViewModel @JvmOverloads constructor(
         if (!needsInit()) return Result.success(true)
         return withIOContext {
             try {
-                val manga = getAnime.await(mangaId)
+                val manga = getManga.await(mangaId)
                 if (manga != null) {
                     // SY -->
                     sourceManager.isInitialized.first { it }
@@ -346,7 +346,7 @@ class ReaderViewModel @JvmOverloads constructor(
                     }
                     val mergedManga = if (source is MergedSource) {
                         runBlocking {
-                            getMergedAnimeById.await(manga.id)
+                            getMergedMangaById.await(manga.id)
                         }.associateBy { it.id }
                     } else {
                         emptyMap()
@@ -717,8 +717,8 @@ class ReaderViewModel @JvmOverloads constructor(
                 }
             }
 
-            updateEpisode.await(
-                EpisodeUpdate(
+            updateChapter.await(
+                ChapterUpdate(
                     id = readerChapter.episode.id!!,
                     seen = readerChapter.episode.seen,
                     lastSecondSeen = readerChapter.episode.last_second_seen.toLong(),
@@ -804,8 +804,8 @@ class ReaderViewModel @JvmOverloads constructor(
         chapter.bookmark = bookmarked
 
         viewModelScope.launchNonCancellable {
-            updateEpisode.await(
-                EpisodeUpdate(
+            updateChapter.await(
+                ChapterUpdate(
                     id = chapter.id!!.toLong(),
                     bookmark = bookmarked,
                 ),
@@ -824,8 +824,8 @@ class ReaderViewModel @JvmOverloads constructor(
         val chapter = chapterList.find { it.episode.id == chapterId }?.episode ?: return
         chapter.bookmark = bookmarked
         viewModelScope.launchNonCancellable {
-            updateEpisode.await(
-                EpisodeUpdate(
+            updateChapter.await(
+                ChapterUpdate(
                     id = chapterId,
                     bookmark = bookmarked,
                 ),
@@ -868,7 +868,7 @@ class ReaderViewModel @JvmOverloads constructor(
 
                 mutableState.update {
                     it.copy(
-                        manga = getAnime.await(manga.id),
+                        manga = getManga.await(manga.id),
                         viewerChapters = currChapters,
                     )
                 }
@@ -904,7 +904,7 @@ class ReaderViewModel @JvmOverloads constructor(
 
                 mutableState.update {
                     it.copy(
-                        manga = getAnime.await(manga.id),
+                        manga = getManga.await(manga.id),
                         viewerChapters = currChapters,
                     )
                 }

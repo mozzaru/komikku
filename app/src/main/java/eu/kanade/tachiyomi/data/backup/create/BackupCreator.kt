@@ -29,7 +29,7 @@ import okio.sink
 import tachiyomi.core.common.i18n.stringResource
 import tachiyomi.core.common.util.system.logcat
 import tachiyomi.domain.manga.interactor.GetFavorites
-import tachiyomi.domain.manga.interactor.GetMergedAnime
+import tachiyomi.domain.manga.interactor.GetMergedManga
 import tachiyomi.domain.manga.model.Manga
 import tachiyomi.domain.manga.repository.MangaRepository
 import tachiyomi.domain.backup.service.BackupPreferences
@@ -61,7 +61,7 @@ class BackupCreator(
     // KMK <--
     // SY -->
     private val savedSearchBackupCreator: SavedSearchBackupCreator = SavedSearchBackupCreator(),
-    private val getMergedAnime: GetMergedAnime = Injekt.get(),
+    private val getMergedManga: GetMergedManga = Injekt.get(),
     // SY <--
 ) {
 
@@ -91,7 +91,7 @@ class BackupCreator(
 
             val nonFavoriteManga = if (options.seenEntries) mangaRepository.getSeenAnimeNotInLibrary() else emptyList()
             // SY -->
-            val mergedManga = getMergedAnime.await()
+            val mergedManga = getMergedManga.await()
             // SY <--
             val backupManga =
                 backupAnimes(getFavorites.await() + nonFavoriteManga /* SY --> */ + mergedManga /* SY <-- */, options)

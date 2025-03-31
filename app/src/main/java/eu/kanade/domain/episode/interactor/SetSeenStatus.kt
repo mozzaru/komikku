@@ -15,7 +15,7 @@ import tachiyomi.domain.manga.repository.MangaRepository
 import tachiyomi.domain.download.service.DownloadPreferences
 import tachiyomi.domain.chapter.interactor.GetMergedChaptersByMangaId
 import tachiyomi.domain.chapter.model.Chapter
-import tachiyomi.domain.chapter.model.EpisodeUpdate
+import tachiyomi.domain.chapter.model.ChapterUpdate
 import tachiyomi.domain.chapter.repository.ChapterRepository
 
 class SetSeenStatus(
@@ -29,7 +29,7 @@ class SetSeenStatus(
 ) {
 
     private val mapper = { chapter: Chapter, seen: Boolean ->
-        EpisodeUpdate(
+        ChapterUpdate(
             seen = seen,
             lastSecondSeen = if (!seen) 0 else null,
             id = chapter.id,

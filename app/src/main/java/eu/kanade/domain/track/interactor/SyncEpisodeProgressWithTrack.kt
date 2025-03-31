@@ -6,8 +6,8 @@ import eu.kanade.tachiyomi.data.track.Tracker
 import logcat.LogPriority
 import tachiyomi.core.common.util.system.logcat
 import tachiyomi.domain.chapter.interactor.GetChaptersByMangaId
-import tachiyomi.domain.chapter.interactor.UpdateEpisode
-import tachiyomi.domain.chapter.model.toEpisodeUpdate
+import tachiyomi.domain.chapter.interactor.UpdateChapter
+import tachiyomi.domain.chapter.model.toChapterUpdate
 import tachiyomi.domain.track.interactor.InsertTrack
 import tachiyomi.domain.track.model.Track
 import uy.kohesive.injekt.Injekt
@@ -15,7 +15,7 @@ import uy.kohesive.injekt.api.get
 import kotlin.math.max
 
 class SyncEpisodeProgressWithTrack(
-    private val updateEpisode: UpdateEpisode,
+    private val updateChapter: UpdateChapter,
     private val insertTrack: InsertTrack,
     private val getChaptersByMangaId: GetChaptersByMangaId,
 ) {
@@ -60,7 +60,7 @@ class SyncEpisodeProgressWithTrack(
             }
             .filter { episode -> !episode.seen }
             // KMK <--
-            .map { it.copy(seen = true).toEpisodeUpdate() }
+            .map { it.copy(seen = true).toChapterUpdate() }
 
         // only take into account continuous watching
         val localLastSeen = sortedEpisodes.takeWhile { it.seen }.lastOrNull()?.episodeNumber ?: 0F
@@ -81,7 +81,7 @@ class SyncEpisodeProgressWithTrack(
                 trackPreferences.autoSyncProgressFromTrackers().get() &&
                 !tracker.hasNotStartedWatching(remoteTrack.status)
             ) {
-                updateEpisode.awaitAll(chapterUpdates)
+                updateChapter.awaitAll(chapterUpdates)
                 return lastSeen.toInt()
             }
             // KMK <--

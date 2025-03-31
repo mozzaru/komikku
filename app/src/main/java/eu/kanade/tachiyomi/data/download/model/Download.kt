@@ -10,9 +10,9 @@ import kotlinx.coroutines.flow.debounce
 import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.emitAll
 import kotlinx.coroutines.flow.flow
-import tachiyomi.domain.manga.interactor.GetAnime
+import tachiyomi.domain.manga.interactor.GetManga
 import tachiyomi.domain.manga.model.Manga
-import tachiyomi.domain.chapter.interactor.GetEpisode
+import tachiyomi.domain.chapter.interactor.GetChapter
 import tachiyomi.domain.chapter.model.Chapter
 import tachiyomi.domain.source.service.SourceManager
 import uy.kohesive.injekt.Injekt
@@ -74,12 +74,12 @@ data class Download(
     companion object {
         suspend fun fromEpisodeId(
             episodeId: Long,
-            getEpisode: GetEpisode = Injekt.get(),
-            getAnime: GetAnime = Injekt.get(),
+            getChapter: GetChapter = Injekt.get(),
+            getManga: GetManga = Injekt.get(),
             sourceManager: SourceManager = Injekt.get(),
         ): Download? {
-            val episode = getEpisode.await(episodeId) ?: return null
-            val anime = getAnime.await(episode.animeId) ?: return null
+            val episode = getChapter.await(episodeId) ?: return null
+            val anime = getManga.await(episode.animeId) ?: return null
             val source = sourceManager.get(anime.source) as? HttpSource ?: return null
 
             return Download(source, anime, episode)

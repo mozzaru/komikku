@@ -91,7 +91,7 @@ fun RelatedAnimesScreen(
             contentPadding = paddingValues,
             onMangaClick = {
                 scope.launchIO {
-                    val manga = screenModel.networkToLocalAnime.getLocal(it)
+                    val manga = screenModel.networkToLocalManga.getLocal(it)
                     if (bulkFavoriteState.selectionMode) {
                         bulkFavoriteScreenModel.toggleSelection(manga)
                     } else {
@@ -101,7 +101,7 @@ fun RelatedAnimesScreen(
             },
             onMangaLongClick = {
                 scope.launchIO {
-                    val manga = screenModel.networkToLocalAnime.getLocal(it)
+                    val manga = screenModel.networkToLocalManga.getLocal(it)
                     if (!bulkFavoriteState.selectionMode) {
                         bulkFavoriteScreenModel.addRemoveManga(manga, haptic)
                     } else {

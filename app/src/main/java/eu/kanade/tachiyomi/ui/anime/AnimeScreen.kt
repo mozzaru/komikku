@@ -335,13 +335,13 @@ class AnimeScreen(
             },
             onRelatedAnimeClick = {
                 scope.launchIO {
-                    val manga = screenModel.networkToLocalAnime.getLocal(it)
+                    val manga = screenModel.networkToLocalManga.getLocal(it)
                     navigator.push(AnimeScreen(manga.id, true))
                 }
             },
             onRelatedAnimeLongClick = {
                 scope.launchIO {
-                    val manga = screenModel.networkToLocalAnime.getLocal(it)
+                    val manga = screenModel.networkToLocalManga.getLocal(it)
                     bulkFavoriteScreenModel.addRemoveManga(manga, haptic)
                 }
             },

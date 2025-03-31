@@ -85,7 +85,7 @@ import tachiyomi.core.common.util.lang.withUIContext
 import tachiyomi.core.common.util.system.ImageUtil
 import tachiyomi.core.common.util.system.logcat
 import tachiyomi.domain.UnsortedPreferences
-import tachiyomi.domain.manga.interactor.GetAllAnime
+import tachiyomi.domain.manga.interactor.GetAllManga
 import tachiyomi.domain.manga.interactor.ResetViewerFlags
 import tachiyomi.domain.chapter.interactor.GetChaptersByMangaId
 import tachiyomi.domain.release.service.AppUpdatePolicy
@@ -578,7 +578,7 @@ object SettingsAdvancedScreen : SearchableSettings {
                     if (job?.isActive == true) return@CleanupDownloadsDialog
                     context.toast(SYMR.strings.starting_cleanup)
                     job = scope.launchNonCancellable {
-                        val mangaList = Injekt.get<GetAllAnime>().await()
+                        val mangaList = Injekt.get<GetAllManga>().await()
                         val downloadManager: DownloadManager = Injekt.get()
                         var foldersCleared = 0
                         Injekt.get<SourceManager>().getOnlineSources().forEach { source ->

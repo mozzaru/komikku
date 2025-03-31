@@ -6,7 +6,7 @@ import eu.kanade.tachiyomi.ui.anime.EpisodeList
 import tachiyomi.domain.manga.model.Manga
 import tachiyomi.domain.manga.model.applyFilter
 import tachiyomi.domain.chapter.model.Chapter
-import tachiyomi.domain.chapter.service.getEpisodeSort
+import tachiyomi.domain.chapter.service.getChapterSort
 import tachiyomi.source.local.isLocal
 
 /**
@@ -40,7 +40,7 @@ fun List<Chapter>.applyFilters(
                 downloaded || isLocalAnime
             }
         }
-        .sortedWith(getEpisodeSort(manga))
+        .sortedWith(getChapterSort(manga))
 }
 
 /**
@@ -56,5 +56,5 @@ fun List<EpisodeList.Item>.applyFilters(manga: Manga): Sequence<EpisodeList.Item
         .filter { (episode) -> applyFilter(unseenFilter) { !episode.seen } }
         .filter { (episode) -> applyFilter(bookmarkedFilter) { episode.bookmark } }
         .filter { applyFilter(downloadedFilter) { it.isDownloaded || isLocalAnime } }
-        .sortedWith { (episode1), (episode2) -> getEpisodeSort(manga).invoke(episode1, episode2) }
+        .sortedWith { (episode1), (episode2) -> getChapterSort(manga).invoke(episode1, episode2) }
 }

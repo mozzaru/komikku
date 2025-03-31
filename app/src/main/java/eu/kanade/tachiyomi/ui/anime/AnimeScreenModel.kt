@@ -98,14 +98,14 @@ import tachiyomi.core.common.util.lang.withUIContext
 import tachiyomi.core.common.util.system.logcat
 import tachiyomi.data.source.NoResultsException
 import tachiyomi.domain.manga.interactor.DeleteMergeById
-import tachiyomi.domain.manga.interactor.GetAnime
-import tachiyomi.domain.manga.interactor.GetAnimeWithEpisodes
-import tachiyomi.domain.manga.interactor.GetDuplicateLibraryAnime
-import tachiyomi.domain.manga.interactor.GetMergedAnimeById
+import tachiyomi.domain.manga.interactor.GetManga
+import tachiyomi.domain.manga.interactor.GetMangaWithChapters
+import tachiyomi.domain.manga.interactor.GetDuplicateLibraryManga
+import tachiyomi.domain.manga.interactor.GetMergedMangaById
 import tachiyomi.domain.manga.interactor.GetMergedReferencesById
-import tachiyomi.domain.manga.interactor.NetworkToLocalAnime
-import tachiyomi.domain.manga.interactor.SetAnimeEpisodeFlags
-import tachiyomi.domain.manga.interactor.SetCustomAnimeInfo
+import tachiyomi.domain.manga.interactor.NetworkToLocalManga
+import tachiyomi.domain.manga.interactor.SetMangaChapterFlags
+import tachiyomi.domain.manga.interactor.SetCustomMangaInfo
 import tachiyomi.domain.manga.interactor.UpdateMergedSettings
 import tachiyomi.domain.manga.model.Manga
 import tachiyomi.domain.manga.model.MangaCover
@@ -120,12 +120,12 @@ import tachiyomi.domain.category.interactor.GetCategories
 import tachiyomi.domain.category.interactor.SetMangaCategories
 import tachiyomi.domain.category.model.Category
 import tachiyomi.domain.chapter.interactor.GetMergedChaptersByMangaId
-import tachiyomi.domain.chapter.interactor.SetAnimeDefaultEpisodeFlags
-import tachiyomi.domain.chapter.interactor.UpdateEpisode
+import tachiyomi.domain.chapter.interactor.SetMangaDefaultChapterFlags
+import tachiyomi.domain.chapter.interactor.UpdateChapter
 import tachiyomi.domain.chapter.model.Chapter
-import tachiyomi.domain.chapter.model.EpisodeUpdate
-import tachiyomi.domain.chapter.service.calculateEpisodeGap
-import tachiyomi.domain.chapter.service.getEpisodeSort
+import tachiyomi.domain.chapter.model.ChapterUpdate
+import tachiyomi.domain.chapter.service.calculateChapterGap
+import tachiyomi.domain.chapter.service.getChapterSort
 import tachiyomi.domain.library.service.LibraryPreferences
 import tachiyomi.domain.source.model.StubSource
 import tachiyomi.domain.source.service.SourceManager
@@ -158,29 +158,29 @@ class AnimeScreenModel(
     private val trackEpisode: TrackEpisode = Injekt.get(),
     private val downloadManager: DownloadManager = Injekt.get(),
     private val downloadCache: DownloadCache = Injekt.get(),
-    private val getAnimeWithEpisodes: GetAnimeWithEpisodes = Injekt.get(),
+    private val getMangaWithChapters: GetMangaWithChapters = Injekt.get(),
     // SY -->
     private val sourceManager: SourceManager = Injekt.get(),
-    private val getAnime: GetAnime = Injekt.get(),
+    private val getAnime: GetManga = Injekt.get(),
     private val getMergedChaptersByMangaId: GetMergedChaptersByMangaId = Injekt.get(),
-    private val getMergedAnimeById: GetMergedAnimeById = Injekt.get(),
+    private val getMergedMangaById: GetMergedMangaById = Injekt.get(),
     private val getMergedReferencesById: GetMergedReferencesById = Injekt.get(),
     // KMK -->
     private val smartSearchMerge: SmartSearchMerge = Injekt.get(),
     // KMK <--
     private val updateMergedSettings: UpdateMergedSettings = Injekt.get(),
-    val networkToLocalAnime: NetworkToLocalAnime = Injekt.get(),
+    val networkToLocalManga: NetworkToLocalManga = Injekt.get(),
     private val deleteMergeById: DeleteMergeById = Injekt.get(),
-    private val setCustomAnimeInfo: SetCustomAnimeInfo = Injekt.get(),
+    private val setCustomMangaInfo: SetCustomMangaInfo = Injekt.get(),
     // SY <--
-    private val getDuplicateLibraryAnime: GetDuplicateLibraryAnime = Injekt.get(),
+    private val getDuplicateLibraryManga: GetDuplicateLibraryManga = Injekt.get(),
     private val getAvailableScanlators: GetAvailableScanlators = Injekt.get(),
     private val getExcludedScanlators: GetExcludedScanlators = Injekt.get(),
     private val setExcludedScanlators: SetExcludedScanlators = Injekt.get(),
-    private val setAnimeEpisodeFlags: SetAnimeEpisodeFlags = Injekt.get(),
-    private val setAnimeDefaultEpisodeFlags: SetAnimeDefaultEpisodeFlags = Injekt.get(),
+    private val setMangaChapterFlags: SetMangaChapterFlags = Injekt.get(),
+    private val setMangaDefaultChapterFlags: SetMangaDefaultChapterFlags = Injekt.get(),
     private val setSeenStatus: SetSeenStatus = Injekt.get(),
-    private val updateEpisode: UpdateEpisode = Injekt.get(),
+    private val updateChapter: UpdateChapter = Injekt.get(),
     private val updateAnime: UpdateAnime = Injekt.get(),
     private val syncEpisodesWithSource: SyncEpisodesWithSource = Injekt.get(),
     private val getCategories: GetCategories = Injekt.get(),
@@ -252,7 +252,7 @@ class AnimeScreenModel(
 
     init {
         screenModelScope.launchIO {
-            getAnimeWithEpisodes.subscribe(mangaId, applyScanlatorFilter = true).distinctUntilChanged()
+            getMangaWithChapters.subscribe(mangaId, applyScanlatorFilter = true).distinctUntilChanged()
                 // SY -->
                 .combine(
                     getMergedChaptersByMangaId.subscribe(mangaId, true, applyScanlatorFilter = true)
@@ -267,7 +267,7 @@ class AnimeScreenModel(
                 .map { CombineState(it) }
                 .combine(
                     combine(
-                        getMergedAnimeById.subscribe(mangaId)
+                        getMergedMangaById.subscribe(mangaId)
                             .distinctUntilChanged(),
                         getMergedReferencesById.subscribe(mangaId)
                             .distinctUntilChanged(),
@@ -343,13 +343,13 @@ class AnimeScreenModel(
         observeDownloads()
 
         screenModelScope.launchIO {
-            val manga = getAnimeWithEpisodes.awaitManga(mangaId)
+            val manga = getMangaWithChapters.awaitManga(mangaId)
 
             // SY -->
             val mergedData = getMergedReferencesById.await(mangaId).takeIf { it.isNotEmpty() }?.let { references ->
                 MergedAnimeData(
                     references,
-                    getMergedAnimeById.await(mangaId).associateBy { it.id },
+                    getMergedMangaById.await(mangaId).associateBy { it.id },
                     references.map { it.mangaSourceId }.distinct()
                         .map { sourceManager.getOrStub(it) },
                 )
@@ -360,14 +360,14 @@ class AnimeScreenModel(
                 ) {
                     getMergedChaptersByMangaId.await(mangaId, applyScanlatorFilter = true)
                 } else {
-                    getAnimeWithEpisodes.awaitChapters(mangaId, applyScanlatorFilter = true)
+                    getMangaWithChapters.awaitChapters(mangaId, applyScanlatorFilter = true)
                 }
                 )
                 .toChapterListItems(manga, mergedData)
             // SY <--
 
             if (!manga.favorite) {
-                setAnimeDefaultEpisodeFlags.await(manga)
+                setMangaDefaultChapterFlags.await(manga)
             }
 
             val needRefreshInfo = !manga.initialized
@@ -592,7 +592,7 @@ class AnimeScreenModel(
             } else {
                 null
             }
-            setCustomAnimeInfo.set(
+            setCustomMangaInfo.set(
                 CustomMangaInfo(
                     state.manga.id,
                     title?.trimOrNull(),
@@ -700,7 +700,7 @@ class AnimeScreenModel(
                 // Add to library
                 // First, check if duplicate exists if callback is provided
                 if (checkDuplicate) {
-                    val duplicate = getDuplicateLibraryAnime.await(manga).getOrNull(0)
+                    val duplicate = getDuplicateLibraryManga.await(manga).getOrNull(0)
 
                     if (duplicate != null) {
                         updateSuccessState { it.copy(dialog = Dialog.DuplicateManga(manga, duplicate)) }
@@ -1133,7 +1133,7 @@ class AnimeScreenModel(
 
     private fun getUnreadChaptersSorted(): List<Chapter> {
         val manga = successState?.manga ?: return emptyList()
-        val chaptersSorted = getUnreadChapters().sortedWith(getEpisodeSort(manga))
+        val chaptersSorted = getUnreadChapters().sortedWith(getChapterSort(manga))
         return if (manga.sortDescending()) chaptersSorted.reversed() else chaptersSorted
     }
 
@@ -1291,8 +1291,8 @@ class AnimeScreenModel(
         screenModelScope.launchIO {
             chapters
                 .filterNot { it.bookmark == bookmarked }
-                .map { EpisodeUpdate(id = it.id, bookmark = bookmarked) }
-                .let { updateEpisode.awaitAll(it) }
+                .map { ChapterUpdate(id = it.id, bookmark = bookmarked) }
+                .let { updateChapter.awaitAll(it) }
         }
         toggleAllSelection(false)
     }
@@ -1345,7 +1345,7 @@ class AnimeScreenModel(
             TriState.ENABLED_NOT -> Manga.EPISODE_SHOW_SEEN
         }
         screenModelScope.launchNonCancellable {
-            setAnimeEpisodeFlags.awaitSetUnreadFilter(manga, flag)
+            setMangaChapterFlags.awaitSetUnreadFilter(manga, flag)
         }
     }
 
@@ -1363,7 +1363,7 @@ class AnimeScreenModel(
         }
 
         screenModelScope.launchNonCancellable {
-            setAnimeEpisodeFlags.awaitSetDownloadedFilter(manga, flag)
+            setMangaChapterFlags.awaitSetDownloadedFilter(manga, flag)
         }
     }
 
@@ -1381,7 +1381,7 @@ class AnimeScreenModel(
         }
 
         screenModelScope.launchNonCancellable {
-            setAnimeEpisodeFlags.awaitSetBookmarkFilter(manga, flag)
+            setMangaChapterFlags.awaitSetBookmarkFilter(manga, flag)
         }
     }
 
@@ -1393,7 +1393,7 @@ class AnimeScreenModel(
         val manga = successState?.manga ?: return
 
         screenModelScope.launchNonCancellable {
-            setAnimeEpisodeFlags.awaitSetDisplayMode(manga, mode)
+            setMangaChapterFlags.awaitSetDisplayMode(manga, mode)
         }
     }
 
@@ -1405,7 +1405,7 @@ class AnimeScreenModel(
         val manga = successState?.manga ?: return
 
         screenModelScope.launchNonCancellable {
-            setAnimeEpisodeFlags.awaitSetSortingModeOrFlipOrder(manga, sort)
+            setMangaChapterFlags.awaitSetSortingModeOrFlipOrder(manga, sort)
         }
     }
 
@@ -1414,7 +1414,7 @@ class AnimeScreenModel(
         screenModelScope.launchNonCancellable {
             libraryPreferences.setChapterSettingsDefault(manga)
             if (applyToExisting) {
-                setAnimeDefaultEpisodeFlags.awaitAll()
+                setMangaDefaultChapterFlags.awaitAll()
             }
             snackbarHostState.showSnackbar(message = context.stringResource(MR.strings.chapter_settings_updated))
         }
@@ -1423,7 +1423,7 @@ class AnimeScreenModel(
     fun resetToDefaultSettings() {
         val manga = successState?.manga ?: return
         screenModelScope.launchNonCancellable {
-            setAnimeDefaultEpisodeFlags.await(manga)
+            setMangaDefaultChapterFlags.await(manga)
         }
     }
 
@@ -1708,7 +1708,7 @@ class AnimeScreenModel(
                             .minus(1)
                             .coerceAtLeast(0)
                     } else {
-                        calculateEpisodeGap(higherChapter.chapter, lowerChapter.chapter)
+                        calculateChapterGap(higherChapter.chapter, lowerChapter.chapter)
                     }
                         .takeIf { it > 0 }
                         ?.let { missingCount ->
@@ -1739,7 +1739,7 @@ class AnimeScreenModel(
                     .filter { (chapter) -> applyFilter(unreadFilter) { !chapter.seen } }
                     .filter { (chapter) -> applyFilter(bookmarkedFilter) { chapter.bookmark } }
                     .filter { applyFilter(downloadedFilter) { it.isDownloaded || isLocalManga } }
-                    .sortedWith { (chapter1), (chapter2) -> getEpisodeSort(manga).invoke(chapter1, chapter2) }
+                    .sortedWith { (chapter1), (chapter2) -> getChapterSort(manga).invoke(chapter1, chapter2) }
             }
         }
     }

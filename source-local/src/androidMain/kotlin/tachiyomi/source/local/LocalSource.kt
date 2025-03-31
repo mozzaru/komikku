@@ -33,7 +33,7 @@ import tachiyomi.core.metadata.comicinfo.ComicInfoPublishingStatus
 import tachiyomi.core.metadata.comicinfo.copyFromComicInfo
 import tachiyomi.core.metadata.comicinfo.getComicInfo
 import tachiyomi.core.metadata.tachiyomi.AnimeDetails
-import tachiyomi.domain.chapter.service.EpisodeRecognition
+import tachiyomi.domain.chapter.service.ChapterRecognition
 import tachiyomi.domain.manga.model.Manga
 import tachiyomi.i18n.MR
 import tachiyomi.source.local.filter.OrderBy
@@ -338,7 +338,7 @@ actual class LocalSource(
                         episodeFile.nameWithoutExtension
                     }.orEmpty()
                     date_upload = episodeFile.lastModified()
-                    chapter_number = EpisodeRecognition
+                    chapter_number = ChapterRecognition
                         .parseEpisodeNumber(manga.title, this.name, this.chapter_number.toDouble())
                         .toFloat()
 

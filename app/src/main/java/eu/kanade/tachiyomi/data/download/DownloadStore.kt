@@ -8,9 +8,9 @@ import kotlinx.coroutines.runBlocking
 import kotlinx.serialization.Serializable
 import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.Json
-import tachiyomi.domain.manga.interactor.GetAnime
+import tachiyomi.domain.manga.interactor.GetManga
 import tachiyomi.domain.manga.model.Manga
-import tachiyomi.domain.chapter.interactor.GetEpisode
+import tachiyomi.domain.chapter.interactor.GetChapter
 import tachiyomi.domain.source.service.SourceManager
 import uy.kohesive.injekt.Injekt
 import uy.kohesive.injekt.api.get
@@ -22,8 +22,8 @@ class DownloadStore(
     context: Context,
     private val sourceManager: SourceManager = Injekt.get(),
     private val json: Json = Injekt.get(),
-    private val getAnime: GetAnime = Injekt.get(),
-    private val getEpisode: GetEpisode = Injekt.get(),
+    private val getManga: GetManga = Injekt.get(),
+    private val getChapter: GetChapter = Injekt.get(),
 ) {
 
     /**
@@ -101,10 +101,10 @@ class DownloadStore(
             val cachedManga = mutableMapOf<Long, Manga?>()
             for ((mangaId, chapterId) in objs) {
                 val manga = cachedManga.getOrPut(mangaId) {
-                    runBlocking { getAnime.await(mangaId) }
+                    runBlocking { getManga.await(mangaId) }
                 } ?: continue
                 val source = sourceManager.get(manga.source) as? HttpSource ?: continue
-                val chapter = runBlocking { getEpisode.await(chapterId) } ?: continue
+                val chapter = runBlocking { getChapter.await(chapterId) } ?: continue
                 downloads.add(Download(source, manga, chapter))
             }
         }

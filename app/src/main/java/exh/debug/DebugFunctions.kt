@@ -16,7 +16,7 @@ import mihon.core.migration.MigrationStrategyFactory
 import mihon.core.migration.Migrator
 import mihon.core.migration.migrations.migrations
 import tachiyomi.data.DatabaseHandler
-import tachiyomi.domain.manga.interactor.GetAllAnime
+import tachiyomi.domain.manga.interactor.GetAllManga
 import tachiyomi.domain.manga.interactor.GetFavorites
 import tachiyomi.domain.source.service.SourceManager
 import uy.kohesive.injekt.Injekt
@@ -31,7 +31,7 @@ object DebugFunctions {
     private val sourceManager: SourceManager by injectLazy()
     private val updateAnime: UpdateAnime by injectLazy()
     private val getFavorites: GetFavorites by injectLazy()
-    private val getAllAnime: GetAllAnime by injectLazy()
+    private val getAllManga: GetAllManga by injectLazy()
 
     fun forceUpgradeMigration(): Boolean {
         val migrationContext = MigrationContext(dryrun = false)
@@ -55,9 +55,9 @@ object DebugFunctions {
 
     fun countMangaInDatabaseInLibrary() = runBlocking { getFavorites.await().size }
 
-    fun countMangaInDatabaseNotInLibrary() = runBlocking { getAllAnime.await() }.count { !it.favorite }
+    fun countMangaInDatabaseNotInLibrary() = runBlocking { getAllManga.await() }.count { !it.favorite }
 
-    fun countMangaInDatabase() = runBlocking { getAllAnime.await() }.size
+    fun countMangaInDatabase() = runBlocking { getAllManga.await() }.size
 
     fun clearSavedSearches() = runBlocking { handler.await { saved_searchQueries.deleteAll() } }
 

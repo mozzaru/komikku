@@ -34,9 +34,9 @@ import mihon.domain.extensionrepo.interactor.UpdateExtensionRepo
 import mihon.domain.extensionrepo.repository.ExtensionRepoRepository
 import mihon.domain.extensionrepo.service.ExtensionRepoService
 import mihon.domain.upcoming.interactor.GetUpcomingManga
-import tachiyomi.data.anime.MangaRepositoryImpl
+import tachiyomi.data.manga.MangaRepositoryImpl
 import tachiyomi.data.category.CategoryRepositoryImpl
-import tachiyomi.data.episode.ChapterRepositoryImpl
+import tachiyomi.data.chapter.ChapterRepositoryImpl
 import tachiyomi.data.history.HistoryRepositoryImpl
 import tachiyomi.data.release.ReleaseServiceImpl
 import tachiyomi.data.source.SourceRepositoryImpl
@@ -44,15 +44,15 @@ import tachiyomi.data.source.StubSourceRepositoryImpl
 import tachiyomi.data.track.TrackRepositoryImpl
 import tachiyomi.data.updates.UpdatesRepositoryImpl
 import tachiyomi.domain.manga.interactor.FetchInterval
-import tachiyomi.domain.manga.interactor.GetAnime
-import tachiyomi.domain.manga.interactor.GetAnimeByUrlAndSourceId
-import tachiyomi.domain.manga.interactor.GetAnimeWithEpisodes
-import tachiyomi.domain.manga.interactor.GetDuplicateLibraryAnime
+import tachiyomi.domain.manga.interactor.GetManga
+import tachiyomi.domain.manga.interactor.GetMangaByUrlAndSourceId
+import tachiyomi.domain.manga.interactor.GetMangaWithChapters
+import tachiyomi.domain.manga.interactor.GetDuplicateLibraryManga
 import tachiyomi.domain.manga.interactor.GetFavorites
 import tachiyomi.domain.manga.interactor.GetLibraryManga
-import tachiyomi.domain.manga.interactor.NetworkToLocalAnime
+import tachiyomi.domain.manga.interactor.NetworkToLocalManga
 import tachiyomi.domain.manga.interactor.ResetViewerFlags
-import tachiyomi.domain.manga.interactor.SetAnimeEpisodeFlags
+import tachiyomi.domain.manga.interactor.SetMangaChapterFlags
 import tachiyomi.domain.manga.repository.MangaRepository
 import tachiyomi.domain.category.interactor.CreateCategoryWithName
 import tachiyomi.domain.category.interactor.DeleteCategory
@@ -66,12 +66,12 @@ import tachiyomi.domain.category.interactor.SetDisplayMode
 import tachiyomi.domain.category.interactor.SetSortModeForCategory
 import tachiyomi.domain.category.interactor.UpdateCategory
 import tachiyomi.domain.category.repository.CategoryRepository
-import tachiyomi.domain.chapter.interactor.GetEpisode
-import tachiyomi.domain.chapter.interactor.GetEpisodeByUrlAndAnimeId
+import tachiyomi.domain.chapter.interactor.GetChapter
+import tachiyomi.domain.chapter.interactor.GetChapterByUrlAndMangaId
 import tachiyomi.domain.chapter.interactor.GetChaptersByMangaId
-import tachiyomi.domain.chapter.interactor.SetAnimeDefaultEpisodeFlags
-import tachiyomi.domain.chapter.interactor.ShouldUpdateDbEpisode
-import tachiyomi.domain.chapter.interactor.UpdateEpisode
+import tachiyomi.domain.chapter.interactor.SetMangaDefaultChapterFlags
+import tachiyomi.domain.chapter.interactor.ShouldUpdateDbChapter
+import tachiyomi.domain.chapter.interactor.UpdateChapter
 import tachiyomi.domain.chapter.repository.ChapterRepository
 import tachiyomi.domain.history.interactor.GetHistory
 import tachiyomi.domain.history.interactor.GetNextEpisodes
@@ -116,20 +116,20 @@ class DomainModule : InjektModule {
         // KMK <--
 
         addSingletonFactory<MangaRepository> { MangaRepositoryImpl(get()) }
-        addFactory { GetDuplicateLibraryAnime(get()) }
+        addFactory { GetDuplicateLibraryManga(get()) }
         addFactory { GetFavorites(get()) }
         addFactory { GetLibraryManga(get()) }
-        addFactory { GetAnimeWithEpisodes(get(), get()) }
-        addFactory { GetAnimeByUrlAndSourceId(get()) }
-        addFactory { GetAnime(get()) }
+        addFactory { GetMangaWithChapters(get(), get()) }
+        addFactory { GetMangaByUrlAndSourceId(get()) }
+        addFactory { GetManga(get()) }
         addFactory { GetNextEpisodes(get(), get(), get(), get()) }
         addFactory { GetUpcomingManga(get()) }
         addFactory { ResetViewerFlags(get()) }
-        addFactory { SetAnimeEpisodeFlags(get()) }
+        addFactory { SetMangaChapterFlags(get()) }
         addFactory { FetchInterval(get()) }
-        addFactory { SetAnimeDefaultEpisodeFlags(get(), get(), get()) }
+        addFactory { SetMangaDefaultChapterFlags(get(), get(), get()) }
         addFactory { SetAnimeViewerFlags(get()) }
-        addFactory { NetworkToLocalAnime(get()) }
+        addFactory { NetworkToLocalManga(get()) }
         addFactory { UpdateAnime(get(), get()) }
         addFactory { SetMangaCategories(get()) }
         addFactory { GetExcludedScanlators(get()) }
@@ -149,12 +149,12 @@ class DomainModule : InjektModule {
         addFactory { SyncEpisodeProgressWithTrack(get(), get(), get()) }
 
         addSingletonFactory<ChapterRepository> { ChapterRepositoryImpl(get()) }
-        addFactory { GetEpisode(get()) }
+        addFactory { GetChapter(get()) }
         addFactory { GetChaptersByMangaId(get()) }
-        addFactory { GetEpisodeByUrlAndAnimeId(get()) }
-        addFactory { UpdateEpisode(get()) }
+        addFactory { GetChapterByUrlAndMangaId(get()) }
+        addFactory { UpdateChapter(get()) }
         addFactory { SetSeenStatus(get(), get(), get(), get(), get()) }
-        addFactory { ShouldUpdateDbEpisode() }
+        addFactory { ShouldUpdateDbChapter() }
         addFactory { SyncEpisodesWithSource(get(), get(), get(), get(), get(), get(), get(), get()) }
         addFactory { GetAvailableScanlators(get()) }
         addFactory { FilterChaptersForDownload(get(), get(), get(), get()) }

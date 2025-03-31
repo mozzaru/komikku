@@ -85,8 +85,8 @@ import tachiyomi.domain.library.model.LibrarySort
 import tachiyomi.domain.library.model.sort
 import tachiyomi.domain.library.service.LibraryPreferences
 import tachiyomi.domain.manga.interactor.GetLibraryManga
-import tachiyomi.domain.manga.interactor.GetMergedAnimeById
-import tachiyomi.domain.manga.interactor.SetCustomAnimeInfo
+import tachiyomi.domain.manga.interactor.GetMergedMangaById
+import tachiyomi.domain.manga.interactor.SetCustomMangaInfo
 import tachiyomi.domain.manga.model.CustomMangaInfo
 import tachiyomi.domain.manga.model.Manga
 import tachiyomi.domain.manga.model.MangaUpdate
@@ -127,10 +127,10 @@ class LibraryScreenModel(
     private val downloadCache: DownloadCache = Injekt.get(),
     private val trackerManager: TrackerManager = Injekt.get(),
     // SY -->
-    private val getMergedAnimeById: GetMergedAnimeById = Injekt.get(),
+    private val getMergedMangaById: GetMergedMangaById = Injekt.get(),
     private val getTracks: GetTracks = Injekt.get(),
     private val searchEngine: SearchEngine = Injekt.get(),
-    private val setCustomAnimeInfo: SetCustomAnimeInfo = Injekt.get(),
+    private val setCustomMangaInfo: SetCustomMangaInfo = Injekt.get(),
     private val getMergedChaptersByMangaId: GetMergedChaptersByMangaId = Injekt.get(),
     syncPreferences: SyncPreferences = Injekt.get(),
     // SY <--
@@ -527,7 +527,7 @@ class LibraryScreenModel(
                             // SY -->
                             if (libraryManga.manga.source == MERGED_SOURCE_ID) {
                                 runBlocking {
-                                    getMergedAnimeById.await(libraryManga.manga.id)
+                                    getMergedMangaById.await(libraryManga.manga.id)
                                 }.sumOf { downloadManager.getDownloadCount(it) }.toLong()
                             } else {
                                 downloadManager.getDownloadCount(libraryManga.manga).toLong()
@@ -652,7 +652,7 @@ class LibraryScreenModel(
 
     suspend fun getNextUnreadChapter(manga: Manga): Chapter? {
         // SY -->
-        val mergedManga = getMergedAnimeById.await(manga.id).associateBy { it.id }
+        val mergedManga = getMergedMangaById.await(manga.id).associateBy { it.id }
         return if (manga.id == MERGED_SOURCE_ID) {
             getMergedChaptersByMangaId.await(manga.id, applyScanlatorFilter = true)
         } else {
@@ -697,7 +697,7 @@ class LibraryScreenModel(
             mangas.forEach { manga ->
                 // SY -->
                 if (manga.source == MERGED_SOURCE_ID) {
-                    val mergedMangas = getMergedAnimeById.await(manga.id)
+                    val mergedMangas = getMergedMangaById.await(manga.id)
                         .associateBy { it.id }
                     getNextEpisodes.await(manga.id)
                         .let { if (amount != null) it.take(amount) else it }
@@ -755,7 +755,7 @@ class LibraryScreenModel(
                 status = null,
             )
 
-            setCustomAnimeInfo.set(mangaInfo)
+            setCustomMangaInfo.set(mangaInfo)
         }
         clearSelection()
     }
@@ -804,7 +804,7 @@ class LibraryScreenModel(
                     val source = sourceManager.get(manga.source) as? HttpSource
                     if (source != null) {
                         if (source is MergedSource) {
-                            val mergedMangas = getMergedAnimeById.await(manga.id)
+                            val mergedMangas = getMergedMangaById.await(manga.id)
                             val sources = mergedMangas.distinctBy {
                                 it.source
                             }.map { sourceManager.getOrStub(it.source) }

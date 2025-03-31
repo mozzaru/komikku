@@ -6,12 +6,12 @@ import eu.kanade.domain.anime.model.toSAnime
 import exh.source.MERGED_SOURCE_ID
 import tachiyomi.core.common.i18n.stringResource
 import tachiyomi.core.common.util.lang.withNonCancellableContext
-import tachiyomi.domain.manga.interactor.DeleteAnimeById
+import tachiyomi.domain.manga.interactor.DeleteMangaById
 import tachiyomi.domain.manga.interactor.DeleteByMergeId
-import tachiyomi.domain.manga.interactor.GetAnime
+import tachiyomi.domain.manga.interactor.GetManga
 import tachiyomi.domain.manga.interactor.GetMergedReferencesById
 import tachiyomi.domain.manga.interactor.InsertMergedReference
-import tachiyomi.domain.manga.interactor.NetworkToLocalAnime
+import tachiyomi.domain.manga.interactor.NetworkToLocalManga
 import tachiyomi.domain.manga.model.Manga
 import tachiyomi.domain.manga.model.MergedMangaReference
 import tachiyomi.domain.category.interactor.GetCategories
@@ -21,11 +21,11 @@ import uy.kohesive.injekt.Injekt
 import uy.kohesive.injekt.api.get
 
 class SmartSearchMerge(
-    private val getAnime: GetAnime = Injekt.get(),
+    private val getManga: GetManga = Injekt.get(),
     private val getMergedReferencesById: GetMergedReferencesById = Injekt.get(),
     private val insertMergedReference: InsertMergedReference = Injekt.get(),
-    private val networkToLocalAnime: NetworkToLocalAnime = Injekt.get(),
-    private val deleteAnimeById: DeleteAnimeById = Injekt.get(),
+    private val networkToLocalManga: NetworkToLocalManga = Injekt.get(),
+    private val deleteMangaById: DeleteMangaById = Injekt.get(),
     private val deleteByMergeId: DeleteByMergeId = Injekt.get(),
     private val getCategories: GetCategories = Injekt.get(),
     private val setMangaCategories: SetMangaCategories = Injekt.get(),
@@ -34,7 +34,7 @@ class SmartSearchMerge(
         // KMK -->
         val context = Injekt.get<Application>()
         // KMK <--
-        val originalAnime = getAnime.await(originalAnimeId)
+        val originalAnime = getManga.await(originalAnimeId)
             ?: throw IllegalArgumentException(context.stringResource(SYMR.strings.merge_unknown_entry, originalAnimeId))
         if (originalAnime.source == MERGED_SOURCE_ID) {
             val children = getMergedReferencesById.await(originalAnimeId)
@@ -99,7 +99,7 @@ class SmartSearchMerge(
                     dateAdded = System.currentTimeMillis(),
                 )
 
-            var existingAnime = getAnime.await(mergedManga.url, mergedManga.source)
+            var existingAnime = getManga.await(mergedManga.url, mergedManga.source)
             while (existingAnime != null) {
                 if (existingAnime.favorite) {
                     // Duplicate entry found -> use it instead
@@ -109,15 +109,15 @@ class SmartSearchMerge(
                     withNonCancellableContext {
                         existingAnime?.id?.let {
                             deleteByMergeId.await(it)
-                            deleteAnimeById.await(it)
+                            deleteMangaById.await(it)
                         }
                     }
                 }
                 // Remove previously merged entry from database (user already removed from favorites)
-                existingAnime = getAnime.await(mergedManga.url, mergedManga.source)
+                existingAnime = getManga.await(mergedManga.url, mergedManga.source)
             }
 
-            mergedManga = networkToLocalAnime.await(mergedManga)
+            mergedManga = networkToLocalManga.await(mergedManga)
 
             getCategories.await(originalAnimeId)
                 .let { categories ->

@@ -57,11 +57,11 @@ import tachiyomi.core.common.util.lang.withIOContext
 import tachiyomi.core.common.util.system.logcat
 import tachiyomi.data.source.NoResultsException
 import tachiyomi.domain.manga.interactor.FetchInterval
-import tachiyomi.domain.manga.interactor.GetAnime
+import tachiyomi.domain.manga.interactor.GetManga
 import tachiyomi.domain.manga.interactor.GetFavorites
 import tachiyomi.domain.manga.interactor.GetLibraryManga
-import tachiyomi.domain.manga.interactor.GetMergedAnimeForDownloading
-import tachiyomi.domain.manga.interactor.NetworkToLocalAnime
+import tachiyomi.domain.manga.interactor.GetMergedMangaForDownloading
+import tachiyomi.domain.manga.interactor.NetworkToLocalManga
 import tachiyomi.domain.manga.model.Manga
 import tachiyomi.domain.manga.model.toMangaUpdate
 import tachiyomi.domain.category.model.Category
@@ -105,7 +105,7 @@ class LibraryUpdateJob(private val context: Context, workerParams: WorkerParamet
     private val downloadManager: DownloadManager = Injekt.get()
     private val coverCache: CoverCache = Injekt.get()
     private val getLibraryManga: GetLibraryManga = Injekt.get()
-    private val getAnime: GetAnime = Injekt.get()
+    private val getManga: GetManga = Injekt.get()
     private val updateAnime: UpdateAnime = Injekt.get()
     private val syncEpisodesWithSource: SyncEpisodesWithSource = Injekt.get()
     private val fetchInterval: FetchInterval = Injekt.get()
@@ -113,8 +113,8 @@ class LibraryUpdateJob(private val context: Context, workerParams: WorkerParamet
 
     // SY -->
     private val getFavorites: GetFavorites = Injekt.get()
-    private val networkToLocalAnime: NetworkToLocalAnime = Injekt.get()
-    private val getMergedAnimeForDownloading: GetMergedAnimeForDownloading = Injekt.get()
+    private val networkToLocalManga: NetworkToLocalManga = Injekt.get()
+    private val getMergedMangaForDownloading: GetMergedMangaForDownloading = Injekt.get()
     private val getTracks: GetTracks = Injekt.get()
     private val insertTrack: InsertTrack = Injekt.get()
     private val trackerManager: TrackerManager = Injekt.get()
@@ -369,7 +369,7 @@ class LibraryUpdateJob(private val context: Context, workerParams: WorkerParamet
                                 ensureActive()
 
                                 // Don't continue to update if manga is not in library
-                                if (getAnime.await(manga.id)?.favorite != true) {
+                                if (getManga.await(manga.id)?.favorite != true) {
                                     return@forEach
                                 }
 
@@ -468,7 +468,7 @@ class LibraryUpdateJob(private val context: Context, workerParams: WorkerParamet
         // may don't like it and they could ban the user.
         // SY -->
         if (manga.source == MERGED_SOURCE_ID) {
-            val downloadingManga = runBlocking { getMergedAnimeForDownloading.await(manga.id) }
+            val downloadingManga = runBlocking { getMergedMangaForDownloading.await(manga.id) }
                 .associateBy { it.id }
             chapters.groupBy { it.animeId }
                 .forEach {
@@ -508,7 +508,7 @@ class LibraryUpdateJob(private val context: Context, workerParams: WorkerParamet
 
         // Get manga from database to account for if it was removed during the update and
         // to get latest data so it doesn't get overwritten later on
-        val dbManga = getAnime.await(manga.id)?.takeIf { it.favorite } ?: return emptyList()
+        val dbManga = getManga.await(manga.id)?.takeIf { it.favorite } ?: return emptyList()
 
         return syncEpisodesWithSource.await(chapters, dbManga, source, false, fetchWindow)
     }
