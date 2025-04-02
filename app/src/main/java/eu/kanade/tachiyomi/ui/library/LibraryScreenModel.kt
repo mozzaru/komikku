@@ -890,7 +890,7 @@ class LibraryScreenModel(
             }
             LibraryGroup.BY_TRACK_STATUS ->
                 TrackStatus.entries
-                    .find { it.int.toLong() == category?.id }
+                    .find { it.long == category?.id }
                     .let { it ?: TrackStatus.OTHER }
                     .let { context.stringResource(it.res) }
             LibraryGroup.UNGROUPED -> context.stringResource(SYMR.strings.ungrouped)
@@ -1153,16 +1153,16 @@ class LibraryScreenModel(
                         TrackStatus.parseTrackerStatus(trackerManager, track.trackerId, track.status)
                     } ?: TrackStatus.OTHER
 
-                    status.int
+                    status.long
                 }.mapKeys { (id) ->
                     Category(
-                        id = id.toLong(),
+                        id = id,
                         name = TrackStatus.entries
-                            .find { it.int == id }
+                            .find { it.long == id }
                             .let { it ?: TrackStatus.OTHER }
                             .let { context.stringResource(it.res) },
                         order = TrackStatus.entries.indexOfFirst {
-                            it.int == id
+                            it.long == id
                         }.takeUnless { it == -1 }?.toLong() ?: TrackStatus.OTHER.ordinal.toLong(),
                         flags = 0,
                         // KMK -->
