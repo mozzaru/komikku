@@ -72,17 +72,17 @@ data class Download(
     }
 
     companion object {
-        suspend fun fromEpisodeId(
-            episodeId: Long,
+        suspend fun fromChapterId(
+            chapterId: Long,
             getChapter: GetChapter = Injekt.get(),
             getManga: GetManga = Injekt.get(),
             sourceManager: SourceManager = Injekt.get(),
         ): Download? {
-            val episode = getChapter.await(episodeId) ?: return null
-            val anime = getManga.await(episode.animeId) ?: return null
-            val source = sourceManager.get(anime.source) as? HttpSource ?: return null
+            val chapter = getChapter.await(chapterId) ?: return null
+            val manga = getManga.await(chapter.animeId) ?: return null
+            val source = sourceManager.get(manga.source) as? HttpSource ?: return null
 
-            return Download(source, anime, episode)
+            return Download(source, manga, chapter)
         }
     }
 }

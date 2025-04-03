@@ -50,8 +50,8 @@ fun BrowseSourceContent(
     onHelpClick: (() -> Unit)?,
     onLocalSourceHelpClick: (() -> Unit)?,
     // SY <--
-    onAnimeClick: (Manga) -> Unit,
-    onAnimeLongClick: (Manga) -> Unit,
+    onMangaClick: (Manga) -> Unit,
+    onMangaLongClick: (Manga) -> Unit,
     // KMK -->
     selection: List<Manga>,
     // KMK <--
@@ -138,8 +138,8 @@ fun BrowseSourceContent(
                 mangaList = mangaList,
                 columns = columns,
                 contentPadding = contentPadding,
-                onAnimeClick = onAnimeClick,
-                onAnimeLongClick = onAnimeLongClick,
+                onMangaClick = onMangaClick,
+                onMangaLongClick = onMangaLongClick,
                 // KMK -->
                 selection = selection,
                 // KMK <--
@@ -151,8 +151,8 @@ fun BrowseSourceContent(
                 mangaList = mangaList,
                 columns = columns,
                 contentPadding = contentPadding,
-                onAnimeClick = onAnimeClick,
-                onAnimeLongClick = onAnimeLongClick,
+                onMangaClick = onMangaClick,
+                onMangaLongClick = onMangaLongClick,
                 // KMK -->
                 selection = selection,
                 usePanoramaCover = true,
@@ -164,8 +164,8 @@ fun BrowseSourceContent(
             BrowseSourceList(
                 mangaList = mangaList,
                 contentPadding = contentPadding,
-                onAnimeClick = onAnimeClick,
-                onAnimeLongClick = onAnimeLongClick,
+                onMangaClick = onMangaClick,
+                onMangaLongClick = onMangaLongClick,
                 // KMK -->
                 selection = selection,
                 // KMK <--
@@ -176,8 +176,8 @@ fun BrowseSourceContent(
                 mangaList = mangaList,
                 columns = columns,
                 contentPadding = contentPadding,
-                onAnimeClick = onAnimeClick,
-                onAnimeLongClick = onAnimeLongClick,
+                onMangaClick = onMangaClick,
+                onMangaLongClick = onMangaLongClick,
                 // KMK -->
                 selection = selection,
                 // KMK <--

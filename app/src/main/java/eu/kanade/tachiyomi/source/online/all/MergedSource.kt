@@ -136,7 +136,7 @@ class MergedSource : HttpSource() {
                                         if (downloadEpisodes && reference.downloadChapters) {
                                             val episodesToDownload = filterChaptersForDownload.await(manga, results)
                                             if (episodesToDownload.isNotEmpty()) {
-                                                downloadManager.downloadEpisodes(
+                                                downloadManager.downloadChapters(
                                                     loadedAnime,
                                                     episodesToDownload,
                                                 )

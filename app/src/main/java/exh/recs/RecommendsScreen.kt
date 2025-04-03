@@ -115,7 +115,7 @@ class RecommendsScreen(val mangaId: Long, val sourceId: Long) : Screen() {
                 onWebViewClick = null,
                 onHelpClick = null,
                 onLocalSourceHelpClick = null,
-                onAnimeClick = {
+                onMangaClick = {
                     // KMK -->
                     scope.launchIO {
                         val manga = screenModel.networkToLocalManga.getLocal(it)
@@ -127,7 +127,7 @@ class RecommendsScreen(val mangaId: Long, val sourceId: Long) : Screen() {
                         }
                     }
                 },
-                onAnimeLongClick = {
+                onMangaLongClick = {
                     // KMK -->
                     scope.launchIO {
                         val manga = screenModel.networkToLocalManga.getLocal(it)

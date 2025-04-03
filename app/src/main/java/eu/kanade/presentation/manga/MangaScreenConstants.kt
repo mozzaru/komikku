@@ -34,6 +34,6 @@ enum class MangaScreenItem {
     EPISODE,
 
     // KMK -->
-    RELATED_ANIMES,
+    RELATED_MANGAS,
     // KMK <--
 }

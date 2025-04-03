@@ -67,7 +67,7 @@ class MigrationListScreenModel(
     private val sourceManager: SourceManager = Injekt.get(),
     private val downloadManager: DownloadManager = Injekt.get(),
     private val coverCache: CoverCache = Injekt.get(),
-    private val getAnime: GetManga = Injekt.get(),
+    private val getManga: GetManga = Injekt.get(),
     private val networkToLocalManga: NetworkToLocalManga = Injekt.get(),
     private val updateManga: UpdateManga = Injekt.get(),
     private val syncChaptersWithSource: SyncChaptersWithSource = Injekt.get(),
@@ -116,7 +116,7 @@ class MigrationListScreenModel(
                 mangaIds
                     .map {
                         async {
-                            val manga = getAnime.await(it) ?: return@async null
+                            val manga = getManga.await(it) ?: return@async null
                             MigratingManga(
                                 manga = manga,
                                 chapterInfo = getChapterInfo(it),
@@ -142,7 +142,7 @@ class MigrationListScreenModel(
     }
 
     suspend fun getManga(result: SearchResult.Result) = getManga(result.id)
-    suspend fun getManga(id: Long) = getAnime.await(id)
+    suspend fun getManga(id: Long) = getManga.await(id)
     suspend fun getChapterInfo(result: SearchResult.Result) = getChapterInfo(result.id)
     private suspend fun getChapterInfo(id: Long) = getChaptersByMangaId.await(id).let { chapters ->
         MigratingManga.ChapterInfo(
@@ -188,7 +188,7 @@ class MigrationListScreenModel(
                         }
                         when (val migration = config.migration) {
                             is MigrationType.MangaSingle -> if (migration.toManga != null) {
-                                val localManga = getAnime.await(migration.toManga)
+                                val localManga = getManga.await(migration.toManga)
                                 if (localManga != null) {
                                     val source = sourceManager.get(localManga.source) as? CatalogueSource
                                     if (source != null) {
@@ -501,7 +501,7 @@ class MigrationListScreenModel(
                         ensureActive()
                         val toMangaObj = manga.searchResult.value.let {
                             if (it is SearchResult.Result) {
-                                getAnime.await(it.id)
+                                getManga.await(it.id)
                             } else {
                                 null
                             }
@@ -543,7 +543,7 @@ class MigrationListScreenModel(
             val manga = migratingItems.value.orEmpty().find { it.manga.id == mangaId }
                 ?: return@launchIO
 
-            val toMangaObj = getAnime.await((manga.searchResult.value as? SearchResult.Result)?.id ?: return@launchIO)
+            val toMangaObj = getManga.await((manga.searchResult.value as? SearchResult.Result)?.id ?: return@launchIO)
                 ?: return@launchIO
             migrateMangaInternal(
                 manga.manga,

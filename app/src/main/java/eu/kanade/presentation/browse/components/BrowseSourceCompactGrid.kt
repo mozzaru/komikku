@@ -24,8 +24,8 @@ fun BrowseSourceCompactGrid(
     mangaList: LazyPagingItems<StateFlow<Manga>>,
     columns: GridCells,
     contentPadding: PaddingValues,
-    onAnimeClick: (Manga) -> Unit,
-    onAnimeLongClick: (Manga) -> Unit,
+    onMangaClick: (Manga) -> Unit,
+    onMangaLongClick: (Manga) -> Unit,
     // KMK -->
     selection: List<Manga>,
     // KMK <--
@@ -43,14 +43,14 @@ fun BrowseSourceCompactGrid(
         }
 
         items(count = mangaList.itemCount) { index ->
-            val anime by mangaList[index]?.collectAsState() ?: return@items
+            val manga by mangaList[index]?.collectAsState() ?: return@items
 
             BrowseSourceCompactGridItem(
-                manga = anime,
-                onClick = { onAnimeClick(anime) },
-                onLongClick = { onAnimeLongClick(anime) },
+                manga = manga,
+                onClick = { onMangaClick(manga) },
+                onLongClick = { onMangaLongClick(manga) },
                 // KMK -->
-                isSelected = selection.fastAny { selected -> selected.id == anime.id },
+                isSelected = selection.fastAny { selected -> selected.id == manga.id },
                 // KMK <--
             )
         }

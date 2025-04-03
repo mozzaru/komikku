@@ -165,7 +165,7 @@ data class SourceSearchScreen(
                 },
                 onHelpClick = { uriHandler.openUri(Constants.URL_HELP) },
                 onLocalSourceHelpClick = { uriHandler.openUri(LocalSource.HELP_URL) },
-                onAnimeClick = {
+                onMangaClick = {
                     // KMK -->
                     scope.launchIO {
                         val manga = screenModel.networkToLocalManga.getLocal(it)
@@ -177,7 +177,7 @@ data class SourceSearchScreen(
                         }
                     }
                 },
-                onAnimeLongClick = {
+                onMangaLongClick = {
                     // KMK -->
                     scope.launchIO {
                         val manga = screenModel.networkToLocalManga.getLocal(it)

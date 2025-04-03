@@ -23,19 +23,19 @@ fun List<Chapter>.applyFilters(
     val downloadedFilter = manga.downloadedFilter
     val bookmarkedFilter = manga.bookmarkedFilter
 
-    return filter { episode -> applyFilter(unseenFilter) { !episode.seen } }
-        .filter { episode -> applyFilter(bookmarkedFilter) { episode.bookmark } }
-        .filter { episode ->
+    return filter { chapter -> applyFilter(unseenFilter) { !chapter.seen } }
+        .filter { chapter -> applyFilter(bookmarkedFilter) { chapter.bookmark } }
+        .filter { chapter ->
             // SY -->
             @Suppress("NAME_SHADOWING")
-            val anime = mergedManga.getOrElse(episode.animeId) { manga }
+            val manga = mergedManga.getOrElse(chapter.animeId) { manga }
             // SY <--
             applyFilter(downloadedFilter) {
-                val downloaded = downloadManager.isEpisodeDownloaded(
-                    episode.name,
-                    episode.scanlator,
-                    /* SY --> */ anime.ogTitle /* SY <-- */,
-                    anime.source,
+                val downloaded = downloadManager.isChapterDownloaded(
+                    chapter.name,
+                    chapter.scanlator,
+                    /* SY --> */ manga.ogTitle /* SY <-- */,
+                    manga.source,
                 )
                 downloaded || isLocalManga
             }
@@ -48,13 +48,13 @@ fun List<Chapter>.applyFilters(
  * @return an observable of the list of chapters filtered and sorted.
  */
 fun List<ChapterList.Item>.applyFilters(manga: Manga): Sequence<ChapterList.Item> {
-    val isLocalAnime = manga.isLocal()
+    val isLocalManga = manga.isLocal()
     val unseenFilter = manga.unseenFilter
     val downloadedFilter = manga.downloadedFilter
     val bookmarkedFilter = manga.bookmarkedFilter
     return asSequence()
-        .filter { (episode) -> applyFilter(unseenFilter) { !episode.seen } }
-        .filter { (episode) -> applyFilter(bookmarkedFilter) { episode.bookmark } }
-        .filter { applyFilter(downloadedFilter) { it.isDownloaded || isLocalAnime } }
-        .sortedWith { (episode1), (episode2) -> getChapterSort(manga).invoke(episode1, episode2) }
+        .filter { (chapter) -> applyFilter(unseenFilter) { !chapter.seen } }
+        .filter { (chapter) -> applyFilter(bookmarkedFilter) { chapter.bookmark } }
+        .filter { applyFilter(downloadedFilter) { it.isDownloaded || isLocalManga } }
+        .sortedWith { (chapter1), (chapter2) -> getChapterSort(manga).invoke(chapter1, chapter2) }
 }

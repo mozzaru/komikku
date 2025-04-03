@@ -57,14 +57,14 @@ fun HistoryItem(
         verticalAlignment = Alignment.CenterVertically,
     ) {
         // KMK -->
-        val animeCover = history.coverData
+        val mangaCover = history.coverData
         val coverIsWide = coverRatio.floatValue <= RatioSwitchToPanorama
-        val bgColor = animeCover.dominantCoverColors?.first?.let { Color(it) }
-        val onBgColor = animeCover.dominantCoverColors?.second
+        val bgColor = mangaCover.dominantCoverColors?.first?.let { Color(it) }
+        val onBgColor = mangaCover.dominantCoverColors?.second
         if (usePanoramaCover && coverIsWide) {
             MangaCover.Panorama(
                 modifier = Modifier.fillMaxHeight(),
-                data = animeCover,
+                data = mangaCover,
                 onClick = onClickCover,
                 // KMK -->
                 bgColor = bgColor,
@@ -80,7 +80,7 @@ fun HistoryItem(
             // KMK <--
             MangaCover.Book(
                 modifier = Modifier.fillMaxHeight(),
-                data = animeCover,
+                data = mangaCover,
                 onClick = onClickCover,
                 // KMK -->
                 bgColor = bgColor,

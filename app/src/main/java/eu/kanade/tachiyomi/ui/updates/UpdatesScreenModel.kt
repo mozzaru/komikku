@@ -109,7 +109,7 @@ class UpdatesScreenModel(
         return this
             .map { update ->
                 val activeDownload = downloadManager.getQueuedDownloadOrNull(update.episodeId)
-                val downloaded = downloadManager.isEpisodeDownloaded(
+                val downloaded = downloadManager.isChapterDownloaded(
                     update.episodeName,
                     update.scanlator,
                     // SY -->
@@ -241,7 +241,7 @@ class UpdatesScreenModel(
                 // Don't download if source isn't available
                 sourceManager.get(manga.source) ?: continue
                 val chapters = updates.mapNotNull { getChapter.await(it.update.episodeId) }
-                downloadManager.downloadEpisodes(manga, chapters)
+                downloadManager.downloadChapters(manga, chapters)
             }
         }
     }
@@ -260,7 +260,7 @@ class UpdatesScreenModel(
                     val manga = getManga.await(mangaId) ?: return@forEach
                     val source = sourceManager.get(manga.source) ?: return@forEach
                     val chapters = updates.mapNotNull { getChapter.await(it.update.episodeId) }
-                    downloadManager.deleteEpisodes(
+                    downloadManager.deleteChapters(
                         chapters,
                         manga,
                         source,

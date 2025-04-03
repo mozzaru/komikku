@@ -323,7 +323,7 @@ data class BrowseSourceScreen(
                 onWebViewClick = onWebViewClick,
                 onHelpClick = { uriHandler.openUri(Constants.URL_HELP) },
                 onLocalSourceHelpClick = onHelpClick,
-                onAnimeClick = {
+                onMangaClick = {
                     // KMK -->
                     scope.launchIO {
                         val manga = screenModel.networkToLocalManga.getLocal(it)
@@ -345,7 +345,7 @@ data class BrowseSourceScreen(
                         }
                     }
                 },
-                onAnimeLongClick = {
+                onMangaLongClick = {
                     // KMK -->
                     scope.launchIO {
                         val manga = screenModel.networkToLocalManga.getLocal(it)
@@ -405,7 +405,7 @@ data class BrowseSourceScreen(
                 DuplicateMangaDialog(
                     onDismissRequest = onDismissRequest,
                     onConfirm = { screenModel.addFavorite(dialog.manga) },
-                    onOpenAnime = { navigator.push(MangaScreen(dialog.duplicate.id)) },
+                    onOpenManga = { navigator.push(MangaScreen(dialog.duplicate.id)) },
                     onMigrate = {
                         // SY -->
                         PreMigrationScreen.navigateToMigration(

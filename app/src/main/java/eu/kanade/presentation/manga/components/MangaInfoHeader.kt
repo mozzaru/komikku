@@ -480,10 +480,10 @@ private fun MangaAndSourceTitlesLarge(
                 contentDescription = stringResource(MR.strings.manga_cover),
                 onClick = onCoverClick,
                 // KMK -->
-                onCoverLoaded = { animeCover, result ->
+                onCoverLoaded = { mangaCover, result ->
                     val image = result.result.image
                     coverRatio.floatValue = image.height.toFloat() / image.width
-                    onCoverLoaded(animeCover)
+                    onCoverLoaded(mangaCover)
                 },
                 // KMK <--
             )
@@ -498,10 +498,10 @@ private fun MangaAndSourceTitlesLarge(
                 contentDescription = stringResource(MR.strings.manga_cover),
                 onClick = onCoverClick,
                 // KMK -->
-                onCoverLoaded = { animeCover, result ->
+                onCoverLoaded = { mangaCover, result ->
                     val image = result.result.image
                     coverRatio.floatValue = image.height.toFloat() / image.width
-                    onCoverLoaded(animeCover)
+                    onCoverLoaded(mangaCover)
                 },
                 // KMK <--
             )
@@ -562,10 +562,10 @@ private fun MangaAndSourceTitlesSmall(
                 contentDescription = stringResource(MR.strings.manga_cover),
                 onClick = onCoverClick,
                 // KMK -->
-                onCoverLoaded = { animeCover, result ->
+                onCoverLoaded = { mangaCover, result ->
                     val image = result.result.image
                     coverRatio.floatValue = image.height.toFloat() / image.width
-                    onCoverLoaded(animeCover)
+                    onCoverLoaded(mangaCover)
                 },
                 // KMK <--
             )
@@ -584,10 +584,10 @@ private fun MangaAndSourceTitlesSmall(
                 contentDescription = stringResource(MR.strings.manga_cover),
                 onClick = onCoverClick,
                 // KMK -->
-                onCoverLoaded = { animeCover, result ->
+                onCoverLoaded = { mangaCover, result ->
                     val image = result.result.image
                     coverRatio.floatValue = image.height.toFloat() / image.width
-                    onCoverLoaded(animeCover)
+                    onCoverLoaded(mangaCover)
                 },
                 // KMK <--
             )

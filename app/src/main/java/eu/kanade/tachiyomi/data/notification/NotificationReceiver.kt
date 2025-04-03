@@ -220,7 +220,7 @@ class NotificationReceiver : BroadcastReceiver() {
                         if (manga != null) {
                             val source = sourceManager.get(manga.source)
                             if (source != null) {
-                                downloadManager.deleteEpisodes(listOf(it), manga, source)
+                                downloadManager.deleteChapters(listOf(it), manga, source)
                             }
                         }
                     }
@@ -240,7 +240,7 @@ class NotificationReceiver : BroadcastReceiver() {
         launchIO {
             val manga = getManga.await(mangaId) ?: return@launchIO
             val chapters = chapterUrls.mapNotNull { getChapter.await(it, mangaId) }
-            downloadManager.downloadEpisodes(manga, chapters)
+            downloadManager.downloadChapters(manga, chapters)
         }
     }
 

@@ -39,7 +39,7 @@ abstract class SearchScreenModel(
     private val sourceManager: SourceManager = Injekt.get(),
     private val extensionManager: ExtensionManager = Injekt.get(),
     val networkToLocalManga: NetworkToLocalManga = Injekt.get(),
-    private val getAnime: GetManga = Injekt.get(),
+    private val getManga: GetManga = Injekt.get(),
     private val preferences: SourcePreferences = Injekt.get(),
 ) : StateScreenModel<SearchScreenModel.State>(initialState) {
 
@@ -81,7 +81,7 @@ abstract class SearchScreenModel(
     @Composable
     fun getManga(initialManga: Manga): androidx.compose.runtime.State<Manga> {
         return produceState(initialValue = initialManga) {
-            getAnime.subscribe(initialManga.url, initialManga.source)
+            getManga.subscribe(initialManga.url, initialManga.source)
                 .collectLatest { manga ->
                     value = manga
                         // KMK -->

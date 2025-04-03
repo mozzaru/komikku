@@ -53,7 +53,7 @@ fun ChapterListDialog(
         ) {
             items(
                 items = chapters,
-                key = { "episode-list-${it.chapter.id}" },
+                key = { "chapter-list-${it.chapter.id}" },
             ) { chapterItem ->
                 val activeDownload = downloadQueueState.find { it.chapter.id == chapterItem.chapter.id }
                 val progress = activeDownload?.let {
@@ -65,7 +65,7 @@ fun ChapterListDialog(
                 val downloaded = if (chapterItem.manga.isLocal()) {
                     true
                 } else {
-                    downloadManager.isEpisodeDownloaded(
+                    downloadManager.isChapterDownloaded(
                         chapterItem.chapter.name,
                         chapterItem.chapter.scanlator,
                         chapterItem.manga.ogTitle,
@@ -87,21 +87,21 @@ fun ChapterListDialog(
                                 ZoneId.systemDefault(),
                             ).toRelativeString(context, dateRelativeTime, chapterItem.dateFormat)
                         },
-                    watchProgress = null,
+                    readProgress = null,
                     scanlator = chapterItem.chapter.scanlator,
                     sourceName = null,
-                    seen = chapterItem.chapter.seen,
+                    read = chapterItem.chapter.seen,
                     bookmark = chapterItem.chapter.bookmark,
                     selected = false,
                     downloadIndicatorEnabled = false,
                     downloadStateProvider = { downloadState },
                     downloadProgressProvider = { progress },
-                    episodeSwipeStartAction = LibraryPreferences.ChapterSwipeAction.ToggleBookmark,
-                    episodeSwipeEndAction = LibraryPreferences.ChapterSwipeAction.ToggleBookmark,
+                    chapterSwipeStartAction = LibraryPreferences.ChapterSwipeAction.ToggleBookmark,
+                    chapterSwipeEndAction = LibraryPreferences.ChapterSwipeAction.ToggleBookmark,
                     onLongClick = { /*TODO*/ },
                     onClick = { onClickChapter(chapterItem.chapter) },
                     onDownloadClick = null,
-                    onEpisodeSwipe = {
+                    onChapterSwipe = {
                         onBookmark(chapterItem.chapter)
                     },
                 )

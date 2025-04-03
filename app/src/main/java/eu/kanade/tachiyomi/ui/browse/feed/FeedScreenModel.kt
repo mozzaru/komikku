@@ -57,7 +57,7 @@ import tachiyomi.domain.manga.model.Manga as DomainManga
 open class FeedScreenModel(
     val sourceManager: SourceManager = Injekt.get(),
     val sourcePreferences: SourcePreferences = Injekt.get(),
-    private val getAnime: GetManga = Injekt.get(),
+    private val getManga: GetManga = Injekt.get(),
     val networkToLocalManga: NetworkToLocalManga = Injekt.get(),
     getFeedSavedSearchGlobal: GetFeedSavedSearchGlobal = Injekt.get(),
     private val getSavedSearchGlobalFeed: GetSavedSearchGlobalFeed = Injekt.get(),
@@ -353,7 +353,7 @@ open class FeedScreenModel(
     @Composable
     fun getManga(initialManga: DomainManga): State<DomainManga> {
         return produceState(initialValue = initialManga) {
-            getAnime.subscribe(initialManga.url, initialManga.source)
+            getManga.subscribe(initialManga.url, initialManga.source)
                 .collectLatest { manga ->
                     value = manga
                         // KMK -->

@@ -21,7 +21,7 @@ class SmartSearchEngine(
 
         val queries = getSmartSearchQueries(cleanedTitle)
 
-        val eligibleAnime = supervisorScope {
+        val eligibleManga = supervisorScope {
             queries.map { query ->
                 async(Dispatchers.Default) {
                     val builtQuery = if (extraSearchParams != null) {
@@ -43,7 +43,7 @@ class SmartSearchEngine(
             }.flatMap { it.await() }
         }
 
-        return eligibleAnime.maxByOrNull { it.dist }?.manga?.toDomainManga(source.id)
+        return eligibleManga.maxByOrNull { it.dist }?.manga?.toDomainManga(source.id)
     }
 
     suspend fun normalSearch(source: CatalogueSource, title: String): Manga? {

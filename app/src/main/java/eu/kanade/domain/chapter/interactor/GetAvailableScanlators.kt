@@ -12,24 +12,24 @@ class GetAvailableScanlators(
         return mapNotNull { it.ifBlank { null } }.toSet()
     }
 
-    suspend fun await(animeId: Long): Set<String> {
-        return repository.getScanlatorsByMangaId(animeId)
+    suspend fun await(mangaId: Long): Set<String> {
+        return repository.getScanlatorsByMangaId(mangaId)
             .cleanupAvailableScanlators()
     }
 
-    fun subscribe(animeId: Long): Flow<Set<String>> {
-        return repository.getScanlatorsByMangaIdAsFlow(animeId)
+    fun subscribe(mangaId: Long): Flow<Set<String>> {
+        return repository.getScanlatorsByMangaIdAsFlow(mangaId)
             .map { it.cleanupAvailableScanlators() }
     }
 
     // SY -->
-    suspend fun awaitMerge(animeId: Long): Set<String> {
-        return repository.getScanlatorsByMergeId(animeId)
+    suspend fun awaitMerge(mangaId: Long): Set<String> {
+        return repository.getScanlatorsByMergeId(mangaId)
             .cleanupAvailableScanlators()
     }
 
-    fun subscribeMerge(animeId: Long): Flow<Set<String>> {
-        return repository.getScanlatorsByMergeIdAsFlow(animeId)
+    fun subscribeMerge(mangaId: Long): Flow<Set<String>> {
+        return repository.getScanlatorsByMergeIdAsFlow(mangaId)
             .map { it.cleanupAvailableScanlators() }
     }
     // SY <--

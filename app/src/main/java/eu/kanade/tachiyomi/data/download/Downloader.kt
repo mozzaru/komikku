@@ -121,8 +121,8 @@ class Downloader(
 
     init {
         launchNow {
-            val episodes = async { store.restore() }
-            addAllToQueue(episodes.await())
+            val chapters = async { store.restore() }
+            addAllToQueue(chapters.await())
         }
     }
 
@@ -244,7 +244,7 @@ class Downloader(
 
     private fun CoroutineScope.launchDownloadJob(download: Download) = launchIO {
         try {
-            downloadEpisode(download)
+            downloadChapter(download)
 
             // Remove successful download from queue
             if (download.status == Download.State.DOWNLOADED) {
@@ -276,26 +276,26 @@ class Downloader(
      * @param chapters the list of chapters to download.
      * @param autoStart whether to start the downloader after enqueing the chapters.
      */
-    fun queueEpisodes(manga: Manga, chapters: List<Chapter>, autoStart: Boolean) {
+    fun queueChapters(manga: Manga, chapters: List<Chapter>, autoStart: Boolean) {
         if (chapters.isEmpty()) return
 
         val source = sourceManager.get(manga.source) as? HttpSource ?: return
         val wasEmpty = queueState.value.isEmpty()
-        val episodesToQueue = chapters.asSequence()
+        val chaptersToQueue = chapters.asSequence()
             // Filter out those already downloaded.
             .filter {
-                provider.findEpisodeDir(it.name, it.scanlator, /* SY --> */ manga.ogTitle /* SY <-- */, source) == null
+                provider.findChapterDir(it.name, it.scanlator, /* SY --> */ manga.ogTitle /* SY <-- */, source) == null
             }
             // Add chapters to queue from the start.
             .sortedByDescending { it.sourceOrder }
             // Filter out those already enqueued.
-            .filter { episode -> queueState.value.none { it.chapter.id == episode.id } }
+            .filter { chapter -> queueState.value.none { it.chapter.id == chapter.id } }
             // Create a download for each one.
             .map { Download(source, manga, it) }
             .toList()
 
-        if (episodesToQueue.isNotEmpty()) {
-            addAllToQueue(episodesToQueue)
+        if (chaptersToQueue.isNotEmpty()) {
+            addAllToQueue(chaptersToQueue)
 
             // Start downloader if needed
             if (autoStart && wasEmpty) {
@@ -325,10 +325,10 @@ class Downloader(
      *
      * @param download the chapter to be downloaded.
      */
-    private suspend fun downloadEpisode(download: Download) {
-        val animeDir: UniFile
+    private suspend fun downloadChapter(download: Download) {
+        val mangaDir: UniFile
         try {
-            animeDir = provider.getAnimeDir(/* SY --> */ download.manga.ogTitle /* SY <-- */, download.source)
+            mangaDir = provider.getMangaDir(/* SY --> */ download.manga.ogTitle /* SY <-- */, download.source)
         } catch (error: Exception) {
             logcat(LogPriority.ERROR, error)
             download.status = Download.State.ERROR
@@ -336,7 +336,7 @@ class Downloader(
             return
         }
 
-        val availSpace = DiskUtil.getAvailableStorageSpace(animeDir)
+        val availSpace = DiskUtil.getAvailableStorageSpace(mangaDir)
         if (availSpace != -1L && availSpace < MIN_DISK_SPACE) {
             download.status = Download.State.ERROR
             notifier.onError(
@@ -348,8 +348,8 @@ class Downloader(
             return
         }
 
-        val episodeDirname = provider.getEpisodeDirName(download.chapter.name, download.chapter.scanlator)
-        val tmpDir = animeDir.createDirectory(episodeDirname + TMP_DIR_SUFFIX)!!
+        val chapterDirname = provider.getChapterDirName(download.chapter.name, download.chapter.scanlator)
+        val tmpDir = mangaDir.createDirectory(chapterDirname + TMP_DIR_SUFFIX)!!
 
         try {
             // If the page list already exists, start from the file
@@ -419,11 +419,11 @@ class Downloader(
 
             // Only rename the directory if it's downloaded
             if (downloadPreferences.saveEpisodesAsCBZ().get()) {
-                archiveEpisode(animeDir, episodeDirname, tmpDir)
+                archiveChapter(mangaDir, chapterDirname, tmpDir)
             } else {
-                tmpDir.renameTo(episodeDirname)
+                tmpDir.renameTo(chapterDirname)
             }
-            cache.addEpisode(episodeDirname, animeDir, download.manga)
+            cache.addChapter(chapterDirname, mangaDir, download.manga)
 
             DiskUtil.createNoMediaFile(tmpDir, context)
 
@@ -617,7 +617,7 @@ class Downloader(
     /**
      * Archive the chapter pages as a CBZ.
      */
-    private fun archiveEpisode(
+    private fun archiveChapter(
         animeDir: UniFile,
         dirname: String,
         tmpDir: UniFile,
@@ -711,8 +711,8 @@ class Downloader(
     }
 
     fun removeFromQueue(chapters: List<Chapter>) {
-        val episodeIds = chapters.map { it.id }
-        removeFromQueueIf { it.chapter.id in episodeIds }
+        val chapterIds = chapters.map { it.id }
+        removeFromQueueIf { it.chapter.id in chapterIds }
     }
 
     fun removeFromQueue(manga: Manga) {

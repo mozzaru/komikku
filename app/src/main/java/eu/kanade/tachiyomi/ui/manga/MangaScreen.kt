@@ -248,11 +248,11 @@ class MangaScreen(
             snackbarHostState = screenModel.snackbarHostState,
             nextUpdate = successState.manga.expectedNextUpdate,
             isTabletUi = isTabletUi(),
-            episodeSwipeStartAction = screenModel.chapterSwipeStartAction,
-            episodeSwipeEndAction = screenModel.chapterSwipeEndAction,
+            chapterSwipeStartAction = screenModel.chapterSwipeStartAction,
+            chapterSwipeEndAction = screenModel.chapterSwipeEndAction,
             onBackClicked = navigator::pop,
-            onEpisodeClicked = { openChapter(context, it) },
-            onDownloadEpisode = screenModel::runChapterDownloadActions.takeIf { !successState.source.isLocalOrStub() },
+            onChapterClicked = { openChapter(context, it) },
+            onDownloadChapter = screenModel::runChapterDownloadActions.takeIf { !successState.source.isLocalOrStub() },
             onAddToLibraryClicked = {
                 screenModel.toggleFavorite()
                 haptic.performHapticFeedback(HapticFeedbackType.LongPress)
@@ -321,25 +321,25 @@ class MangaScreen(
             onMultiMarkAsSeenClicked = screenModel::markChaptersRead,
             onMarkPreviousAsSeenClicked = screenModel::markPreviousChapterRead,
             onMultiDeleteClicked = screenModel::showDeleteChapterDialog,
-            onEpisodeSwipe = screenModel::chapterSwipe,
-            onEpisodeSelected = screenModel::toggleSelection,
-            onAllEpisodeSelected = screenModel::toggleAllSelection,
+            onChapterSwipe = screenModel::chapterSwipe,
+            onChapterSelected = screenModel::toggleSelection,
+            onAllChapterSelected = screenModel::toggleAllSelection,
             onInvertSelection = screenModel::invertSelection,
             // KMK -->
             getMangaState = { screenModel.getManga(initialManga = it) },
-            onRelatedAnimesScreenClick = {
+            onRelatedMangasScreenClick = {
                 if (successState.isRelatedMangasFetched == null) {
                     scope.launchIO { screenModel.fetchRelatedMangasFromSource(onDemand = true) }
                 }
                 showRelatedMangasScreen()
             },
-            onRelatedAnimeClick = {
+            onRelatedMangaClick = {
                 scope.launchIO {
                     val manga = screenModel.networkToLocalManga.getLocal(it)
                     navigator.push(MangaScreen(manga.id, true))
                 }
             },
-            onRelatedAnimeLongClick = {
+            onRelatedMangaLongClick = {
                 scope.launchIO {
                     val manga = screenModel.networkToLocalManga.getLocal(it)
                     bulkFavoriteScreenModel.addRemoveManga(manga, haptic)
@@ -411,7 +411,7 @@ class MangaScreen(
                 DuplicateMangaDialog(
                     onDismissRequest = onDismissRequest,
                     onConfirm = { screenModel.toggleFavorite(onRemoved = {}, checkDuplicate = false) },
-                    onOpenAnime = { navigator.push(MangaScreen(dialog.duplicate.id)) },
+                    onOpenManga = { navigator.push(MangaScreen(dialog.duplicate.id)) },
                     onMigrate = {
                         // SY -->
                         migrateManga(navigator, dialog.duplicate, screenModel.manga!!.id)

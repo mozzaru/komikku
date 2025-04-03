@@ -22,7 +22,7 @@ class SyncChapterProgressWithTrack(
     val trackPreferences: TrackPreferences = Injekt.get()
 
     suspend fun await(
-        animeId: Long,
+        mangaId: Long,
         remoteTrack: Track,
         tracker: Tracker,
     ): Int? {
@@ -33,37 +33,37 @@ class SyncChapterProgressWithTrack(
         // <-- KKM
 
         // Current chapters in database, sort by source's order because database's order is a mess
-        val dbEpisodes = getChaptersByMangaId.await(animeId)
+        val dbChapters = getChaptersByMangaId.await(mangaId)
             // KMK -->
             .sortedByDescending { it.sourceOrder }
             // KMK <--
             .filter { it.isRecognizedNumber }
 
-        val sortedEpisodes = dbEpisodes
+        val sortedChapters = dbChapters
             .sortedBy { it.episodeNumber }
 
         // KMK -->
-        var lastCheckEpisode: Double
-        var checkingEpisode = 0.0
+        var lastCheckChapter: Double
+        var checkingChapter = 0.0
 
         /**
-         * Episodes to update to follow tracker: only continuous incremental chapters
+         * Chapters to update to follow tracker: only continuous incremental chapters
          * any abnormal chapter number will stop it from updating seen status further.
-         * Some animes has name such as Volume 2 Chapter 1 which will corrupt the order
-         * if we sort by episodeNumber.
+         * Some mangas has name such as Volume 2 Chapter 1 which will corrupt the order
+         * if we sort by chapterNumber.
          */
-        val chapterUpdates = dbEpisodes
-            .takeWhile { episode ->
-                lastCheckEpisode = checkingEpisode
-                checkingEpisode = episode.episodeNumber
-                episode.episodeNumber >= lastCheckEpisode && episode.episodeNumber <= remoteTrack.lastEpisodeSeen
+        val chapterUpdates = dbChapters
+            .takeWhile { chapter ->
+                lastCheckChapter = checkingChapter
+                checkingChapter = chapter.episodeNumber
+                chapter.episodeNumber >= lastCheckChapter && chapter.episodeNumber <= remoteTrack.lastEpisodeSeen
             }
-            .filter { episode -> !episode.seen }
+            .filter { chapter -> !chapter.seen }
             // KMK <--
             .map { it.copy(seen = true).toChapterUpdate() }
 
         // only take into account continuous watching
-        val localLastSeen = sortedEpisodes.takeWhile { it.seen }.lastOrNull()?.episodeNumber ?: 0F
+        val localLastSeen = sortedChapters.takeWhile { it.seen }.lastOrNull()?.episodeNumber ?: 0F
         // Tracker will update to latest seen chapter
         val lastSeen = max(remoteTrack.lastEpisodeSeen, localLastSeen.toDouble())
         val updatedTrack = remoteTrack.copy(lastEpisodeSeen = lastSeen)

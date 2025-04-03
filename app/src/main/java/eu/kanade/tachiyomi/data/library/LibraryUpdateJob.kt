@@ -472,7 +472,7 @@ class LibraryUpdateJob(private val context: Context, workerParams: WorkerParamet
                 .associateBy { it.id }
             chapters.groupBy { it.animeId }
                 .forEach {
-                    downloadManager.downloadEpisodes(
+                    downloadManager.downloadChapters(
                         downloadingManga[it.key] ?: return@forEach,
                         it.value,
                         false,
@@ -482,7 +482,7 @@ class LibraryUpdateJob(private val context: Context, workerParams: WorkerParamet
             return
         }
         // SY <--
-        downloadManager.downloadEpisodes(manga, chapters, false)
+        downloadManager.downloadChapters(manga, chapters, false)
     }
 
     /**

@@ -8,16 +8,16 @@ class GetExcludedScanlators(
     private val handler: DatabaseHandler,
 ) {
 
-    suspend fun await(animeId: Long): Set<String> {
+    suspend fun await(mangaId: Long): Set<String> {
         return handler.awaitList {
-            excluded_scanlatorsQueries.getExcludedScanlatorsByAnimeId(animeId)
+            excluded_scanlatorsQueries.getExcludedScanlatorsByAnimeId(mangaId)
         }
             .toSet()
     }
 
-    fun subscribe(animeId: Long): Flow<Set<String>> {
+    fun subscribe(mangaId: Long): Flow<Set<String>> {
         return handler.subscribeToList {
-            excluded_scanlatorsQueries.getExcludedScanlatorsByAnimeId(animeId)
+            excluded_scanlatorsQueries.getExcludedScanlatorsByAnimeId(mangaId)
         }
             .map { it.toSet() }
     }

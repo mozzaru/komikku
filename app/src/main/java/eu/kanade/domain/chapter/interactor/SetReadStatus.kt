@@ -40,7 +40,7 @@ class SetReadStatus(
      * Mark chapters as seen/unseen, also delete downloaded chapters if 'After manually marked as seen' is set.
      *
      * Called from:
-     *  - [LibraryScreenModel]: Manually select animes & mark as seen
+     *  - [LibraryScreenModel]: Manually select mangas & mark as seen
      *  - [MangaScreenModel.markChaptersRead]: Manually select chapters & mark as seen or swipe chapter as seen
      *  - [UpdatesScreenModel.markUpdatesSeen]: Manually select chapters & mark as seen
      *  - [LibraryUpdateJob.updateEpisodeList]: when a manga is updated and has new chapter but already seen,
@@ -56,19 +56,19 @@ class SetReadStatus(
         manually: Boolean = true,
         // KMK <--
     ): Result = withNonCancellableContext {
-        val episodesToUpdate = chapters.filter {
+        val chaptersToUpdate = chapters.filter {
             when (seen) {
                 true -> !it.seen
                 false -> it.seen || it.lastSecondSeen > 0
             }
         }
-        if (episodesToUpdate.isEmpty()) {
-            return@withNonCancellableContext Result.NoEpisodes
+        if (chaptersToUpdate.isEmpty()) {
+            return@withNonCancellableContext Result.NoChapters
         }
 
         try {
             chapterRepository.updateAll(
-                episodesToUpdate.map { mapper(it, seen) },
+                chaptersToUpdate.map { mapper(it, seen) },
             )
         } catch (e: Exception) {
             logcat(LogPriority.ERROR, e)
@@ -82,15 +82,15 @@ class SetReadStatus(
             seen &&
             downloadPreferences.removeAfterMarkedAsSeen().get()
         ) {
-            episodesToUpdate
+            chaptersToUpdate
                 // KMK -->
                 .map { it.copy(seen = true) } // mark as seen so it will respect category exclusion
                 // KMK <--
                 .groupBy { it.animeId }
-                .forEach { (animeId, episodes) ->
+                .forEach { (mangaId, chapters) ->
                     deleteDownload.awaitAll(
-                        manga = mangaRepository.getMangaById(animeId),
-                        chapters = episodes.toTypedArray(),
+                        manga = mangaRepository.getMangaById(mangaId),
+                        chapters = chapters.toTypedArray(),
                     )
                 }
         }
@@ -98,21 +98,21 @@ class SetReadStatus(
         Result.Success
     }
 
-    suspend fun await(animeId: Long, seen: Boolean): Result = withNonCancellableContext {
+    suspend fun await(mangaId: Long, seen: Boolean): Result = withNonCancellableContext {
         await(
             seen = seen,
             chapters = chapterRepository
-                .getChapterByMangaId(animeId)
+                .getChapterByMangaId(mangaId)
                 .toTypedArray(),
         )
     }
 
     // SY -->
-    private suspend fun awaitMerged(animeId: Long, seen: Boolean) = withNonCancellableContext f@{
+    private suspend fun awaitMerged(mangaId: Long, seen: Boolean) = withNonCancellableContext f@{
         return@f await(
             seen = seen,
             chapters = getMergedChaptersByMangaId
-                .await(animeId, dedupe = false)
+                .await(mangaId, dedupe = false)
                 .toTypedArray(),
         )
     }
@@ -126,7 +126,7 @@ class SetReadStatus(
 
     sealed interface Result {
         data object Success : Result
-        data object NoEpisodes : Result
+        data object NoChapters : Result
         data class InternalError(val error: Throwable) : Result
     }
 }

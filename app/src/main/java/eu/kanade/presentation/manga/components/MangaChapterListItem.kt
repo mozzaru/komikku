@@ -49,40 +49,40 @@ import tachiyomi.presentation.core.util.selectedBackground
 fun MangaChapterListItem(
     title: String,
     date: String?,
-    watchProgress: String?,
+    readProgress: String?,
     scanlator: String?,
     // SY -->
     sourceName: String?,
     // SY <--
-    seen: Boolean,
+    read: Boolean,
     bookmark: Boolean,
     selected: Boolean,
     downloadIndicatorEnabled: Boolean,
     downloadStateProvider: () -> Download.State,
     downloadProgressProvider: () -> Int,
-    episodeSwipeStartAction: LibraryPreferences.ChapterSwipeAction,
-    episodeSwipeEndAction: LibraryPreferences.ChapterSwipeAction,
+    chapterSwipeStartAction: LibraryPreferences.ChapterSwipeAction,
+    chapterSwipeEndAction: LibraryPreferences.ChapterSwipeAction,
     onLongClick: () -> Unit,
     onClick: () -> Unit,
     onDownloadClick: ((ChapterDownloadAction) -> Unit)?,
-    onEpisodeSwipe: (LibraryPreferences.ChapterSwipeAction) -> Unit,
+    onChapterSwipe: (LibraryPreferences.ChapterSwipeAction) -> Unit,
     modifier: Modifier = Modifier,
 ) {
     val start = getSwipeAction(
-        action = episodeSwipeStartAction,
-        seen = seen,
+        action = chapterSwipeStartAction,
+        seen = read,
         bookmark = bookmark,
         downloadState = downloadStateProvider(),
         background = MaterialTheme.colorScheme.primaryContainer,
-        onSwipe = { onEpisodeSwipe(episodeSwipeStartAction) },
+        onSwipe = { onChapterSwipe(chapterSwipeStartAction) },
     )
     val end = getSwipeAction(
-        action = episodeSwipeEndAction,
-        seen = seen,
+        action = chapterSwipeEndAction,
+        seen = read,
         bookmark = bookmark,
         downloadState = downloadStateProvider(),
         background = MaterialTheme.colorScheme.primaryContainer,
-        onSwipe = { onEpisodeSwipe(episodeSwipeEndAction) },
+        onSwipe = { onChapterSwipe(chapterSwipeEndAction) },
     )
 
     SwipeableActionsBox(
@@ -110,7 +110,7 @@ fun MangaChapterListItem(
                     verticalAlignment = Alignment.CenterVertically,
                 ) {
                     var textHeight by remember { mutableIntStateOf(0) }
-                    if (!seen) {
+                    if (!read) {
                         Icon(
                             imageVector = Icons.Filled.Circle,
                             contentDescription = stringResource(MR.strings.unread),
@@ -135,7 +135,7 @@ fun MangaChapterListItem(
                         maxLines = 1,
                         overflow = TextOverflow.Ellipsis,
                         onTextLayout = { textHeight = it.size.height },
-                        color = LocalContentColor.current.copy(alpha = if (seen) DISABLED_ALPHA else 1f),
+                        color = LocalContentColor.current.copy(alpha = if (read) DISABLED_ALPHA else 1f),
                     )
                 }
 
@@ -143,7 +143,7 @@ fun MangaChapterListItem(
                     val subtitleStyle = MaterialTheme.typography.bodySmall
                         .merge(
                             color = LocalContentColor.current
-                                .copy(alpha = if (seen) DISABLED_ALPHA else SECONDARY_ALPHA),
+                                .copy(alpha = if (read) DISABLED_ALPHA else SECONDARY_ALPHA),
                         )
                     ProvideTextStyle(value = subtitleStyle) {
                         if (date != null) {
@@ -152,16 +152,16 @@ fun MangaChapterListItem(
                                 maxLines = 1,
                                 overflow = TextOverflow.Ellipsis,
                             )
-                            if (watchProgress != null ||
+                            if (readProgress != null ||
                                 scanlator != null/* SY --> */ ||
                                 sourceName != null/* SY <-- */
                             ) {
                                 DotSeparatorText()
                             }
                         }
-                        if (watchProgress != null) {
+                        if (readProgress != null) {
                             Text(
-                                text = watchProgress,
+                                text = readProgress,
                                 maxLines = 1,
                                 overflow = TextOverflow.Ellipsis,
                                 color = LocalContentColor.current.copy(alpha = DISABLED_ALPHA),

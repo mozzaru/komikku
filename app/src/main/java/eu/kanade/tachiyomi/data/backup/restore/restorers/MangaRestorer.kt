@@ -228,24 +228,24 @@ class MangaRestorer(
 
     private suspend fun insertNewChapters(chapters: List<Chapter>) {
         handler.await(true) {
-            chapters.forEach { episode ->
+            chapters.forEach { chapter ->
                 episodesQueries.insert(
-                    episode.animeId,
-                    episode.url,
-                    episode.name,
-                    episode.scanlator,
-                    episode.seen,
-                    episode.bookmark,
+                    chapter.animeId,
+                    chapter.url,
+                    chapter.name,
+                    chapter.scanlator,
+                    chapter.seen,
+                    chapter.bookmark,
                     // AM (FILLERMARK) -->
-                    episode.fillermark,
+                    chapter.fillermark,
                     // <-- AM (FILLERMARK)
-                    episode.lastSecondSeen,
-                    episode.totalSeconds,
-                    episode.episodeNumber,
-                    episode.sourceOrder,
-                    episode.dateFetch,
-                    episode.dateUpload,
-                    episode.version,
+                    chapter.lastSecondSeen,
+                    chapter.totalSeconds,
+                    chapter.episodeNumber,
+                    chapter.sourceOrder,
+                    chapter.dateFetch,
+                    chapter.dateUpload,
+                    chapter.version,
                 )
             }
         }
@@ -253,27 +253,27 @@ class MangaRestorer(
 
     private suspend fun updateExistingChapters(chapters: List<Chapter>) {
         handler.await(true) {
-            chapters.forEach { episode ->
+            chapters.forEach { chapter ->
                 episodesQueries.update(
                     animeId = null,
                     url = null,
                     name = null,
                     scanlator = null,
-                    seen = episode.seen,
-                    bookmark = episode.bookmark,
+                    seen = chapter.seen,
+                    bookmark = chapter.bookmark,
                     // AM (FILLERMARK) -->
-                    fillermark = episode.fillermark,
+                    fillermark = chapter.fillermark,
                     // <-- AM (FILLERMARK)
-                    lastSecondSeen = episode.lastSecondSeen,
-                    totalSeconds = episode.totalSeconds,
+                    lastSecondSeen = chapter.lastSecondSeen,
+                    totalSeconds = chapter.totalSeconds,
                     episodeNumber = null,
-                    sourceOrder = if (isSync) episode.sourceOrder else null,
+                    sourceOrder = if (isSync) chapter.sourceOrder else null,
                     dateFetch = null,
                     // KMK -->
-                    dateUpload = episode.dateUpload,
+                    dateUpload = chapter.dateUpload,
                     // KMK <--
-                    episodeId = episode.id,
-                    version = episode.version,
+                    episodeId = chapter.id,
+                    version = chapter.version,
                     isSyncing = 1,
                 )
             }

@@ -161,7 +161,7 @@ class MangaScreenModel(
     private val getMangaWithChapters: GetMangaWithChapters = Injekt.get(),
     // SY -->
     private val sourceManager: SourceManager = Injekt.get(),
-    private val getAnime: GetManga = Injekt.get(),
+    private val getManga: GetManga = Injekt.get(),
     private val getMergedChaptersByMangaId: GetMergedChaptersByMangaId = Injekt.get(),
     private val getMergedMangaById: GetMergedMangaById = Injekt.get(),
     private val getMergedReferencesById: GetMergedReferencesById = Injekt.get(),
@@ -210,10 +210,10 @@ class MangaScreenModel(
         get() = manga?.favorite ?: false
 
     private val allChapters: List<ChapterList.Item>?
-        get() = successState?.episodes
+        get() = successState?.chapters
 
     private val filteredChapters: List<ChapterList.Item>?
-        get() = successState?.processedEpisodes
+        get() = successState?.processedChapters
 
     val chapterSwipeStartAction = libraryPreferences.swipeToEndAction().get()
     val chapterSwipeEndAction = libraryPreferences.swipeToStartAction().get()
@@ -295,7 +295,7 @@ class MangaScreenModel(
                     updateSuccessState {
                         it.copy(
                             manga = manga,
-                            episodes = chapterItems,
+                            chapters = chapterItems,
                             // SY -->
                             mergedData = mergedData,
                             // SY <--
@@ -382,7 +382,7 @@ class MangaScreenModel(
                     manga = manga,
                     source = source,
                     isFromSource = isFromSource,
-                    episodes = chapters,
+                    chapters = chapters,
                     // SY -->
                     availableScanlators = if (manga.source == MERGED_SOURCE_ID) {
                         getAvailableScanlators.awaitMerge(mangaId)
@@ -616,7 +616,7 @@ class MangaScreenModel(
     @Composable
     fun getManga(initialManga: Manga): RuntimeState<Manga> {
         return produceState(initialValue = initialManga) {
-            getAnime.subscribe(initialManga.url, initialManga.source)
+            getManga.subscribe(initialManga.url, initialManga.source)
                 .flowWithLifecycle(lifecycle)
                 .collectLatest { manga ->
                     value = manga
@@ -902,15 +902,15 @@ class MangaScreenModel(
 
     private fun updateDownloadState(download: Download) {
         updateSuccessState { successState ->
-            val modifiedIndex = successState.episodes.indexOfFirst { it.id == download.chapter.id }
+            val modifiedIndex = successState.chapters.indexOfFirst { it.id == download.chapter.id }
             if (modifiedIndex < 0) return@updateSuccessState successState
 
-            val newChapters = successState.episodes.toMutableList().apply {
+            val newChapters = successState.chapters.toMutableList().apply {
                 val item = removeAt(modifiedIndex)
                     .copy(downloadState = download.status, downloadProgress = download.progress)
                 add(modifiedIndex, item)
             }
-            successState.copy(episodes = newChapters)
+            successState.copy(chapters = newChapters)
         }
     }
 
@@ -936,7 +936,7 @@ class MangaScreenModel(
             val downloaded = if (manga.isLocal()) {
                 true
             } else {
-                downloadManager.isEpisodeDownloaded(
+                downloadManager.isChapterDownloaded(
                     // SY -->
                     chapter.name,
                     chapter.scanlator,
@@ -1121,7 +1121,7 @@ class MangaScreenModel(
      */
     fun getNextUnreadChapter(): Chapter? {
         val successState = successState ?: return null
-        return successState.episodes.getNextUnread(successState.manga)
+        return successState.chapters.getNextUnread(successState.manga)
     }
 
     private fun getUnreadChapters(): List<Chapter> {
@@ -1273,12 +1273,12 @@ class MangaScreenModel(
         if (state.source is MergedSource) {
             chapters.groupBy { it.animeId }.forEach { map ->
                 val manga = state.mergedData?.manga?.get(map.key) ?: return@forEach
-                downloadManager.downloadEpisodes(manga, map.value)
+                downloadManager.downloadChapters(manga, map.value)
             }
         } else {
             // SY <--
             val manga = state.manga
-            downloadManager.downloadEpisodes(manga, chapters)
+            downloadManager.downloadChapters(manga, chapters)
         }
         toggleAllSelection(false)
     }
@@ -1306,7 +1306,7 @@ class MangaScreenModel(
         screenModelScope.launchNonCancellable {
             try {
                 successState?.let { state ->
-                    downloadManager.deleteEpisodes(
+                    downloadManager.deleteChapters(
                         chapters,
                         state.manga,
                         state.source,
@@ -1434,8 +1434,8 @@ class MangaScreenModel(
         fromLongPress: Boolean = false,
     ) {
         updateSuccessState { successState ->
-            val newChapters = successState.processedEpisodes.toMutableList().apply {
-                val selectedIndex = successState.processedEpisodes.indexOfFirst { it.id == item.chapter.id }
+            val newChapters = successState.processedChapters.toMutableList().apply {
+                val selectedIndex = successState.processedChapters.indexOfFirst { it.id == item.chapter.id }
                 if (selectedIndex < 0) return@apply
 
                 val selectedItem = get(selectedIndex)
@@ -1487,31 +1487,31 @@ class MangaScreenModel(
                     }
                 }
             }
-            successState.copy(episodes = newChapters)
+            successState.copy(chapters = newChapters)
         }
     }
 
     fun toggleAllSelection(selected: Boolean) {
         updateSuccessState { successState ->
-            val newChapters = successState.episodes.map {
+            val newChapters = successState.chapters.map {
                 selectedChapterIds.addOrRemove(it.id, selected)
                 it.copy(selected = selected)
             }
             selectedPositions[0] = -1
             selectedPositions[1] = -1
-            successState.copy(episodes = newChapters)
+            successState.copy(chapters = newChapters)
         }
     }
 
     fun invertSelection() {
         updateSuccessState { successState ->
-            val newChapters = successState.episodes.map {
+            val newChapters = successState.chapters.map {
                 selectedChapterIds.addOrRemove(it.id, !it.selected)
                 it.copy(selected = !it.selected)
             }
             selectedPositions[0] = -1
             selectedPositions[1] = -1
-            successState.copy(episodes = newChapters)
+            successState.copy(chapters = newChapters)
         }
     }
 
@@ -1638,7 +1638,7 @@ class MangaScreenModel(
             val manga: Manga,
             val source: Source,
             val isFromSource: Boolean,
-            val episodes: List<ChapterList.Item>,
+            val chapters: List<ChapterList.Item>,
             val availableScanlators: ImmutableSet<String>,
             val excludedScanlators: ImmutableSet<String>,
             val trackingCount: Int = 0,
@@ -1673,7 +1673,7 @@ class MangaScreenModel(
              * a value of null will be treated as still loading, so if all searching were failed and won't update
              * 'relatedMangaCollection` then we should return empty list
              */
-            val relatedAnimesSorted = relatedMangaCollection
+            val relatedMangasSorted = relatedMangaCollection
                 ?.sorted(manga)
                 ?.removeDuplicates(manga)
                 ?.filter { it.isVisible() }
@@ -1681,8 +1681,8 @@ class MangaScreenModel(
                 ?: if (isRelatedMangasFetched == true) emptyList() else null
             // KMK <--
 
-            val processedEpisodes by lazy {
-                episodes.applyFilters(manga).toList()
+            val processedChapters by lazy {
+                chapters.applyFilters(manga).toList()
                     // KMK -->
                     // safe-guard some edge-cases where chapters are duplicated some how on a merged entry
                     .distinctBy { it.id }
@@ -1690,11 +1690,11 @@ class MangaScreenModel(
             }
 
             val isAnySelected by lazy {
-                episodes.fastAny { it.selected }
+                chapters.fastAny { it.selected }
             }
 
             val chapterListItems by lazy {
-                processedEpisodes.insertSeparators { before, after ->
+                processedChapters.insertSeparators { before, after ->
                     val (lowerChapter, higherChapter) = if (manga.sortDescending()) {
                         after to before
                     } else {

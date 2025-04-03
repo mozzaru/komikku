@@ -118,7 +118,7 @@ class LibraryScreenModel(
     private val getChaptersByMangaId: GetChaptersByMangaId = Injekt.get(),
     private val setReadStatus: SetReadStatus = Injekt.get(),
     private val updateManga: UpdateManga = Injekt.get(),
-    private val setAnimeCategories: SetMangaCategories = Injekt.get(),
+    private val setMangaCategories: SetMangaCategories = Injekt.get(),
     private val preferences: BasePreferences = Injekt.get(),
     private val libraryPreferences: LibraryPreferences = Injekt.get(),
     private val coverCache: CoverCache = Injekt.get(),
@@ -706,7 +706,7 @@ class LibraryScreenModel(
                             val mergedManga = mergedMangas[mangaId] ?: return@ab
                             val downloadChapters = chapters.fastFilterNot { chapter ->
                                 downloadManager.queueState.value.fastAny { chapter.id == it.chapter.id } ||
-                                    downloadManager.isEpisodeDownloaded(
+                                    downloadManager.isChapterDownloaded(
                                         chapter.name,
                                         chapter.scanlator,
                                         mergedManga.ogTitle,
@@ -714,7 +714,7 @@ class LibraryScreenModel(
                                     )
                             }
 
-                            downloadManager.downloadEpisodes(mergedManga, downloadChapters)
+                            downloadManager.downloadChapters(mergedManga, downloadChapters)
                         }
 
                     return@forEach
@@ -724,7 +724,7 @@ class LibraryScreenModel(
                 val chapters = getNextChapters.await(manga.id)
                     .fastFilterNot { chapter ->
                         downloadManager.getQueuedDownloadOrNull(chapter.id) != null ||
-                            downloadManager.isEpisodeDownloaded(
+                            downloadManager.isChapterDownloaded(
                                 chapter.name,
                                 chapter.scanlator,
                                 // SY -->
@@ -736,7 +736,7 @@ class LibraryScreenModel(
                     }
                     .let { if (amount != null) it.take(amount) else it }
 
-                downloadManager.downloadEpisodes(manga, chapters)
+                downloadManager.downloadChapters(manga, chapters)
             }
         }
     }
@@ -838,7 +838,7 @@ class LibraryScreenModel(
                     .plus(addCategories)
                     .toList()
 
-                setAnimeCategories.await(manga.id, categoryIds)
+                setMangaCategories.await(manga.id, categoryIds)
             }
         }
     }

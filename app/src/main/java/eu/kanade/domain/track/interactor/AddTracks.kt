@@ -32,11 +32,11 @@ class AddTracks(
     private val trackerManager: TrackerManager,
 ) {
 
-    suspend fun bind(tracker: Tracker, item: Track, animeId: Long) = withNonCancellableContext {
+    suspend fun bind(tracker: Tracker, item: Track, mangaId: Long) = withNonCancellableContext {
         withIOContext {
-            val allEpisodes = getChaptersByMangaId.await(animeId)
-            val hasSeenEpisodes = allEpisodes.any { it.seen }
-            tracker.bind(item, hasSeenEpisodes)
+            val allChapters = getChaptersByMangaId.await(mangaId)
+            val hasSeenChapters = allChapters.any { it.seen }
+            tracker.bind(item, hasSeenChapters)
 
             var track = item.toDomainTrack(idRequired = false) ?: return@withIOContext
 
@@ -44,28 +44,28 @@ class AddTracks(
 
             // TODO: merge into [SyncChapterProgressWithTrack]?
             // Update chapter progress if newer chapters marked seen locally
-            if (hasSeenEpisodes) {
-                val latestLocalSeenEpisodeNumber = allEpisodes
+            if (hasSeenChapters) {
+                val latestLocalSeenChapterNumber = allChapters
                     .sortedBy { it.episodeNumber }
                     .takeWhile { it.seen }
                     .lastOrNull()
                     ?.episodeNumber ?: -1.0
 
-                if (latestLocalSeenEpisodeNumber > track.lastEpisodeSeen) {
+                if (latestLocalSeenChapterNumber > track.lastEpisodeSeen) {
                     track = track.copy(
-                        lastEpisodeSeen = latestLocalSeenEpisodeNumber,
+                        lastEpisodeSeen = latestLocalSeenChapterNumber,
                     )
-                    tracker.setRemoteLastChapterRead(track.toDbTrack(), latestLocalSeenEpisodeNumber.toInt())
+                    tracker.setRemoteLastChapterRead(track.toDbTrack(), latestLocalSeenChapterNumber.toInt())
                 }
 
                 if (track.startDate <= 0) {
-                    val firstSeenEpisodeDate = Injekt.get<GetHistory>().await(animeId)
+                    val firstSeenChapterDate = Injekt.get<GetHistory>().await(mangaId)
                         .sortedBy { it.seenAt }
                         .firstOrNull()
                         ?.seenAt
 
-                    firstSeenEpisodeDate?.let {
-                        val startDate = firstSeenEpisodeDate.time.convertEpochMillisZone(
+                    firstSeenChapterDate?.let {
+                        val startDate = firstSeenChapterDate.time.convertEpochMillisZone(
                             ZoneOffset.systemDefault(),
                             ZoneOffset.UTC,
                         )
@@ -79,11 +79,11 @@ class AddTracks(
 
             // KMK -->
             val context = Injekt.get<Application>()
-            refreshTracks.await(animeId)
+            refreshTracks.await(mangaId)
                 .filter { it.first != null }
                 .forEach { (track, e) ->
                     logcat(LogPriority.ERROR, e) {
-                        "Failed to refresh track data animeId=$animeId for service ${track!!.id}"
+                        "Failed to refresh track data animeId=$mangaId for service ${track!!.id}"
                     }
                     withUIContext {
                         context.toast(

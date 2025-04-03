@@ -20,8 +20,8 @@ import tachiyomi.presentation.core.util.plus
 fun BrowseSourceList(
     mangaList: LazyPagingItems<StateFlow<Manga>>,
     contentPadding: PaddingValues,
-    onAnimeClick: (Manga) -> Unit,
-    onAnimeLongClick: (Manga) -> Unit,
+    onMangaClick: (Manga) -> Unit,
+    onMangaLongClick: (Manga) -> Unit,
     // KMK -->
     selection: List<Manga>,
     // KMK <--
@@ -36,14 +36,14 @@ fun BrowseSourceList(
         }
 
         items(count = mangaList.itemCount) { index ->
-            val anime by mangaList[index]?.collectAsState() ?: return@items
+            val manga by mangaList[index]?.collectAsState() ?: return@items
 
             BrowseSourceListItem(
-                manga = anime,
-                onClick = { onAnimeClick(anime) },
-                onLongClick = { onAnimeLongClick(anime) },
+                manga = manga,
+                onClick = { onMangaClick(manga) },
+                onLongClick = { onMangaLongClick(manga) },
                 // KMK -->
-                isSelected = selection.fastAny { selected -> selected.id == anime.id },
+                isSelected = selection.fastAny { selected -> selected.id == manga.id },
                 // KMK <--
             )
         }

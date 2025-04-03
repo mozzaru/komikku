@@ -18,7 +18,7 @@ fun List<Chapter>.filterDownloaded(manga: Manga/* SY --> */, mangaMap: Map<Long,
     // SY -->
     return filter {
         val chapterManga = mangaMap?.get(it.animeId) ?: manga
-        downloadCache.isEpisodeDownloaded(it.name, it.scanlator, chapterManga.ogTitle, chapterManga.source, false)
+        downloadCache.isChapterDownloaded(it.name, it.scanlator, chapterManga.ogTitle, chapterManga.source, false)
     }
     // SY <--
 }

@@ -58,7 +58,7 @@ fun MangaToolbar(
     // SY -->
     onClickEditInfo: (() -> Unit)?,
     // KMK -->
-    onClickRelatedAnimes: (() -> Unit)?,
+    onClickRelatedMangas: (() -> Unit)?,
     // KMK <--
     onClickRecommend: (() -> Unit)?,
     onClickMerge: (() -> Unit)?,
@@ -208,11 +208,11 @@ fun MangaToolbar(
                                     )
                                 }
                                 // KMK -->
-                                if (onClickRelatedAnimes != null) {
+                                if (onClickRelatedMangas != null) {
                                     add(
                                         AppBar.OverflowAction(
                                             title = stringResource(KMR.strings.pref_source_related_mangas),
-                                            onClick = onClickRelatedAnimes,
+                                            onClick = onClickRelatedMangas,
                                         ),
                                     )
                                 }

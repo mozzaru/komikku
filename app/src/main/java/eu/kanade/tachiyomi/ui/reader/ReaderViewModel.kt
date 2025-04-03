@@ -192,9 +192,9 @@ class ReaderViewModel @JvmOverloads constructor(
         }
         fun isChapterDownloaded(chapter: Chapter): Boolean {
             val chapterManga = mangaMap?.get(chapter.animeId) ?: manga
-            return downloadManager.isEpisodeDownloaded(
+            return downloadManager.isChapterDownloaded(
                 chapterName = chapter.name,
-                episodeScanlator = chapter.scanlator,
+                chapterScanlator = chapter.scanlator,
                 mangaTitle = chapterManga.ogTitle,
                 sourceId = chapterManga.source,
             )
@@ -520,7 +520,7 @@ class ReaderViewModel @JvmOverloads constructor(
         if (chapter.pageLoader?.isLocal == false) {
             val manga = manga ?: return
             val dbChapter = chapter.chapter
-            val isDownloaded = downloadManager.isEpisodeDownloaded(
+            val isDownloaded = downloadManager.isChapterDownloaded(
                 dbChapter.name,
                 dbChapter.scanlator,
                 /* SY --> */ manga.ogTitle /* SY <-- */,
@@ -600,7 +600,7 @@ class ReaderViewModel @JvmOverloads constructor(
         val nextChapter = state.value.viewerChapters?.nextChapter?.chapter ?: return
 
         viewModelScope.launchIO {
-            val isNextChapterDownloaded = downloadManager.isEpisodeDownloaded(
+            val isNextChapterDownloaded = downloadManager.isChapterDownloaded(
                 nextChapter.name,
                 nextChapter.scanlator,
                 // SY -->
@@ -618,7 +618,7 @@ class ReaderViewModel @JvmOverloads constructor(
                 }
             }.take(downloadAheadAmount)
 
-            downloadManager.downloadEpisodes(
+            downloadManager.downloadChapters(
                 manga,
                 chaptersToDownload,
             )
@@ -721,7 +721,7 @@ class ReaderViewModel @JvmOverloads constructor(
                 ChapterUpdate(
                     id = readerChapter.chapter.id!!,
                     seen = readerChapter.chapter.seen,
-                    lastSecondSeen = readerChapter.chapter.last_second_seen.toLong(),
+                    lastSecondSeen = readerChapter.chapter.last_second_seen,
                 ),
             )
 
@@ -784,11 +784,11 @@ class ReaderViewModel @JvmOverloads constructor(
     fun getSource() = manga?.source?.let { sourceManager.getOrStub(it) } as? HttpSource
 
     fun getChapterUrl(): String? {
-        val sEpisode = getCurrentChapter()?.chapter ?: return null
+        val sChapter = getCurrentChapter()?.chapter ?: return null
         val source = getSource() ?: return null
 
         return try {
-            source.getChapterUrl(sEpisode)
+            source.getChapterUrl(sChapter)
         } catch (e: Exception) {
             logcat(LogPriority.ERROR, e)
             null

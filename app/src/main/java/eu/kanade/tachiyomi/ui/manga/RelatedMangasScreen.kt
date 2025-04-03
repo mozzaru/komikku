@@ -55,7 +55,7 @@ fun RelatedMangasScreen(
                     onClickClearSelection = bulkFavoriteScreenModel::toggleSelectionMode,
                     onChangeCategoryClick = bulkFavoriteScreenModel::addFavorite,
                     onSelectAll = {
-                        successState.relatedAnimesSorted?.forEach {
+                        successState.relatedMangasSorted?.forEach {
                             val relatedManga = it as RelatedManga.Success
                             relatedManga.mangaList.forEach { manga ->
                                 bulkFavoriteScreenModel.select(manga)
@@ -63,7 +63,7 @@ fun RelatedMangasScreen(
                         }
                     },
                     onReverseSelection = {
-                        successState.relatedAnimesSorted
+                        successState.relatedMangasSorted
                             ?.map { it as RelatedManga.Success }
                             ?.flatMap { it.mangaList }
                             ?.let { bulkFavoriteScreenModel.reverseSelection(it) }
@@ -84,7 +84,7 @@ fun RelatedMangasScreen(
         snackbarHost = { SnackbarHost(hostState = snackbarHostState) },
     ) { paddingValues ->
         RelatedMangasContent(
-            relatedMangas = successState.relatedAnimesSorted,
+            relatedMangas = successState.relatedMangasSorted,
             getMangaState = { manga -> screenModel.getManga(initialManga = manga) },
             columns = getColumnsPreference(LocalConfiguration.current.orientation),
             displayMode = displayMode,
