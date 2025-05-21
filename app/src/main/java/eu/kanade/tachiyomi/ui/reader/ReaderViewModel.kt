@@ -328,6 +328,21 @@ class ReaderViewModel @JvmOverloads constructor(
     fun onActivityFinish() {
         deletePendingChapters()
     }
+    
+    fun saveLastReadState() {
+        val mangaId = state.value.manga?.id ?: return
+        val chapterId = state.value.currentChapter?.chapter?.id ?: return
+        val page = state.value.currentPage
+        preferences.saveLastRead(mangaId, chapterId, page)
+    }
+    
+    /** Contoh fungsi getLastReadStateFromPref **/
+    fun getLastReadStateFromPref(): LastReadState? {
+        // Ambil dari preferences/database
+        return preferences.getLastRead()
+    }
+    
+    data class LastReadState(val mangaId: Long, val chapterId: Long, val page: Int)
 
     /**
      * Whether this presenter is initialized yet.

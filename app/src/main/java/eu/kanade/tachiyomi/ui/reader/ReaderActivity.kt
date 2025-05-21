@@ -217,26 +217,40 @@ class ReaderActivity : BaseActivity() {
             @Suppress("DEPRECATION")
             overridePendingTransition(R.anim.shared_axis_x_push_enter, R.anim.shared_axis_x_push_exit)
         }
-
+    
         super.onCreate(savedInstanceState)
-
+    
         binding = ReaderActivityBinding.inflate(layoutInflater)
         setContentView(binding.root)
-
+    
+        val (manga, chapter, page) = when {
+            savedInstanceState != null -> Triple(
+                savedInstanceState.getLong("manga", -1L),
+                savedInstanceState.getLong("chapter", -1L),
+                savedInstanceState.getInt("page", -1).takeIf { it != -1 }
+            )
+            else -> {
+                val mangaId = intent.extras?.getLong("manga", -1) ?: -1L
+                val chapterId = intent.extras?.getLong("chapter", -1) ?: -1L
+                val pageNum = intent.extras?.getInt("page", -1).takeIf { it != -1 }
+                if (mangaId == -1L || chapterId == -1L) {
+                    // Fallback: load dari preferences jika ada
+                    val lastRead = viewModel.getLastReadStateFromPref()
+                    Triple(lastRead?.mangaId ?: -1L, lastRead?.chapterId ?: -1L, lastRead?.page)
+                } else {
+                    Triple(mangaId, chapterId, pageNum)
+                }
+            }
+        }
+    
         if (viewModel.needsInit()) {
-            val manga = intent.extras?.getLong("manga", -1) ?: -1L
-            val chapter = intent.extras?.getLong("chapter", -1) ?: -1L
-            // SY -->
-            val page = intent.extras?.getInt("page", -1).takeUnless { it == -1 }
-            // SY <--
             if (manga == -1L || chapter == -1L) {
                 finish()
                 return
             }
             NotificationReceiver.dismissNotification(this, manga.hashCode(), Notifications.ID_NEW_CHAPTERS)
-
             lifecycleScope.launchNonCancellable {
-                val initResult = viewModel.init(manga, chapter/* SY --> */, page/* SY <-- */)
+                val initResult = viewModel.init(manga, chapter, page)
                 if (!initResult.getOrDefault(false)) {
                     val exception = initResult.exceptionOrNull() ?: IllegalStateException("Unknown err")
                     withUIContext {
@@ -316,8 +330,17 @@ class ReaderActivity : BaseActivity() {
     }
 
     override fun onPause() {
+    // Simpan posisi baca terakhir secara eksplisit sebelum aplikasi ke background
+        viewModel.saveLastReadState()
         viewModel.flushReadTimer()
         super.onPause()
+    }
+    
+    override fun onSaveInstanceState(outState: Bundle) {
+        super.onSaveInstanceState(outState)
+        outState.putLong("manga", viewModel.state.value.manga?.id ?: -1L)
+        outState.putLong("chapter", viewModel.state.value.currentChapter?.chapter?.id ?: -1L)
+        outState.putInt("page", viewModel.state.value.currentPage)
     }
 
     /**
