@@ -243,6 +243,7 @@ class App : Application(), DefaultLifecycleObserver, SingletonImageLoader.Factor
         super.onLowMemory()
         SingletonImageLoader.get(this).memoryCache?.clear()
         MangaCover.clearMemoryCache()
+        TachiyomiImageDecoder.clearCache()
         Injekt.get<SearchEngine>().clearCache()
     }
 
@@ -251,6 +252,7 @@ class App : Application(), DefaultLifecycleObserver, SingletonImageLoader.Factor
         if (level >= TRIM_MEMORY_RUNNING_CRITICAL || level == TRIM_MEMORY_UI_HIDDEN) {
             SingletonImageLoader.get(this).memoryCache?.clear()
             MangaCover.clearMemoryCache()
+            TachiyomiImageDecoder.clearCache()
             Injekt.get<SearchEngine>().clearCache()
         }
     }

@@ -14,9 +14,15 @@ plugins {
 }
 
 if (Config.includeTelemetry) {
-    pluginManager.apply {
-        apply(libs.plugins.google.services.get().pluginId)
-        apply(libs.plugins.firebase.crashlytics.get().pluginId)
+    val isCi = System.getenv("GITHUB_ACTIONS") == "true"
+    val isPreview = project.gradle.startParameter.taskNames.any { it.contains("Preview", ignoreCase = true) }
+
+    // Only apply telemetry if not in CI or not a preview build, to avoid 'google-services.json' mismatch
+    if (!(isCi && isPreview)) {
+        pluginManager.apply {
+            apply(libs.plugins.google.services.get().pluginId)
+            apply(libs.plugins.firebase.crashlytics.get().pluginId)
+        }
     }
 }
 

@@ -115,5 +115,9 @@ class TachiyomiImageDecoder(private val resources: ImageSource, private val opti
 
     companion object {
         var displayProfile: ByteArray? = null
+
+        fun clearCache() {
+            displayProfile = null
+        }
     }
 }
