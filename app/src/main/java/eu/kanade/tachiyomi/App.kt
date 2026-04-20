@@ -91,7 +91,8 @@ import tachiyomi.core.common.i18n.stringResource
 import tachiyomi.core.common.preference.Preference
 import tachiyomi.core.common.preference.PreferenceStore
 import tachiyomi.core.common.util.system.ImageUtil
-import tachiyomi.core.common.util.system.logcat
+import exh.search.SearchEngine
+import tachiyomi.domain.manga.model.MangaCover
 import tachiyomi.domain.storage.service.StorageManager
 import tachiyomi.i18n.MR
 import tachiyomi.presentation.widget.WidgetManager
@@ -235,6 +236,22 @@ class App : Application(), DefaultLifecycleObserver, SingletonImageLoader.Factor
         }
 
         initializeMigrator()
+    }
+
+    override fun onLowMemory() {
+        super.onLowMemory()
+        SingletonImageLoader.get(this).memoryCache?.clear()
+        MangaCover.clearMemoryCache()
+        Injekt.get<SearchEngine>().clearCache()
+    }
+
+    override fun onTrimMemory(level: Int) {
+        super.onTrimMemory(level)
+        if (level >= TRIM_MEMORY_RUNNING_CRITICAL || level == TRIM_MEMORY_UI_HIDDEN) {
+            SingletonImageLoader.get(this).memoryCache?.clear()
+            MangaCover.clearMemoryCache()
+            Injekt.get<SearchEngine>().clearCache()
+        }
     }
 
     private fun initializeMigrator() {
