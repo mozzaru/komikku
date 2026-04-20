@@ -77,6 +77,7 @@ import exh.log.EHLogLevel
 import exh.log.EnhancedFilePrinter
 import exh.log.XLogLogcatLogger
 import exh.log.xLogD
+import exh.search.SearchEngine
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
@@ -91,7 +92,7 @@ import tachiyomi.core.common.i18n.stringResource
 import tachiyomi.core.common.preference.Preference
 import tachiyomi.core.common.preference.PreferenceStore
 import tachiyomi.core.common.util.system.ImageUtil
-import exh.search.SearchEngine
+import tachiyomi.core.common.util.system.logcat
 import tachiyomi.domain.manga.model.MangaCover
 import tachiyomi.domain.storage.service.StorageManager
 import tachiyomi.i18n.MR

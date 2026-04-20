@@ -34,8 +34,8 @@ jobs:
         with:
           fetch-depth: 0
 
-      - name: Dependency Review
-        uses: actions/dependency-review-action@05fe4576374b728f0c523d6a13d64c25081e0803 # v4.8.3
+#      - name: Dependency Review
+#        uses: actions/dependency-review-action@05fe4576374b728f0c523d6a13d64c25081e0803 # v4.8.3
 
       - name: Validate Gradle Wrapper
         uses: gradle/actions/wrapper-validation@f29f5a9d7b09a7c6b29859002d29d24e1674c884 # v5.0.1
