@@ -31,6 +31,12 @@ import eu.kanade.tachiyomi.source.model.Page
 import eu.kanade.tachiyomi.source.online.HttpSource
 import eu.kanade.tachiyomi.source.online.MetadataSource
 import eu.kanade.tachiyomi.source.online.all.MergedSource
+import coil3.asDrawable
+import coil3.imageLoader
+import coil3.request.ImageRequest
+import coil3.request.SuccessResult
+import androidx.palette.graphics.Palette
+import eu.kanade.tachiyomi.util.system.getBitmapOrNull
 import eu.kanade.tachiyomi.ui.reader.chapter.ReaderChapterItem
 import eu.kanade.tachiyomi.ui.reader.loader.ChapterLoader
 import eu.kanade.tachiyomi.ui.reader.loader.DownloadPageLoader
@@ -368,6 +374,37 @@ class ReaderViewModel @JvmOverloads constructor(
             .launchIn(viewModelScope)
 
         // SY -->
+        val app = Injekt.get<Application>()
+        state.map { it.manga }
+            .distinctUntilChanged()
+            .filterNotNull()
+            .onEach { manga ->
+                val request = ImageRequest.Builder(app)
+                    .data(manga)
+                    .build()
+                val result = app.imageLoader.execute(request)
+                if (result is SuccessResult) {
+                    val bitmap = result.image.asDrawable(app.resources).getBitmapOrNull()
+                    if (bitmap != null) {
+                        val paletteBitmap = if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.O && bitmap.config == android.graphics.Bitmap.Config.HARDWARE) {
+                            bitmap.copy(android.graphics.Bitmap.Config.ARGB_8888, false)
+                        } else {
+                            bitmap
+                        }
+                        if (paletteBitmap != null) {
+                            val palette = Palette.from(paletteBitmap).generate()
+                            val color = palette.getVibrantColor(
+                                palette.getDominantColor(0),
+                            )
+                            if (color != 0) {
+                                mutableState.update { it.copy(coverColor = color) }
+                            }
+                        }
+                    }
+                }
+            }
+            .launchIn(viewModelScope)
+
         state.mapLatest { it.ehAutoscrollFreq }
             .distinctUntilChanged()
             .drop(1)
@@ -1496,6 +1533,7 @@ class ReaderViewModel @JvmOverloads constructor(
         val autoScroll: Boolean = false,
         val isAutoScrollEnabled: Boolean = false,
         val ehAutoscrollFreq: String = "",
+        val coverColor: Int? = null,
         // SY <--
     ) {
         val currentChapter: ReaderChapter?

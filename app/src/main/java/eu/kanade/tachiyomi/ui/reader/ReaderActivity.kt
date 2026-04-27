@@ -26,6 +26,7 @@ import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.enableEdgeToEdge
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.activity.viewModels
+import androidx.core.graphics.ColorUtils
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Row
@@ -258,6 +259,16 @@ class ReaderActivity : BaseActivity() {
         // EXH -->
         enableExhAutoScroll()
         // EXH <--
+
+        viewModel.state
+            .map { it.coverColor }
+            .distinctUntilChanged()
+            .onEach {
+                if (readerPreferences.readerTheme().get() == 3) {
+                    binding.readerContainer.setBackgroundColor(automaticBackgroundColor())
+                }
+            }
+            .launchIn(lifecycleScope)
 
         // Finish when incognito mode is disabled
         preferences.incognitoMode().changes()
@@ -1429,7 +1440,19 @@ class ReaderActivity : BaseActivity() {
         /**
          * Picks background color for [ReaderActivity] based on light/dark theme preference
          */
-        private fun automaticBackgroundColor(): Int {
+        fun automaticBackgroundColor(): Int {
+            val coverColor = viewModel.state.value.coverColor
+            if (coverColor != null) {
+                val isNightMode = baseContext.isNightMode()
+                val hsl = FloatArray(3)
+                ColorUtils.colorToHSL(coverColor, hsl)
+                if (isNightMode) {
+                    hsl[2] = 0.05f // Darker for night mode
+                } else {
+                    hsl[2] = 0.95f // Lighter for light mode
+                }
+                return ColorUtils.HSLToColor(hsl)
+            }
             return if (baseContext.isNightMode()) {
                 grayBackgroundColor
             } else {
