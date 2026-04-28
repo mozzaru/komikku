@@ -8,6 +8,11 @@ import androidx.compose.runtime.Immutable
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import androidx.palette.graphics.Palette
+import coil3.asDrawable
+import coil3.imageLoader
+import coil3.request.ImageRequest
+import coil3.request.SuccessResult
 import eu.kanade.domain.base.BasePreferences
 import eu.kanade.domain.chapter.model.toDbChapter
 import eu.kanade.domain.manga.interactor.SetMangaViewerFlags
@@ -31,12 +36,6 @@ import eu.kanade.tachiyomi.source.model.Page
 import eu.kanade.tachiyomi.source.online.HttpSource
 import eu.kanade.tachiyomi.source.online.MetadataSource
 import eu.kanade.tachiyomi.source.online.all.MergedSource
-import coil3.asDrawable
-import coil3.imageLoader
-import coil3.request.ImageRequest
-import coil3.request.SuccessResult
-import androidx.palette.graphics.Palette
-import eu.kanade.tachiyomi.util.system.getBitmapOrNull
 import eu.kanade.tachiyomi.ui.reader.chapter.ReaderChapterItem
 import eu.kanade.tachiyomi.ui.reader.loader.ChapterLoader
 import eu.kanade.tachiyomi.ui.reader.loader.DownloadPageLoader
@@ -57,6 +56,7 @@ import eu.kanade.tachiyomi.util.lang.byteSize
 import eu.kanade.tachiyomi.util.storage.DiskUtil
 import eu.kanade.tachiyomi.util.storage.DiskUtil.MAX_FILE_NAME_BYTES
 import eu.kanade.tachiyomi.util.storage.cacheImageDir
+import eu.kanade.tachiyomi.util.system.getBitmapOrNull
 import exh.metadata.metadata.RaisedSearchMetadata
 import exh.source.MERGED_SOURCE_ID
 import exh.source.getMainSource
