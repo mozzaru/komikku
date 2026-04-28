@@ -146,25 +146,23 @@ class ChapterCache(
      */
     fun isImageInCache(imageUrl: String): Boolean {
         return try {
-            val snapshot = diskCache.get(DiskUtil.hashKeyForDisk(imageUrl))
-            val inJournal = snapshot?.use { true } ?: false
-
-            if (inJournal) {
-                android.util.Log.d("PAGE_CACHE", "Cache HIT journal: $imageUrl")
-                return true
-            }
-
-            val imageFile = getImageFile(imageUrl)
-            val fileExists = imageFile.exists() && imageFile.length() > 0
-
-            android.util.Log.d("PAGE_CACHE", "File check: exists=${imageFile.exists()} size=${imageFile.length()} path=${imageFile.absolutePath}")
-
-            fileExists
+            diskCache.get(DiskUtil.hashKeyForDisk(imageUrl)).use { it != null }
         } catch (_: IOException) {
-            getImageFile(imageUrl).let { it.exists() && it.length() > 0 }
-        } catch (_: Exception) {
             false
         }
+    }
+
+    /**
+     * Get image input stream from cache.
+     *
+     * @param imageUrl url of image.
+     * @return input stream of image.
+     * @throws IOException if image is not in cache.
+     */
+    fun getImageInputStream(imageUrl: String): java.io.InputStream {
+        val key = DiskUtil.hashKeyForDisk(imageUrl)
+        val snapshot = diskCache.get(key) ?: throw IOException("Not in cache: $imageUrl")
+        return snapshot.getInputStream(0)
     }
 
     /**

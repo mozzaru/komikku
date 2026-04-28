@@ -1,6 +1,5 @@
 package eu.kanade.tachiyomi.ui.reader.loader
 
-import android.util.Log
 import eu.kanade.domain.source.service.SourcePreferences
 import eu.kanade.tachiyomi.data.cache.ChapterCache
 import eu.kanade.tachiyomi.data.database.models.toDomainChapter
@@ -218,20 +217,19 @@ internal class HttpPageLoader(
             }
             val imageUrl = page.imageUrl!!
 
-            val inCache = chapterCache.isImageInCache(imageUrl)
-            Log.d("PAGE_CACHE", "Page ${page.index}: inCache=$inCache")
-
-            if (!inCache) {
+            if (!chapterCache.isImageInCache(imageUrl)) {
                 page.status = Page.State.DownloadImage
                 val imageResponse = source.getImage(page, dataSaver)
                 chapterCache.putImageToCache(imageUrl, imageResponse)
             }
 
-            page.stream = { chapterCache.getImageFile(imageUrl).inputStream() }
+            page.stream = { chapterCache.getImageInputStream(imageUrl) }
             page.status = Page.State.Ready
         } catch (e: Throwable) {
             page.status = Page.State.Error(e)
-            if (e is CancellationException) throw e
+            if (e is CancellationException) {
+                throw e
+            }
         }
     }
 
