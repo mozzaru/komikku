@@ -96,6 +96,7 @@ internal class HttpPageLoader(
             // Don't trust sources and use our own indexing
             ReaderPage(index, page.url, page.imageUrl)
         }
+        savePageListToCache(rp)
         if (readerPreferences.aggressivePageLoading().get()) {
             rp.forEach {
                 if (it.status == Page.State.Queue) {
@@ -168,15 +169,19 @@ internal class HttpPageLoader(
 
         // Cache current page list progress for online chapters to allow a faster reopen
         chapter.pages?.let { pages ->
-            launchIO {
-                try {
-                    // Convert to pages without reader information
-                    val pagesToSave = pages.map { Page(it.index, it.url, it.imageUrl) }
-                    chapterCache.putPageListToCache(chapter.chapter.toDomainChapter()!!, pagesToSave)
-                } catch (e: Throwable) {
-                    if (e is CancellationException) {
-                        throw e
-                    }
+            savePageListToCache(pages)
+        }
+    }
+
+    private fun savePageListToCache(pages: List<ReaderPage>) {
+        launchIO {
+            try {
+                // Convert to pages without reader information
+                val pagesToSave = pages.map { Page(it.index, it.url, it.imageUrl) }
+                chapterCache.putPageListToCache(chapter.chapter.toDomainChapter()!!, pagesToSave)
+            } catch (e: Throwable) {
+                if (e is CancellationException) {
+                    throw e
                 }
             }
         }
@@ -214,6 +219,10 @@ internal class HttpPageLoader(
             if (page.imageUrl.isNullOrEmpty()) {
                 page.status = Page.State.LoadPage
                 page.imageUrl = source.getImageUrl(page)
+
+                // SY -->
+                chapter.pages?.let { savePageListToCache(it) }
+                // SY <--
             }
             val imageUrl = page.imageUrl!!
 

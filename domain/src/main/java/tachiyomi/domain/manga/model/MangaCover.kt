@@ -73,7 +73,7 @@ data class MangaCover(
          * [vibrantCoverColorMap] store color generated while browsing library.
          * It always empty at beginning each time app starts, then add more color while browsing.
          */
-        val vibrantCoverColorMap: HashMap<Long, Int?> = hashMapOf()
+        val vibrantCoverColorMap = ConcurrentHashMap<Long, Int?>()
 
         /**
          * [dominantCoverColorMap] stores favorite manga's cover & text's color as a joined string in Prefs.
@@ -85,6 +85,12 @@ data class MangaCover(
         var dominantCoverColorMap = ConcurrentHashMap<Long, Pair<Int, Int>>()
 
         var coverRatioMap = ConcurrentHashMap<Long, Float>()
+
+        fun clearCache() {
+            vibrantCoverColorMap.clear()
+            dominantCoverColorMap.clear()
+            coverRatioMap.clear()
+        }
         // KMK <--
 
         // SY -->

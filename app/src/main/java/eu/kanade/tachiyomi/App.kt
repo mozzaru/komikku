@@ -20,6 +20,7 @@ import androidx.work.Configuration
 import androidx.work.WorkManager
 import coil3.ImageLoader
 import coil3.SingletonImageLoader
+import coil3.imageLoader
 import coil3.disk.DiskCache
 import coil3.disk.directory
 import coil3.memory.MemoryCache
@@ -83,6 +84,8 @@ import kotlinx.coroutines.flow.onEach
 import logcat.AndroidLogcatLogger
 import logcat.LogPriority
 import logcat.LogcatLogger
+import tachiyomi.domain.manga.model.MangaCover
+import exh.search.SearchEngine
 import mihon.core.migration.Migrator
 import mihon.core.migration.migrations.migrations
 import mihon.telemetry.TelemetryConfig
@@ -235,6 +238,22 @@ class App : Application(), DefaultLifecycleObserver, SingletonImageLoader.Factor
         }
 
         initializeMigrator()
+    }
+
+    override fun onTrimMemory(level: Int) {
+        super.onTrimMemory(level)
+        if (level >= TRIM_MEMORY_RUNNING_CRITICAL || level == TRIM_MEMORY_COMPLETE) {
+            imageLoader.memoryCache?.clear()
+            MangaCover.clearCache()
+            Injekt.get<SearchEngine>().clearCache()
+        }
+    }
+
+    override fun onLowMemory() {
+        super.onLowMemory()
+        imageLoader.memoryCache?.clear()
+        MangaCover.clearCache()
+        Injekt.get<SearchEngine>().clearCache()
     }
 
     private fun initializeMigrator() {
