@@ -265,7 +265,7 @@ class ReaderActivity : BaseActivity() {
             .distinctUntilChanged()
             .onEach {
                 if (readerPreferences.readerTheme().get() == 3) {
-                    binding.readerContainer.setBackgroundColor(automaticBackgroundColor())
+                    binding.readerContainer.setBackgroundColor(config?.automaticBackgroundColor() ?: Color.BLACK)
                 }
             }
             .launchIn(lifecycleScope)
