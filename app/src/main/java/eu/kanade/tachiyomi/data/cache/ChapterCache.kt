@@ -162,7 +162,15 @@ class ChapterCache(
     fun getImageInputStream(imageUrl: String): java.io.InputStream {
         val key = DiskUtil.hashKeyForDisk(imageUrl)
         val snapshot = diskCache.get(key) ?: throw IOException("Not in cache: $imageUrl")
-        return snapshot.getInputStream(0)
+        val inner = snapshot.getInputStream(0)
+        return object : java.io.InputStream() {
+            override fun read() = inner.read()
+            override fun read(b: ByteArray, off: Int, len: Int) = inner.read(b, off, len)
+            override fun close() {
+                inner.close()
+                snapshot.close()
+            }
+        }
     }
 
     /**
