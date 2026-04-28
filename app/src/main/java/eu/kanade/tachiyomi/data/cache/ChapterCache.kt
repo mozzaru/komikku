@@ -146,8 +146,23 @@ class ChapterCache(
      */
     fun isImageInCache(imageUrl: String): Boolean {
         return try {
-            diskCache.get(DiskUtil.hashKeyForDisk(imageUrl)).use { it != null }
+            val snapshot = diskCache.get(DiskUtil.hashKeyForDisk(imageUrl))
+            val inJournal = snapshot?.use { true } ?: false
+
+            if (inJournal) {
+                android.util.Log.d("PAGE_CACHE", "Cache HIT journal: $imageUrl")
+                return true
+            }
+
+            val imageFile = getImageFile(imageUrl)
+            val fileExists = imageFile.exists() && imageFile.length() > 0
+
+            android.util.Log.d("PAGE_CACHE", "File check: exists=${imageFile.exists()} size=${imageFile.length()} path=${imageFile.absolutePath}")
+
+            fileExists
         } catch (_: IOException) {
+            getImageFile(imageUrl).let { it.exists() && it.length() > 0 }
+        } catch (_: Exception) {
             false
         }
     }
