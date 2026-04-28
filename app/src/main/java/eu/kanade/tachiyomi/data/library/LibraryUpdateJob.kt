@@ -203,6 +203,7 @@ class LibraryUpdateJob(private val context: Context, workerParams: WorkerParamet
                 // KMK -->
                 libraryUpdateStatus.stop()
                 // KMK <--
+                mangaToUpdate = emptyList()
             }
         }
     }
