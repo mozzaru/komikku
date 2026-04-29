@@ -111,10 +111,12 @@ internal class HttpPageLoader(
      * Loads a page through the queue. Handles re-enqueueing pages if they were evicted from the cache.
      */
     override suspend fun loadPage(page: ReaderPage) = withIOContext {
+        android.util.Log.d("PAGE_CACHE", "loadPage called: index=${page.index} status=${page.status} imageUrl=${page.imageUrl}")
         val imageUrl = page.imageUrl
 
         // Check if the image has been deleted
         if (page.status == Page.State.Ready && imageUrl != null && !chapterCache.isImageInCache(imageUrl)) {
+            android.util.Log.d("PAGE_CACHE", "Page ${page.index}: cache miss after resume, resetting to Queue")
             page.status = Page.State.Queue
         }
 
