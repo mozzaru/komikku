@@ -87,6 +87,12 @@ data class MangaCover(
         var coverRatioMap = ConcurrentHashMap<Long, Float>()
         // KMK <--
 
+        fun clearCache() {
+            vibrantCoverColorMap.clear()
+            dominantCoverColorMap.clear()
+            coverRatioMap.clear()
+        }
+
         // SY -->
         private val getCustomMangaInfo: GetCustomMangaInfo by injectLazy()
         // SY <--

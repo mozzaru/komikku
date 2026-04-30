@@ -5,6 +5,10 @@ import java.util.Locale
 class SearchEngine {
     private val queryCache = mutableMapOf<String, List<QueryComponent>>()
 
+    fun clearCache() {
+        queryCache.clear()
+    }
+
     fun textToSubQueries(
         namespace: String?,
         component: Text?,

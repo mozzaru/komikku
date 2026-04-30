@@ -27,6 +27,7 @@ import coil3.request.ImageRequest
 import coil3.request.allowHardware
 import coil3.request.crossfade
 import coil3.size.Precision
+import coil3.size.Size
 import coil3.size.ViewSizeResolver
 import com.davemorrissey.labs.subscaleview.ImageSource
 import com.davemorrissey.labs.subscaleview.SubsamplingScaleImageView
@@ -346,7 +347,29 @@ open class ReaderPageImageView @JvmOverloads constructor(
             }
             is BufferedSource -> {
                 if (!isWebtoon || alwaysDecodeLongStripWithSSIV) {
-                    setHardwareConfig(ImageUtil.canUseHardwareBitmap(data))
+                    if (ImageUtil.canUseHardwareBitmap(data)) {
+                        ImageRequest.Builder(context)
+                            .data(data)
+                            .size(Size.ORIGINAL)
+                            .target(
+                                onSuccess = { result ->
+                                    val image = result as BitmapImage
+                                    setImage(ImageSource.bitmap(image.bitmap))
+                                    isVisible = true
+                                    this@ReaderPageImageView.onImageLoaded()
+                                },
+                            )
+                            .listener(
+                                onError = { _, result ->
+                                    onImageLoadError(result.throwable)
+                                },
+                            )
+                            .crossfade(false)
+                            .build()
+                            .let(context.imageLoader::enqueue)
+                        return@apply
+                    }
+
                     setImage(ImageSource.inputStream(data.inputStream()))
                     isVisible = true
                     return@apply
@@ -354,7 +377,6 @@ open class ReaderPageImageView @JvmOverloads constructor(
 
                 ImageRequest.Builder(context)
                     .data(data)
-                    .memoryCachePolicy(CachePolicy.DISABLED)
                     .diskCachePolicy(CachePolicy.DISABLED)
                     .target(
                         onSuccess = { result ->
@@ -431,7 +453,6 @@ open class ReaderPageImageView @JvmOverloads constructor(
 
         val request = ImageRequest.Builder(context)
             .data(data)
-            .memoryCachePolicy(CachePolicy.DISABLED)
             .diskCachePolicy(CachePolicy.DISABLED)
             .target(
                 onSuccess = { result ->
