@@ -345,8 +345,9 @@ open class ReaderPageImageView @JvmOverloads constructor(
                 isVisible = true
             }
             is BufferedSource -> {
-                if (!isWebtoon || alwaysDecodeLongStripWithSSIV) {
-                    setHardwareConfig(ImageUtil.canUseHardwareBitmap(data))
+                val canUseHardwareBitmap = ImageUtil.canUseHardwareBitmap(data)
+                if (!isWebtoon || alwaysDecodeLongStripWithSSIV || !canUseHardwareBitmap) {
+                    setHardwareConfig(canUseHardwareBitmap)
                     setImage(ImageSource.inputStream(data.inputStream()))
                     isVisible = true
                     return@apply
@@ -354,12 +355,17 @@ open class ReaderPageImageView @JvmOverloads constructor(
 
                 ImageRequest.Builder(context)
                     .data(data)
-                    .memoryCachePolicy(CachePolicy.DISABLED)
+                    .memoryCachePolicy(CachePolicy.ENABLED)
                     .diskCachePolicy(CachePolicy.DISABLED)
                     .target(
                         onSuccess = { result ->
                             val image = result as BitmapImage
                             setImage(ImageSource.bitmap(image.bitmap))
+                            isVisible = true
+                        },
+                        onError = {
+                            setHardwareConfig(false)
+                            setImage(ImageSource.inputStream(data.inputStream()))
                             isVisible = true
                         },
                     )
@@ -431,7 +437,7 @@ open class ReaderPageImageView @JvmOverloads constructor(
 
         val request = ImageRequest.Builder(context)
             .data(data)
-            .memoryCachePolicy(CachePolicy.DISABLED)
+            .memoryCachePolicy(CachePolicy.ENABLED)
             .diskCachePolicy(CachePolicy.DISABLED)
             .target(
                 onSuccess = { result ->

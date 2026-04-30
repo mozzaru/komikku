@@ -100,7 +100,7 @@ class SYDomainModule : InjektModule {
         addFactory { DeleteSortTag(get(), get()) }
         addFactory { ReorderSortTag(get(), get()) }
         addFactory { GetPagePreviews(get(), get()) }
-        addFactory { SearchEngine() }
+        addSingletonFactory { SearchEngine() }
         addFactory { IsTrackUnfollowed() }
         addFactory { GetReadMangaNotInLibraryView(get()) }
 

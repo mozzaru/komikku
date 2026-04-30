@@ -85,6 +85,12 @@ data class MangaCover(
         var dominantCoverColorMap = ConcurrentHashMap<Long, Pair<Int, Int>>()
 
         var coverRatioMap = ConcurrentHashMap<Long, Float>()
+
+        fun clearCache() {
+            vibrantCoverColorMap.clear()
+            dominantCoverColorMap.clear()
+            coverRatioMap.clear()
+        }
         // KMK <--
 
         // SY -->
