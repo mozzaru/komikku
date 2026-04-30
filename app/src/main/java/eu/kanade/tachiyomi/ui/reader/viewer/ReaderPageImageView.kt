@@ -354,7 +354,7 @@ open class ReaderPageImageView @JvmOverloads constructor(
                 }
 
                 ImageRequest.Builder(context)
-                    .data(data)
+                    .data(data.peek().buffered())
                     .memoryCachePolicy(CachePolicy.ENABLED)
                     .diskCachePolicy(CachePolicy.DISABLED)
                     .target(

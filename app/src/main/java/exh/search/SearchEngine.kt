@@ -1,9 +1,10 @@
 package exh.search
 
 import java.util.Locale
+import java.util.concurrent.ConcurrentHashMap
 
 class SearchEngine {
-    private val queryCache = mutableMapOf<String, List<QueryComponent>>()
+    private val queryCache = ConcurrentHashMap<String, List<QueryComponent>>()
 
     fun clearCache() {
         queryCache.clear()
