@@ -19,6 +19,10 @@ import eu.kanade.domain.track.interactor.TrackChapter
 import eu.kanade.domain.track.service.TrackPreferences
 import eu.kanade.domain.ui.UiPreferences
 import eu.kanade.presentation.manga.components.ChapterDownloadAction
+import eu.kanade.tachiyomi.data.cache.BitmapMemoryCache
+import eu.kanade.tachiyomi.data.cache.LocalFileBitmapCache
+import eu.kanade.tachiyomi.data.cache.SavedInstanceBitmapCache
+import eu.kanade.tachiyomi.data.coil.SmartImageDecoder
 import eu.kanade.tachiyomi.data.database.models.toDomainChapter
 import eu.kanade.tachiyomi.data.download.DownloadManager
 import eu.kanade.tachiyomi.data.download.DownloadProvider
@@ -75,6 +79,9 @@ import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.runBlocking
 import logcat.LogPriority
+import logcat.logcat
+import okio.buffer
+import okio.source
 import tachiyomi.core.common.preference.toggle
 import tachiyomi.core.common.storage.UniFileTempFileManager
 import tachiyomi.core.common.util.lang.launchIO
@@ -139,6 +146,11 @@ class ReaderViewModel @JvmOverloads constructor(
     private val getMergedChaptersByMangaId: GetMergedChaptersByMangaId = Injekt.get(),
     // SY <--
 ) : ViewModel() {
+
+    private var bitmapMemoryCache: BitmapMemoryCache? = null
+    private var savedInstanceBitmapCache: SavedInstanceBitmapCache? = null
+    private var localFileCache: LocalFileBitmapCache? = null
+    private val smartDecoder by lazy { SmartImageDecoder(localFileCache ?: LocalFileBitmapCache()) }
 
     private val mutableState = MutableStateFlow(State())
     val state = mutableState.asStateFlow()
@@ -409,6 +421,74 @@ class ReaderViewModel @JvmOverloads constructor(
      */
     fun needsInit(): Boolean {
         return manga == null
+    }
+
+    fun setBitmapMemoryCache(cache: BitmapMemoryCache) {
+        this.bitmapMemoryCache = cache
+    }
+
+    fun setSavedInstanceBitmapCache(cache: SavedInstanceBitmapCache) {
+        this.savedInstanceBitmapCache = cache
+    }
+
+    fun setLocalFileCache(cache: LocalFileBitmapCache) {
+        this.localFileCache = cache
+    }
+
+    fun preloadCurrentPageBitmap() {
+        val chapter = getCurrentChapter() ?: return
+        val pageIndex = state.value.currentPage
+        val page = chapter.pages?.getOrNull(pageIndex) ?: return
+
+        viewModelScope.launch(Dispatchers.IO) {
+            preloadPageBitmapInternal(page, chapter, isPersistent = true)
+        }
+    }
+
+    fun preloadNextPageBitmap(offset: Int = 1) {
+        val chapter = getCurrentChapter() ?: return
+        val pageIndex = state.value.currentPage + offset
+        val page = chapter.pages?.getOrNull(pageIndex) ?: return
+
+        viewModelScope.launch(Dispatchers.IO) {
+            preloadPageBitmapInternal(page, chapter, isPersistent = false)
+        }
+    }
+
+    private suspend fun preloadPageBitmapInternal(
+        page: ReaderPage,
+        chapter: ReaderChapter,
+        isPersistent: Boolean = false,
+    ) {
+        try {
+            val cacheKey = "${chapter.chapter.id}_${page.index}"
+
+            savedInstanceBitmapCache?.get(cacheKey)?.let {
+                logcat(LogPriority.DEBUG) { "Preload: Page ${page.index} in SavedInstance cache" }
+                return
+            }
+
+            if (bitmapMemoryCache?.get(cacheKey) != null) {
+                logcat(LogPriority.DEBUG) { "Preload: Page ${page.index} in memory cache" }
+                return
+            }
+
+            val stream = page.stream?.invoke() ?: return
+
+            val bufferedSource = stream.source().buffer()
+
+            val bitmap = smartDecoder.decodeFromSource(bufferedSource) ?: return
+
+            if (isPersistent) {
+                savedInstanceBitmapCache?.put(cacheKey, bitmap, isPersistent = true)
+            }
+
+            bitmapMemoryCache?.put(cacheKey, bitmap)
+
+            logcat(LogPriority.DEBUG) { "Preload: Preloaded page ${page.index}" }
+        } catch (e: Exception) {
+            logcat(LogPriority.ERROR, e) { "Preload: Failed page ${page.index}" }
+        }
     }
 
     /**

@@ -278,7 +278,7 @@ class App : Application(), DefaultLifecycleObserver, SingletonImageLoader.Factor
             diskCache(
                 DiskCache.Builder()
                     .directory(context.cacheDir.resolve("image_cache"))
-                    .maxSizePercent(0.02)
+                    .maxSizePercent(0.15)
                     .build(),
             )
 
@@ -294,7 +294,7 @@ class App : Application(), DefaultLifecycleObserver, SingletonImageLoader.Factor
 
             // Coil spawns a new thread for every image load by default
             fetcherCoroutineContext(Dispatchers.IO.limitedParallelism(8))
-            decoderCoroutineContext(Dispatchers.IO.limitedParallelism(3))
+            decoderCoroutineContext(Dispatchers.IO.limitedParallelism(6))
         }
             .build()
     }

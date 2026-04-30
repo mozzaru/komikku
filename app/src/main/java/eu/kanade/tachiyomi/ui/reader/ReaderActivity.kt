@@ -78,6 +78,8 @@ import eu.kanade.presentation.reader.appbars.ReaderAppBars
 import eu.kanade.presentation.reader.settings.ReaderSettingsDialog
 import eu.kanade.presentation.theme.TachiyomiTheme
 import eu.kanade.tachiyomi.R
+import eu.kanade.tachiyomi.data.cache.BitmapMemoryCache
+import eu.kanade.tachiyomi.data.cache.SavedInstanceBitmapCache
 import eu.kanade.tachiyomi.data.coil.TachiyomiImageDecoder
 import eu.kanade.tachiyomi.data.connections.discord.DiscordRPCService
 import eu.kanade.tachiyomi.data.connections.discord.ReaderData
@@ -128,6 +130,7 @@ import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.flow.sample
 import kotlinx.coroutines.launch
 import logcat.LogPriority
+import logcat.logcat
 import tachiyomi.core.common.Constants
 import tachiyomi.core.common.i18n.pluralStringResource
 import tachiyomi.core.common.i18n.stringResource
@@ -164,6 +167,9 @@ class ReaderActivity : BaseActivity() {
             }
         }
     }
+
+    private val bitmapMemoryCache by lazy { BitmapMemoryCache() }
+    private val savedInstanceBitmapCache by lazy { SavedInstanceBitmapCache() }
 
     private val readerPreferences = Injekt.get<ReaderPreferences>()
     private val preferences = Injekt.get<BasePreferences>()
@@ -546,6 +552,24 @@ class ReaderActivity : BaseActivity() {
      */
     override fun onResume() {
         super.onResume()
+
+        logcat(LogPriority.DEBUG) { "ReaderActivity.onResume() - preload start" }
+
+        // Pass caches to viewmodel
+        viewModel.setBitmapMemoryCache(bitmapMemoryCache)
+        viewModel.setSavedInstanceBitmapCache(savedInstanceBitmapCache)
+
+        // Aggressive preload
+        lifecycleScope.launch {
+            try {
+                viewModel.preloadCurrentPageBitmap()
+                viewModel.preloadNextPageBitmap(offset = 1)
+                viewModel.preloadNextPageBitmap(offset = 2)
+            } catch (e: Exception) {
+                logcat(LogPriority.ERROR, e) { "Preload failed" }
+            }
+        }
+
         viewModel.restartReadTimer()
 
         // AM (DISCORD) -->
