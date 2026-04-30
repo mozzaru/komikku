@@ -35,6 +35,7 @@ import eu.kanade.tachiyomi.ui.reader.chapter.ReaderChapterItem
 import eu.kanade.tachiyomi.ui.reader.loader.ChapterLoader
 import eu.kanade.tachiyomi.ui.reader.loader.DownloadPageLoader
 import eu.kanade.tachiyomi.ui.reader.model.InsertPage
+import eu.kanade.tachiyomi.ui.reader.model.PageCacheManager
 import eu.kanade.tachiyomi.ui.reader.model.ReaderChapter
 import eu.kanade.tachiyomi.ui.reader.model.ReaderPage
 import eu.kanade.tachiyomi.ui.reader.model.ViewerChapters
@@ -394,6 +395,8 @@ class ReaderViewModel @JvmOverloads constructor(
                 downloadManager.addDownloadsToStartOfQueue(listOf(it))
             }
         }
+        // Clear all bitmap caches
+        PageCacheManager.evictAll()
     }
 
     /**

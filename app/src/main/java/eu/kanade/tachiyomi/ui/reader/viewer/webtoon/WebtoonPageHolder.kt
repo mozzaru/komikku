@@ -1,6 +1,9 @@
 package eu.kanade.tachiyomi.ui.reader.viewer.webtoon
 
 import android.content.res.Resources
+import android.graphics.Bitmap
+import android.graphics.drawable.BitmapDrawable
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.ViewGroup
 import android.view.ViewGroup.LayoutParams.MATCH_PARENT
@@ -14,6 +17,7 @@ import com.davemorrissey.labs.subscaleview.SubsamplingScaleImageView
 import eu.kanade.presentation.util.formattedMessage
 import eu.kanade.tachiyomi.databinding.ReaderErrorBinding
 import eu.kanade.tachiyomi.source.model.Page
+import eu.kanade.tachiyomi.ui.reader.model.PageCacheManager
 import eu.kanade.tachiyomi.ui.reader.model.ReaderPage
 import eu.kanade.tachiyomi.ui.reader.viewer.ReaderPageImageView
 import eu.kanade.tachiyomi.ui.reader.viewer.ReaderProgressIndicator
@@ -33,7 +37,9 @@ import tachiyomi.core.common.util.lang.withIOContext
 import tachiyomi.core.common.util.lang.withUIContext
 import tachiyomi.core.common.util.system.ImageUtil
 import tachiyomi.core.common.util.system.logcat
+import tachiyomi.decoder.ImageDecoder
 import tachiyomi.i18n.MR
+import java.io.InputStream
 
 /**
  * Holder of the webtoon reader for a single page of a chapter.
@@ -189,30 +195,47 @@ class WebtoonPageHolder(
      * Called when the page is ready.
      */
     private suspend fun setImage() {
-        progressIndicator.setProgress(0)
+        val page = page ?: return
 
-        val streamFn = page?.stream ?: return
+        val cachedBitmap = page.decodedBitmap
+        if (cachedBitmap != null && !cachedBitmap.isRecycled) {
+            Log.d(
+                "WTHolder",
+                "Using cached bitmap for page ${page.index}",
+            )
+            withUIContext {
+                val drawable = BitmapDrawable(context.resources, cachedBitmap)
+                frame.setImage(
+                    drawable,
+                    createConfig(),
+                )
+                progressContainer.isVisible = false
+                removeErrorLayout()
+                onImageDecoded()
+            }
+            return
+        }
 
+        Log.d(
+            "WTHolder",
+            "Decoding page ${page.index} from stream",
+        )
+        val streamFn = page.stream ?: return
         try {
             val (source, isAnimated) = withIOContext {
-                val source = streamFn().use { process(Buffer().readFrom(it)) }
-                val isAnimated = ImageUtil.isAnimatedAndSupported(source)
-                Pair(source, isAnimated)
+                val src = streamFn().use { process(Buffer().readFrom(it)) }
+                val isAnim = ImageUtil.isAnimatedAndSupported(src)
+                Pair(src, isAnim)
             }
             withUIContext {
                 frame.setImage(
                     source,
                     isAnimated,
-                    ReaderPageImageView.Config(
-                        zoomDuration = viewer.config.doubleTapAnimDuration,
-                        minimumScaleType = SubsamplingScaleImageView.SCALE_TYPE_FIT_WIDTH,
-                        cropBorders =
-                        (viewer.config.imageCropBorders && viewer.isContinuous) ||
-                            (viewer.config.continuousCropBorders && !viewer.isContinuous),
-                    ),
+                    createConfig(),
                 )
                 removeErrorLayout()
             }
+            cacheDecodedBitmap(page, streamFn)
         } catch (e: Throwable) {
             logcat(LogPriority.ERROR, e)
             withUIContext {
@@ -220,6 +243,28 @@ class WebtoonPageHolder(
             }
         }
     }
+
+    private suspend fun cacheDecodedBitmap(page: ReaderPage, streamFn: () -> InputStream) {
+        try {
+            val bitmap = withIOContext {
+                val source = streamFn().use { process(Buffer().readFrom(it)) }
+                val decoder = ImageDecoder.newInstance(source.inputStream())
+                decoder?.decode()
+            }
+            if (bitmap != null) {
+                PageCacheManager.cacheBitmap(page, bitmap)
+            }
+        } catch (e: Exception) {
+            logcat(LogPriority.ERROR, e) { "Failed to cache bitmap for page ${page.index}" }
+        }
+    }
+
+    private fun createConfig() = ReaderPageImageView.Config(
+        zoomDuration = viewer.config.doubleTapAnimDuration,
+        minimumScaleType = SubsamplingScaleImageView.SCALE_TYPE_FIT_WIDTH,
+        cropBorders = (viewer.config.imageCropBorders && viewer.isContinuous) ||
+            (viewer.config.continuousCropBorders && !viewer.isContinuous),
+    )
 
     private fun process(imageSource: BufferedSource): BufferedSource {
         if (viewer.config.dualPageRotateToFit) {

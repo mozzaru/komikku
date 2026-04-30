@@ -1,5 +1,6 @@
 package eu.kanade.tachiyomi.ui.reader.model
 
+import android.graphics.Bitmap
 import eu.kanade.tachiyomi.source.model.Page
 import java.io.InputStream
 
@@ -25,4 +26,18 @@ open class ReaderPage(
             field = value
             if (value) shiftedPage = false
         }
+
+    @Volatile
+    var decodedBitmap: Bitmap? = null
+
+    /**
+     * Safely clean bitmaps. Aman was called many times.
+     */
+    fun clearDecodedBitmap() {
+        val bmp = decodedBitmap
+        if (bmp != null && !bmp.isRecycled) {
+            bmp.recycle()
+        }
+        decodedBitmap = null
+    }
 }

@@ -3,6 +3,8 @@ package eu.kanade.tachiyomi.ui.reader.viewer.pager
 import android.annotation.SuppressLint
 import android.content.Context
 import android.graphics.Bitmap
+import android.graphics.drawable.BitmapDrawable
+import android.util.Log
 import android.view.LayoutInflater
 import androidx.annotation.ColorInt
 import androidx.core.view.isVisible
@@ -10,6 +12,7 @@ import eu.kanade.presentation.util.formattedMessage
 import eu.kanade.tachiyomi.databinding.ReaderErrorBinding
 import eu.kanade.tachiyomi.source.model.Page
 import eu.kanade.tachiyomi.ui.reader.model.InsertPage
+import eu.kanade.tachiyomi.ui.reader.model.PageCacheManager
 import eu.kanade.tachiyomi.ui.reader.model.ReaderPage
 import eu.kanade.tachiyomi.ui.reader.viewer.ReaderPageImageView
 import eu.kanade.tachiyomi.ui.reader.viewer.ReaderProgressIndicator
@@ -32,6 +35,7 @@ import tachiyomi.core.common.util.system.ImageUtil
 import tachiyomi.core.common.util.system.logcat
 import tachiyomi.decoder.ImageDecoder
 import tachiyomi.i18n.MR
+import java.io.InputStream
 import kotlin.math.max
 
 /**
@@ -172,6 +176,35 @@ class PagerPageHolder(
      */
     private suspend fun setImage() {
         if (extraPage == null) {
+            val cachedBitmap = page.decodedBitmap
+            if (cachedBitmap != null && !cachedBitmap.isRecycled) {
+                Log.d(
+                    "PagerHolder",
+                    "Using cached bitmap for page ${page.index}",
+                )
+                withUIContext {
+                    progressIndicator?.setProgress(100)
+                    val drawable = BitmapDrawable(context.resources, cachedBitmap)
+                    setImage(
+                        drawable,
+                        Config(
+                            zoomDuration = viewer.config.doubleTapAnimDuration,
+                            minimumScaleType = viewer.config.imageScaleType,
+                            cropBorders = viewer.config.imageCropBorders,
+                            zoomStartPosition = viewer.config.imageZoomType,
+                            landscapeZoom = viewer.config.landscapeZoom,
+                            disableZoomIn = viewer.config.disableZoomIn,
+                            doubleTapZoom = viewer.config.doubleTapZoom,
+                            landscapeZoomScaleType = viewer.config.landscapeZoomScaleType,
+                        ),
+                    )
+                    removeErrorLayout()
+                }
+                return
+            }
+        }
+
+        if (extraPage == null) {
             progressIndicator?.setProgress(0)
         } else {
             progressIndicator?.setProgress(95)
@@ -183,7 +216,6 @@ class PagerPageHolder(
         try {
             val (source, isAnimated, background) = withIOContext {
                 streamFn().buffered(16).use { source ->
-                    // SY -->
                     if (extraPage != null) {
                         streamFn2?.invoke()
                             ?.buffered(16)
@@ -191,11 +223,10 @@ class PagerPageHolder(
                         null
                     }.use { source2 ->
                         val itemSource = if (viewer.config.dualPageSplit) {
-                            process(item.first, Buffer().readFrom(source))
+                            process(page, Buffer().readFrom(source))
                         } else {
                             mergePages(Buffer().readFrom(source), source2?.let { Buffer().readFrom(it) })
                         }
-                        // SY <--
                         val isAnimated = ImageUtil.isAnimatedAndSupported(itemSource)
                         val background = if (!isAnimated && viewer.config.automaticBackground) {
                             ImageUtil.chooseBackground(context, itemSource.peek())
@@ -216,11 +247,9 @@ class PagerPageHolder(
                         cropBorders = viewer.config.imageCropBorders,
                         zoomStartPosition = viewer.config.imageZoomType,
                         landscapeZoom = viewer.config.landscapeZoom,
-                        // KMK -->
                         disableZoomIn = viewer.config.disableZoomIn,
                         doubleTapZoom = viewer.config.doubleTapZoom,
                         landscapeZoomScaleType = viewer.config.landscapeZoomScaleType,
-                        // KMK <--
                     ),
                 )
                 if (!isAnimated) {
@@ -228,11 +257,35 @@ class PagerPageHolder(
                 }
                 removeErrorLayout()
             }
+
+            if (extraPage == null) {
+                val streamForCache = page.stream
+                if (streamForCache != null) {
+                    cacheDecodedBitmap(page, streamForCache)
+                }
+            }
         } catch (e: Throwable) {
             logcat(LogPriority.ERROR, e)
             withUIContext {
                 setError(e)
             }
+        }
+    }
+
+    private suspend fun cacheDecodedBitmap(page: ReaderPage, streamFn: () -> InputStream) {
+        try {
+            val bitmap = withIOContext {
+                val source = streamFn().buffered(16).use {
+                    Buffer().readFrom(it)
+                }
+                val decoder = ImageDecoder.newInstance(source.inputStream())
+                decoder?.decode()
+            }
+            if (bitmap != null) {
+                PageCacheManager.cacheBitmap(page, bitmap)
+            }
+        } catch (e: Exception) {
+            logcat(LogPriority.ERROR, e) { "Failed to cache bitmap for page ${page.index}" }
         }
     }
 
