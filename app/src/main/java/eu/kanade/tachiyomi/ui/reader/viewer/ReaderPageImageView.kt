@@ -42,6 +42,7 @@ import eu.kanade.tachiyomi.ui.reader.viewer.webtoon.WebtoonSubsamplingImageView
 import eu.kanade.tachiyomi.util.system.animatorDurationScale
 import eu.kanade.tachiyomi.util.view.isVisibleOnScreen
 import okio.BufferedSource
+import okio.buffer
 import tachiyomi.core.common.util.system.ImageUtil
 import uy.kohesive.injekt.Injekt
 import uy.kohesive.injekt.api.get
@@ -354,7 +355,7 @@ open class ReaderPageImageView @JvmOverloads constructor(
                 }
 
                 ImageRequest.Builder(context)
-                    .data(data.peek().buffered())
+                    .data(data.peek().buffer())
                     .memoryCachePolicy(CachePolicy.ENABLED)
                     .diskCachePolicy(CachePolicy.DISABLED)
                     .target(
@@ -367,11 +368,6 @@ open class ReaderPageImageView @JvmOverloads constructor(
                             setHardwareConfig(false)
                             setImage(ImageSource.inputStream(data.inputStream()))
                             isVisible = true
-                        },
-                    )
-                    .listener(
-                        onError = { _, result ->
-                            onImageLoadError(result.throwable)
                         },
                     )
                     .size(ViewSizeResolver(this@ReaderPageImageView))
